@@ -1,0 +1,238 @@
+{
+  "id": "102",
+  "type": "dialogue",
+  "title": "Booking an Airbnb and Meeting the Host",
+  "meta": "B2 · 约 330 词 · 场景：联系民宿房东与入住",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Host",
+      "name_zh": "房东",
+      "voice": "en-SG-WayneNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Calling the Host Before Arrival",
+      "heading_zh": "1. 入住前给房东打电话",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "Hi, is this Daniel? __This is__ Lee. I booked your apartment in Tiong Bahru from Friday to Monday.",
+          "zh": "你好，是 Daniel 吗？我是 Lee。我订了你在中峇鲁的公寓，周五住到周一。"
+        },
+        {
+          "sp": "B",
+          "en": "Hi, Mr. Lee! Thanks for booking. What time are you planning to ==arrive==?",
+          "zh": "你好，Lee 先生！谢谢预订。你们打算几点到？"
+        },
+        {
+          "sp": "A",
+          "en": "**Probably around nine at night. Is it self check-in, or do we need to meet you in person?**",
+          "zh": "大概晚上九点左右。是自助入住，还是需要跟你当面碰头？"
+        },
+        {
+          "sp": "B",
+          "en": "It's self check-in. There's a ==lockbox== by the door, and I'll send you the code on the day.",
+          "zh": "是自助入住。门边有个密码钥匙盒，当天我把密码发给你。"
+        },
+        {
+          "sp": "A",
+          "en": "Great. Is there a ==cot== we could use? We're travelling with a two-year-old.",
+          "zh": "好的。有没有婴儿床可以用？我们带着一个两岁的孩子。"
+        },
+        {
+          "sp": "B",
+          "en": "Yes, there's a baby cot in the storeroom. I'll set it up before you come.",
+          "zh": "有的，储物间里有张婴儿床。你们来之前我会装好。"
+        },
+        {
+          "sp": "A",
+          "en": "That's really helpful. Are there any __house rules__ I should know about?",
+          "zh": "太有帮助了。有什么入住规矩我需要知道的吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Just the usual. No smoking, no parties, and please __keep the noise down__ after ten. The neighbours are quite strict.",
+          "zh": "就是常规那些。不能抽烟，不能开派对，十点以后请保持安静。邻居挺较真的。"
+        },
+        {
+          "sp": "A",
+          "en": "No problem. And where do we throw the rubbish? I don't want to __get it wrong__.",
+          "zh": "没问题。垃圾扔哪儿？我不想弄错。"
+        },
+        {
+          "sp": "B",
+          "en": "There's a ==rubbish chute== in the corridor, right next to the lift. Recycling goes in the blue bin downstairs.",
+          "zh": "走廊里有个垃圾槽，就在电梯旁边。可回收的放楼下的蓝色桶。"
+        },
+        {
+          "sp": "A",
+          "en": "**Perfect. I'll send you a message when we land.**",
+          "zh": "好的。我们落地了给你发消息。"
+        }
+      ]
+    },
+    {
+      "heading": "2. Locked Out at the Door",
+      "heading_zh": "2. 门打不开",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "Hi Daniel, sorry to bother you so late. We're at the door, but the code you sent isn't working.",
+          "zh": "Daniel 你好，抱歉这么晚打扰你。我们到门口了，但你发的密码打不开。"
+        },
+        {
+          "sp": "B",
+          "en": "Oh no, I'm so sorry. Which code did you try?",
+          "zh": "哎呀，真不好意思。你试的是哪个密码？"
+        },
+        {
+          "sp": "A",
+          "en": "Four seven two nine. I've tried it three times, and the box won't open.",
+          "zh": "四七二九。我试了三次，盒子就是打不开。"
+        },
+        {
+          "sp": "B",
+          "en": "Ah, my mistake. I ==reset== it this morning. The new code is eight one five three.",
+          "zh": "啊，是我的错。我今天早上重设过了。新密码是八一五三。"
+        },
+        {
+          "sp": "A",
+          "en": "Hold on, let me try. Okay, it's open!",
+          "zh": "等一下，我试试。好，开了！"
+        },
+        {
+          "sp": "B",
+          "en": "Sorry again for the ==hassle==. The Wi-Fi password is on the fridge.",
+          "zh": "再次抱歉添麻烦了。Wi-Fi 密码贴在冰箱上。"
+        },
+        {
+          "sp": "A",
+          "en": "**No worries. One more thing. Would it be possible to check out a bit later on Monday?**",
+          "zh": "没关系。还有一件事。周一能稍微晚点退房吗？"
+        },
+        {
+          "sp": "B",
+          "en": "The next guest arrives at three, so I can give you until one. Is that okay?",
+          "zh": "下一位客人三点到，所以我可以给你们延到一点。可以吗？"
+        },
+        {
+          "sp": "A",
+          "en": "That works. Could we also __leave our luggage__ somewhere until the evening? Our flight is at night.",
+          "zh": "可以。另外行李能找个地方放到傍晚吗？我们的航班是晚上的。"
+        },
+        {
+          "sp": "B",
+          "en": "Sure, you can leave it in the ==storeroom==. Just __drop the key__ back in the lockbox when you go.",
+          "zh": "当然，可以放在储物间。走的时候把钥匙放回钥匙盒就行。"
+        },
+        {
+          "sp": "A",
+          "en": "Great. Thanks again, Daniel. Have a good night.",
+          "zh": "好的。再次感谢，Daniel。晚安。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "「你」怎么入住？房东答应提供什么？",
+      "a": "自助入住，门边有密码钥匙盒，当天发密码；房东会提前装好婴儿床。"
+    },
+    {
+      "q": "到了门口为什么打不开？最后怎么解决的？",
+      "a": "房东早上重设了密码却没更新；他给了新密码八一五三，门就开了。"
+    },
+    {
+      "q": "退房那天房东做了哪些通融？",
+      "a": "下一位客人三点到，所以可以延到一点退房；行李可以放储物间到傍晚，走时把钥匙放回钥匙盒。"
+    }
+  ],
+  "dictation": [
+    "Probably around nine at night. Is it self check-in, or do we need to meet you in person?",
+    "No problem. And where do we throw the rubbish? I don't want to get it wrong.",
+    "No worries. One more thing. Would it be possible to check out a bit later on Monday?",
+    "That works. Could we also leave our luggage somewhere until the evening? Our flight is at night."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Hi Daniel, sorry to bother you so late. We're at the door, but the code you sent isn't working.",
+    "marked": "Hi Daniel, / sorry to bother you so <b>late</b>. //<br>We're at the <b>door</b>, / but the <b>code</b> you sent / <b>isn't</b> working. //"
+  },
+  "prompts": [
+    {
+      "q": "入住第二天发现热水器没有热水，孩子等着洗澡。给房东打电话说明情况，问能不能尽快处理，以及今晚有没有临时办法。",
+      "ref": "Hi Daniel, it's Lee from your Tiong Bahru apartment. Sorry to bother you, but there's no hot water in the bathroom. I've checked the switch, and it's on. Our son needs a bath before bed, so could someone come and take a look this evening? If not, is there anything I can try in the meantime?",
+      "ref_zh": "你好 Daniel，我是住你中峇鲁公寓的 Lee。不好意思打扰，浴室没有热水。我看过开关了，是开着的。我儿子睡前要洗澡，今晚能找人来看看吗？如果来不了，我先自己试试有什么办法？"
+    },
+    {
+      "q": "退房后到了机场，发现孩子的保温水壶落在公寓里了。给房东发语音，说明放在哪儿，问能不能帮忙寄到你家。",
+      "ref": "Hi Daniel, it's Lee. We checked out this afternoon, but I think we left our son's water bottle behind. It's a small blue one, probably on the kitchen counter. Could you keep it for me when you go in? I'm happy to pay for a courier to send it to our place. Sorry for the trouble, and thanks for a great stay.",
+      "ref_zh": "你好 Daniel，我是 Lee。我们今天下午退房了，但好像把儿子的水壶落下了。是个蓝色的小水壶，大概在厨房台面上。你进去的时候能帮我收一下吗？我可以付快递费寄到我家。不好意思添麻烦，也谢谢你，住得很好。"
+    }
+  ],
+  "words": [
+    {
+      "w": "arrive",
+      "ipa": "/əˈraɪv/",
+      "zh": "到达",
+      "ex": "What time does your flight arrive?"
+    },
+    {
+      "w": "lockbox",
+      "ipa": "/ˈlɑːkbɑːks/",
+      "zh": "密码钥匙盒",
+      "ex": "The key is in a lockbox next to the front door."
+    },
+    {
+      "w": "cot",
+      "ipa": "/kɑːt/",
+      "zh": "婴儿床（英式）",
+      "ex": "Could the hotel put a cot in our room?"
+    },
+    {
+      "w": "house rules",
+      "ipa": "/haʊs ruːlz/",
+      "zh": "入住规矩",
+      "ex": "Please read the house rules before you check in."
+    },
+    {
+      "w": "keep the noise down",
+      "ipa": "/kiːp ðə nɔɪz daʊn/",
+      "zh": "保持安静",
+      "ex": "Could you keep the noise down? The baby is sleeping."
+    },
+    {
+      "w": "rubbish chute",
+      "ipa": "/ˈrʌbɪʃ ʃuːt/",
+      "zh": "垃圾槽",
+      "ex": "Don't throw glass bottles down the rubbish chute."
+    },
+    {
+      "w": "reset (v.)",
+      "ipa": "/ˌriːˈset/",
+      "zh": "重设",
+      "ex": "I had to reset my password again.",
+      "tts_w": "reset"
+    },
+    {
+      "w": "hassle",
+      "ipa": "/ˈhæsəl/",
+      "zh": "麻烦事",
+      "ex": "Sorry for the hassle, and thanks for waiting."
+    },
+    {
+      "w": "storeroom",
+      "ipa": "/ˈstɔːrruːm/",
+      "zh": "储物间",
+      "ex": "You can leave your bags in the storeroom."
+    }
+  ]
+}

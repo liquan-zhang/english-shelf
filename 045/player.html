@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Aligning Two Teams on One Goal · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "045", "title": "Aligning Two Teams on One Goal", "meta": "B2 · 约 260 词 · 场景：跨团队对齐", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Two Scoreboards, One Product", "heading_zh": "1. 两块记分牌，一个产品", "rows": [[{"id": "s0_0_0", "md": "The growth team wants more pop-ups to drive sign-ups.", "text": "The growth team wants more pop-ups to drive sign-ups.", "zh": "增长团队想多加弹窗来拉注册。", "sp": null}, {"id": "s0_0_1", "md": "The app performance team wants fewer, because every pop-up adds load time.", "text": "The app performance team wants fewer, because every pop-up adds load time.", "zh": "App 性能团队想少加，因为每个弹窗都会拖慢加载时间。", "sp": null}, {"id": "s0_0_2", "md": "Both teams are smart, both have data, and both are measured on different numbers.", "text": "Both teams are smart, both have data, and both are measured on different numbers.", "zh": "两个团队都很聪明，手里都有数据，而且考核的是不同的指标。", "sp": null}], [{"id": "s0_1_0", "md": "This is the usual root of cross-team conflict.", "text": "This is the usual root of cross-team conflict.", "zh": "这就是跨团队冲突最常见的根源。", "sp": null}, {"id": "s0_1_1", "md": "It is rarely about ==personalities==.", "text": "It is rarely about personalities.", "zh": "问题很少出在人的性格上。", "sp": null}, {"id": "s0_1_2", "md": "**When two teams keep different scoreboards, every meeting turns into a negotiation.**", "text": "When two teams keep different scoreboards, every meeting turns into a negotiation.", "zh": "两个团队各看各的记分牌，每次开会就都变成了谈判。", "sp": null}, {"id": "s0_1_3", "md": "Each side ==defends== its own metric, and the user __gets lost in the middle__.", "text": "Each side defends its own metric, and the user gets lost in the middle.", "zh": "每一方都在守自己的指标，用户就在中间被弄丢了。", "sp": null}], [{"id": "s0_2_0", "md": "You cannot fix this with more meetings or a nicer tone.", "text": "You cannot fix this with more meetings or a nicer tone.", "zh": "这事靠多开几次会、语气客气一点是解决不了的。", "sp": null}, {"id": "s0_2_1", "md": "You fix it by changing what both teams are __held accountable for__.", "text": "You fix it by changing what both teams are held accountable for.", "zh": "要解决，就得改变两个团队各自要背的东西。", "sp": null}, {"id": "s0_2_2", "md": "In other words, you need a shared definition of winning that neither team can ==achieve== alone.", "text": "In other words, you need a shared definition of winning that neither team can achieve alone.", "zh": "换句话说，你需要一个双方共同认可的「赢」的定义，而且任何一个团队单靠自己都做不到。", "sp": null}]]}, {"heading": "2. Building the Shared Number", "heading_zh": "2. 建立一个共同的指标", "rows": [[{"id": "s1_0_0", "md": "Get both leads in one room and ask a simple question.", "text": "Get both leads in one room and ask a simple question.", "zh": "把两边的 lead 拉到一个房间里，问一个简单的问题。", "sp": null}, {"id": "s1_0_1", "md": "\"If this project goes perfectly, what changes for the user?\"", "text": "\"If this project goes perfectly, what changes for the user?\"", "zh": "「如果这个项目做得完美，用户那边会有什么变化？」", "sp": null}, {"id": "s1_0_2", "md": "Keep asking until the answer is something both teams would __sign off on__.", "text": "Keep asking until the answer is something both teams would sign off on.", "zh": "一直追问，直到答案是两个团队都愿意签字认可的。", "sp": null}], [{"id": "s1_1_0", "md": "In our example, the answer might be \"more new users who are still active after a week.\"", "text": "In our example, the answer might be \"more new users who are still active after a week.\"", "zh": "拿我们的例子来说，答案可能是「一周后仍然活跃的新用户更多了」。", "sp": null}, {"id": "s1_1_1", "md": "Sign-ups alone can be gamed, and load time alone ignores the business.", "text": "Sign-ups alone can be gamed, and load time alone ignores the business.", "zh": "光看注册量可以刷，光看加载时间又不管业务。", "sp": null}, {"id": "s1_1_2", "md": "Retention ==captures== what both teams actually care about.", "text": "Retention captures what both teams actually care about.", "zh": "留存才真正体现了两个团队都在乎的东西。", "sp": null}], [{"id": "s1_2_0", "md": "Then add a ==guardrail== for each side.", "text": "Then add a guardrail for each side.", "zh": "然后给每一方各加一条护栏。", "sp": null}, {"id": "s1_2_1", "md": "The growth team can try any idea, as long as load time stays under an agreed limit.", "text": "The growth team can try any idea, as long as load time stays under an agreed limit.", "zh": "增长团队想试什么点子都行，只要加载时间不超过约定的上限。", "sp": null}, {"id": "s1_2_2", "md": "**A shared goal plus clear guardrails turns rivals into partners.**", "text": "A shared goal plus clear guardrails turns rivals into partners.", "zh": "共同的目标加上清晰的护栏，能把对手变成搭档。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, review the number together, in the same meeting, from the same dashboard.", "text": "Finally, review the number together, in the same meeting, from the same dashboard.", "zh": "最后，一起看这个指标：同一个会、同一个 dashboard。", "sp": null}, {"id": "s1_3_1", "md": "When both teams look at one chart every week, arguments about whose data is right slowly ==disappear==.", "text": "When both teams look at one chart every week, arguments about whose data is right slowly disappear.", "zh": "当两个团队每周都看同一张图，关于谁的数据对的争论就会慢慢消失。", "sp": null}, {"id": "s1_3_2", "md": "The conversation shifts from \"your team\" to \"our number,\" which is exactly the point.", "text": "The conversation shifts from \"your team\" to \"our number,\" which is exactly the point.", "zh": "对话会从「你们团队」变成「我们的指标」，这恰恰就是目的所在。", "sp": null}]]}], "gist": [{"q": "跨团队冲突通常的根源是什么？", "a": "不是性格问题，而是两个团队用不同的指标（记分牌）考核，每次开会都变成谈判。"}, {"q": "例子中两个团队的共同目标最后是什么？为什么选它？", "a": "一周后仍活跃的新用户数（留存）；单看注册量能被刷，单看加载时间忽略业务，留存同时反映双方关心的东西。"}, {"q": "除了共同目标，还要加什么？", "a": "给每一方设护栏指标，比如增长团队可以随便试，但加载时间必须低于约定上限；并每周用同一个看板一起复盘。"}], "dictation": [{"id": "s0_1_2", "text": "When two teams keep different scoreboards, every meeting turns into a negotiation."}, {"id": "s1_0_1", "text": "\"If this project goes perfectly, what changes for the user?\""}, {"id": "s1_2_2", "text": "A shared goal plus clear guardrails turns rivals into partners."}, {"id": "s1_1_1", "text": "Sign-ups alone can be gamed, and load time alone ignores the business."}], "shadow": {"text": "Then add a guardrail for each side. The growth team can try any idea, as long as load time stays under an agreed limit. A shared goal plus clear guardrails turns rivals into partners.", "marked": "Then add a <b>guardrail</b> / for <b>each</b> side. //<br>The growth team can try <b>any</b> idea, / as long as <b>load time</b> stays under an <b>agreed</b> limit. //<br>A <b>shared</b> goal / plus clear <b>guardrails</b> / turns <b>rivals</b> into <b>partners</b>. //"}, "prompts": [{"q": "推荐算法组想提高点击率，内容安全组想减少违规内容曝光，两边在会上吵起来了。你主持会议，用 30 秒提出一个共同目标加护栏的方案。", "ref": "Can I suggest we step back for a second? I think we're arguing because we're looking at two different numbers. What we both want is users who come back tomorrow because they enjoyed their feed. So let's make next-day return rate the shared goal. Recommendations can test anything they like, as long as the rate of flagged content doesn't go up. Does that work for both teams?", "ref_zh": "我能不能建议大家先退一步？我觉得我们在吵，是因为我们看的是两个不同的数字。我们双方真正想要的，是用户因为喜欢自己的 feed，第二天还会回来。所以我们就把次日回访率作为共同目标吧。推荐团队想试什么都行，只要被举报内容的比例不上升。两个团队觉得这样可以吗？", "id": "ref0"}, {"q": "两个团队每周都在争论谁的数据是对的。用 30 秒提议统一看板和复盘方式。", "ref": "Every week we spend the first twenty minutes debating whose numbers are right, and that's time we never get back. I'd like to propose one dashboard that both teams agree on, built from the same data source. We review it together every Monday, in one meeting. If someone thinks a number is wrong, we fix the dashboard, not the argument.", "ref_zh": "每周我们都要花前二十分钟争论谁的数据是对的，这些时间是再也找不回来的。我想提议做一个两个团队都认可的 dashboard，用同一个数据源。每周一我们一起在一个会上看。如果有人觉得哪个数字不对，我们就去修 dashboard，而不是继续吵。", "id": "ref1"}], "words": [{"w": "personality", "ipa": "/ˌpɜːrsəˈnæləti/", "zh": "性格、个性", "ex": "This isn't a personality clash; their goals are just different.", "id": "w0"}, {"w": "achieve", "ipa": "/əˈtʃiːv/", "zh": "达成、实现", "ex": "We can't achieve the latency target without their help.", "id": "w1"}, {"w": "capture (v.)", "ipa": "/ˈkæptʃər/", "zh": "体现、捕捉", "ex": "Does this metric really capture how users feel about search?", "tts_w": "capture", "id": "w2"}, {"w": "guardrail", "ipa": "/ˈɡɑːrdreɪl/", "zh": "护栏（底线指标）", "ex": "Crash rate is our guardrail; if it goes up, we stop the test.", "id": "w3"}, {"w": "disappear", "ipa": "/ˌdɪsəˈpɪr/", "zh": "消失", "ex": "After the fix, the timeout errors disappeared completely.", "id": "w4"}, {"w": "accountable", "ipa": "/əˈkaʊntəbl/", "zh": "负有责任的", "ex": "Who is accountable for the release if both teams ship code?", "id": "w5"}, {"w": "retention", "ipa": "/rɪˈtenʃən/", "zh": "留存", "ex": "Week one retention dropped after we changed the onboarding flow.", "id": "w6"}, {"w": "rival", "ipa": "/ˈraɪvl/", "zh": "对手", "ex": "We should treat the infra team as partners, not rivals.", "id": "w7"}, {"w": "sign off on", "ipa": "/saɪn ɔːf ɑːn/", "zh": "签字同意、批准", "ex": "Legal needs to sign off on the new privacy text first.", "id": "w8"}, {"w": "defend", "ipa": "/dɪˈfend/", "zh": "维护、辩护", "ex": "Every team will defend its own roadmap unless we agree on one goal.", "id": "w9"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Two Scoreboards, One Product", "zh": "1. 两块记分牌，一个产品", "start": 0.0, "end": 3.024, "words": [[0.105, 0.382], [0.868, 1.066], [1.079, 1.776], [1.908, 2.118], [2.132, 2.632]]}, {"kind": "s", "id": "s0_0_0", "md": "The growth team wants more pop-ups to drive sign-ups.", "zh": "增长团队想多加弹窗来拉注册。", "sp": null, "gap": false, "start": 3.024, "end": 6.384, "words": [[3.142, 3.195], [3.208, 3.524], [3.537, 3.813], [3.827, 4.077], [4.09, 4.287], [4.3, 4.879], [4.892, 4.998], [5.011, 5.327], [5.34, 5.998]]}, {"kind": "s", "id": "s0_0_1", "md": "The app performance team wants fewer, because every pop-up adds load time.", "zh": "App 性能团队想少加，因为每个弹窗都会拖慢加载时间。", "sp": null, "gap": false, "start": 6.384, "end": 11.304, "words": [[6.502, 6.581], [6.595, 6.766], [6.779, 7.358], [7.371, 7.66], [7.673, 7.95], [7.963, 8.41], [8.647, 9.016], [9.134, 9.371], [9.384, 9.884], [9.976, 10.252], [10.266, 10.529], [10.542, 10.923]]}, {"kind": "s", "id": "s0_0_2", "md": "Both teams are smart, both have data, and both are measured on different numbers.", "zh": "两个团队都很聪明，手里都有数据，而且考核的是不同的指标。", "sp": null, "gap": false, "start": 11.304, "end": 16.68, "words": [[11.422, 11.659], [11.672, 12.028], [12.041, 12.159], [12.172, 12.646], [13.041, 13.251], [13.265, 13.501], [13.515, 13.909], [14.238, 14.37], [14.383, 14.738], [14.751, 14.857], [14.87, 15.343], [15.357, 15.475], [15.488, 15.778], [15.791, 16.291]]}, {"kind": "s", "id": "s0_1_0", "md": "This is the usual root of cross-team conflict.", "zh": "这就是跨团队冲突最常见的根源。", "sp": null, "gap": true, "start": 16.68, "end": 19.848, "words": [[16.785, 17.075], [17.088, 17.206], [17.219, 17.298], [17.312, 17.877], [17.891, 18.18], [18.193, 18.285], [18.298, 18.838], [18.851, 19.469]]}, {"kind": "s", "id": "s0_1_1", "md": "It is rarely about ==personalities==.", "zh": "问题很少出在人的性格上。", "sp": null, "gap": false, "start": 19.848, "end": 22.2, "words": [[19.953, 20.032], [20.045, 20.177], [20.19, 20.572], [20.585, 20.861], [20.874, 21.822]]}, {"kind": "s", "id": "s0_1_2", "md": "**When two teams keep different scoreboards, every meeting turns into a negotiation.**", "zh": "两个团队各看各的记分牌，每次开会就都变成了谈判。", "sp": null, "gap": false, "start": 22.2, "end": 27.984, "words": [[22.318, 22.476], [22.489, 22.726], [22.739, 23.226], [23.397, 23.687], [23.7, 24.029], [24.042, 24.818], [25.2, 25.45], [25.463, 25.871], [25.884, 26.332], [26.345, 26.661], [26.674, 26.713], [26.726, 27.595]]}, {"kind": "s", "id": "s0_1_3", "md": "Each side ==defends== its own metric, and the user __gets lost in the middle__.", "zh": "每一方都在守自己的指标，用户就在中间被弄丢了。", "sp": null, "gap": false, "start": 27.984, "end": 32.448, "words": [[28.089, 28.287], [28.3, 28.642], [28.655, 29.129], [29.142, 29.287], [29.3, 29.497], [29.51, 29.997], [30.326, 30.379], [30.392, 30.458], [30.471, 30.879], [30.892, 31.102], [31.116, 31.55], [31.563, 31.616], [31.629, 31.695], [31.708, 32.063]]}, {"kind": "s", "id": "s0_2_0", "md": "You cannot fix this with more meetings or a nicer tone.", "zh": "这事靠多开几次会、语气客气一点是解决不了的。", "sp": null, "gap": true, "start": 32.448, "end": 36.216, "words": [[32.553, 32.632], [32.645, 32.974], [32.987, 33.356], [33.369, 33.58], [33.593, 33.764], [33.777, 34.001], [34.014, 34.632], [34.843, 34.987], [35.001, 35.04], [35.053, 35.435], [35.448, 35.816]]}, {"kind": "s", "id": "s0_2_1", "md": "You fix it by changing what both teams are __held accountable for__.", "zh": "要解决，就得改变两个团队各自要背的东西。", "sp": null, "gap": false, "start": 36.216, "end": 39.984, "words": [[36.321, 36.427], [36.44, 36.676], [36.69, 36.782], [36.795, 36.927], [36.94, 37.466], [37.479, 37.663], [37.677, 37.979], [37.992, 38.348], [38.361, 38.44], [38.453, 38.663], [38.677, 39.163], [39.177, 39.584]]}, {"kind": "s", "id": "s0_2_2", "md": "In other words, you need a shared definition of winning that neither team can ==achieve== alone.", "zh": "换句话说，你需要一个双方共同认可的「赢」的定义，而且任何一个团队单靠自己都做不到。", "sp": null, "gap": false, "start": 39.984, "end": 45.648, "words": [[40.089, 40.234], [40.247, 40.484], [40.497, 40.931], [41.221, 41.313], [41.326, 41.51], [41.523, 41.563], [41.576, 42.05], [42.063, 42.734], [42.747, 42.905], [42.918, 43.26], [43.273, 43.458], [43.471, 43.839], [43.852, 44.287], [44.3, 44.458], [44.471, 44.826], [44.839, 45.26]]}, {"kind": "h", "id": "h1", "md": "2. Building the Shared Number", "zh": "2. 建立一个共同的指标", "start": 45.648, "end": 47.928, "words": [[45.766, 46.003], [46.359, 46.661], [46.674, 46.74], [46.753, 47.109], [47.122, 47.53]]}, {"kind": "s", "id": "s1_0_0", "md": "Get both leads in one room and ask a simple question.", "zh": "把两边的 lead 拉到一个房间里，问一个简单的问题。", "sp": null, "gap": false, "start": 47.928, "end": 51.504, "words": [[48.046, 48.217], [48.231, 48.546], [48.56, 48.902], [48.915, 49.033], [49.046, 49.283], [49.296, 49.652], [49.902, 49.994], [50.007, 50.257], [50.27, 50.31], [50.323, 50.639], [50.652, 51.125]]}, {"kind": "s", "id": "s1_0_1", "md": "\"If this project goes perfectly, what changes for the user?\"", "zh": "「如果这个项目做得完美，用户那边会有什么变化？」", "sp": null, "gap": false, "start": 51.504, "end": 55.464, "words": [[51.688, 51.754], [51.754, 51.912], [51.925, 52.438], [52.451, 52.728], [52.741, 53.412], [53.715, 53.886], [53.899, 54.346], [54.359, 54.478], [54.491, 54.543], [54.557, 55.043]]}, {"kind": "s", "id": "s1_0_2", "md": "Keep asking until the answer is something both teams would __sign off on__.", "zh": "一直追问，直到答案是两个团队都愿意签字认可的。", "sp": null, "gap": false, "start": 55.464, "end": 59.736, "words": [[55.582, 55.78], [55.793, 56.188], [56.201, 56.464], [56.477, 56.569], [56.582, 57.056], [57.069, 57.188], [57.201, 57.596], [57.609, 57.938], [57.951, 58.372], [58.385, 58.503], [58.517, 58.832], [58.846, 59.069], [59.082, 59.346]]}, {"kind": "s", "id": "s1_1_0", "md": "In our example, the answer might be \"more new users who are still active after a week.\"", "zh": "拿我们的例子来说，答案可能是「一周后仍然活跃的新用户更多了」。", "sp": null, "gap": true, "start": 59.736, "end": 65.304, "words": [[59.841, 59.947], [59.96, 60.104], [60.118, 60.604], [60.881, 60.986], [60.999, 61.315], [61.328, 61.604], [61.618, 61.841], [61.92, 62.17], [62.183, 62.381], [62.394, 62.894], [62.907, 63.012], [63.025, 63.131], [63.144, 63.486], [63.499, 63.907], [63.986, 64.302], [64.315, 64.368], [64.381, 64.802]]}, {"kind": "s", "id": "s1_1_1", "md": "Sign-ups alone can be gamed, and load time alone ignores the business.", "zh": "光看注册量可以刷，光看加载时间又不管业务。", "sp": null, "gap": false, "start": 65.304, "end": 70.296, "words": [[65.409, 65.909], [65.922, 66.304], [66.317, 66.462], [66.475, 66.607], [66.62, 67.107], [67.422, 67.58], [67.593, 67.843], [67.857, 68.107], [68.12, 68.607], [68.712, 69.186], [69.199, 69.291], [69.304, 69.909]]}, {"kind": "s", "id": "s1_1_2", "md": "Retention ==captures== what both teams actually care about.", "zh": "留存才真正体现了两个团队都在乎的东西。", "sp": null, "gap": false, "start": 70.296, "end": 73.872, "words": [[70.401, 70.875], [70.888, 71.388], [71.401, 71.599], [71.612, 71.941], [71.954, 72.441], [72.454, 72.822], [72.835, 73.085], [73.099, 73.48]]}, {"kind": "s", "id": "s1_2_0", "md": "Then add a ==guardrail== for each side.", "zh": "然后给每一方各加一条护栏。", "sp": null, "gap": true, "start": 73.872, "end": 76.176, "words": [[73.99, 74.201], [74.214, 74.333], [74.346, 74.398], [74.411, 74.951], [74.964, 75.122], [75.135, 75.319], [75.333, 75.78]]}, {"kind": "s", "id": "s1_2_1", "md": "The growth team can try any idea, as long as load time stays under an agreed limit.", "zh": "增长团队想试什么点子都行，只要加载时间不超过约定的上限。", "sp": null, "gap": false, "start": 76.176, "end": 81.864, "words": [[76.294, 76.347], [76.36, 76.715], [76.729, 77.018], [77.031, 77.163], [77.176, 77.505], [77.597, 77.847], [77.86, 78.373], [78.781, 78.939], [78.952, 79.189], [79.202, 79.308], [79.321, 79.571], [79.584, 79.886], [79.9, 80.281], [80.294, 80.558], [80.571, 80.689], [80.702, 81.084], [81.097, 81.479]]}, {"kind": "s", "id": "s1_2_2", "md": "**A shared goal plus clear guardrails turns rivals into partners.**", "zh": "共同的目标加上清晰的护栏，能把对手变成搭档。", "sp": null, "gap": false, "start": 81.864, "end": 86.64, "words": [[81.956, 81.996], [82.009, 82.404], [82.417, 82.693], [82.706, 83.167], [83.259, 83.627], [83.64, 84.364], [84.443, 84.825], [84.838, 85.338], [85.351, 85.601], [85.614, 86.246]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, review the number together, in the same meeting, from the same dashboard.", "zh": "最后，一起看这个指标：同一个会、同一个 dashboard。", "sp": null, "gap": true, "start": 86.64, "end": 92.016, "words": [[86.824, 87.285], [87.587, 87.956], [87.969, 88.061], [88.074, 88.429], [88.443, 88.969], [89.272, 89.337], [89.351, 89.429], [89.443, 89.785], [89.798, 90.206], [90.482, 90.614], [90.627, 90.706], [90.719, 90.995], [91.008, 91.627]]}, {"kind": "s", "id": "s1_3_1", "md": "When both teams look at one chart every week, arguments about whose data is right slowly ==disappear==.", "zh": "当两个团队每周都看同一张图，关于谁的数据对的争论就会慢慢消失。", "sp": null, "gap": false, "start": 92.016, "end": 98.904, "words": [[92.134, 92.253], [92.266, 92.569], [92.582, 92.898], [92.911, 93.082], [93.095, 93.213], [93.227, 93.49], [93.503, 93.898], [94.055, 94.319], [94.332, 94.713], [95.148, 95.661], [95.674, 95.95], [95.963, 96.213], [96.227, 96.687], [96.858, 97.016], [97.029, 97.319], [97.332, 97.832], [97.845, 98.516]]}, {"kind": "s", "id": "s1_3_2", "md": "The conversation shifts from \"your team\" to \"our number,\" which is exactly the point.", "zh": "对话会从「你们团队」变成「我们的指标」，这恰恰就是目的所在。", "sp": null, "gap": false, "start": 98.904, "end": 104.712, "words": [[99.036, 99.088], [99.101, 99.865], [99.878, 100.299], [100.312, 100.614], [100.799, 100.93], [100.943, 101.378], [101.628, 101.838], [101.865, 102.049], [102.062, 102.522], [102.996, 103.167], [103.18, 103.286], [103.299, 103.786], [103.799, 103.891], [103.904, 104.325]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

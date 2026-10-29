@@ -1,0 +1,179 @@
+{
+  "id": "062",
+  "title": "Writing a Status Update During an Outage",
+  "meta": "B2 · 约 280 词 · 场景：故障通报",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Who Is Actually Reading",
+      "paragraphs": [
+        [
+          "During an outage, the engineers fixing the problem are rarely the people reading the updates.",
+          "The readers are support agents, sales leads, executives, and other teams waiting on you.",
+          "They do not need the stack trace; they need to understand the ==impact== and know what to tell their own people."
+        ],
+        [
+          "Most bad updates fail in one of two ways.",
+          "Some are too ==technical==, full of pod names and error codes that only three people understand.",
+          "Others are so ==cautious== that they say nothing at all, like \"We are aware of an issue.\""
+        ],
+        [
+          "**Write every update for the person who just joined the channel and has read nothing else.**",
+          "If they can act on it without asking a follow-up question, the update has done its job.",
+          "If they have to __scroll back__ through an hour of chat to understand it, the update has failed."
+        ]
+      ],
+      "heading_zh": "1. 到底谁在看",
+      "paragraphs_zh": [
+        [
+          "故障期间，修问题的工程师很少是看通报的人。",
+          "看通报的是客服、销售负责人、高管，还有在等你的其他团队。",
+          "他们不需要堆栈信息；他们需要搞清楚影响面，知道该怎么跟自己的人交代。"
+        ],
+        [
+          "大多数糟糕的通报，都栽在下面两种情况之一。",
+          "有的太技术，满篇 pod 名和错误码，只有三个人看得懂。",
+          "有的又谨慎过头，等于什么都没说，比如「我们已知悉一个问题」。"
+        ],
+        [
+          "每一条通报都要写给刚进群、别的什么都没看过的人。",
+          "如果他不用追问就能据此行动，这条通报就算合格了。",
+          "如果他得往上翻一个小时的聊天记录才看得懂，这条通报就失败了。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Four Lines, Every Time",
+      "paragraphs": [
+        [
+          "A simple template __takes the pressure off__ when your heart is racing.",
+          "Line one is the impact: which users, which feature, and since when.",
+          "Line two is the current status: investigating, ==identified==, or recovering."
+        ],
+        [
+          "Line three is the next action, in plain words.",
+          "\"We are rolling back the payment change and expect errors to drop within twenty minutes.\"",
+          "Line four is the time of the next update, and you keep that promise even if nothing has changed."
+        ],
+        [
+          "**An update that says nothing new still tells people you have not forgotten them.**",
+          "Avoid guessing at the root cause in a public channel, because ==premature== explanations tend to __come back to bite you__.",
+          "Say what you have ==confirmed==, and __label the rest__ as unknown.",
+          "People can plan around an honest unknown much more easily than around a wrong answer."
+        ]
+      ],
+      "heading_zh": "2. 每次都写四行",
+      "paragraphs_zh": [
+        [
+          "心跳加速的时候，一个简单的模板能帮你减轻压力。",
+          "第一行写影响：哪些用户、哪个功能、从什么时候开始。",
+          "第二行写当前状态：排查中、已定位，还是恢复中。"
+        ],
+        [
+          "第三行用大白话写下一步动作。",
+          "「我们正在回滚支付相关的改动，预计二十分钟内报错会降下来。」",
+          "第四行写下一次同步的时间，就算情况没变，也要说到做到。"
+        ],
+        [
+          "一条没有新消息的通报，也在告诉大家你没忘了他们。",
+          "别在公开群里猜根因，因为过早下的结论往往会反过来坑你。",
+          "已经确认的就说确认了，其余的标成未知。",
+          "大家围绕一个坦诚的「未知」做安排，比围绕一个错误答案容易得多。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "故障通报真正的读者是谁？他们需要什么？",
+      "a": "客服、销售、高管和其他等待的团队；他们不要堆栈信息，要知道影响范围以及该怎么跟自己的人说。"
+    },
+    {
+      "q": "作者提出的四行模板分别是什么？",
+      "a": "影响（哪些用户、哪个功能、从何时开始）；当前状态（排查中/已定位/恢复中）；下一步动作；下次更新时间。"
+    },
+    {
+      "q": "为什么不要在公开频道猜根因？",
+      "a": "过早的解释容易反噬；只说已确认的，其余标为未知，诚实的未知比错误答案更便于别人安排。"
+    }
+  ],
+  "dictation": [
+    "Write every update for the person who just joined the channel and has read nothing else.",
+    "Line four is the time of the next update, and you keep that promise even if nothing has changed.",
+    "An update that says nothing new still tells people you have not forgotten them.",
+    "People can plan around an honest unknown much more easily than around a wrong answer."
+  ],
+  "shadow": {
+    "text": "Line three is the next action, in plain words. \"We are rolling back the payment change and expect errors to drop within twenty minutes.\" Line four is the time of the next update, and you keep that promise even if nothing has changed.",
+    "marked": "Line <b>three</b> / is the next <b>action</b>, / in <b>plain</b> words. //<br>\"We are rolling <b>back</b> the payment change / and expect errors to <b>drop</b> / within <b>twenty</b> minutes.\" //<br>Line <b>four</b> / is the time of the <b>next</b> update, / and you <b>keep</b> that promise / even if <b>nothing</b> has changed. //"
+  },
+  "prompts": [
+    {
+      "q": "支付服务故障已经二十分钟，客服群里一直在问情况。用 30 秒口头给出一次四行式的状态通报。",
+      "ref": "Quick update on the payment issue. Since about two fifteen, around a third of card payments in the region are failing; other payment methods are fine. We've identified a bad config change as the likely trigger. We're rolling it back now and expect failures to drop within twenty minutes. Please tell customers to retry or use another method for now. Next update at three o'clock, even if nothing changes.",
+      "ref_zh": "同步一下支付问题。大概从两点十五开始，这个区域约三分之一的银行卡支付失败；其他支付方式正常。我们已经定位到一个有问题的配置变更，很可能是诱因。现在正在回滚，预计二十分钟内失败率会降下来。请先让用户重试，或者换一种支付方式。三点同步下一次进展，就算没有变化也会同步。"
+    },
+    {
+      "q": "高管在群里追问“到底是什么原因？”，但根因还没确认。用 30 秒回复：说清已确认的、未知的，并避免过早下结论。",
+      "ref": "Good question, and I want to be careful here. What we've confirmed is that the errors started with this morning's deployment, and rolling it back has already cut them by half. What we don't know yet is which part of the change caused it. I'd rather not guess in this channel and correct it later. We'll share the confirmed cause in the next update at four.",
+      "ref_zh": "好问题，这里我想谨慎一点。目前已经确认的是，报错是从今天上午那次部署开始的，回滚之后已经降了一半。还不知道的是具体是改动里的哪一部分导致的。我不想在群里先猜一个、回头再更正。确认的原因我们会在四点的下一次同步里发出来。"
+    }
+  ],
+  "words": [
+    {
+      "w": "impact",
+      "ipa": "/ˈɪmpækt/",
+      "zh": "影响、影响范围",
+      "ex": "What's the customer impact right now, roughly how many users?"
+    },
+    {
+      "w": "technical",
+      "ipa": "/ˈteknɪkəl/",
+      "zh": "技术性的、专业的",
+      "ex": "Keep the update less technical; the sales team will read it too."
+    },
+    {
+      "w": "cautious",
+      "ipa": "/ˈkɔːʃəs/",
+      "zh": "谨慎的、小心翼翼的",
+      "ex": "The statement was so cautious that customers didn't know what to do."
+    },
+    {
+      "w": "identify",
+      "ipa": "/aɪˈdentɪˌfaɪ/",
+      "zh": "确认、定位",
+      "ex": "We've identified the bad deploy and are rolling it back."
+    },
+    {
+      "w": "premature",
+      "ipa": "/ˌpriːməˈtʃʊr/",
+      "zh": "过早的、为时尚早的",
+      "ex": "It's premature to blame the vendor before we check our own config."
+    },
+    {
+      "w": "confirm",
+      "ipa": "/kənˈfɜːrm/",
+      "zh": "确认、证实",
+      "ex": "Can you confirm that the error rate is back to normal?"
+    },
+    {
+      "w": "template",
+      "ipa": "/ˈtemplət/",
+      "zh": "模板",
+      "ex": "Let's add an outage update template to the on-call runbook."
+    },
+    {
+      "w": "recover",
+      "ipa": "/rɪˈkʌvər/",
+      "zh": "恢复",
+      "ex": "The service started to recover a few minutes after the rollback."
+    },
+    {
+      "w": "follow-up",
+      "ipa": "/ˈfɑːloʊ ʌp/",
+      "zh": "后续的；跟进",
+      "ex": "I'll send a follow-up email with the full timeline tomorrow."
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "id": "114",
+  "type": "dialogue",
+  "title": "Hosting Friends for After-Work Drinks",
+  "meta": "B2 · 约 250 词 · 场景：订位、点单与核对账单",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Bar Manager", "name_zh": "酒吧经理", "voice": "en-IN-PrabhatNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Booking and Ordering",
+      "heading_zh": "1. 订位和点单",
+      "lines": [
+        {"sp": "B", "en": "Good afternoon, Copper Room. How can I help?", "zh": "下午好，这里是 Copper Room。有什么可以帮您？"},
+        {"sp": "A", "en": "**Hi, I'd like to book a table for six this Thursday, around six thirty.**", "zh": "你好，我想订这周四的位子，六个人，六点半左右。"},
+        {"sp": "B", "en": "Let me see. I can give you a high table near the window. Is that alright?", "zh": "我看看。可以给您安排靠窗的高桌，行吗？"},
+        {"sp": "A", "en": "Perfect. Do you have a ==happy hour==, and __until what time__?", "zh": "太好了。你们有欢乐时段吗？到几点？"},
+        {"sp": "B", "en": "Yes, until eight. House pours and draught beers are one-for-one.", "zh": "有，到八点。店酒和生啤买一送一。"},
+        {"sp": "A", "en": "Great. One of my friends doesn't drink. Do you have decent ==mocktails==?", "zh": "很好。我有个朋友不喝酒，你们有像样的无酒精鸡尾酒吗？"},
+        {"sp": "B", "en": "We have three on the menu, and the bartender can make something ==off menu== too.", "zh": "菜单上有三款，调酒师也可以做菜单外的。"},
+        {"sp": "A", "en": "Good to know. Could we also __pre-order__ some ==bar snacks== so they're ready when we arrive?", "zh": "好的。我们能不能先预点一些下酒小吃，到的时候就能上？"},
+        {"sp": "B", "en": "Of course. I'd suggest the sharing platter. It __feeds about__ four to six people.", "zh": "当然。推荐拼盘，大概够四到六个人吃。"},
+        {"sp": "A", "en": "Let's do one platter. The booking is under Lee. Thanks a lot.", "zh": "那就来一份拼盘。订位名字写 Lee。多谢。"}
+      ]
+    },
+    {
+      "heading": "2. Settling the Bill",
+      "heading_zh": "2. 结账",
+      "lines": [
+        {"sp": "A", "en": "Excuse me, could we __get the bill__, please? It's all on one card.", "zh": "打扰一下，麻烦买单。全部刷一张卡。"},
+        {"sp": "B", "en": "Certainly. Here you are. Take your time.", "zh": "好的，给您。您慢慢看。"},
+        {"sp": "A", "en": "Sorry, I think there's a ==mistake==. We only had one bottle of white wine, but there are two on here.", "zh": "不好意思，好像有点问题。我们只点了一瓶白葡萄酒，账单上是两瓶。"},
+        {"sp": "B", "en": "Let me check with the bar. You're right, the second one was for the next table. I'll take it off.", "zh": "我跟吧台确认一下。您说得对，第二瓶是隔壁桌的。我给您去掉。"},
+        {"sp": "A", "en": "Thanks. And the beers after eight, were those still at the happy hour price?", "zh": "谢谢。还有八点以后点的啤酒，还算欢乐时段价吗？"},
+        {"sp": "B", "en": "The last ==round== came in at eight ten, so that's full price, I'm afraid.", "zh": "最后一轮是八点十分下的单，所以恐怕要按原价算。"},
+        {"sp": "A", "en": "**Fair enough. Is the service charge already included?**", "zh": "也合理。服务费已经包含在内了吗？"},
+        {"sp": "B", "en": "Yes, service charge and GST are both included. Your new ==total== is three hundred and twelve.", "zh": "是的，服务费和消费税都包含了。新的总额是三百一十二。"},
+        {"sp": "A", "en": "**Great, thanks for sorting that out. We had a really good time.**", "zh": "好，谢谢你们处理。我们今晚玩得很开心。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」订了什么样的位子？还提前安排了什么？", "a": "周四六点半、六个人的靠窗高桌；还预点了一份分享拼盘。"},
+    {"q": "账单上出了什么错？", "a": "多算了一瓶白葡萄酒，那瓶其实是隔壁桌的，经理去掉了。"},
+    {"q": "为什么最后一轮啤酒按原价算？", "a": "因为是八点十分下的单，欢乐时段八点已经结束了。"}
+  ],
+  "dictation": [
+    "Hi, I'd like to book a table for six this Thursday, around six thirty.",
+    "Great. One of my friends doesn't drink. Do you have decent mocktails?",
+    "Sorry, I think there's a mistake. We only had one bottle of white wine, but there are two on here.",
+    "Fair enough. Is the service charge already included?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Good to know. Could we also pre-order some bar snacks so they're ready when we arrive?",
+    "marked": "Good to <b>know</b>. //<br>Could we also <b>pre-order</b> / some <b>bar snacks</b> / so they're <b>ready</b> / when we <b>arrive</b>? //"
+  },
+  "prompts": [
+    {
+      "q": "你想给团队在酒吧包一个角落办欢送会，大约十二个人。打电话问能不能预留、有没有最低消费、可不可以带蛋糕。",
+      "ref": "Hi, I'm organising a farewell for a colleague next Friday evening, about twelve people. Would it be possible to reserve a corner area for us from seven? Is there a minimum spend for a group that size? Also, we'd like to bring our own cake. Is that okay, and is there a cake cutting fee?",
+      "ref_zh": "你好，我下周五晚上要给同事办个欢送会，大概十二个人。七点开始能给我们预留一个角落吗？这么多人有没有最低消费？另外我们想自带蛋糕，可以吗？收切蛋糕费吗？"
+    },
+    {
+      "q": "结账时朋友坚持要和你平摊，但你说好今天你请。礼貌地坚持由你买单，并顺便约下次。",
+      "ref": "No, no, put your card away. I invited you all tonight, so this one's on me. It's been ages since we got together, and I really wanted to say thanks for helping me settle in. If you insist, you can get the next round next time. Let's not leave it so long again.",
+      "ref_zh": "不不，把卡收起来。今晚是我请大家的，这顿我来。我们好久没聚了，我也一直想谢谢你们帮我适应这边。你们非要请的话，下次那一轮你们来。下次别隔这么久了。"
+    }
+  ],
+  "words": [
+    {"w": "happy hour", "ipa": "/ˈhæpi aʊr/", "zh": "欢乐时段（酒水优惠）", "ex": "Happy hour ends at eight, so let's order now."},
+    {"w": "mocktail", "ipa": "/ˈmɑːkteɪl/", "zh": "无酒精鸡尾酒", "ex": "I'm driving tonight, so I'll just have a mocktail."},
+    {"w": "off menu", "ipa": "/ɔːf ˈmenjuː/", "zh": "菜单之外的", "ex": "The chef can cook something off menu for the kids."},
+    {"w": "bar snacks", "ipa": "/bɑːr snæks/", "zh": "下酒小吃", "ex": "The bar snacks here are better than the main dishes."},
+    {"w": "pre-order", "ipa": "/ˌpriː ˈɔːrdər/", "zh": "提前点单", "ex": "You can pre-order the birthday cake online."},
+    {"w": "mistake", "ipa": "/mɪˈsteɪk/", "zh": "错误", "ex": "There's a mistake on my receipt."},
+    {"w": "round", "ipa": "/raʊnd/", "zh": "（给一桌人点的）一轮酒", "ex": "This round is on me."},
+    {"w": "total", "ipa": "/ˈtoʊtəl/", "zh": "总额", "ex": "What's the total with service charge?"},
+    {"w": "get the bill", "ipa": "/ɡet ðə bɪl/", "zh": "买单", "ex": "Could we get the bill when you have a moment?"}
+  ]
+}

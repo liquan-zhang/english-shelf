@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Prioritizing When Everything Is Urgent · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "075", "title": "Prioritizing When Everything Is Urgent", "meta": "B2 · 约 270 词 · 场景：需求排序", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Urgent Is a Label, Not a Fact", "heading_zh": "1. 紧急是标签，不是事实", "rows": [[{"id": "s0_0_0", "md": "On some Mondays, five people message you before ten o'clock, and every message says urgent.", "text": "On some Mondays, five people message you before ten o'clock, and every message says urgent.", "zh": "有些周一，十点前就有五个人来找你，每条消息都写着紧急。", "sp": null}, {"id": "s0_0_1", "md": "Sales needs a fix for a big client, the PM wants a demo by Wednesday, and security has found an old library with a known problem.", "text": "Sales needs a fix for a big client, the PM wants a demo by Wednesday, and security has found an old library with a known problem.", "zh": "销售要给一个大客户修 bug，PM 想周三前看 demo，安全团队发现了一个有已知漏洞的老库。", "sp": null}, {"id": "s0_0_2", "md": "If everything is urgent, the word has stopped meaning anything.", "text": "If everything is urgent, the word has stopped meaning anything.", "zh": "如果什么都紧急，这个词就已经没有意义了。", "sp": null}], [{"id": "s0_1_0", "md": "People label requests urgent because that is how they get attention.", "text": "People label requests urgent because that is how they get attention.", "zh": "大家把需求标成紧急，是因为这样才能被注意到。", "sp": null}, {"id": "s0_1_1", "md": "It is not ==dishonest==; it is a ==rational== response to a busy team.", "text": "It is not dishonest; it is a rational response to a busy team.", "zh": "这不是不诚实；面对一个忙碌的团队，这是理性的反应。", "sp": null}, {"id": "s0_1_2", "md": "**Your job is not to judge who shouts loudest but to find out what each delay really costs.**", "text": "Your job is not to judge who shouts loudest but to find out what each delay really costs.", "zh": "你的任务不是看谁嗓门最大，而是搞清楚每件事拖一拖真正的代价是什么。", "sp": null}], [{"id": "s0_2_0", "md": "Without that, priority goes to whoever is most ==persistent==, and the team spends its whole week reacting.", "text": "Without that, priority goes to whoever is most persistent, and the team spends its whole week reacting.", "zh": "不这么做的话，优先级就归最能磨的那个人，团队一整周都在被动应付。", "sp": null}, {"id": "s0_2_1", "md": "Engineers switch tasks five times a day and finish almost nothing.", "text": "Engineers switch tasks five times a day and finish almost nothing.", "zh": "工程师一天切换五次任务，几乎什么都做不完。", "sp": null}, {"id": "s0_2_2", "md": "By Friday, the most important request is often the one nobody got around to.", "text": "By Friday, the most important request is often the one nobody got around to.", "zh": "到了周五，最重要的那个需求往往是谁都没顾上的那个。", "sp": null}]]}, {"heading": "2. One Question and a Shared List", "heading_zh": "2. 一个问题加一张共享清单", "rows": [[{"id": "s1_0_0", "md": "The most useful question is simple: what happens if this waits one week?", "text": "The most useful question is simple: what happens if this waits one week?", "zh": "最有用的问题很简单：这件事等一周会怎样？", "sp": null}, {"id": "s1_0_1", "md": "For the security library, the answer might be a real ==exposure== for customer data.", "text": "For the security library, the answer might be a real exposure for customer data.", "zh": "对那个安全库来说，答案可能是客户数据存在真实的暴露风险。", "sp": null}, {"id": "s1_0_2", "md": "For the demo, the answer might be that the meeting moves to Thursday.", "text": "For the demo, the answer might be that the meeting moves to Thursday.", "zh": "对那个 demo 来说，答案可能是会议挪到周四。", "sp": null}], [{"id": "s1_1_0", "md": "Then put the requests in one ranked list and share it with everyone who asked.", "text": "Then put the requests in one ranked list and share it with everyone who asked.", "zh": "然后把所有需求放进一张排好序的清单，分享给每个提需求的人。", "sp": null}, {"id": "s1_1_1", "md": "Ranking in public is uncomfortable, but it moves the argument to the right place.", "text": "Ranking in public is uncomfortable, but it moves the argument to the right place.", "zh": "公开排序是有点尴尬，但它把争论挪到了该在的地方。", "sp": null}, {"id": "s1_1_2", "md": "If sales disagrees with the order, they can __take it up with__ the PM, instead of pressuring individual engineers in private messages.", "text": "If sales disagrees with the order, they can take it up with the PM, instead of pressuring individual engineers in private messages.", "zh": "如果销售不同意这个顺序，他们可以去找 PM 谈，而不是私聊给某个工程师施压。", "sp": null}], [{"id": "s1_2_0", "md": "**A visible ranking turns competing demands into a conversation about priorities.**", "text": "A visible ranking turns competing demands into a conversation about priorities.", "zh": "一张透明的排序，能把相互竞争的需求变成一场关于优先级的讨论。", "sp": null}, {"id": "s1_2_1", "md": "Keep a little ==slack== for true emergencies, and __revisit the list__ every week.", "text": "Keep a little slack for true emergencies, and revisit the list every week.", "zh": "给真正的紧急情况留一点余量，并且每周回顾一下这张清单。", "sp": null}, {"id": "s1_2_2", "md": "The list will never be perfect, but it will be ==transparent==, and that alone removes a lot of ==friction==.", "text": "The list will never be perfect, but it will be transparent, and that alone removes a lot of friction.", "zh": "这张清单永远不会完美，但它是透明的，光这一点就能减少很多摩擦。", "sp": null}]]}], "gist": [{"q": "为什么人人都把需求标成“紧急”？作者怎么看？", "a": "这是在忙碌团队里获得关注的理性做法，不算不诚实；但“紧急”只是标签，不是事实。"}, {"q": "判断优先级最有用的问题是什么？", "a": "如果这件事等一周会怎样？比如安全漏洞可能真的暴露客户数据，而演示只是改到周四。"}, {"q": "为什么要公开一份排序清单？", "a": "把争论引到正确的地方（找 PM 而不是私下施压工程师），把竞争性需求变成关于优先级的讨论；同时留余量应对真急事，每周复看。"}], "dictation": [{"id": "s0_0_2", "text": "If everything is urgent, the word has stopped meaning anything."}, {"id": "s0_1_2", "text": "Your job is not to judge who shouts loudest but to find out what each delay really costs."}, {"id": "s1_0_0", "text": "The most useful question is simple: what happens if this waits one week?"}, {"id": "s1_2_0", "text": "A visible ranking turns competing demands into a conversation about priorities."}], "shadow": {"text": "Then put the requests in one ranked list and share it with everyone who asked. Ranking in public is uncomfortable, but it moves the argument to the right place.", "marked": "Then put the requests / in <b>one</b> ranked list / and <b>share</b> it with everyone who asked. //<br>Ranking in <b>public</b> / is <b>uncomfortable</b>, / but it moves the argument / to the <b>right</b> place. //"}, "prompts": [{"q": "销售总监私信你的工程师，要求今天就修他客户的问题，打乱了排期。用 30 秒跟他沟通，用“等一周会怎样”来定优先级。", "ref": "Hi, I saw your message to Leo about the client issue, and I want to help. To place it correctly, can I ask one thing: what happens if this waits until next week? If the client might cancel, that changes everything, and we'll move it up today. If it's more of an annoyance, it goes on our shared list, and you can see exactly where it sits.", "ref_zh": "你好，我看到你给 Leo 发的关于客户问题的消息，我想帮忙。为了排准优先级，我能问一句吗：这件事等到下周会怎样？如果客户可能会解约，那就完全不一样了，我们今天就把它提上来。如果更多是个烦心事，它就会进我们的共享清单，你能清楚看到它排在哪里。", "id": "ref0"}, {"q": "周会上三个需求方都说自己最急。用 30 秒提出公开排序的做法。", "ref": "I hear that all three of these feel urgent, and I'm sure they are, from where each of you sits. We can't do all three this week, so here's what I propose. I'll put them in one ranked list, based on what each delay actually costs, and share it in our channel by this afternoon. If anyone disagrees with the order, let's discuss it together with the PM.", "ref_zh": "我知道这三件事都让人觉得很急，站在各自的角度，我相信确实都急。这周我们没法三件都做，所以我的提议是：我按每件事延期的实际代价排一张清单，今天下午之前发到群里。如果有人不同意这个顺序，我们拉上 PM 一起讨论。", "id": "ref1"}], "words": [{"w": "dishonest", "ipa": "/dɪsˈɑːnɪst/", "zh": "不诚实的", "ex": "It would be dishonest to call this feature finished.", "id": "w0"}, {"w": "rational", "ipa": "/ˈræʃənəl/", "zh": "理性的、合理的", "ex": "Given the deadline, cutting the feature was a rational choice.", "id": "w1"}, {"w": "persistent", "ipa": "/pərˈsɪstənt/", "zh": "坚持不懈的、反复纠缠的", "ex": "He was persistent until the platform team fixed the quota.", "id": "w2"}, {"w": "exposure", "ipa": "/ɪkˈspoʊʒər/", "zh": "暴露（风险）", "ex": "This bug creates an exposure for user email addresses.", "id": "w3"}, {"w": "slack", "ipa": "/slæk/", "zh": "余量、松弛空间", "ex": "Leave some slack in the sprint for on-call work.", "id": "w4"}, {"w": "transparent", "ipa": "/trænsˈperənt/", "zh": "透明的、公开的", "ex": "We try to be transparent about how we rank requests.", "id": "w5"}, {"w": "friction", "ipa": "/ˈfrɪkʃən/", "zh": "摩擦、阻力", "ex": "A shared calendar removed a lot of friction between the two teams.", "id": "w6"}, {"w": "urgent", "ipa": "/ˈɜːrdʒənt/", "zh": "紧急的", "ex": "Is this urgent, or can it wait until after the release?", "id": "w7"}, {"w": "ranking", "ipa": "/ˈræŋkɪŋ/", "zh": "排序、排名", "ex": "Let's agree on the ranking before we assign anyone.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Urgent Is a Label, Not a Fact", "zh": "1. 紧急是标签，不是事实", "start": 0.0, "end": 3.288, "words": [[0.105, 0.408], [0.868, 1.237], [1.342, 1.434], [1.447, 1.513], [1.526, 2.0], [2.237, 2.355], [2.368, 2.395], [2.408, 2.895]]}, {"kind": "s", "id": "s0_0_0", "md": "On some Mondays, five people message you before ten o'clock, and every message says urgent.", "zh": "有些周一，十点前就有五个人来找你，每条消息都写着紧急。", "sp": null, "gap": false, "start": 3.288, "end": 8.952, "words": [[3.393, 3.498], [3.512, 3.696], [3.709, 4.301], [4.485, 4.788], [4.801, 5.104], [5.117, 5.499], [5.512, 5.617], [5.63, 6.012], [6.025, 6.262], [6.275, 6.722], [7.025, 7.143], [7.156, 7.38], [7.393, 7.827], [7.841, 8.064], [8.077, 8.551]]}, {"kind": "s", "id": "s0_0_1", "md": "Sales needs a fix for a big client, the PM wants a demo by Wednesday, and security has found an old library with a known problem.", "zh": "销售要给一个大客户修 bug，PM 想周三前看 demo，安全团队发现了一个有已知漏洞的老库。", "sp": null, "gap": false, "start": 8.952, "end": 17.232, "words": [[9.07, 9.373], [9.386, 9.623], [9.636, 9.689], [9.702, 10.084], [10.097, 10.268], [10.281, 10.347], [10.36, 10.557], [10.57, 11.057], [11.36, 11.452], [11.465, 11.86], [11.873, 12.097], [12.11, 12.202], [12.215, 12.57], [12.584, 12.781], [12.794, 13.478], [13.728, 13.86], [13.873, 14.439], [14.452, 14.584], [14.597, 14.834], [14.847, 14.992], [15.097, 15.36], [15.373, 15.926], [15.939, 16.11], [16.123, 16.136], [16.149, 16.386], [16.399, 16.847]]}, {"kind": "s", "id": "s0_0_2", "md": "If everything is urgent, the word has stopped meaning anything.", "zh": "如果什么都紧急，这个词就已经没有意义了。", "sp": null, "gap": false, "start": 17.232, "end": 21.216, "words": [[17.337, 17.482], [17.627, 18.1], [18.114, 18.258], [18.271, 18.745], [19.074, 19.179], [19.193, 19.443], [19.456, 19.6], [19.614, 19.995], [20.008, 20.337], [20.35, 20.837]]}, {"kind": "s", "id": "s0_1_0", "md": "People label requests urgent because that is how they get attention.", "zh": "大家把需求标成紧急，是因为这样才能被注意到。", "sp": null, "gap": true, "start": 21.216, "end": 25.056, "words": [[21.334, 21.611], [21.624, 21.966], [21.979, 22.505], [22.519, 22.953], [23.058, 23.413], [23.427, 23.624], [23.637, 23.729], [23.742, 23.887], [23.9, 24.019], [24.032, 24.163], [24.177, 24.677]]}, {"kind": "s", "id": "s0_1_1", "md": "It is not ==dishonest==; it is a ==rational== response to a busy team.", "zh": "这不是不诚实；面对一个忙碌的团队，这是理性的反应。", "sp": null, "gap": false, "start": 25.056, "end": 29.4, "words": [[25.161, 25.24], [25.253, 25.372], [25.385, 25.648], [25.661, 26.345], [26.674, 26.727], [26.74, 26.832], [26.845, 26.911], [26.924, 27.517], [27.53, 28.03], [28.043, 28.174], [28.188, 28.28], [28.293, 28.609], [28.622, 29.003]]}, {"kind": "s", "id": "s0_1_2", "md": "**Your job is not to judge who shouts loudest but to find out what each delay really costs.**", "zh": "你的任务不是看谁嗓门最大，而是搞清楚每件事拖一拖真正的代价是什么。", "sp": null, "gap": false, "start": 29.4, "end": 34.92, "words": [[29.518, 29.637], [29.65, 29.953], [29.966, 30.058], [30.071, 30.308], [30.321, 30.413], [30.426, 30.768], [30.782, 30.874], [30.887, 31.268], [31.282, 31.782], [32.058, 32.163], [32.176, 32.242], [32.255, 32.571], [32.584, 32.729], [32.742, 32.913], [32.992, 33.189], [33.203, 33.584], [33.597, 33.861], [33.874, 34.532]]}, {"kind": "s", "id": "s0_2_0", "md": "Without that, priority goes to whoever is most ==persistent==, and the team spends its whole week reacting.", "zh": "不这么做的话，优先级就归最能磨的那个人，团队一整周都在被动应付。", "sp": null, "gap": true, "start": 34.92, "end": 41.568, "words": [[35.038, 35.367], [35.381, 35.723], [35.986, 36.525], [36.538, 36.828], [36.841, 36.933], [36.946, 37.407], [37.42, 37.525], [37.538, 37.907], [37.92, 38.512], [38.854, 38.907], [38.92, 39.012], [39.025, 39.407], [39.578, 39.946], [39.959, 40.078], [40.091, 40.367], [40.381, 40.604], [40.617, 41.183]]}, {"kind": "s", "id": "s0_2_1", "md": "Engineers switch tasks five times a day and finish almost nothing.", "zh": "工程师一天切换五次任务，几乎什么都做不完。", "sp": null, "gap": false, "start": 41.568, "end": 45.936, "words": [[41.673, 42.147], [42.16, 42.476], [42.489, 42.989], [43.002, 43.344], [43.357, 43.673], [43.686, 43.739], [43.752, 44.134], [44.265, 44.371], [44.384, 44.818], [44.831, 45.173], [45.186, 45.542]]}, {"kind": "s", "id": "s0_2_2", "md": "By Friday, the most important request is often the one nobody got around to.", "zh": "到了周五，最重要的那个需求往往是谁都没顾上的那个。", "sp": null, "gap": false, "start": 45.936, "end": 51.072, "words": [[46.054, 46.147], [46.16, 46.633], [46.923, 47.002], [47.015, 47.265], [47.278, 47.725], [47.739, 48.304], [48.568, 48.699], [48.712, 49.107], [49.12, 49.225], [49.239, 49.515], [49.528, 49.897], [49.91, 50.081], [50.094, 50.436], [50.449, 50.686]]}, {"kind": "h", "id": "h1", "md": "2. One Question and a Shared List", "zh": "2. 一个问题加一张共享清单", "start": 51.072, "end": 54.048, "words": [[51.19, 51.44], [51.861, 52.059], [52.072, 52.598], [52.677, 52.809], [52.822, 52.848], [52.861, 53.217], [53.23, 53.651]]}, {"kind": "s", "id": "s1_0_0", "md": "The most useful question is simple: what happens if this waits one week?", "zh": "最有用的问题很简单：这件事等一周会怎样？", "sp": null, "gap": false, "start": 54.048, "end": 58.512, "words": [[54.166, 54.219], [54.232, 54.522], [54.535, 54.93], [54.943, 55.377], [55.39, 55.495], [55.509, 55.903], [56.377, 56.495], [56.509, 56.916], [56.93, 57.048], [57.061, 57.219], [57.232, 57.495], [57.509, 57.732], [57.745, 58.127]]}, {"kind": "s", "id": "s1_0_1", "md": "For the security library, the answer might be a real ==exposure== for customer data.", "zh": "对那个安全库来说，答案可能是客户数据存在真实的暴露风险。", "sp": null, "gap": false, "start": 58.512, "end": 63.624, "words": [[58.644, 58.709], [58.723, 58.801], [58.815, 59.328], [59.341, 59.959], [60.262, 60.367], [60.38, 60.709], [60.723, 60.973], [60.986, 61.144], [61.157, 61.236], [61.249, 61.617], [61.63, 62.223], [62.236, 62.38], [62.394, 62.828], [62.841, 63.223]]}, {"kind": "s", "id": "s1_0_2", "md": "For the demo, the answer might be that the meeting moves to Thursday.", "zh": "对那个 demo 来说，答案可能是会议挪到周四。", "sp": null, "gap": false, "start": 63.624, "end": 67.632, "words": [[63.756, 63.821], [63.835, 63.913], [63.927, 64.282], [64.65, 64.756], [64.769, 65.071], [65.085, 65.361], [65.374, 65.571], [65.585, 65.729], [65.742, 65.808], [65.821, 66.216], [66.229, 66.532], [66.545, 66.637], [66.65, 67.242]]}, {"kind": "s", "id": "s1_1_0", "md": "Then put the requests in one ranked list and share it with everyone who asked.", "zh": "然后把所有需求放进一张排好序的清单，分享给每个提需求的人。", "sp": null, "gap": true, "start": 67.632, "end": 72.648, "words": [[67.75, 67.895], [67.908, 68.066], [68.079, 68.172], [68.185, 68.829], [68.843, 69.014], [69.027, 69.329], [69.343, 69.658], [69.671, 70.066], [70.382, 70.474], [70.487, 70.816], [70.829, 70.895], [70.908, 71.053], [71.224, 71.606], [71.619, 71.777], [71.79, 72.264]]}, {"kind": "s", "id": "s1_1_1", "md": "Ranking in public is uncomfortable, but it moves the argument to the right place.", "zh": "公开排序是有点尴尬，但它把争论挪到了该在的地方。", "sp": null, "gap": false, "start": 72.648, "end": 78.12, "words": [[72.753, 73.108], [73.122, 73.214], [73.227, 73.674], [73.819, 74.016], [74.082, 74.911], [75.306, 75.424], [75.437, 75.516], [75.53, 75.819], [75.832, 75.937], [76.016, 76.595], [76.701, 76.793], [76.806, 76.898], [76.911, 77.148], [77.161, 77.74]]}, {"kind": "s", "id": "s1_1_2", "md": "If sales disagrees with the order, they can __take it up with__ the PM, instead of pressuring individual engineers in private messages.", "zh": "如果销售不同意这个顺序，他们可以去找 PM 谈，而不是私聊给某个工程师施压。", "sp": null, "gap": false, "start": 78.12, "end": 86.112, "words": [[78.225, 78.357], [78.37, 78.778], [78.791, 79.383], [79.396, 79.541], [79.554, 79.633], [79.646, 80.054], [80.331, 80.436], [80.449, 80.567], [80.581, 80.791], [80.804, 80.883], [80.896, 81.054], [81.067, 81.186], [81.199, 81.291], [81.304, 81.831], [82.159, 82.488], [82.502, 82.594], [82.607, 83.225], [83.304, 83.936], [83.949, 84.541], [84.554, 84.659], [84.673, 85.081], [85.094, 85.725]]}, {"kind": "s", "id": "s1_2_0", "md": "**A visible ranking turns competing demands into a conversation about priorities.**", "zh": "一张透明的排序，能把相互竞争的需求变成一场关于优先级的讨论。", "sp": null, "gap": true, "start": 86.112, "end": 91.776, "words": [[86.204, 86.257], [86.27, 86.783], [86.796, 87.23], [87.244, 87.625], [87.638, 88.244], [88.257, 88.915], [88.994, 89.296], [89.309, 89.375], [89.388, 90.23], [90.244, 90.52], [90.533, 91.375]]}, {"kind": "s", "id": "s1_2_1", "md": "Keep a little ==slack== for true emergencies, and __revisit the list__ every week.", "zh": "给真正的紧急情况留一点余量，并且每周回顾一下这张清单。", "sp": null, "gap": false, "start": 91.776, "end": 96.84, "words": [[91.881, 92.052], [92.065, 92.118], [92.131, 92.381], [92.394, 92.789], [92.802, 92.96], [92.973, 93.276], [93.289, 94.092], [94.355, 94.513], [94.526, 95.052], [95.065, 95.184], [95.197, 95.579], [95.789, 96.013], [96.026, 96.447]]}, {"kind": "s", "id": "s1_2_2", "md": "The list will never be perfect, but it will be ==transparent==, and that alone removes a lot of ==friction==.", "zh": "这张清单永远不会完美，但它是透明的，光这一点就能减少很多摩擦。", "sp": null, "gap": false, "start": 96.84, "end": 103.272, "words": [[96.958, 97.064], [97.077, 97.419], [97.432, 97.564], [97.577, 97.945], [97.958, 98.09], [98.103, 98.761], [99.024, 99.143], [99.156, 99.222], [99.235, 99.327], [99.34, 99.458], [99.472, 100.287], [100.616, 100.695], [100.708, 100.879], [100.893, 101.353], [101.366, 101.866], [101.879, 101.932], [101.945, 102.287], [102.301, 102.379], [102.393, 102.893]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

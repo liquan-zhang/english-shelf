@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Reporting a Lost Card · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "117", "type": "dialogue", "title": "Reporting a Lost Card", "meta": "B2 · 约 280 词 · 场景：电话挂失信用卡与可疑交易", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Card Services", "name_zh": "信用卡客服", "voice": "en-SG-LunaNeural"}}, "gist": [{"q": "客服是怎么核实「你」的身份的？", "a": "先问全名和出生日期，再发一次性验证码让你念出来。"}, {"q": "卡被冻结后发现了什么？", "a": "早上有两笔网上交易不是本人：电器店二百四十元、外卖平台十八元。"}, {"q": "客服后续做了哪些处理？", "a": "两笔交易提交争议并标记盗刷，调查期间不收费；补寄新卡，提醒更新自动扣款；短信发参考编号。"}], "dictation": [{"id": "s0_1_0", "text": "Hi, I think I've lost my credit card. I need to block it right away."}, {"id": "s1_3_0", "text": "Neither of those was me. Can I dispute them?"}, {"id": "s1_7_0", "text": "And can you send me a replacement card? My phone bill is paid with this one."}, {"id": "s1_9_0", "text": "Got it. Could I also get a reference number for this call?"}], "shadow": {"speaker": "A", "text": "Last night at a restaurant in Tanjong Pagar. I think I left it behind there.", "marked": "<b>Last night</b> / at a <b>restaurant</b> in Tanjong <b>Pagar</b>. //<br>I think I <b>left it behind</b> there. //"}, "prompts": [{"q": "你在手机银行里收到一条你没做过的扣款提醒，但卡还在你手上。打电话给银行，说明情况并要求处理。", "ref": "Hi, I just got an alert for a charge of about ninety dollars on my credit card, but I didn't make it. The card is still with me, so I think the details might have been stolen online. Could you block this card, dispute the charge, and send me a new one? I'd also like to know if there were any other strange payments.", "ref_zh": "你好，我刚收到信用卡一笔大约九十元的扣款提醒，但不是我刷的。卡还在我身上，所以我怀疑卡信息在网上被盗了。能帮我冻结这张卡、对这笔扣款提出争议、再寄一张新卡吗？我也想知道还有没有别的异常付款。", "id": "ref0"}, {"q": "冻结卡片后你发现卡其实在外套口袋里。打电话问能不能解冻，以及之前的争议还会不会继续处理。", "ref": "Hi, I called this morning to block my card, but I've just found it in my jacket pocket. Is it possible to unblock it instead of getting a replacement? Also, I reported a charge I didn't recognise. I still don't think that one was me, so I'd like the dispute to carry on. Is that okay?", "ref_zh": "你好，我今天早上打电话冻结了卡，结果刚在外套口袋里找到了。能不能直接解冻，不用补新卡？另外我之前报了一笔不认识的扣款，我仍然觉得那笔不是我刷的，希望争议继续处理，可以吗？", "id": "ref1"}], "words": [{"w": "verify", "ipa": "/ˈverɪfaɪ/", "zh": "核实", "ex": "We need to verify your phone number first.", "id": "w0"}, {"w": "one-time password", "ipa": "/ˌwʌn taɪm ˈpæswɜːrd/", "zh": "一次性验证码", "ex": "Never share your one-time password with anyone.", "id": "w1"}, {"w": "block (v.)", "ipa": "/blɑːk/", "zh": "冻结（卡）", "ex": "You can block your card in the app in seconds.", "tts_w": "block", "id": "w2"}, {"w": "transaction", "ipa": "/trænˈzækʃən/", "zh": "交易", "ex": "Every transaction shows up in the app straight away.", "id": "w3"}, {"w": "fraud", "ipa": "/frɔːd/", "zh": "诈骗，盗刷", "ex": "The bank called me about possible fraud on my account.", "id": "w4"}, {"w": "investigate", "ipa": "/ɪnˈvestɪɡeɪt/", "zh": "调查", "ex": "The landlord promised to investigate the leak.", "id": "w5"}, {"w": "dispute (v.)", "ipa": "/dɪˈspjuːt/", "zh": "对（扣款）提出异议", "ex": "You can dispute the charge within sixty days.", "tts_w": "dispute", "id": "w6"}, {"w": "replacement card", "ipa": "/rɪˈpleɪsmənt kɑːrd/", "zh": "补发的卡", "ex": "My replacement card came in the post yesterday.", "id": "w7"}, {"w": "recurring payment", "ipa": "/rɪˈkɜːrɪŋ ˈpeɪmənt/", "zh": "定期自动扣款", "ex": "My gym fee is a recurring payment on my card.", "id": "w8"}], "sections": [{"heading": "1. Blocking the Card", "heading_zh": "1. 冻结卡片", "rows": [[{"id": "s0_0_0", "md": "Thank you for calling Card Services. This is Michelle. How can I help?", "text": "Thank you for calling Card Services. This is Michelle. How can I help?", "zh": "感谢致电信用卡服务中心，我是 Michelle。有什么可以帮您？", "sp": "B"}], [{"id": "s0_1_0", "md": "**Hi, I think I've lost my credit card. I need to block it right away.**", "text": "Hi, I think I've lost my credit card. I need to block it right away.", "zh": "你好，我的信用卡好像丢了。需要马上冻结。", "sp": "A"}], [{"id": "s0_2_0", "md": "I can help with that. First, I need to ==verify== your identity. Could I have your full name and date of birth?", "text": "I can help with that. First, I need to verify your identity. Could I have your full name and date of birth?", "zh": "我来帮您处理。首先需要核实身份。请告诉我您的全名和出生日期。", "sp": "B"}], [{"id": "s0_3_0", "md": "It's Lee Wei, born on the fourth of March, nineteen eighty-eight.", "text": "It's Lee Wei, born on the fourth of March, nineteen eighty-eight.", "zh": "Lee Wei，一九八八年三月四日出生。", "sp": "A"}], [{"id": "s0_4_0", "md": "Thank you. I've just sent a ==one-time password== to your mobile. Could you read it out?", "text": "Thank you. I've just sent a one-time password to your mobile. Could you read it out?", "zh": "谢谢。我刚往您手机发了一个一次性验证码，请念一下。", "sp": "B"}], [{"id": "s0_5_0", "md": "Sure, it's seven, four, one, nine, zero, two.", "text": "Sure, it's seven, four, one, nine, zero, two.", "zh": "好的，是七四一九零二。", "sp": "A"}], [{"id": "s0_6_0", "md": "That's verified. When did you last use the card?", "text": "That's verified. When did you last use the card?", "zh": "核实成功。您最后一次用这张卡是什么时候？", "sp": "B"}], [{"id": "s0_7_0", "md": "Last night at a restaurant in Tanjong Pagar. I think I __left it behind__ there.", "text": "Last night at a restaurant in Tanjong Pagar. I think I left it behind there.", "zh": "昨晚在丹戎巴葛的一家餐厅。我估计是落在那儿了。", "sp": "A"}], [{"id": "s0_8_0", "md": "Okay, I've ==blocked== the card now. Nobody can use it from this point on.", "text": "Okay, I've blocked the card now. Nobody can use it from this point on.", "zh": "好的，卡已经冻结了。从现在起没人能用这张卡。", "sp": "B"}]]}, {"heading": "2. Charges You Didn't Make", "heading_zh": "2. 不是你刷的交易", "rows": [[{"id": "s1_0_0", "md": "I do see two ==transactions== this morning, both online. Did you make those?", "text": "I do see two transactions this morning, both online. Did you make those?", "zh": "我看到今天早上有两笔交易，都是网上的。是您本人消费的吗？", "sp": "B"}], [{"id": "s1_1_0", "md": "What are they? I haven't used the card since last night.", "text": "What are they? I haven't used the card since last night.", "zh": "是什么交易？我从昨晚起就没用过这张卡。", "sp": "A"}], [{"id": "s1_2_0", "md": "One for two hundred and forty dollars at an electronics store, and one for eighteen dollars at a food delivery app.", "text": "One for two hundred and forty dollars at an electronics store, and one for eighteen dollars at a food delivery app.", "zh": "一笔是电器店的二百四十元，一笔是外卖平台的十八元。", "sp": "B"}], [{"id": "s1_3_0", "md": "**Neither of those was me. Can I dispute them?**", "text": "Neither of those was me. Can I dispute them?", "zh": "这两笔都不是我。我能申诉吗？", "sp": "A"}], [{"id": "s1_4_0", "md": "Yes. I'll __raise a dispute__ for both and flag them as ==fraud==. You won't be charged while we ==investigate==.", "text": "Yes. I'll raise a dispute for both and flag them as fraud. You won't be charged while we investigate.", "zh": "可以。我给这两笔都提交争议，标记为盗刷。调查期间不会向您收费。", "sp": "B"}], [{"id": "s1_5_0", "md": "Thank you. __How long__ does the investigation usually take?", "text": "Thank you. How long does the investigation usually take?", "zh": "谢谢。调查一般要多久？", "sp": "A"}], [{"id": "s1_6_0", "md": "Usually two to four weeks. We'll update you by email.", "text": "Usually two to four weeks. We'll update you by email.", "zh": "一般两到四周，我们会邮件通知您进展。", "sp": "B"}], [{"id": "s1_7_0", "md": "**And can you send me a replacement card? My phone bill is paid with this one.**", "text": "And can you send me a replacement card? My phone bill is paid with this one.", "zh": "能给我补一张新卡吗？我的手机话费是用这张卡扣的。", "sp": "A"}], [{"id": "s1_8_0", "md": "A new card will arrive in five to seven working days, with a new number. You'll need to __update__ your recurring payments.", "text": "A new card will arrive in five to seven working days, with a new number. You'll need to update your recurring payments.", "zh": "新卡五到七个工作日寄到，卡号会变。您需要更新自动扣款的卡号。", "sp": "B"}], [{"id": "s1_9_0", "md": "Got it. Could I also get a reference number for this call?", "text": "Got it. Could I also get a reference number for this call?", "zh": "明白了。能给我这次来电的参考编号吗？", "sp": "A"}], [{"id": "s1_10_0", "md": "Of course. I'll send it to you by text right after this call.", "text": "Of course. I'll send it to you by text right after this call.", "zh": "当然。挂电话后我马上短信发给您。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Blocking the Card", "zh": "1. 冻结卡片", "start": 0.0, "end": 1.872, "words": [[0.105, 0.368], [0.632, 1.0], [1.013, 1.079], [1.092, 1.487]]}, {"kind": "s", "id": "s0_0_0", "md": "Thank you for calling Card Services. This is Michelle. How can I help?", "zh": "感谢致电信用卡服务中心，我是 Michelle。有什么可以帮您？", "sp": "B", "gap": false, "start": 1.872, "end": 9.312, "words": [[1.975, 2.251], [2.264, 2.383], [2.396, 2.593], [2.606, 2.988], [3.001, 3.264], [3.277, 4.238], [5.161, 5.464], [5.477, 5.701], [5.714, 6.464], [7.385, 7.635], [7.648, 7.846], [7.859, 7.925], [7.938, 8.398]]}, {"kind": "s", "id": "s0_1_0", "md": "**Hi, I think I've lost my credit card. I need to block it right away.**", "zh": "你好，我的信用卡好像丢了。需要马上冻结。", "sp": "A", "gap": false, "start": 9.312, "end": 13.56, "words": [[9.43, 9.707], [10.023, 10.115], [10.128, 10.325], [10.338, 10.43], [10.444, 10.694], [10.707, 10.799], [10.812, 11.115], [11.128, 11.47], [11.904, 11.944], [11.957, 12.101], [12.115, 12.18], [12.194, 12.496], [12.509, 12.628], [12.641, 12.799], [12.812, 13.167]]}, {"kind": "s", "id": "s0_2_0", "md": "I can help with that. First, I need to ==verify== your identity. Could I have your full name and date of birth?", "zh": "我来帮您处理。首先需要核实身份。请告诉我您的全名和出生日期。", "sp": "B", "gap": false, "start": 13.56, "end": 23.016, "words": [[13.663, 13.821], [13.834, 14.044], [14.057, 14.294], [14.307, 14.478], [14.492, 14.965], [15.889, 16.507], [16.757, 16.889], [16.902, 17.152], [17.165, 17.284], [17.297, 17.784], [17.797, 17.981], [17.994, 18.876], [19.797, 19.994], [20.007, 20.113], [20.126, 20.336], [20.349, 20.481], [20.494, 20.744], [20.757, 21.034], [21.047, 21.231], [21.244, 21.442], [21.455, 21.626], [21.639, 22.073]]}, {"kind": "s", "id": "s0_3_0", "md": "It's Lee Wei, born on the fourth of March, nineteen eighty-eight.", "zh": "Lee Wei，一九八八年三月四日出生。", "sp": "A", "gap": false, "start": 23.016, "end": 27.192, "words": [[23.121, 23.279], [23.292, 23.477], [23.49, 23.871], [24.213, 24.45], [24.463, 24.542], [24.555, 24.634], [24.648, 24.977], [24.99, 25.082], [25.095, 25.595], [25.819, 26.266], [26.279, 26.792]]}, {"kind": "s", "id": "s0_4_0", "md": "Thank you. I've just sent a ==one-time password== to your mobile. Could you read it out?", "zh": "谢谢。我刚往您手机发了一个一次性验证码，请念一下。", "sp": "B", "gap": false, "start": 27.192, "end": 34.896, "words": [[27.295, 27.65], [27.663, 28.137], [29.06, 29.31], [29.324, 29.547], [29.56, 29.824], [29.837, 29.876], [29.889, 30.389], [30.403, 30.863], [30.876, 30.981], [30.995, 31.139], [31.153, 31.718], [32.639, 32.863], [32.876, 33.047], [33.06, 33.297], [33.31, 33.495], [33.508, 33.968]]}, {"kind": "s", "id": "s0_5_0", "md": "Sure, it's seven, four, one, nine, zero, two.", "zh": "好的，是七四一九零二。", "sp": "A", "gap": false, "start": 34.896, "end": 39.888, "words": [[35.014, 35.449], [35.685, 35.83], [35.843, 36.291], [36.541, 37.054], [37.304, 37.672], [38.001, 38.488], [38.685, 39.106], [39.133, 39.501]]}, {"kind": "s", "id": "s0_6_0", "md": "That's verified. When did you last use the card?", "zh": "核实成功。您最后一次用这张卡是什么时候？", "sp": "B", "gap": false, "start": 39.888, "end": 44.88, "words": [[39.991, 40.425], [40.438, 41.227], [42.151, 42.414], [42.427, 42.598], [42.612, 42.73], [42.743, 43.059], [43.072, 43.322], [43.335, 43.454], [43.467, 43.967]]}, {"kind": "s", "id": "s0_7_0", "md": "Last night at a restaurant in Tanjong Pagar. I think I __left it behind__ there.", "zh": "昨晚在丹戎巴葛的一家餐厅。我估计是落在那儿了。", "sp": "A", "gap": false, "start": 44.88, "end": 49.608, "words": [[44.985, 45.262], [45.275, 45.498], [45.512, 45.591], [45.604, 45.643], [45.656, 46.288], [46.354, 46.446], [46.459, 46.959], [46.972, 47.485], [47.933, 47.998], [48.012, 48.196], [48.209, 48.262], [48.275, 48.498], [48.512, 48.577], [48.591, 48.946], [48.959, 49.209]]}, {"kind": "s", "id": "s0_8_0", "md": "Okay, I've ==blocked== the card now. Nobody can use it from this point on.", "zh": "好的，卡已经冻结了。从现在起没人能用这张卡。", "sp": "B", "gap": false, "start": 49.608, "end": 56.448, "words": [[49.711, 50.368], [50.632, 50.921], [50.934, 51.263], [51.276, 51.395], [51.408, 51.697], [51.711, 52.118], [53.029, 53.529], [53.542, 53.766], [53.779, 54.068], [54.082, 54.253], [54.266, 54.503], [54.516, 54.74], [54.753, 55.069], [55.082, 55.516]]}, {"kind": "h", "id": "h1", "md": "2. Charges You Didn't Make", "zh": "2. 不是你刷的交易", "start": 56.448, "end": 58.728, "words": [[56.553, 56.764], [57.224, 57.645], [57.659, 57.737], [57.751, 57.987], [58.001, 58.33]]}, {"kind": "s", "id": "s1_0_0", "md": "I do see two ==transactions== this morning, both online. Did you make those?", "zh": "我看到今天早上有两笔交易，都是网上的。是您本人消费的吗？", "sp": "B", "gap": false, "start": 58.728, "end": 65.52, "words": [[58.831, 58.989], [59.002, 59.16], [59.173, 59.436], [59.449, 59.66], [59.673, 60.436], [60.449, 60.712], [60.725, 61.304], [61.475, 61.818], [61.831, 62.462], [63.386, 63.61], [63.623, 63.767], [63.781, 64.044], [64.057, 64.596]]}, {"kind": "s", "id": "s1_1_0", "md": "What are they? I haven't used the card since last night.", "zh": "是什么交易？我从昨晚起就没用过这张卡。", "sp": "A", "gap": false, "start": 65.52, "end": 68.664, "words": [[65.625, 65.691], [65.704, 65.77], [65.783, 66.02], [66.454, 66.52], [66.533, 66.796], [66.809, 67.02], [67.033, 67.112], [67.125, 67.428], [67.441, 67.638], [67.652, 67.954], [67.967, 68.27]]}, {"kind": "s", "id": "s1_2_0", "md": "One for two hundred and forty dollars at an electronics store, and one for eighteen dollars at a food delivery app.", "zh": "一笔是电器店的二百四十元，一笔是外卖平台的十八元。", "sp": "B", "gap": false, "start": 68.664, "end": 76.728, "words": [[68.767, 69.069], [69.082, 69.267], [69.28, 69.503], [69.517, 69.951], [69.964, 70.109], [70.122, 70.503], [70.517, 71.017], [71.03, 71.214], [71.227, 71.346], [71.359, 72.004], [72.017, 72.503], [72.74, 72.951], [72.964, 73.188], [73.201, 73.411], [73.425, 73.793], [73.806, 74.306], [74.319, 74.503], [74.517, 74.582], [74.596, 74.872], [74.885, 75.438], [75.451, 75.806]]}, {"kind": "s", "id": "s1_3_0", "md": "**Neither of those was me. Can I dispute them?**", "zh": "这两笔都不是我。我能申诉吗？", "sp": "A", "gap": false, "start": 76.728, "end": 79.416, "words": [[76.833, 77.096], [77.11, 77.189], [77.202, 77.425], [77.439, 77.596], [77.61, 77.833], [78.267, 78.373], [78.386, 78.438], [78.452, 78.846], [78.86, 79.031]]}, {"kind": "s", "id": "s1_4_0", "md": "Yes. I'll __raise a dispute__ for both and flag them as ==fraud==. You won't be charged while we ==investigate==.", "zh": "可以。我给这两笔都提交争议，标记为盗刷。调查期间不会向您收费。", "sp": "B", "gap": false, "start": 79.416, "end": 88.92, "words": [[79.519, 80.387], [81.284, 81.534], [81.548, 81.811], [81.824, 81.903], [81.916, 82.403], [82.416, 82.6], [82.613, 82.929], [82.942, 83.087], [83.1, 83.39], [83.403, 83.626], [83.64, 83.863], [83.877, 84.403], [85.324, 85.521], [85.534, 85.798], [85.811, 85.942], [85.955, 86.442], [86.455, 86.745], [86.758, 86.942], [86.955, 87.995]]}, {"kind": "s", "id": "s1_5_0", "md": "Thank you. __How long__ does the investigation usually take?", "zh": "谢谢。调查一般要多久？", "sp": "A", "gap": false, "start": 88.92, "end": 92.688, "words": [[89.038, 89.196], [89.209, 89.394], [89.828, 89.986], [89.999, 90.328], [90.341, 90.525], [90.538, 90.617], [90.631, 91.473], [91.486, 91.881], [91.894, 92.302]]}, {"kind": "s", "id": "s1_6_0", "md": "Usually two to four weeks. We'll update you by email.", "zh": "一般两到四周，我们会邮件通知您进展。", "sp": "B", "gap": false, "start": 92.688, "end": 98.352, "words": [[92.791, 93.277], [93.291, 93.554], [93.567, 93.712], [93.725, 94.014], [94.027, 94.738], [95.649, 95.912], [95.925, 96.372], [96.385, 96.53], [96.543, 96.767], [96.78, 97.425]]}, {"kind": "s", "id": "s1_7_0", "md": "**And can you send me a replacement card? My phone bill is paid with this one.**", "zh": "能给我补一张新卡吗？我的手机话费是用这张卡扣的。", "sp": "A", "gap": false, "start": 98.352, "end": 102.456, "words": [[98.457, 98.523], [98.536, 98.707], [98.72, 98.799], [98.813, 99.01], [99.023, 99.115], [99.128, 99.181], [99.194, 99.694], [99.707, 99.997], [100.431, 100.576], [100.589, 100.839], [100.852, 101.049], [101.063, 101.168], [101.181, 101.431], [101.444, 101.589], [101.602, 101.786], [101.799, 102.063]]}, {"kind": "s", "id": "s1_8_0", "md": "A new card will arrive in five to seven working days, with a new number. You'll need to __update__ your recurring payments.", "zh": "新卡五到七个工作日寄到，卡号会变。您需要更新自动扣款的卡号。", "sp": "B", "gap": false, "start": 102.456, "end": 111.6, "words": [[102.559, 102.677], [102.69, 102.967], [102.98, 103.269], [103.282, 103.414], [103.427, 103.822], [103.835, 103.98], [103.993, 104.295], [104.309, 104.401], [104.414, 104.782], [104.795, 105.19], [105.203, 105.756], [105.967, 106.217], [106.23, 106.282], [106.295, 106.532], [106.545, 107.164], [108.088, 108.311], [108.324, 108.548], [108.561, 108.706], [108.719, 109.167], [109.18, 109.311], [109.324, 109.864], [109.877, 110.666]]}, {"kind": "s", "id": "s1_9_0", "md": "Got it. Could I also get a reference number for this call?", "zh": "明白了。能给我这次来电的参考编号吗？", "sp": "A", "gap": false, "start": 111.6, "end": 114.816, "words": [[111.705, 111.876], [111.889, 112.008], [112.442, 112.547], [112.561, 112.679], [112.692, 112.955], [112.968, 113.087], [113.1, 113.139], [113.153, 113.574], [113.587, 113.824], [113.837, 113.955], [113.968, 114.113], [114.126, 114.429]]}, {"kind": "s", "id": "s1_10_0", "md": "Of course. I'll send it to you by text right after this call.", "zh": "当然。挂电话后我马上短信发给您。", "sp": "B", "gap": false, "start": 114.816, "end": 120.72, "words": [[114.919, 115.169], [115.182, 115.971], [116.882, 117.079], [117.092, 117.395], [117.408, 117.54], [117.553, 117.658], [117.671, 117.842], [117.855, 118.04], [118.053, 118.408], [118.421, 118.632], [118.645, 118.961], [118.974, 119.211], [119.224, 119.79]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Working with Teammates in Five Time Zones · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "091", "title": "Working with Teammates in Five Time Zones", "meta": "B2 · 约 280 词 · 场景：跨时区协作", "voice": "en-IN-PrabhatNeural", "rate": "-5%", "sections": [{"heading": "1. The Hidden Cost of the Overlap Hour", "heading_zh": "1. 重叠时段的隐性成本", "rows": [[{"id": "s0_0_0", "md": "Our team has people in Bangalore, Singapore, Sydney, London and San Francisco.", "text": "Our team has people in Bangalore, Singapore, Sydney, London and San Francisco.", "zh": "我们团队的人分布在班加罗尔、新加坡、悉尼、伦敦和旧金山。", "sp": null}, {"id": "s0_0_1", "md": "On a map, that looks impressive.", "text": "On a map, that looks impressive.", "zh": "放在地图上，看着挺唬人。", "sp": null}, {"id": "s0_0_2", "md": "In a calendar, it looks like a ==puzzle== with no clean solution.", "text": "In a calendar, it looks like a puzzle with no clean solution.", "zh": "放进日历里，就是一道怎么拼都拼不齐的拼图。", "sp": null}], [{"id": "s0_1_0", "md": "The usual answer is to find one overlap hour and put every meeting there.", "text": "The usual answer is to find one overlap hour and put every meeting there.", "zh": "通常的做法是找一个大家都在线的重叠时段，把所有会都塞进去。", "sp": null}, {"id": "s0_1_1", "md": "But someone always pays for that hour, and it is usually the same people: the ones joining at seven in the morning or ten at night.", "text": "But someone always pays for that hour, and it is usually the same people: the ones joining at seven in the morning or ten at night.", "zh": "但总有人要为这个时段买单，而且通常是同一批人：早上七点或者晚上十点进会的那些。", "sp": null}, {"id": "s0_1_2", "md": "Over time, they stop speaking up, and the team starts losing their ideas without noticing.", "text": "Over time, they stop speaking up, and the team starts losing their ideas without noticing.", "zh": "时间一长，他们就不怎么发言了，团队也在不知不觉中丢掉了他们的想法。", "sp": null}], [{"id": "s0_2_0", "md": "**Time zones are not just a scheduling problem; they are a fairness problem.**", "text": "Time zones are not just a scheduling problem; they are a fairness problem.", "zh": "时区不只是排会的问题；它是公平的问题。", "sp": null}, {"id": "s0_2_1", "md": "If one office always __bears the cost__, ==resentment== builds quietly, even on a friendly team.", "text": "If one office always bears the cost, resentment builds quietly, even on a friendly team.", "zh": "如果总是同一个办公室承担代价，哪怕团队氛围再好，不满也会悄悄积累。", "sp": null}, {"id": "s0_2_2", "md": "People rarely complain about it directly, but you will see it in shorter answers and cameras that stay off.", "text": "People rarely complain about it directly, but you will see it in shorter answers and cameras that stay off.", "zh": "大家很少会直接抱怨，但你会从越来越短的回答、一直不开的摄像头里看出来。", "sp": null}, {"id": "s0_2_3", "md": "That is why the ==arrangement== matters as much as the agenda.", "text": "That is why the arrangement matters as much as the agenda.", "zh": "所以会怎么安排，和议程本身一样重要。", "sp": null}]]}, {"heading": "2. Rotate, Record, Hand Off", "heading_zh": "2. 轮换、录屏、交接", "rows": [[{"id": "s1_0_0", "md": "First, ==rotate== the inconvenient slot.", "text": "First, rotate the inconvenient slot.", "zh": "第一，把难受的时段轮换起来。", "sp": null}, {"id": "s1_0_1", "md": "If the weekly sync is painful for London this month, move it so that Sydney __takes a turn__ next month.", "text": "If the weekly sync is painful for London this month, move it so that Sydney takes a turn next month.", "zh": "如果这个月的周会对伦敦很痛苦，下个月就挪一挪，让悉尼轮一次。", "sp": null}, {"id": "s1_0_2", "md": "People accept a bad time much more easily when they can see it is shared.", "text": "People accept a bad time much more easily when they can see it is shared.", "zh": "大家一旦看到苦是轮着吃的，接受一个糟糕的时间就容易多了。", "sp": null}], [{"id": "s1_1_0", "md": "Second, record every meeting and write a short summary of the decisions.", "text": "Second, record every meeting and write a short summary of the decisions.", "zh": "第二，每个会都录屏，并写一份简短的决策纪要。", "sp": null}, {"id": "s1_1_1", "md": "Someone who could not attend should be able to __catch up__ in five minutes and still give input ==asynchronously== before anything is final.", "text": "Someone who could not attend should be able to catch up in five minutes and still give input asynchronously before anything is final.", "zh": "没能参会的人应该能在五分钟内跟上进度，并且在事情拍板之前，还能异步给出意见。", "sp": null}], [{"id": "s1_2_0", "md": "Third, end each day with a ==handoff== note.", "text": "Third, end each day with a handoff note.", "zh": "第三，每天下班前写一份交接说明。", "sp": null}, {"id": "s1_2_1", "md": "Three lines are enough: what I finished, what is blocked, and what the next person can __pick up__.", "text": "Three lines are enough: what I finished, what is blocked, and what the next person can pick up.", "zh": "三行就够了：我做完了什么，卡在哪里，下一个人可以接着做什么。", "sp": null}, {"id": "s1_2_2", "md": "**A good handoff note means the work keeps moving while you sleep.**", "text": "A good handoff note means the work keeps moving while you sleep.", "zh": "交接写得好，你睡觉的时候活儿也在往前推。", "sp": null}], [{"id": "s1_3_0", "md": "Done well, five time zones stop feeling like a ==burden==.", "text": "Done well, five time zones stop feeling like a burden.", "zh": "做好了，五个时区就不再是负担。", "sp": null}, {"id": "s1_3_1", "md": "The project becomes a relay race, with progress happening __around the clock__ instead of waiting for one shared hour.", "text": "The project becomes a relay race, with progress happening around the clock instead of waiting for one shared hour.", "zh": "项目会变成一场接力赛，进度二十四小时不停，而不是干等那一个共同的小时。", "sp": null}]]}], "gist": [{"q": "作者说“只找一个重叠时段开会”有什么隐性代价？", "a": "总是同一批人在清晨或深夜付出代价，久而久之他们不再发言，团队悄悄失去他们的想法。"}, {"q": "作者把时区问题重新定义成什么问题？", "a": "不只是排期问题，而是公平问题；某个办公室一直承担成本，怨气会悄悄积累。"}, {"q": "文中的三个做法是什么？", "a": "轮换不方便的时段；会议录像并写决策摘要，让缺席者能异步参与；每天结束时写三行交接（完成了什么、卡在哪、下一个人能接什么）。"}], "dictation": [{"id": "s0_2_0", "text": "Time zones are not just a scheduling problem; they are a fairness problem."}, {"id": "s1_0_2", "text": "People accept a bad time much more easily when they can see it is shared."}, {"id": "s1_2_0", "text": "Third, end each day with a handoff note."}, {"id": "s1_2_2", "text": "A good handoff note means the work keeps moving while you sleep."}], "shadow": {"text": "Third, end each day with a handoff note. Three lines are enough: what I finished, what is blocked, and what the next person can pick up. A good handoff note means the work keeps moving while you sleep.", "marked": "Third, end each day / with a <b>handoff</b> note. //<br><b>Three</b> lines are enough: / what I <b>finished</b>, / what is <b>blocked</b>, / and what the <b>next</b> person can pick up. //<br>A good handoff note means / the work keeps <b>moving</b> / while you <b>sleep</b>. //"}, "prompts": [{"q": "你们组的周会一直定在新加坡下午四点，对旧金山同事来说是深夜。你在会上提出轮换时间，30 秒。", "ref": "One process point before we close. Our weekly sync has been at four in the afternoon Singapore time for almost a year, which means Mike has been joining after midnight. That's not fair to him. I'd like to rotate the slot every month, so each office takes a turn with the bad time. I'll send a proposed schedule today.", "ref_zh": "散会前说一个流程上的事。我们的周会快一年都定在新加坡时间下午四点，这意味着 Mike 一直是过了午夜才进会。这对他不公平。我想每个月轮换一次时间，让每个办公室都轮着承担难受的时段。我今天把排期方案发出来。", "id": "ref0"}, {"q": "下班前给伦敦同事发一条语音交接，30 秒说清：完成了什么、卡在哪、他可以接什么。", "ref": "Hi Emma, quick handoff before I log off. I finished the retry logic and all the tests are green. I'm blocked on the config change, because I still don't have access to the production settings. If you have a moment today, could you pick up the code review from Arun? Everything else can wait until I'm back tomorrow morning.", "ref_zh": "Hi Emma，下线前快速交接一下。重试逻辑我写完了，测试全绿。配置变更那块卡住了，因为我还是没有生产环境配置的权限。你今天有空的话，能不能把 Arun 的 code review 接过去？其他的都可以等我明天早上回来再说。", "id": "ref1"}], "words": [{"w": "puzzle", "ipa": "/ˈpʌzəl/", "zh": "难题、谜题", "ex": "Planning the on-call rotation across four offices is a real puzzle.", "id": "w0"}, {"w": "resentment", "ipa": "/rɪˈzentmənt/", "zh": "怨恨、不满", "ex": "Always scheduling demos at night for one team will create resentment.", "id": "w1"}, {"w": "arrangement", "ipa": "/əˈreɪndʒmənt/", "zh": "安排", "ex": "The current arrangement works for Singapore but not for London.", "id": "w2"}, {"w": "rotate", "ipa": "/ˈroʊteɪt/", "zh": "轮换、轮流", "ex": "We rotate the meeting time every month so no office always loses.", "id": "w3"}, {"w": "asynchronously", "ipa": "/eɪˈsɪŋkrənəsli/", "zh": "异步地", "ex": "Please review the design asynchronously and leave comments by Friday.", "id": "w4"}, {"w": "handoff", "ipa": "/ˈhændˌɔːf/", "zh": "交接", "ex": "A clear handoff saved us a full day on the incident.", "id": "w5"}, {"w": "burden", "ipa": "/ˈbɜːrdən/", "zh": "负担", "ex": "Late-night calls shouldn't be a burden on the same people every week.", "id": "w6"}, {"w": "bear the cost", "ipa": "/ber ðə kɔːst/", "zh": "承担代价", "ex": "Why should the Sydney team bear the cost of our planning mistakes?", "id": "w7"}, {"w": "around the clock", "ipa": "/əˈraʊnd ðə klɑːk/", "zh": "日夜不停、全天候", "ex": "With three regions, we can support customers around the clock.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Hidden Cost of the Overlap Hour", "zh": "1. 重叠时段的隐性成本", "start": 0.0, "end": 3.84, "words": [[0.103, 0.418], [0.563, 0.708], [0.708, 1.103], [1.116, 1.484], [1.563, 1.708], [1.708, 1.892], [1.971, 2.563], [2.603, 2.879]]}, {"kind": "s", "id": "s0_0_0", "md": "Our team has people in Bangalore, Singapore, Sydney, London and San Francisco.", "zh": "我们团队的人分布在班加罗尔、新加坡、悉尼、伦敦和旧金山。", "sp": null, "gap": false, "start": 3.84, "end": 11.4, "words": [[3.943, 4.153], [4.166, 4.574], [4.574, 4.903], [4.916, 5.39], [5.469, 5.653], [5.653, 6.245], [6.508, 7.206], [7.482, 8.061], [8.443, 8.969], [9.074, 9.324], [9.324, 9.666], [9.666, 10.443]]}, {"kind": "s", "id": "s0_0_1", "md": "On a map, that looks impressive.", "zh": "放在地图上，看着挺唬人。", "sp": null, "gap": false, "start": 11.4, "end": 14.616, "words": [[11.503, 11.687], [11.713, 11.766], [11.766, 12.187], [12.305, 12.634], [12.634, 13.003], [13.055, 13.713]]}, {"kind": "s", "id": "s0_0_2", "md": "In a calendar, it looks like a ==puzzle== with no clean solution.", "zh": "放进日历里，就是一道怎么拼都拼不齐的拼图。", "sp": null, "gap": false, "start": 14.616, "end": 19.824, "words": [[14.719, 14.824], [14.824, 14.877], [14.877, 15.534], [15.863, 16.021], [16.021, 16.39], [16.39, 16.705], [16.705, 16.771], [16.771, 17.311], [17.311, 17.587], [17.653, 17.903], [17.942, 18.271], [18.271, 18.877]]}, {"kind": "s", "id": "s0_1_0", "md": "The usual answer is to find one overlap hour and put every meeting there.", "zh": "通常的做法是找一个大家都在线的重叠时段，把所有会都塞进去。", "sp": null, "gap": true, "start": 19.824, "end": 26.304, "words": [[19.927, 20.019], [20.019, 20.532], [20.585, 21.124], [21.229, 21.413], [21.427, 21.545], [21.558, 21.966], [21.966, 22.295], [22.4, 23.032], [23.085, 23.374], [23.571, 23.808], [23.808, 24.071], [24.15, 24.545], [24.545, 24.992], [24.992, 25.348]]}, {"kind": "s", "id": "s0_1_1", "md": "But someone always pays for that hour, and it is usually the same people: the ones joining at seven in the morning or ten at night.", "zh": "但总有人要为这个时段买单，而且通常是同一批人：早上七点或者晚上十点进会的那些。", "sp": null, "gap": false, "start": 26.304, "end": 36.744, "words": [[26.407, 26.617], [26.617, 27.117], [27.209, 27.722], [27.722, 28.143], [28.157, 28.38], [28.38, 28.643], [28.696, 28.972], [29.354, 29.551], [29.551, 29.67], [29.67, 29.854], [29.854, 30.367], [30.367, 30.499], [30.499, 30.88], [30.88, 31.38], [31.722, 31.828], [31.828, 32.249], [32.249, 32.736], [32.801, 33.038], [33.038, 33.499], [33.591, 33.709], [33.722, 33.854], [33.854, 34.393], [34.459, 34.696], [34.696, 34.986], [35.051, 35.301], [35.301, 35.762]]}, {"kind": "s", "id": "s0_1_2", "md": "Over time, they stop speaking up, and the team starts losing their ideas without noticing.", "zh": "时间一长，他们就不怎么发言了，团队也在不知不觉中丢掉了他们的想法。", "sp": null, "gap": false, "start": 36.744, "end": 44.352, "words": [[36.847, 37.162], [37.162, 37.597], [37.768, 37.965], [37.978, 38.347], [38.347, 38.873], [38.873, 39.176], [39.57, 39.728], [39.728, 39.873], [39.873, 40.241], [40.241, 40.741], [40.794, 41.255], [41.255, 41.597], [41.662, 42.241], [42.241, 42.715], [42.755, 43.412]]}, {"kind": "s", "id": "s0_2_0", "md": "**Time zones are not just a scheduling problem; they are a fairness problem.**", "zh": "时区不只是排会的问题；它是公平的问题。", "sp": null, "gap": true, "start": 44.352, "end": 50.568, "words": [[44.455, 44.784], [44.784, 45.257], [45.323, 45.56], [45.56, 45.915], [45.915, 46.31], [46.376, 46.455], [46.455, 47.086], [47.086, 47.626], [47.863, 48.06], [48.099, 48.323], [48.415, 48.507], [48.507, 49.086], [49.086, 49.626]]}, {"kind": "s", "id": "s0_2_1", "md": "If one office always __bears the cost__, ==resentment== builds quietly, even on a friendly team.", "zh": "如果总是同一个办公室承担代价，哪怕团队氛围再好，不满也会悄悄积累。", "sp": null, "gap": false, "start": 50.568, "end": 58.104, "words": [[50.671, 50.828], [50.868, 51.21], [51.302, 51.71], [51.789, 52.302], [52.302, 52.697], [52.697, 52.829], [52.829, 53.289], [53.605, 54.236], [54.25, 54.684], [54.736, 55.289], [55.618, 55.973], [56.039, 56.236], [56.25, 56.289], [56.302, 56.789], [56.868, 57.21]]}, {"kind": "s", "id": "s0_2_2", "md": "People rarely complain about it directly, but you will see it in shorter answers and cameras that stay off.", "zh": "大家很少会直接抱怨，但你会从越来越短的回答、一直不开的摄像头里看出来。", "sp": null, "gap": false, "start": 58.104, "end": 66.84, "words": [[58.207, 58.575], [58.575, 59.009], [59.009, 59.614], [59.615, 60.009], [60.022, 60.193], [60.193, 60.943], [61.391, 61.601], [61.601, 61.772], [61.772, 62.022], [62.022, 62.312], [62.338, 62.496], [62.562, 62.746], [62.746, 63.233], [63.325, 63.917], [64.062, 64.325], [64.338, 64.799], [64.799, 65.115], [65.115, 65.417], [65.43, 65.891]]}, {"kind": "s", "id": "s0_2_3", "md": "That is why the ==arrangement== matters as much as the agenda.", "zh": "所以会怎么安排，和议程本身一样重要。", "sp": null, "gap": false, "start": 66.84, "end": 71.88, "words": [[66.943, 67.232], [67.232, 67.443], [67.443, 67.758], [67.758, 67.943], [67.982, 68.601], [68.614, 69.245], [69.337, 69.614], [69.614, 69.956], [70.008, 70.258], [70.258, 70.429], [70.456, 70.982]]}, {"kind": "h", "id": "h1", "md": "2. Rotate, Record, Hand Off", "zh": "2. 轮换、录屏、交接", "start": 71.88, "end": 75.456, "words": [[71.983, 72.167], [72.298, 72.864], [73.022, 73.627], [73.825, 74.114], [74.114, 74.496]]}, {"kind": "s", "id": "s1_0_0", "md": "First, ==rotate== the inconvenient slot.", "zh": "第一，把难受的时段轮换起来。", "sp": null, "gap": false, "start": 75.456, "end": 79.392, "words": [[75.559, 75.98], [76.217, 76.756], [76.769, 76.993], [77.045, 77.94], [77.94, 78.44]]}, {"kind": "s", "id": "s1_0_1", "md": "If the weekly sync is painful for London this month, move it so that Sydney __takes a turn__ next month.", "zh": "如果这个月的周会对伦敦很痛苦，下个月就挪一挪，让悉尼轮一次。", "sp": null, "gap": false, "start": 79.392, "end": 87.696, "words": [[79.495, 79.639], [79.639, 79.771], [79.771, 80.31], [80.31, 80.626], [80.705, 80.916], [80.916, 81.521], [81.521, 81.797], [81.797, 82.245], [82.245, 82.495], [82.495, 82.929], [83.376, 83.692], [83.692, 83.85], [83.85, 84.153], [84.153, 84.429], [84.429, 84.889], [84.929, 85.31], [85.376, 85.468], [85.468, 85.903], [85.903, 86.258], [86.271, 86.718]]}, {"kind": "s", "id": "s1_0_2", "md": "People accept a bad time much more easily when they can see it is shared.", "zh": "大家一旦看到苦是轮着吃的，接受一个糟糕的时间就容易多了。", "sp": null, "gap": false, "start": 87.696, "end": 94.224, "words": [[87.799, 88.167], [88.246, 88.772], [88.851, 88.943], [88.943, 89.299], [89.364, 89.746], [89.746, 90.088], [90.088, 90.43], [90.535, 91.075], [91.233, 91.522], [91.522, 91.759], [91.799, 92.088], [92.088, 92.391], [92.457, 92.601], [92.601, 92.785], [92.785, 93.285]]}, {"kind": "s", "id": "s1_1_0", "md": "Second, record every meeting and write a short summary of the decisions.", "zh": "第二，每个会都录屏，并写一份简短的决策纪要。", "sp": null, "gap": true, "start": 94.224, "end": 100.512, "words": [[94.327, 94.853], [95.063, 95.603], [95.695, 96.09], [96.09, 96.642], [96.735, 96.985], [96.985, 97.34], [97.419, 97.498], [97.498, 97.906], [97.906, 98.445], [98.511, 98.734], [98.735, 98.866], [98.866, 99.603]]}, {"kind": "s", "id": "s1_1_1", "md": "Someone who could not attend should be able to __catch up__ in five minutes and still give input ==asynchronously== before anything is final.", "zh": "没能参会的人应该能在五分钟内跟上进度，并且在事情拍板之前，还能异步给出意见。", "sp": null, "gap": false, "start": 100.512, "end": 110.592, "words": [[100.615, 101.154], [101.154, 101.378], [101.391, 101.641], [101.641, 101.957], [102.023, 102.47], [102.536, 102.772], [102.773, 102.957], [103.036, 103.444], [103.444, 103.562], [103.575, 103.944], [103.944, 104.141], [104.207, 104.365], [104.365, 104.733], [104.733, 105.233], [105.444, 105.68], [105.68, 106.075], [106.075, 106.325], [106.404, 106.812], [106.878, 107.799], [107.799, 108.246], [108.351, 108.891], [108.957, 109.194], [109.194, 109.707]]}, {"kind": "s", "id": "s1_2_0", "md": "Third, end each day with a ==handoff== note.", "zh": "第三，每天下班前写一份交接说明。", "sp": null, "gap": true, "start": 110.592, "end": 114.528, "words": [[110.695, 111.129], [111.339, 111.589], [111.695, 112.01], [112.037, 112.313], [112.313, 112.563], [112.576, 112.668], [112.668, 113.155], [113.155, 113.576]]}, {"kind": "s", "id": "s1_2_1", "md": "Three lines are enough: what I finished, what is blocked, and what the next person can __pick up__.", "zh": "三行就够了：我做完了什么，卡在哪里，下一个人可以接着做什么。", "sp": null, "gap": false, "start": 114.528, "end": 122.832, "words": [[114.631, 114.946], [114.96, 115.394], [115.46, 115.723], [115.789, 116.289], [116.617, 116.907], [116.96, 117.157], [117.157, 117.644], [118.117, 118.381], [118.394, 118.552], [118.552, 118.999], [119.433, 119.67], [119.67, 119.973], [119.973, 120.131], [120.131, 120.512], [120.539, 121.039], [121.052, 121.341], [121.341, 121.565], [121.565, 121.881]]}, {"kind": "s", "id": "s1_2_2", "md": "**A good handoff note means the work keeps moving while you sleep.**", "zh": "交接写得好，你睡觉的时候活儿也在往前推。", "sp": null, "gap": false, "start": 122.832, "end": 128.112, "words": [[122.935, 122.987], [122.987, 123.29], [123.29, 123.803], [123.803, 124.171], [124.211, 124.632], [124.632, 124.79], [124.79, 125.198], [125.25, 125.671], [125.671, 126.145], [126.145, 126.514], [126.514, 126.685], [126.685, 127.171]]}, {"kind": "s", "id": "s1_3_0", "md": "Done well, five time zones stop feeling like a ==burden==.", "zh": "做好了，五个时区就不再是负担。", "sp": null, "gap": true, "start": 128.112, "end": 133.224, "words": [[128.215, 128.517], [128.517, 128.965], [129.201, 129.609], [129.609, 129.965], [129.965, 130.465], [130.517, 130.938], [130.938, 131.425], [131.425, 131.701], [131.701, 131.754], [131.754, 132.294]]}, {"kind": "s", "id": "s1_3_1", "md": "The project becomes a relay race, with progress happening __around the clock__ instead of waiting for one shared hour.", "zh": "项目会变成一场接力赛，进度二十四小时不停，而不是干等那一个共同的小时。", "sp": null, "gap": false, "start": 133.224, "end": 141.792, "words": [[133.327, 133.406], [133.406, 133.892], [133.932, 134.498], [134.577, 134.669], [134.669, 135.024], [135.024, 135.445], [135.813, 136.05], [136.05, 136.603], [136.603, 137.129], [137.182, 137.603], [137.603, 137.787], [137.787, 138.195], [138.274, 138.695], [138.695, 138.919], [138.919, 139.458], [139.458, 139.761], [139.761, 140.116], [140.116, 140.537], [140.59, 140.853]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Presenting Numbers That People Remember · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "014", "title": "Presenting Numbers That People Remember", "meta": "B2 · 约 280 词 · 场景：数据汇报", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. A Number Alone Means Nothing", "heading_zh": "1. 光有数字毫无意义", "rows": [[{"id": "s0_0_0", "md": "Here is a sentence from a real quarterly review.", "text": "Here is a sentence from a real quarterly review.", "zh": "这是一次真实的季度复盘里的一句话。", "sp": null}, {"id": "s0_0_1", "md": "\"We reduced P ninety-nine latency from eight hundred and forty milliseconds to six hundred and ten.\"", "text": "\"We reduced P ninety-nine latency from eight hundred and forty milliseconds to six hundred and ten.\"", "zh": "「我们把 P99 延迟从八百四十毫秒降到了六百一十毫秒。」", "sp": null}, {"id": "s0_0_2", "md": "It is accurate, it is impressive, and almost nobody in the room will remember it by lunch.", "text": "It is accurate, it is impressive, and almost nobody in the room will remember it by lunch.", "zh": "数据准确，成绩亮眼，但到午饭时间，屋里几乎没人还记得。", "sp": null}], [{"id": "s0_1_0", "md": "The problem is not the audience's attention span.", "text": "The problem is not the audience's attention span.", "zh": "问题不在于听众注意力不集中。", "sp": null}, {"id": "s0_1_1", "md": "A number by itself has no ==meaning== until people can compare it to something.", "text": "A number by itself has no meaning until people can compare it to something.", "zh": "一个数字本身没有意义，除非大家能拿它跟什么东西比一比。", "sp": null}, {"id": "s0_1_2", "md": "Is six hundred and ten good?", "text": "Is six hundred and ten good?", "zh": "六百一十算好吗？", "sp": null}, {"id": "s0_1_3", "md": "Is the drop big or small?", "text": "Is the drop big or small?", "zh": "这个降幅算大还是算小？", "sp": null}, {"id": "s0_1_4", "md": "Most listeners have no ==reference point==, so the number simply __slides past__ them.", "text": "Most listeners have no reference point, so the number simply slides past them.", "zh": "大多数听众没有参照物，所以这个数字就这么从他们耳边滑过去了。", "sp": null}], [{"id": "s0_2_0", "md": "**Your job is not to report numbers; it is to make them feel like something.**", "text": "Your job is not to report numbers; it is to make them feel like something.", "zh": "你的工作不是汇报数字，而是让数字有感觉。", "sp": null}, {"id": "s0_2_1", "md": "That takes three small habits, and none of them require ==fancy== charts.", "text": "That takes three small habits, and none of them require fancy charts.", "zh": "这需要三个小习惯，而且都用不着花哨的图表。", "sp": null}]]}, {"heading": "2. Round It, Compare It, Translate It", "heading_zh": "2. 取整、对比、换算", "rows": [[{"id": "s1_0_0", "md": "First, round ==aggressively==.", "text": "First, round aggressively.", "zh": "第一，大胆取整。", "sp": null}, {"id": "s1_0_1", "md": "\"About a third faster\" is easier to hold in your head than the exact figure.", "text": "\"About a third faster\" is easier to hold in your head than the exact figure.", "zh": "「快了大概三分之一」比精确数字好记得多。", "sp": null}, {"id": "s1_0_2", "md": "Put the precise number on the slide for those who want it, and say the simple one out loud.", "text": "Put the precise number on the slide for those who want it, and say the simple one out loud.", "zh": "精确数字放在幻灯片上给想看的人看，嘴上说简单的那个。", "sp": null}], [{"id": "s1_1_0", "md": "Second, always give a comparison.", "text": "Second, always give a comparison.", "zh": "第二，永远给一个对比。", "sp": null}, {"id": "s1_1_1", "md": "A comparison gives listeners a ruler to measure your number against.", "text": "A comparison gives listeners a ruler to measure your number against.", "zh": "对比给了听众一把尺子，用来衡量你的数字。", "sp": null}, {"id": "s1_1_2", "md": "Compare it to last quarter, to a ==competitor==, or to a goal everyone remembers.", "text": "Compare it to last quarter, to a competitor, or to a goal everyone remembers.", "zh": "跟上季度比，跟竞争对手比，或者跟一个大家都记得的目标比。", "sp": null}, {"id": "s1_1_3", "md": "\"We're now faster than our target for next year\" __tells a story__ in one line.", "text": "\"We're now faster than our target for next year\" tells a story in one line.", "zh": "「我们现在已经比明年的目标还快了」，一句话就讲了个故事。", "sp": null}], [{"id": "s1_2_0", "md": "Third, translate the number into human units.", "text": "Third, translate the number into human units.", "zh": "第三，把数字换算成人能感知的单位。", "sp": null}, {"id": "s1_2_1", "md": "Instead of \"saved twelve thousand compute hours,\" try \"saved the cost of two full-time engineers.\"", "text": "Instead of \"saved twelve thousand compute hours,\" try \"saved the cost of two full-time engineers.\"", "zh": "别说「省了一万两千个计算小时」，试试说「省下了两个全职工程师的成本」。", "sp": null}, {"id": "s1_2_2", "md": "Instead of \"point three percent error rate,\" try \"one failed payment for every three hundred customers.\"", "text": "Instead of \"point three percent error rate,\" try \"one failed payment for every three hundred customers.\"", "zh": "别说「错误率百分之零点三」，试试说「每三百个客户里有一笔支付失败」。", "sp": null}, {"id": "s1_2_3", "md": "**People forget percentages, but they remember people, money, and time.**", "text": "People forget percentages, but they remember people, money, and time.", "zh": "百分比人们会忘，但人、钱和时间他们记得住。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, choose one ==headline== number per slide, and __let the rest go__.", "text": "Finally, choose one headline number per slide, and let the rest go.", "zh": "最后，每页幻灯片只选一个核心数字，其余的都舍掉。", "sp": null}, {"id": "s1_3_1", "md": "If everything is highlighted, nothing is.", "text": "If everything is highlighted, nothing is.", "zh": "如果什么都高亮，就等于什么都没高亮。", "sp": null}, {"id": "s1_3_2", "md": "A clear number respects how people actually listen, which is once, quickly, and while thinking about something else.", "text": "A clear number respects how people actually listen, which is once, quickly, and while thinking about something else.", "zh": "一个清晰的数字，尊重的是人们真实的听法：只听一遍，听得很快，而且脑子里还想着别的事。", "sp": null}]]}], "gist": [{"q": "为什么作者说单独一个数字没有意义？", "a": "听众没有参照点，不知道这个数字是好是坏、变化是大是小，所以记不住。"}, {"q": "让数字被记住的三个习惯是什么？", "a": "大胆取整；一定给出对比（上季度、竞品、目标）；换算成人、钱、时间等直观单位。"}, {"q": "每页幻灯片的数字应该怎么安排？", "a": "只选一个主打数字，其余放下；全都强调等于什么都没强调。"}], "dictation": [{"id": "s0_2_0", "text": "Your job is not to report numbers; it is to make them feel like something."}, {"id": "s1_2_3", "text": "People forget percentages, but they remember people, money, and time."}, {"id": "s0_1_1", "text": "A number by itself has no meaning until people can compare it to something."}, {"id": "s1_3_1", "text": "If everything is highlighted, nothing is."}], "shadow": {"text": "Third, translate the number into human units. Instead of \"saved twelve thousand compute hours,\" try \"saved the cost of two full-time engineers.\"", "marked": "<b>Third</b>, / translate the number / into <b>human</b> units. //<br>Instead of \"saved twelve thousand <b>compute</b> hours,\" / try \"saved the <b>cost</b> / of <b>two</b> full-time <b>engineers</b>.\" //"}, "prompts": [{"q": "季度汇报中，你要讲“崩溃率从百分之零点八降到百分之零点二”。用 30 秒把这个数字讲得让人记住：取整、对比、换算成人话。", "ref": "The headline for this quarter is stability. Our crash rate is now about a quarter of what it was in the spring. To put that in human terms, before, roughly one in every hundred and twenty sessions ended in a crash. Now it's one in five hundred. For a typical user who opens the app twice a day, that's going from a crash every two months to about one a year.", "ref_zh": "这个季度的关键词是稳定性。我们的崩溃率现在大约只有春天时的四分之一。换成人能感知的说法，以前大概每一百二十次会话就有一次崩溃。现在是五百次一次。对一个每天打开两次 app 的普通用户来说，就是从大概两个月崩一次，变成了一年崩一次左右。", "id": "ref0"}, {"q": "你要向管理层争取资源优化存储，说明“每月存储费用十五万美元，其中三成是无用日志”。用 30 秒把钱换算成大家有感觉的单位。", "ref": "Here's the number I want you to remember. About a third of our storage bill is old logs that nobody ever reads. That's roughly fifty thousand dollars a month, or the cost of a small team, spent on data we delete without looking. With about three weeks of cleanup work, we can get most of that back, every single month, from now on.", "ref_zh": "这是我希望大家记住的数字。我们存储账单里大约三分之一，是从来没人看的旧日志。这差不多是每个月五万美元，相当于一个小团队的成本，花在了我们看都不看就删掉的数据上。只要花大概三周做清理，从今往后每个月都能把其中大部分省回来。", "id": "ref1"}], "words": [{"w": "meaning", "ipa": "/ˈmiːnɪŋ/", "zh": "意义", "ex": "This metric has no meaning unless we compare it week over week.", "id": "w0"}, {"w": "reference point", "ipa": "/ˈrefərəns pɔɪnt/", "zh": "参照点", "ex": "Last year's peak gives us a useful reference point for capacity.", "id": "w1"}, {"w": "fancy", "ipa": "/ˈfænsi/", "zh": "花哨的、复杂的", "ex": "We don't need a fancy dashboard; a simple table is enough.", "id": "w2"}, {"w": "aggressively", "ipa": "/əˈɡresɪvli/", "zh": "大胆地、激进地", "ex": "We're cutting scope aggressively to hit the date.", "id": "w3"}, {"w": "competitor", "ipa": "/kəmˈpetɪtər/", "zh": "竞争对手", "ex": "Our sign-up flow is two steps shorter than any competitor's.", "id": "w4"}, {"w": "headline (adj.)", "ipa": "/ˈhedlaɪn/", "zh": "最主要的、标题性的", "ex": "The headline number is a forty percent drop in tickets.", "tts_w": "headline", "id": "w5"}, {"w": "attention span", "ipa": "/əˈtenʃən spæn/", "zh": "注意力持续时间", "ex": "Keep demos short; everyone's attention span drops after lunch.", "id": "w6"}, {"w": "round (v.)", "ipa": "/raʊnd/", "zh": "取整、四舍五入", "ex": "Let's round it to two seconds on the slide.", "tts_w": "round", "id": "w7"}, {"w": "impressive", "ipa": "/ɪmˈpresɪv/", "zh": "令人印象深刻的", "ex": "The cost savings from the migration were impressive.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. A Number Alone Means Nothing", "zh": "1. 光有数字毫无意义", "start": 0.0, "end": 2.616, "words": [[0.118, 0.382], [0.737, 0.75], [0.763, 1.118], [1.132, 1.526], [1.539, 1.789], [1.803, 2.224]]}, {"kind": "s", "id": "s0_0_0", "md": "Here is a sentence from a real quarterly review.", "zh": "这是一次真实的季度复盘里的一句话。", "sp": null, "gap": false, "start": 2.616, "end": 5.52, "words": [[2.761, 2.892], [2.905, 3.011], [3.024, 3.077], [3.09, 3.484], [3.498, 3.669], [3.682, 3.774], [3.787, 4.182], [4.195, 4.682], [4.695, 5.129]]}, {"kind": "s", "id": "s0_0_1", "md": "\"We reduced P ninety-nine latency from eight hundred and forty milliseconds to six hundred and ten.\"", "zh": "「我们把 P99 延迟从八百四十毫秒降到了六百一十毫秒。」", "sp": null, "gap": false, "start": 5.52, "end": 11.904, "words": [[5.717, 5.731], [5.809, 6.27], [6.283, 6.573], [6.586, 7.309], [7.323, 7.823], [7.836, 8.059], [8.217, 8.362], [8.375, 8.73], [8.744, 8.836], [8.849, 9.231], [9.244, 9.994], [10.191, 10.296], [10.309, 10.652], [10.665, 11.02], [11.033, 11.112], [11.125, 11.507]]}, {"kind": "s", "id": "s0_0_2", "md": "It is accurate, it is impressive, and almost nobody in the room will remember it by lunch.", "zh": "数据准确，成绩亮眼，但到午饭时间，屋里几乎没人还记得。", "sp": null, "gap": false, "start": 11.904, "end": 17.568, "words": [[12.022, 12.101], [12.115, 12.259], [12.272, 12.825], [13.128, 13.207], [13.22, 13.338], [13.351, 13.996], [14.246, 14.351], [14.365, 14.772], [14.786, 15.272], [15.286, 15.365], [15.378, 15.443], [15.457, 15.799], [15.812, 15.943], [15.957, 16.351], [16.365, 16.457], [16.47, 16.615], [16.628, 17.18]]}, {"kind": "s", "id": "s0_1_0", "md": "The problem is not the audience's attention span.", "zh": "问题不在于听众注意力不集中。", "sp": null, "gap": true, "start": 17.568, "end": 20.688, "words": [[17.686, 17.739], [17.752, 18.2], [18.331, 18.436], [18.45, 18.726], [18.739, 18.857], [18.871, 19.41], [19.423, 19.871], [19.884, 20.292]]}, {"kind": "s", "id": "s0_1_1", "md": "A number by itself has no ==meaning== until people can compare it to something.", "zh": "一个数字本身没有意义，除非大家能拿它跟什么东西比一比。", "sp": null, "gap": false, "start": 20.688, "end": 25.368, "words": [[20.78, 20.806], [20.82, 21.109], [21.122, 21.32], [21.333, 21.806], [21.925, 22.175], [22.188, 22.372], [22.385, 22.899], [23.043, 23.32], [23.333, 23.727], [23.741, 23.885], [23.899, 24.333], [24.346, 24.425], [24.438, 24.517], [24.53, 24.991]]}, {"kind": "s", "id": "s0_1_2", "md": "Is six hundred and ten good?", "zh": "六百一十算好吗？", "sp": null, "gap": false, "start": 25.368, "end": 27.216, "words": [[25.473, 25.605], [25.618, 25.894], [25.907, 26.171], [26.184, 26.263], [26.276, 26.5], [26.513, 26.815]]}, {"kind": "s", "id": "s0_1_3", "md": "Is the drop big or small?", "zh": "这个降幅算大还是算小？", "sp": null, "gap": false, "start": 27.216, "end": 29.256, "words": [[27.308, 27.4], [27.413, 27.492], [27.505, 27.821], [27.834, 28.177], [28.321, 28.427], [28.44, 28.861]]}, {"kind": "s", "id": "s0_1_4", "md": "Most listeners have no ==reference point==, so the number simply __slides past__ them.", "zh": "大多数听众没有参照物，所以这个数字就这么从他们耳边滑过去了。", "sp": null, "gap": false, "start": 29.256, "end": 34.08, "words": [[29.361, 29.611], [29.624, 30.085], [30.098, 30.322], [30.335, 30.611], [30.624, 31.019], [31.032, 31.361], [31.743, 31.861], [31.874, 31.953], [31.967, 32.295], [32.309, 32.69], [32.703, 33.124], [33.138, 33.506], [33.519, 33.69]]}, {"kind": "s", "id": "s0_2_0", "md": "**Your job is not to report numbers; it is to make them feel like something.**", "zh": "你的工作不是汇报数字，而是让数字有感觉。", "sp": null, "gap": true, "start": 34.08, "end": 38.688, "words": [[34.185, 34.33], [34.343, 34.764], [34.883, 34.988], [35.001, 35.317], [35.33, 35.448], [35.462, 35.896], [35.909, 36.435], [36.751, 36.817], [36.83, 36.962], [36.975, 37.067], [37.08, 37.304], [37.317, 37.435], [37.448, 37.712], [37.725, 37.883], [37.896, 38.304]]}, {"kind": "s", "id": "s0_2_1", "md": "That takes three small habits, and none of them require ==fancy== charts.", "zh": "这需要三个小习惯，而且都用不着花哨的图表。", "sp": null, "gap": false, "start": 38.688, "end": 43.296, "words": [[38.806, 38.938], [38.951, 39.306], [39.32, 39.675], [39.688, 40.004], [40.017, 40.583], [40.859, 41.017], [41.03, 41.214], [41.227, 41.306], [41.32, 41.464], [41.477, 41.925], [41.938, 42.306], [42.32, 42.899]]}, {"kind": "h", "id": "h1", "md": "2. Round It, Compare It, Translate It", "zh": "2. 取整、对比、换算", "start": 43.296, "end": 46.68, "words": [[43.414, 43.625], [44.099, 44.375], [44.388, 44.546], [44.77, 45.204], [45.217, 45.349], [45.599, 46.112], [46.125, 46.283]]}, {"kind": "s", "id": "s1_0_0", "md": "First, round ==aggressively==.", "zh": "第一，大胆取整。", "sp": null, "gap": false, "start": 46.68, "end": 48.744, "words": [[46.838, 47.18], [47.443, 47.667], [47.68, 48.351]]}, {"kind": "s", "id": "s1_0_1", "md": "\"About a third faster\" is easier to hold in your head than the exact figure.", "zh": "「快了大概三分之一」比精确数字好记得多。", "sp": null, "gap": false, "start": 48.744, "end": 53.664, "words": [[48.915, 49.033], [49.112, 49.165], [49.178, 49.56], [49.573, 50.139], [50.362, 50.547], [50.56, 50.968], [50.981, 51.02], [51.033, 51.349], [51.362, 51.441], [51.455, 51.586], [51.599, 52.007], [52.126, 52.231], [52.244, 52.31], [52.323, 52.823], [52.836, 53.284]]}, {"kind": "s", "id": "s1_0_2", "md": "Put the precise number on the slide for those who want it, and say the simple one out loud.", "zh": "精确数字放在幻灯片上给想看的人看，嘴上说简单的那个。", "sp": null, "gap": false, "start": 53.664, "end": 58.872, "words": [[53.782, 53.901], [53.914, 53.993], [54.006, 54.532], [54.546, 54.861], [54.875, 54.98], [54.993, 55.072], [55.085, 55.506], [55.519, 55.638], [55.651, 55.888], [55.901, 55.993], [56.006, 56.282], [56.296, 56.427], [56.848, 56.914], [56.927, 57.164], [57.177, 57.282], [57.296, 57.73], [57.743, 57.94], [57.953, 58.124], [58.138, 58.493]]}, {"kind": "s", "id": "s1_1_0", "md": "Second, always give a comparison.", "zh": "第二，永远给一个对比。", "sp": null, "gap": true, "start": 58.872, "end": 61.368, "words": [[58.99, 59.411], [59.806, 60.096], [60.109, 60.227], [60.24, 60.293], [60.306, 60.977]]}, {"kind": "s", "id": "s1_1_1", "md": "A comparison gives listeners a ruler to measure your number against.", "zh": "对比给了听众一把尺子，用来衡量你的数字。", "sp": null, "gap": false, "start": 61.368, "end": 65.544, "words": [[61.473, 61.526], [61.539, 62.289], [62.368, 62.618], [62.631, 63.118], [63.131, 63.184], [63.197, 63.657], [63.671, 63.776], [63.789, 64.171], [64.184, 64.302], [64.315, 64.618], [64.631, 65.157]]}, {"kind": "s", "id": "s1_1_2", "md": "Compare it to last quarter, to a ==competitor==, or to a goal everyone remembers.", "zh": "跟上季度比，跟竞争对手比，或者跟一个大家都记得的目标比。", "sp": null, "gap": false, "start": 65.544, "end": 70.968, "words": [[65.649, 65.978], [65.991, 66.057], [66.07, 66.162], [66.176, 66.478], [66.491, 66.926], [67.215, 67.347], [67.36, 67.426], [67.439, 68.11], [68.544, 68.636], [68.649, 68.807], [68.82, 68.912], [68.926, 69.333], [69.557, 69.952], [69.965, 70.57]]}, {"kind": "s", "id": "s1_1_3", "md": "\"We're now faster than our target for next year\" __tells a story__ in one line.", "zh": "「我们现在已经比明年的目标还快了」，一句话就讲了个故事。", "sp": null, "gap": false, "start": 70.968, "end": 75.768, "words": [[71.152, 71.205], [71.205, 71.415], [71.429, 71.915], [71.929, 72.047], [72.06, 72.179], [72.192, 72.573], [72.586, 72.718], [72.731, 73.047], [73.06, 73.336], [73.613, 73.876], [73.889, 73.942], [73.955, 74.455], [74.639, 74.784], [74.797, 75.034], [75.047, 75.389]]}, {"kind": "s", "id": "s1_2_0", "md": "Third, translate the number into human units.", "zh": "第三，把数字换算成人能感知的单位。", "sp": null, "gap": true, "start": 75.768, "end": 79.368, "words": [[75.926, 76.36], [76.742, 77.281], [77.294, 77.373], [77.386, 77.794], [77.807, 78.071], [78.084, 78.413], [78.426, 78.978]]}, {"kind": "s", "id": "s1_2_1", "md": "Instead of \"saved twelve thousand compute hours,\" try \"saved the cost of two full-time engineers.\"", "zh": "别说「省了一万两千个计算小时」，试试说「省下了两个全职工程师的成本」。", "sp": null, "gap": false, "start": 79.368, "end": 86.184, "words": [[79.473, 79.894], [79.907, 80.052], [80.079, 80.579], [80.592, 81.052], [81.065, 81.526], [81.539, 81.934], [81.947, 82.434], [82.736, 83.0], [83.026, 83.394], [83.407, 83.486], [83.5, 83.947], [83.96, 84.065], [84.079, 84.407], [84.421, 85.052], [85.065, 85.789]]}, {"kind": "s", "id": "s1_2_2", "md": "Instead of \"point three percent error rate,\" try \"one failed payment for every three hundred customers.\"", "zh": "别说「错误率百分之零点三」，试试说「每三百个客户里有一笔支付失败」。", "sp": null, "gap": false, "start": 86.184, "end": 93.264, "words": [[86.289, 86.71], [86.723, 86.881], [86.908, 87.302], [87.316, 87.658], [87.671, 88.131], [88.263, 88.552], [88.566, 88.881], [89.184, 89.447], [89.473, 89.816], [89.829, 90.171], [90.184, 90.631], [90.75, 91.0], [91.131, 91.474], [91.487, 91.868], [91.881, 92.171], [92.184, 92.868]]}, {"kind": "s", "id": "s1_2_3", "md": "**People forget percentages, but they remember people, money, and time.**", "zh": "百分比人们会忘，但人、钱和时间他们记得住。", "sp": null, "gap": false, "start": 93.264, "end": 97.992, "words": [[93.382, 93.632], [93.646, 93.988], [94.001, 94.777], [95.001, 95.132], [95.146, 95.264], [95.277, 95.672], [95.685, 96.146], [96.54, 96.869], [97.067, 97.172], [97.185, 97.606]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, choose one ==headline== number per slide, and __let the rest go__.", "zh": "最后，每页幻灯片只选一个核心数字，其余的都舍掉。", "sp": null, "gap": true, "start": 97.992, "end": 102.504, "words": [[98.176, 98.61], [98.913, 99.229], [99.242, 99.505], [99.518, 99.913], [99.926, 100.15], [100.163, 100.321], [100.334, 100.782], [101.163, 101.242], [101.255, 101.413], [101.426, 101.505], [101.518, 101.821], [101.834, 102.11]]}, {"kind": "s", "id": "s1_3_1", "md": "If everything is highlighted, nothing is.", "zh": "如果什么都高亮，就等于什么都没高亮。", "sp": null, "gap": false, "start": 102.504, "end": 105.216, "words": [[102.609, 102.728], [102.741, 103.136], [103.149, 103.254], [103.267, 103.859], [104.149, 104.478], [104.491, 104.833]]}, {"kind": "s", "id": "s1_3_2", "md": "A clear number respects how people actually listen, which is once, quickly, and while thinking about something else.", "zh": "一个清晰的数字，尊重的是人们真实的听法：只听一遍，听得很快，而且脑子里还想着别的事。", "sp": null, "gap": false, "start": 105.216, "end": 112.392, "words": [[105.321, 105.387], [105.4, 105.755], [105.769, 106.071], [106.084, 106.571], [106.584, 106.755], [106.769, 107.242], [107.255, 107.676], [107.69, 108.137], [108.453, 108.611], [108.624, 108.729], [108.742, 109.295], [109.479, 110.005], [110.308, 110.4], [110.413, 110.584], [110.598, 110.94], [110.953, 111.19], [111.203, 111.532], [111.545, 111.992]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

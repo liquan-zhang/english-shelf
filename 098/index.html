@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Building a Team Culture Across Offices · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "098", "title": "Building a Team Culture Across Offices", "meta": "B2 · 约 270 词 · 场景：跨办公室团队文化", "voice": "en-IN-PrabhatNeural", "rate": "-5%", "sections": [{"heading": "1. The Main Office Problem", "heading_zh": "1. 主办公室问题", "rows": [[{"id": "s0_0_0", "md": "Every ==distributed== team has a ==gravity== problem.", "text": "Every distributed team has a gravity problem.", "zh": "每个分布式团队都有一个「引力」问题。", "sp": null}, {"id": "s0_0_1", "md": "The office where the manager sits becomes the main office, and every other office slowly feels like a ==satellite==.", "text": "The office where the manager sits becomes the main office, and every other office slowly feels like a satellite.", "zh": "经理坐的那个办公室会变成主办公室，其他办公室慢慢就觉得自己像卫星。", "sp": null}], [{"id": "s0_1_0", "md": "You can see it in small things.", "text": "You can see it in small things.", "zh": "从一些小事上就能看出来。", "sp": null}, {"id": "s0_1_1", "md": "Decisions happen in a corridor in Singapore, and the team in Hyderabad reads about them a day later.", "text": "Decisions happen in a corridor in Singapore, and the team in Hyderabad reads about them a day later.", "zh": "决定是在新加坡的走廊里定的，海得拉巴的团队一天后才从文字里看到。", "sp": null}, {"id": "s0_1_2", "md": "Jokes, nicknames and stories are all local, so people in other offices always feel one step behind.", "text": "Jokes, nicknames and stories are all local, so people in other offices always feel one step behind.", "zh": "玩笑、外号和故事都是本地的，所以其他办公室的人总觉得慢了半拍。", "sp": null}, {"id": "s0_1_3", "md": "Nobody planned it that way, but nobody stopped it either.", "text": "Nobody planned it that way, but nobody stopped it either.", "zh": "没人有意这样安排，但也没人去阻止。", "sp": null}], [{"id": "s0_2_0", "md": "**Culture is not what you write on a slide; it is what people in every office experience on an ordinary Tuesday.**", "text": "Culture is not what you write on a slide; it is what people in every office experience on an ordinary Tuesday.", "zh": "文化不是你写在 PPT 上的东西；而是每个办公室的人在一个普通周二的真实感受。", "sp": null}, {"id": "s0_2_1", "md": "If that experience depends on which city you sit in, you do not have one team.", "text": "If that experience depends on which city you sit in, you do not have one team.", "zh": "如果这种感受取决于你坐在哪个城市，那你们就不是一个团队。", "sp": null}, {"id": "s0_2_2", "md": "You have several teams sharing a name.", "text": "You have several teams sharing a name.", "zh": "而是几个共用一个名字的团队。", "sp": null}]]}, {"heading": "2. Small Rituals That Travel", "heading_zh": "2. 能跨地域的小仪式", "rows": [[{"id": "s1_0_0", "md": "Start with decisions.", "text": "Start with decisions.", "zh": "先从决策入手。", "sp": null}, {"id": "s1_0_1", "md": "Make it a rule that nothing is final until it is written in the shared channel, even if it was agreed over lunch in one office.", "text": "Make it a rule that nothing is final until it is written in the shared channel, even if it was agreed over lunch in one office.", "zh": "定一条规矩：任何事在写进共享频道之前都不算最终定下，哪怕是在某个办公室吃午饭时已经谈好的。", "sp": null}, {"id": "s1_0_2", "md": "This one habit removes most of the ==insider== advantage.", "text": "This one habit removes most of the insider advantage.", "zh": "光这一个习惯，就能消掉大部分「自己人」的信息优势。", "sp": null}], [{"id": "s1_1_0", "md": "Next, create rituals that work across time zones.", "text": "Next, create rituals that work across time zones.", "zh": "然后，建立一些能跨时区的仪式。", "sp": null}, {"id": "s1_1_1", "md": "Try a weekly thread where everyone posts one win, a monthly demo where each office presents, or a ==shout-out== at the start of every all-hands.", "text": "Try a weekly thread where everyone posts one win, a monthly demo where each office presents, or a shout-out at the start of every all-hands.", "zh": "可以试试每周开一个帖子让每人发一条成果，每月办一次各办公室轮流上台的 demo，或者每次全员会开场先点名表扬。", "sp": null}, {"id": "s1_1_2", "md": "These small moments make people in other cities ==visible== to each other.", "text": "These small moments make people in other cities visible to each other.", "zh": "这些小时刻能让不同城市的人彼此被看见。", "sp": null}], [{"id": "s1_2_0", "md": "Be careful with language.", "text": "Be careful with language.", "zh": "说话用词要小心。", "sp": null}, {"id": "s1_2_1", "md": "Saying \"the India team\" or \"the remote folks\" __draws lines__ you may not intend.", "text": "Saying \"the India team\" or \"the remote folks\" draws lines you may not intend.", "zh": "说「印度团队」或者「远程的那帮人」，会划出一些你可能并不想划的界线。", "sp": null}, {"id": "s1_2_2", "md": "**Talk about the work and the people, not the locations.**", "text": "Talk about the work and the people, not the locations.", "zh": "聊工作、聊人，别聊地点。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, when there is a travel budget, send engineers, not just managers.", "text": "Finally, when there is a travel budget, send engineers, not just managers.", "zh": "最后，有差旅预算的时候，派工程师去，而不只是派经理。", "sp": null}, {"id": "s1_3_1", "md": "Two days of working __side by side__ builds more trust than a year of video calls, and those engineers __bring the stories home__.", "text": "Two days of working side by side builds more trust than a year of video calls, and those engineers bring the stories home.", "zh": "并肩工作两天建立起来的信任，比一年的视频会议还多，而且这些工程师会把故事带回去。", "sp": null}]]}], "gist": [{"q": "什么是分布式团队的“引力问题”？", "a": "经理所在的办公室成了主办公室，其他办公室慢慢变成卫星，决策、笑话和故事都在本地发生，别处总慢一步。"}, {"q": "作者如何定义团队文化？", "a": "不是写在幻灯片上的东西，而是每个办公室的人在普通周二的真实体验；体验取决于所在城市，就不算一个团队。"}, {"q": "文中提出了哪些具体做法？", "a": "决定必须写进共享频道才算数；建立跨时区仪式（每周晒成果、月度各办公室演示、全员会点名表扬）；说人和事，不说地点；差旅预算让工程师也去面对面合作。"}], "dictation": [{"id": "s0_2_0", "text": "Culture is not what you write on a slide; it is what people in every office experience on an ordinary Tuesday."}, {"id": "s1_0_2", "text": "This one habit removes most of the insider advantage."}, {"id": "s1_1_2", "text": "These small moments make people in other cities visible to each other."}, {"id": "s1_2_2", "text": "Talk about the work and the people, not the locations."}], "shadow": {"text": "Start with decisions. Make it a rule that nothing is final until it is written in the shared channel, even if it was agreed over lunch in one office. This one habit removes most of the insider advantage.", "marked": "Start with <b>decisions</b>. //<br>Make it a <b>rule</b> / that <b>nothing</b> is final / until it is <b>written</b> in the shared channel, / even if it was agreed over <b>lunch</b> / in <b>one</b> office. //<br>This one <b>habit</b> / removes most of the <b>insider</b> advantage. //"}, "prompts": [{"q": "你注意到最近很多决定是在新加坡办公室午饭时定下的，海得拉巴的同事事后才知道。你在周会上提出新规则，30 秒。", "ref": "I want to raise something I've noticed, and I'm part of the problem. A few recent decisions were made over lunch here in Singapore, and our colleagues in Hyderabad only heard about them later. From now on, let's agree that nothing is final until it's written in the team channel. If it's not in the channel, it hasn't been decided.", "ref_zh": "我想提一件最近注意到的事，而且我自己也有份。最近有几个决定是在新加坡这边吃午饭时定下的，海得拉巴的同事事后才知道。从现在开始，我们约定：任何事在写进团队频道之前都不算最终定下。没进频道，就等于没定。", "id": "ref0"}, {"q": "你在月度全员会开场给班加罗尔的同事一个 shout-out。", "ref": "Before we start, I want to give a big shout-out to Deepa and the Bangalore crew. Last week, while most of us were asleep, they found the memory leak that had been crashing our upload service for a month. They didn't just patch it, they wrote up exactly how they found it. Deepa, maybe you could share that story at the next demo?", "ref_zh": "开始之前，我想大大表扬一下 Deepa 和班加罗尔的伙伴们。上周，在我们大多数人睡觉的时候，他们找到了那个让上传服务崩了一个月的内存泄漏。他们不只是打了补丁，还把排查过程原原本本写了下来。Deepa，下次 demo 的时候要不要给大家讲讲这个故事？", "id": "ref1"}], "words": [{"w": "distributed", "ipa": "/dɪˈstrɪbjətɪd/", "zh": "分布式的、分散在各地的", "ex": "Running a distributed team means writing more and meeting less.", "id": "w0"}, {"w": "gravity", "ipa": "/ˈɡrævəti/", "zh": "引力、吸引力", "ex": "Headquarters has a natural gravity, so we have to push decisions outward.", "id": "w1"}, {"w": "satellite", "ipa": "/ˈsætəˌlaɪt/", "zh": "卫星；附属的（办公室）", "ex": "Nobody wants to work in a satellite office that only gets leftover tasks.", "id": "w2"}, {"w": "insider", "ipa": "/ɪnˈsaɪdər/", "zh": "内部人士、圈内人", "ex": "Hallway decisions give insiders an unfair advantage.", "id": "w3"}, {"w": "shout-out", "ipa": "/ˈʃaʊt aʊt/", "zh": "公开点名表扬、致谢", "ex": "Big shout-out to the Sydney team for fixing the alert overnight.", "id": "w4"}, {"w": "visible", "ipa": "/ˈvɪzəbəl/", "zh": "可见的、显眼的", "ex": "Make the work of the support team more visible to leadership.", "id": "w5"}, {"w": "ritual", "ipa": "/ˈrɪtʃuəl/", "zh": "惯例、仪式", "ex": "Our Friday demo has become a team ritual.", "id": "w6"}, {"w": "all-hands", "ipa": "/ˈɔːl hændz/", "zh": "全员大会", "ex": "The new strategy will be announced at the all-hands.", "id": "w7"}, {"w": "side by side", "ipa": "/saɪd baɪ saɪd/", "zh": "并肩、一起", "ex": "Working side by side for a week solved months of confusion.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Main Office Problem", "zh": "1. 主办公室问题", "start": 0.0, "end": 3.096, "words": [[0.103, 0.445], [0.603, 0.747], [0.747, 1.103], [1.195, 1.603], [1.603, 2.168]]}, {"kind": "s", "id": "s0_0_0", "md": "Every ==distributed== team has a ==gravity== problem.", "zh": "每个分布式团队都有一个「引力」问题。", "sp": null, "gap": false, "start": 3.096, "end": 7.2, "words": [[3.199, 3.528], [3.528, 4.291], [4.357, 4.764], [4.764, 5.107], [5.107, 5.159], [5.159, 5.699], [5.725, 6.278]]}, {"kind": "s", "id": "s0_0_1", "md": "The office where the manager sits becomes the main office, and every other office slowly feels like a ==satellite==.", "zh": "经理坐的那个办公室会变成主办公室，其他办公室慢慢就觉得自己像卫星。", "sp": null, "gap": false, "start": 7.2, "end": 16.296, "words": [[7.303, 7.447], [7.553, 8.013], [8.013, 8.395], [8.395, 8.539], [8.539, 9.092], [9.092, 9.447], [9.5, 10.026], [10.026, 10.184], [10.184, 10.566], [10.645, 11.145], [11.566, 11.816], [11.895, 12.263], [12.342, 12.658], [12.763, 13.171], [13.224, 13.724], [13.737, 14.21], [14.211, 14.513], [14.513, 14.605], [14.605, 15.342]]}, {"kind": "s", "id": "s0_1_0", "md": "You can see it in small things.", "zh": "从一些小事上就能看出来。", "sp": null, "gap": true, "start": 16.296, "end": 19.464, "words": [[16.399, 16.517], [16.557, 16.846], [16.846, 17.162], [17.175, 17.346], [17.412, 17.583], [17.583, 18.03], [18.043, 18.517]]}, {"kind": "s", "id": "s0_1_1", "md": "Decisions happen in a corridor in Singapore, and the team in Hyderabad reads about them a day later.", "zh": "决定是在新加坡的走廊里定的，海得拉巴的团队一天后才从文字里看到。", "sp": null, "gap": false, "start": 19.464, "end": 27.672, "words": [[19.567, 20.185], [20.185, 20.646], [20.738, 20.856], [20.856, 20.909], [20.909, 21.514], [21.632, 21.817], [21.817, 22.488], [22.948, 23.119], [23.119, 23.277], [23.277, 23.711], [23.764, 23.935], [23.935, 24.646], [24.685, 25.132], [25.185, 25.54], [25.54, 25.909], [25.935, 26.027], [26.04, 26.251], [26.277, 26.725]]}, {"kind": "s", "id": "s0_1_2", "md": "Jokes, nicknames and stories are all local, so people in other offices always feel one step behind.", "zh": "玩笑、外号和故事都是本地的，所以其他办公室的人总觉得慢了半拍。", "sp": null, "gap": false, "start": 27.672, "end": 36.744, "words": [[27.775, 28.248], [28.393, 29.038], [29.117, 29.34], [29.34, 29.959], [30.038, 30.275], [30.38, 30.59], [30.59, 31.104], [31.472, 31.683], [31.709, 32.196], [32.288, 32.446], [32.511, 32.827], [32.919, 33.485], [33.59, 34.143], [34.143, 34.432], [34.472, 34.801], [34.801, 35.169], [35.169, 35.788]]}, {"kind": "s", "id": "s0_1_3", "md": "Nobody planned it that way, but nobody stopped it either.", "zh": "没人有意这样安排，但也没人去阻止。", "sp": null, "gap": false, "start": 36.744, "end": 41.664, "words": [[36.847, 37.281], [37.294, 37.702], [37.715, 37.847], [37.847, 38.149], [38.149, 38.478], [38.755, 39.018], [39.018, 39.544], [39.544, 39.978], [40.057, 40.215], [40.281, 40.702]]}, {"kind": "s", "id": "s0_2_0", "md": "**Culture is not what you write on a slide; it is what people in every office experience on an ordinary Tuesday.**", "zh": "文化不是你写在 PPT 上的东西；而是每个办公室的人在一个普通周二的真实感受。", "sp": null, "gap": true, "start": 41.664, "end": 50.688, "words": [[41.767, 42.267], [42.372, 42.543], [42.543, 42.872], [42.885, 43.201], [43.201, 43.359], [43.359, 43.727], [43.793, 43.964], [43.964, 44.017], [44.017, 44.503], [44.767, 44.885], [45.003, 45.174], [45.175, 45.451], [45.451, 45.977], [46.082, 46.253], [46.346, 46.74], [46.819, 47.227], [47.293, 48.043], [48.135, 48.359], [48.385, 48.543], [48.609, 49.175], [49.201, 49.727]]}, {"kind": "s", "id": "s0_2_1", "md": "If that experience depends on which city you sit in, you do not have one team.", "zh": "如果这种感受取决于你坐在哪个城市，那你们就不是一个团队。", "sp": null, "gap": false, "start": 50.688, "end": 57.456, "words": [[50.791, 50.975], [50.975, 51.264], [51.33, 52.12], [52.159, 52.725], [52.817, 53.014], [53.014, 53.37], [53.409, 53.856], [53.856, 54.014], [54.014, 54.304], [54.317, 54.541], [54.856, 55.001], [55.001, 55.159], [55.159, 55.475], [55.475, 55.791], [55.791, 56.133], [56.185, 56.58]]}, {"kind": "s", "id": "s0_2_2", "md": "You have several teams sharing a name.", "zh": "而是几个共用一个名字的团队。", "sp": null, "gap": false, "start": 57.456, "end": 61.056, "words": [[57.559, 57.717], [57.73, 58.072], [58.072, 58.585], [58.585, 58.98], [59.032, 59.545], [59.585, 59.69], [59.69, 60.151]]}, {"kind": "h", "id": "h1", "md": "2. Small Rituals That Travel", "zh": "2. 能跨地域的小仪式", "start": 61.056, "end": 64.224, "words": [[61.159, 61.303], [61.435, 61.882], [61.882, 62.488], [62.488, 62.79], [62.79, 63.317]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with decisions.", "zh": "先从决策入手。", "sp": null, "gap": false, "start": 64.224, "end": 66.888, "words": [[64.327, 64.774], [64.827, 65.103], [65.182, 65.958]]}, {"kind": "s", "id": "s1_0_1", "md": "Make it a rule that nothing is final until it is written in the shared channel, even if it was agreed over lunch in one office.", "zh": "定一条规矩：任何事在写进共享频道之前都不算最终定下，哪怕是在某个办公室吃午饭时已经谈好的。", "sp": null, "gap": false, "start": 66.888, "end": 77.328, "words": [[66.991, 67.293], [67.372, 67.517], [67.556, 67.622], [67.622, 68.043], [68.043, 68.333], [68.385, 68.938], [69.004, 69.241], [69.241, 69.675], [69.714, 70.227], [70.333, 70.464], [70.491, 70.688], [70.688, 71.083], [71.188, 71.306], [71.306, 71.425], [71.425, 71.872], [71.885, 72.451], [72.727, 73.083], [73.162, 73.372], [73.385, 73.517], [73.517, 73.859], [73.925, 74.425], [74.517, 74.833], [74.833, 75.28], [75.359, 75.53], [75.53, 75.82], [75.899, 76.412]]}, {"kind": "s", "id": "s1_0_2", "md": "This one habit removes most of the ==insider== advantage.", "zh": "光这一个习惯，就能消掉大部分「自己人」的信息优势。", "sp": null, "gap": false, "start": 77.328, "end": 82.392, "words": [[77.431, 77.667], [77.667, 78.023], [78.023, 78.457], [78.51, 79.102], [79.167, 79.575], [79.641, 79.773], [79.786, 79.983], [79.983, 80.602], [80.681, 81.391]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, create rituals that work across time zones.", "zh": "然后，建立一些能跨时区的仪式。", "sp": null, "gap": true, "start": 82.392, "end": 87.36, "words": [[82.495, 82.876], [83.153, 83.534], [83.587, 84.245], [84.245, 84.56], [84.56, 84.942], [85.021, 85.521], [85.56, 85.903], [85.903, 86.416]]}, {"kind": "s", "id": "s1_1_1", "md": "Try a weekly thread where everyone posts one win, a monthly demo where each office presents, or a ==shout-out== at the start of every all-hands.", "zh": "可以试试每周开一个帖子让每人发一条成果，每月办一次各办公室轮流上台的 demo，或者每次全员会开场先点名表扬。", "sp": null, "gap": false, "start": 87.36, "end": 98.76, "words": [[87.463, 87.765], [87.857, 87.95], [87.963, 88.476], [88.476, 88.884], [88.884, 89.252], [89.344, 89.936], [89.936, 90.463], [90.489, 90.778], [90.778, 91.16], [91.542, 91.607], [91.607, 92.121], [92.121, 92.555], [92.555, 92.91], [93.028, 93.318], [93.397, 93.778], [93.778, 94.371], [94.673, 94.871], [94.871, 94.923], [94.923, 95.528], [95.607, 95.844], [95.844, 95.989], [95.989, 96.423], [96.436, 96.634], [96.699, 97.081], [97.134, 97.844]]}, {"kind": "s", "id": "s1_1_2", "md": "These small moments make people in other cities ==visible== to each other.", "zh": "这些小时刻能让不同城市的人彼此被看见。", "sp": null, "gap": false, "start": 98.76, "end": 104.832, "words": [[98.863, 99.218], [99.271, 99.665], [99.665, 100.205], [100.231, 100.586], [100.586, 101.113], [101.218, 101.376], [101.442, 101.797], [101.797, 102.363], [102.402, 102.942], [102.955, 103.126], [103.192, 103.494], [103.507, 103.876]]}, {"kind": "s", "id": "s1_2_0", "md": "Be careful with language.", "zh": "说话用词要小心。", "sp": null, "gap": true, "start": 104.832, "end": 107.664, "words": [[104.935, 105.106], [105.132, 105.764], [105.764, 106.027], [106.093, 106.685]]}, {"kind": "s", "id": "s1_2_1", "md": "Saying \"the India team\" or \"the remote folks\" __draws lines__ you may not intend.", "zh": "说「印度团队」或者「远程的那帮人」，会划出一些你可能并不想划的界线。", "sp": null, "gap": false, "start": 107.664, "end": 114.384, "words": [[107.767, 108.227], [108.319, 108.503], [108.582, 109.043], [109.043, 109.477], [109.622, 109.898], [109.964, 110.082], [110.082, 110.53], [110.53, 111.03], [111.253, 111.609], [111.609, 112.096], [112.096, 112.267], [112.28, 112.49], [112.49, 112.819], [112.885, 113.424]]}, {"kind": "s", "id": "s1_2_2", "md": "**Talk about the work and the people, not the locations.**", "zh": "聊工作、聊人，别聊地点。", "sp": null, "gap": false, "start": 114.384, "end": 119.016, "words": [[114.487, 114.723], [114.723, 115.079], [115.079, 115.25], [115.25, 115.684], [115.816, 116.0], [116.0, 116.145], [116.145, 116.658], [116.816, 117.158], [117.158, 117.316], [117.316, 118.092]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, when there is a travel budget, send engineers, not just managers.", "zh": "最后，有差旅预算的时候，派工程师去，而不只是派经理。", "sp": null, "gap": true, "start": 119.016, "end": 126.216, "words": [[119.119, 119.671], [119.987, 120.263], [120.263, 120.632], [120.724, 120.895], [120.908, 120.974], [120.987, 121.487], [121.487, 121.987], [122.29, 122.658], [122.75, 123.527], [123.777, 124.119], [124.132, 124.513], [124.527, 125.277]]}, {"kind": "s", "id": "s1_3_1", "md": "Two days of working __side by side__ builds more trust than a year of video calls, and those engineers __bring the stories home__.", "zh": "并肩工作两天建立起来的信任，比一年的视频会议还多，而且这些工程师会把故事带回去。", "sp": null, "gap": false, "start": 126.216, "end": 136.272, "words": [[126.319, 126.424], [126.45, 126.858], [126.924, 127.148], [127.148, 127.687], [127.687, 128.108], [128.108, 128.345], [128.345, 128.753], [128.753, 129.24], [129.292, 129.648], [129.648, 130.055], [130.161, 130.49], [130.49, 130.569], [130.569, 130.937], [131.029, 131.279], [131.292, 131.753], [131.753, 132.319], [132.608, 132.805], [132.805, 133.2], [133.266, 133.963], [134.003, 134.253], [134.253, 134.398], [134.398, 134.963], [134.963, 135.371]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

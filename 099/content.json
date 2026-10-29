@@ -1,0 +1,190 @@
+{
+  "id": "099",
+  "title": "When Silence Means Different Things",
+  "meta": "B2 · 约 280 词 · 场景：解读会议中的沉默",
+  "voice": "en-AU-NatashaNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Four Meanings of the Same Pause",
+      "paragraphs": [
+        [
+          "You finish presenting a plan and ask for feedback.",
+          "Nobody says anything for five seconds.",
+          "What does that silence mean?",
+          "The honest answer is that it depends on who is in the room."
+        ],
+        [
+          "For an Australian colleague, it might mean, \"I agree, let's move on.\"",
+          "For someone from a culture that values ==hierarchy==, it might mean, \"I disagree, but it's not my place to say so in front of your manager.\"",
+          "For a colleague working in a second language, it might simply mean, \"I'm still ==processing== what you said.\"",
+          "And for an engineer from Finland, a long pause may just be polite thinking time."
+        ],
+        [
+          "**Silence is information, but it is not an answer.**",
+          "If you treat it as ==consent==, you will often get surprises later, usually in the form of quiet resistance or work that slowly stalls."
+        ]
+      ],
+      "heading_zh": "1. 同一段沉默的四种意思",
+      "paragraphs_zh": [
+        [
+          "你讲完一个方案，请大家提意见。",
+          "五秒钟没人说话。",
+          "这段沉默是什么意思？",
+          "老实说，这取决于屋里坐的是谁。"
+        ],
+        [
+          "对一个澳洲同事来说，可能意思是：「我同意，往下走吧。」",
+          "对来自看重层级的文化的人来说，可能意思是：「我不同意，但当着你老板的面轮不到我说。」",
+          "对一个用第二语言工作的同事来说，可能只是：「我还在消化你刚才说的。」",
+          "而对一个芬兰工程师来说，长时间停顿可能只是礼貌的思考时间。"
+        ],
+        [
+          "沉默是信息，但不是答案。",
+          "如果你把它当成默许，之后往往会有意外，通常表现为无声的抵触，或者慢慢停滞的工作。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Design the Meeting for Quiet People",
+      "paragraphs": [
+        [
+          "First, wait longer than feels comfortable.",
+          "Count to seven in your head after asking a question.",
+          "Many ==reflective== people need those extra seconds to __put their thoughts into words__."
+        ],
+        [
+          "Second, ask specific people specific questions.",
+          "\"Mei, you know the billing system best, what risk do you see here?\" is much easier to answer than an open \"Anyone?\"",
+          "It also gives junior colleagues permission to speak before the seniors __set the tone__."
+        ],
+        [
+          "Third, offer an ==alternative== channel.",
+          "\"If you'd rather think about it, __drop your comments__ in the doc by tomorrow\" catches the people who do their best thinking after the meeting.",
+          "Some of your best ideas will arrive that way."
+        ],
+        [
+          "**Make it normal to disagree after the meeting, not just during it.**",
+          "Over time, you will learn what silence means for each person on your team, and you will stop ==mistaking== quiet for agreement."
+        ]
+      ],
+      "heading_zh": "2. 为安静的人设计会议",
+      "paragraphs_zh": [
+        [
+          "第一，等得比你觉得舒服的时间更久一点。",
+          "提完问题后，在心里数到七。",
+          "很多爱琢磨的人需要多出来的这几秒，才能把想法组织成话。"
+        ],
+        [
+          "第二，点名问具体的人具体的问题。",
+          "「Mei，计费系统你最熟，你看这里有什么风险？」比一句开放的「有人要说吗？」好回答得多。",
+          "这也让资历浅的同事可以在资深的人定调之前先开口。"
+        ],
+        [
+          "第三，提供另一个渠道。",
+          "「如果你想再想想，明天之前把意见写到文档里」，能接住那些会后才想得最清楚的人。",
+          "你的一些最好的点子会从这个渠道冒出来。"
+        ],
+        [
+          "让会后提不同意见成为常态，而不是只能在会上提。",
+          "时间长了，你会知道团队里每个人的沉默分别意味着什么，也就不会再把安静错当成同意。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "同样五秒钟的沉默，在文中可能有哪几种含义？",
+      "a": "澳洲同事：同意，继续吧；重视等级的文化：不同意但不便当着上级说；第二语言者：还在消化；芬兰工程师：礼貌的思考时间。"
+    },
+    {
+      "q": "作者对沉默的核心判断是什么？",
+      "a": "沉默是信息，但不是答案；把沉默当同意，之后常会出现消极抵触或工作慢慢停滞。"
+    },
+    {
+      "q": "怎样为安静的人设计会议？",
+      "a": "提问后多等一会儿（心里数到七）；点名问具体的人具体问题；提供会后在文档评论的渠道；让会后提异议成为常态。"
+    }
+  ],
+  "dictation": [
+    "Silence is information, but it is not an answer.",
+    "First, wait longer than feels comfortable.",
+    "Second, ask specific people specific questions.",
+    "Make it normal to disagree after the meeting, not just during it."
+  ],
+  "shadow": {
+    "text": "For a colleague working in a second language, it might simply mean, \"I'm still processing what you said.\" And for an engineer from Finland, a long pause may just be polite thinking time.",
+    "marked": "For a colleague working in a <b>second</b> language, / it might <b>simply</b> mean, / \"I'm <b>still</b> processing / what you <b>said</b>.\" //<br>And for an engineer from <b>Finland</b>, / a <b>long</b> pause / may just be polite <b>thinking</b> time. //"
+  },
+  "prompts": [
+    {
+      "q": "你在会上提出组织调整方案后全场沉默。你不确定这代表同意还是不满。用文中的方法处理，30 秒。",
+      "ref": "I'll take that silence as people thinking it over, not as a yes. It's a big change, so I don't expect instant reactions. Priya, you've worked closely with both teams, what worries you most about this? Thanks, that's helpful. For everyone else, please add your concerns to the doc by Thursday, even small ones. Nothing is final until then.",
+      "ref_zh": "我把刚才的沉默理解为大家在思考，而不是同意。这是个大调整，我也不指望大家马上有反应。Priya，你跟两个团队都合作很紧，你最担心的是什么？谢谢，很有帮助。其他人请在周四之前把顾虑写到文档里，再小的也写。在那之前都不算最终定下。"
+    },
+    {
+      "q": "一位日本同事在讨论中总不发言。会后你私下鼓励他表达意见。",
+      "ref": "Hey Kenji, do you have a minute? I noticed you were quiet in the design review, and I know you've worked on that service for years. I'd really value your view, even if it's different from mine. If speaking up in the meeting feels awkward, feel free to message me or comment in the doc. Your input really does change decisions.",
+      "ref_zh": "嘿 Kenji，有空聊一分钟吗？我注意到你在设计评审上没怎么说话，我知道那个服务你做了好几年。我真的很看重你的看法，哪怕跟我的不一样。如果在会上发言觉得别扭，随时私信我或者在文档里评论都行。你的意见是真的会影响决策的。"
+    }
+  ],
+  "words": [
+    {
+      "w": "hierarchy",
+      "ipa": "/ˈhaɪəˌrɑːrki/",
+      "zh": "等级制度、层级",
+      "ex": "In some teams, hierarchy makes people wait for the manager to speak first."
+    },
+    {
+      "w": "process (v.)",
+      "ipa": "/ˈprɑːses/",
+      "zh": "消化、理解",
+      "ex": "Give me a minute to process that, it's a big change.",
+      "tts_w": "process"
+    },
+    {
+      "w": "consent",
+      "ipa": "/kənˈsent/",
+      "zh": "同意、许可",
+      "ex": "Silence in the room is not the same as consent."
+    },
+    {
+      "w": "reflective",
+      "ipa": "/rɪˈflektɪv/",
+      "zh": "善于思考的、深思的",
+      "ex": "She's more reflective, so she usually sends her feedback in writing."
+    },
+    {
+      "w": "alternative",
+      "ipa": "/ɔːlˈtɜːrnətɪv/",
+      "zh": "替代的、另一种选择",
+      "ex": "If the call time doesn't work, we can offer an alternative slot."
+    },
+    {
+      "w": "mistake (v.) for",
+      "ipa": "/mɪˈsteɪk fɔːr/",
+      "zh": "把……误认为……",
+      "ex": "Don't mistake his calm for a lack of interest.",
+      "tts_w": "mistake for"
+    },
+    {
+      "w": "deference",
+      "ipa": "/ˈdefərəns/",
+      "zh": "尊重、顺从",
+      "ex": "Out of deference to the director, nobody questioned the plan."
+    },
+    {
+      "w": "set the tone",
+      "ipa": "/set ðə toʊn/",
+      "zh": "定基调",
+      "ex": "The first comment in a review often sets the tone for the rest."
+    },
+    {
+      "w": "stall (v.)",
+      "ipa": "/stɔːl/",
+      "zh": "停滞、搁置",
+      "ex": "The project stalled because nobody owned the final decision.",
+      "tts_w": "stall"
+    }
+  ]
+}

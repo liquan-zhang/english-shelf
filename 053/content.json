@@ -1,0 +1,188 @@
+{
+  "id": "053",
+  "title": "Praising Specific Work, Not People",
+  "meta": "B2 · 约 260 词 · 场景：表扬与认可",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Trouble with \"Great Job\"",
+      "paragraphs": [
+        [
+          "After a smooth launch, you post in the team channel: \"Great job, everyone! You're amazing!\"",
+          "People add a few emojis, and the moment is gone by lunch.",
+          "Nobody learned anything, and the engineer who quietly saved the launch feels ==invisible==."
+        ],
+        [
+          "General praise sounds kind, but it carries almost no information.",
+          "Praise about the person, like \"you're so smart,\" is even ==riskier==.",
+          "It __teaches people to protect__ their image, so they avoid hard problems where they might look less smart."
+        ],
+        [
+          "**Praise is a tool for telling people what to repeat.**",
+          "Used well, it is one of the cheapest ways to ==steer== how your team works.",
+          "Used vaguely, it is just noise."
+        ]
+      ],
+      "heading_zh": "1. 「干得好」的问题",
+      "paragraphs_zh": [
+        [
+          "上线很顺利，你在团队群里发：「大家干得好！你们太棒了！」",
+          "大家回几个表情，到午饭时这事就过去了。",
+          "没有人学到任何东西，而那个默默救了这次上线的工程师觉得自己被无视了。"
+        ],
+        [
+          "笼统的表扬听起来很友善，但几乎不带任何信息。",
+          "夸人本身的，比如「你真聪明」，风险更大。",
+          "这会让人学会维护自己的形象，于是他们会避开那些可能显得自己不够聪明的难题。"
+        ],
+        [
+          "表扬是一种工具，用来告诉大家什么值得重复。",
+          "用得好，它是引导团队工作方式最便宜的手段之一。",
+          "用得模糊，它就只是噪音。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Point at the Work",
+      "paragraphs": [
+        [
+          "Good praise names a specific action and its effect.",
+          "\"Splitting the migration into five small releases meant we could roll back each step in minutes. That's why we had zero downtime.\"",
+          "The engineer now knows exactly which ==decision== mattered."
+        ],
+        [
+          "Notice the less visible work, too.",
+          "Anyone can praise a big feature, but cleaning up flaky tests, writing a clear runbook, or ==mentoring== a new hire often __goes unnoticed__.",
+          "When you praise those things, you tell the whole team that they count."
+        ],
+        [
+          "Choose the right audience.",
+          "Some people love public ==recognition==; others find it embarrassing and prefer a private message.",
+          "If you are not sure, ask, or __do both__: a short public note and a longer private one."
+        ],
+        [
+          "Finally, praise the process, not only the result.",
+          "A careful experiment that failed can deserve more credit than a lucky success.",
+          "**When you reward good thinking instead of good luck, people take smarter risks.**"
+        ]
+      ],
+      "heading_zh": "2. 夸具体的工作",
+      "paragraphs_zh": [
+        [
+          "好的表扬会点出一个具体的动作和它的效果。",
+          "「把迁移拆成五个小版本发布，意味着每一步都能在几分钟内回滚。所以我们才做到了零停机。」",
+          "这下工程师就确切知道是哪个决定起了作用。"
+        ],
+        [
+          "也要注意那些不那么显眼的工作。",
+          "谁都会夸一个大功能，但清理不稳定的测试、写一份清晰的 runbook、带新人，这些往往没人注意到。",
+          "当你表扬这些事情时，你是在告诉整个团队：这些也算数。"
+        ],
+        [
+          "选对场合。",
+          "有些人很喜欢公开表扬；另一些人会觉得尴尬，更喜欢私信。",
+          "如果拿不准，就问一下，或者两样都做：公开说一句简短的，私下再发一段长的。"
+        ],
+        [
+          "最后，表扬过程，而不只是结果。",
+          "一个严谨但失败了的实验，可能比一次侥幸的成功更值得肯定。",
+          "当你奖励的是好的思考而不是好运气时，大家才会冒更聪明的风险。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为 \"Great job, you're amazing\" 这类表扬有什么问题？",
+      "a": "几乎没有信息量，没人学到什么，真正默默救场的人感觉被忽视。"
+    },
+    {
+      "q": "为什么夸人「聪明」更有风险？",
+      "a": "它让人学会维护形象，回避可能显得不够聪明的难题。"
+    },
+    {
+      "q": "好的表扬应该怎么做？",
+      "a": "点出具体行动和它的效果；关注不显眼的工作（修不稳定测试、写 runbook、带新人）；选对公开或私下的场合；表扬过程和思考，而不只是结果。"
+    }
+  ],
+  "dictation": [
+    "Praise is a tool for telling people what to repeat.",
+    "Good praise names a specific action and its effect.",
+    "A careful experiment that failed can deserve more credit than a lucky success.",
+    "When you reward good thinking instead of good luck, people take smarter risks."
+  ],
+  "shadow": {
+    "text": "Notice the less visible work, too. Anyone can praise a big feature, but cleaning up flaky tests, writing a clear runbook, or mentoring a new hire often goes unnoticed. When you praise those things, you tell the whole team that they count.",
+    "marked": "Notice the <b>less visible</b> work, / too. //<br>Anyone can praise a <b>big</b> feature, / but cleaning up <b>flaky</b> tests, / writing a clear <b>runbook</b>, / or <b>mentoring</b> a new hire / often goes <b>unnoticed</b>. //<br>When you praise <b>those</b> things, / you tell the <b>whole</b> team / that they <b>count</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "一位工程师花了一周把一批不稳定的测试修好了，CI 变得可靠。用 30 秒在周会上具体地表扬他做的事和带来的效果。",
+      "ref": "I want to call out something that's easy to miss. Over the last week, Arjun fixed almost all of the flaky tests in the checkout pipeline. Before that, we were rerunning builds three or four times a day and losing trust in red results. This week, a red build actually means something is broken. That's saved every one of us time, so thank you, Arjun.",
+      "ref_zh": "我想特别提一件很容易被忽略的事。过去一周，Arjun 把结账流水线里几乎所有不稳定的测试都修好了。在那之前，我们每天要把构建重跑三四次，对红色结果已经不信任了。这周，构建一红就真的说明有东西坏了。这给我们每个人都省了时间，所以谢谢你，Arjun。"
+    },
+    {
+      "q": "下属做了一个实验，结果没有达到预期，但实验设计得很严谨。用 30 秒私下表扬他的过程而不是结果。",
+      "ref": "I know the experiment didn't give us the lift we hoped for, but I want you to know I thought it was really well done. You defined the success metric before you started, you ran it long enough, and you stopped as soon as the guardrail moved. Because of that, we can trust the result and move on quickly. That's exactly the kind of thinking I want more of.",
+      "ref_zh": "我知道这个实验没带来我们期望的提升，但我想让你知道，我觉得它做得非常好。你在开始前就定义了成功指标，跑的时间足够长，护栏指标一动就马上停了。正因为这样，我们可以信任这个结果，并且很快往下走。这正是我希望多一些的思考方式。"
+    }
+  ],
+  "words": [
+    {
+      "w": "invisible",
+      "ipa": "/ɪnˈvɪzəbl/",
+      "zh": "看不见的、被忽视的",
+      "ex": "A lot of platform work is invisible until something breaks."
+    },
+    {
+      "w": "risky",
+      "ipa": "/ˈrɪski/",
+      "zh": "有风险的",
+      "ex": "Deploying on Friday afternoon is riskier than it looks."
+    },
+    {
+      "w": "steer",
+      "ipa": "/stɪr/",
+      "zh": "引导、掌舵",
+      "ex": "Can you steer the discussion back to the rollout plan?"
+    },
+    {
+      "w": "decision",
+      "ipa": "/dɪˈsɪʒən/",
+      "zh": "决定",
+      "ex": "Using a feature flag was the decision that saved the launch."
+    },
+    {
+      "w": "mentor (v.)",
+      "ipa": "/ˈmentɔːr/",
+      "zh": "指导、带（新人）",
+      "ex": "She's been mentoring two new hires on the search team.",
+      "tts_w": "mentor"
+    },
+    {
+      "w": "recognition",
+      "ipa": "/ˌrekəɡˈnɪʃən/",
+      "zh": "认可、表彰",
+      "ex": "The on-call team deserves some recognition for last weekend."
+    },
+    {
+      "w": "flaky",
+      "ipa": "/ˈfleɪki/",
+      "zh": "（测试）时好时坏的",
+      "ex": "This test is flaky; it fails about once in ten runs."
+    },
+    {
+      "w": "runbook",
+      "ipa": "/ˈrʌnbʊk/",
+      "zh": "运维手册",
+      "ex": "Add the restart steps to the runbook so on-call can follow them."
+    },
+    {
+      "w": "embarrassing",
+      "ipa": "/ɪmˈbærəsɪŋ/",
+      "zh": "令人尴尬的",
+      "ex": "Some people find being praised in a big meeting embarrassing."
+    }
+  ]
+}

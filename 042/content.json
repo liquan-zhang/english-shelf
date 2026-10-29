@@ -1,0 +1,191 @@
+{
+  "id": "042",
+  "title": "Translating Your Request into Their Interests",
+  "meta": "B2 · 约 280 词 · 场景：跨团队推动",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Your Reasons Are Not Their Reasons",
+      "paragraphs": [
+        [
+          "Imagine you want the operations team to adopt a new logging format.",
+          "You explain that it will make your dashboards cleaner and your debugging faster.",
+          "They nod politely, and nothing happens for two months."
+        ],
+        [
+          "The problem is not your logic.",
+          "The problem is that every reason you gave was about your team.",
+          "From their side, the request means extra work, a new tool to learn, and a ==marginal== benefit for someone else.",
+          "**Nobody changes their priorities because your argument is correct.**"
+        ],
+        [
+          "People move when they can see something they already want.",
+          "That is why the most useful skill in cross-team work is ==translation==.",
+          "You keep the same request, but you __restate it in terms of__ their goals, their ==metrics==, and their pain."
+        ]
+      ],
+      "heading_zh": "1. 你的理由不是他们的理由",
+      "paragraphs_zh": [
+        [
+          "假设你想让运维团队采用一种新的日志格式。",
+          "你解释说，这能让你们的 dashboard 更清爽，排查问题更快。",
+          "他们客气地点点头，然后两个月过去了，什么都没发生。"
+        ],
+        [
+          "问题不在你的逻辑。",
+          "问题在于你给的每一条理由都是关于你自己团队的。",
+          "站在他们那边，这个请求意味着额外的工作量、一个要学的新工具，以及给别人带来的一点点好处。",
+          "没有人会因为你的论证正确就调整自己的优先级。"
+        ],
+        [
+          "人们只有在看到自己本来就想要的东西时才会动。",
+          "所以跨团队协作里最有用的能力是翻译。",
+          "请求还是那个请求，但你要用他们的目标、他们的指标、他们的痛点重新讲一遍。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. The Translation Test",
+      "paragraphs": [
+        [
+          "Before any meeting, finish this sentence: \"This helps you because...\"",
+          "If you can only finish it with \"it helps us,\" you are not ready yet.",
+          "Go and find out what keeps them up at night."
+        ],
+        [
+          "Usually, the answer is hiding in plain sight.",
+          "The operations team gets paged at three in the morning, and half of those pages come from logs nobody can read.",
+          "Now your pitch becomes \"This format could __cut your night pages__ by a third.\"",
+          "It is the same change, but it lands ==differently==."
+        ],
+        [
+          "Be careful not to ==exaggerate==.",
+          "If you promise a benefit you cannot deliver, you __burn the trust__ you will need next quarter.",
+          "**Offer the benefit you can prove, and offer to measure it together.**"
+        ],
+        [
+          "Finally, let them shape the plan.",
+          "When they choose the rollout order or the first service to migrate, the project starts to feel like theirs.",
+          "That sense of ==ownership== does more for your request than any slide you could write."
+        ]
+      ],
+      "heading_zh": "2. 翻译测试",
+      "paragraphs_zh": [
+        [
+          "开任何会之前，先把这句话补完：「这对你们有帮助，因为……」",
+          "如果你只能补成「这对我们有帮助」，说明你还没准备好。",
+          "去搞清楚是什么让他们夜里睡不着。"
+        ],
+        [
+          "通常答案就摆在眼前。",
+          "运维团队凌晨三点被 page，其中一半的告警来自没人看得懂的日志。",
+          "这时候你的说法就变成了「这个格式能把你们的夜间告警砍掉三分之一」。",
+          "改动还是同一个，但听起来完全不一样。"
+        ],
+        [
+          "注意别夸大。",
+          "如果你承诺了做不到的好处，就会把下个季度还用得上的信任烧掉。",
+          "只说你能证明的好处，并且主动提出一起来度量。"
+        ],
+        [
+          "最后，让他们参与制定方案。",
+          "当他们来决定上线顺序、或者先迁哪个服务时，这个项目就开始像是他们自己的了。",
+          "这种主人翁感对你的请求的帮助，比你能写的任何一页 PPT 都大。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么运维团队礼貌点头却两个月没动静？",
+      "a": "因为给出的理由全是对我方团队的好处，对他们来说只是额外工作和别人的收益。"
+    },
+    {
+      "q": "作者提出的「翻译测试」是什么？",
+      "a": "会前补完一句话：This helps you because...；如果只能说「对我们有好处」，就还没准备好。"
+    },
+    {
+      "q": "翻译需求时要注意什么？",
+      "a": "不要夸大收益，只承诺能证明的好处并提出一起度量；让对方参与定方案，产生主人翁感。"
+    }
+  ],
+  "dictation": [
+    "Nobody changes their priorities because your argument is correct.",
+    "People move when they can see something they already want.",
+    "Offer the benefit you can prove, and offer to measure it together.",
+    "When they choose the rollout order or the first service to migrate, the project starts to feel like theirs."
+  ],
+  "shadow": {
+    "text": "Usually, the answer is hiding in plain sight. The operations team gets paged at three in the morning, and half of those pages come from logs nobody can read.",
+    "marked": "Usually, / the answer is <b>hiding</b> in <b>plain</b> sight. //<br>The operations team gets <b>paged</b> / at <b>three</b> in the morning, / and <b>half</b> of those pages / come from logs <b>nobody</b> can read. //"
+  },
+  "prompts": [
+    {
+      "q": "你想让数据平台团队给你们的表加分区，这样你们查询更快。用 30 秒向他们提出，但要用他们的利益来讲（比如他们的集群成本或告警）。",
+      "ref": "I know partitioning sounds like our problem, so let me put it in terms of your cluster. Our daily reports currently scan the full table, and they show up as the top cost item on your monthly bill. If we partition by date, those jobs should read a tiny fraction of the data. That means lower spend for you and fewer slow queries blocking other teams. Could we try it on one table first and compare the numbers?",
+      "ref_zh": "我知道分区听起来像是我们的问题，那我从你们集群的角度说一下。我们的日报现在每次都扫全表，在你们的月度账单上是排第一的成本项。如果按日期分区，这些任务应该只需要读很小一部分数据。这意味着你们的花费会降下来，挡住其他团队的慢查询也会变少。我们能不能先拿一张表试试，对比一下数据？"
+    },
+    {
+      "q": "你希望客服团队改用你们新做的工单分类工具。他们觉得是给自己添麻烦。用 30 秒回应，把好处翻译成他们关心的指标。",
+      "ref": "I hear you, nobody wants another tool. Here's why I think it's worth a look for your team specifically. Right now your agents spend a lot of time sorting tickets by hand before they even start helping customers. The new tool does that sorting automatically, so your response time should go down. Let's run it with two agents for a week and see if their numbers actually improve.",
+      "ref_zh": "我理解，谁都不想再多一个工具。我说说为什么我觉得这个值得你们团队看一看。现在你们的客服在开始帮客户之前，要花很多时间手动给工单分类。新工具会自动完成分类，所以你们的响应时间应该能降下来。我们先让两个客服用一周，看看他们的数据是不是真的有改善。"
+    }
+  ],
+  "words": [
+    {
+      "w": "marginal",
+      "ipa": "/ˈmɑːrdʒɪnl/",
+      "zh": "边际的、微小的",
+      "ex": "The gain is marginal, maybe a few milliseconds at most."
+    },
+    {
+      "w": "translation",
+      "ipa": "/trænzˈleɪʃən/",
+      "zh": "转译、翻译",
+      "ex": "Your proposal needs some translation before the finance team will care."
+    },
+    {
+      "w": "metric",
+      "ipa": "/ˈmetrɪk/",
+      "zh": "指标",
+      "ex": "Their key metric this quarter is the number of night pages."
+    },
+    {
+      "w": "differently",
+      "ipa": "/ˈdɪfrəntli/",
+      "zh": "不同地",
+      "ex": "The same data lands differently when you start with their problem."
+    },
+    {
+      "w": "exaggerate",
+      "ipa": "/ɪɡˈzædʒəreɪt/",
+      "zh": "夸大",
+      "ex": "Let's not exaggerate the savings until we've run the benchmark."
+    },
+    {
+      "w": "ownership",
+      "ipa": "/ˈoʊnərʃɪp/",
+      "zh": "主人翁意识、归属",
+      "ex": "Giving them the rollout plan created real ownership."
+    },
+    {
+      "w": "pitch",
+      "ipa": "/pɪtʃ/",
+      "zh": "推介、说服性陈述",
+      "ex": "Let's rehearse the pitch before we meet the platform team."
+    },
+    {
+      "w": "restate",
+      "ipa": "/ˌriːˈsteɪt/",
+      "zh": "换种说法重述",
+      "ex": "Let me restate the goal in terms of user impact."
+    },
+    {
+      "w": "priority",
+      "ipa": "/praɪˈɔːrəti/",
+      "zh": "优先事项",
+      "ex": "Stability is our top priority until the holiday freeze."
+    }
+  ]
+}

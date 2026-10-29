@@ -1,0 +1,243 @@
+{
+  "id": "106",
+  "type": "dialogue",
+  "title": "Booking a Table for a Family Dinner",
+  "meta": "B2 · 约 310 词 · 场景：电话订寿宴与迟到通知",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Restaurant Staff",
+      "name_zh": "餐厅店员",
+      "voice": "en-AU-NatashaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Making the Booking",
+      "heading_zh": "1. 电话订位",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Good afternoon, Harbour Grill. How can I help?",
+          "zh": "下午好，Harbour Grill。有什么可以帮您？"
+        },
+        {
+          "sp": "A",
+          "en": "Hi, I'd like to __book a table for__ Saturday night, around seven. There'll be eight of us.",
+          "zh": "你好，我想订周六晚上七点左右的位子，一共八个人。"
+        },
+        {
+          "sp": "B",
+          "en": "Let me check. Saturday at seven for eight. Yes, we can do that. Is it a special occasion?",
+          "zh": "我查一下。周六七点，八位。可以的。是有什么特别的日子吗？"
+        },
+        {
+          "sp": "A",
+          "en": "**It's my mother's seventieth birthday. Do you have a private room, or at least a quieter corner?**",
+          "zh": "是我妈妈七十大寿。有包间吗？或者至少安静一点的角落？"
+        },
+        {
+          "sp": "B",
+          "en": "We have a ==private room== that seats ten, but there's a ==minimum spend== of eight hundred dollars.",
+          "zh": "我们有一间能坐十个人的包间，不过最低消费是八百块。"
+        },
+        {
+          "sp": "A",
+          "en": "That should be fine. We'll also need two ==high chairs== for the kids.",
+          "zh": "应该没问题。我们还需要两张儿童餐椅。"
+        },
+        {
+          "sp": "B",
+          "en": "No worries. Any __dietary requirements__ I should note down?",
+          "zh": "没问题。有什么饮食上的要求需要我记下来吗？"
+        },
+        {
+          "sp": "A",
+          "en": "My father doesn't eat beef, and one of the kids is ==allergic== to peanuts.",
+          "zh": "我爸爸不吃牛肉，有个孩子对花生过敏。"
+        },
+        {
+          "sp": "B",
+          "en": "Got it, I'll let the kitchen know. Anything else?",
+          "zh": "好的，我会告诉厨房。还有别的吗？"
+        },
+        {
+          "sp": "A",
+          "en": "**Yes. Would it be okay if we brought our own birthday cake?**",
+          "zh": "有。我们自己带生日蛋糕可以吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Of course. There's a ==cakeage== fee of twenty dollars, and we'll keep it in the fridge for you.",
+          "zh": "当然可以。蛋糕切费是二十块，我们会帮您放冰箱。"
+        },
+        {
+          "sp": "A",
+          "en": "That's fine. The booking's under Lee, and my number is nine one two three, four five six seven.",
+          "zh": "可以。预订名字写 Lee，我的电话是九一二三，四五六七。"
+        },
+        {
+          "sp": "B",
+          "en": "Lovely. We'll send you a confirmation by text. See you Saturday!",
+          "zh": "好的。我们会发短信确认。周六见！"
+        }
+      ]
+    },
+    {
+      "heading": "2. Running Late",
+      "heading_zh": "2. 要迟到了",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Harbour Grill, this is Natasha.",
+          "zh": "Harbour Grill，我是 Natasha。"
+        },
+        {
+          "sp": "A",
+          "en": "Hi Natasha, this is Lee. I have a booking for eight at seven tonight, in the private room.",
+          "zh": "你好 Natasha，我是 Lee。我订了今晚七点的包间，八个人。"
+        },
+        {
+          "sp": "B",
+          "en": "Yes, Mr. Lee. We've got everything set up for you.",
+          "zh": "是的，Lee 先生。我们都给您布置好了。"
+        },
+        {
+          "sp": "A",
+          "en": "**I'm afraid we're running about twenty minutes late. There's an accident on the expressway.**",
+          "zh": "我们恐怕要晚二十分钟左右。高速上出了车祸。"
+        },
+        {
+          "sp": "B",
+          "en": "Thanks for letting us know. We normally only __hold the table__ for fifteen minutes, but for the private room, that's fine.",
+          "zh": "谢谢告知。我们一般只保留位子十五分钟，不过包间没关系。"
+        },
+        {
+          "sp": "A",
+          "en": "Thank you. We ==pre-ordered== the starters. Could you __hold off on__ them until we arrive?",
+          "zh": "谢谢。我们预点了前菜，能等我们到了再上吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Sure, I'll tell the kitchen to wait. Shall we bring the cake out after the ==mains==?",
+          "zh": "好的，我让厨房等一下。蛋糕在主菜之后端出来吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Yes, please, with ==candles==. And could the staff sing happy birthday? My mum would love that.",
+          "zh": "好的，麻烦插上蜡烛。服务员能一起唱生日歌吗？我妈妈会很开心的。"
+        },
+        {
+          "sp": "B",
+          "en": "Absolutely, we'll __make it special__. Drive safely, and see you soon.",
+          "zh": "当然，我们会让这一刻很特别。路上注意安全，待会儿见。"
+        },
+        {
+          "sp": "A",
+          "en": "**Thanks so much. See you shortly.**",
+          "zh": "太感谢了。待会儿见。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "「你」订位时提了哪些要求？",
+      "a": "周六晚七点八个人，要包间；要两张儿童餐椅；爸爸不吃牛肉，一个孩子花生过敏；自带生日蛋糕。"
+    },
+    {
+      "q": "包间和自带蛋糕各有什么费用？",
+      "a": "包间最低消费八百块；自带蛋糕收二十块蛋糕切费，餐厅帮忙冷藏。"
+    },
+    {
+      "q": "「你」为什么打第二通电话？餐厅怎么配合的？",
+      "a": "高速上有车祸，要晚二十分钟；餐厅说包间可以保留，前菜等人到了再上，主菜后插蜡烛端蛋糕、员工一起唱生日歌。"
+    }
+  ],
+  "dictation": [
+    "It's my mother's seventieth birthday. Do you have a private room, or at least a quieter corner?",
+    "Yes. Would it be okay if we brought our own birthday cake?",
+    "I'm afraid we're running about twenty minutes late. There's an accident on the expressway.",
+    "Thank you. We pre-ordered the starters. Could you hold off on them until we arrive?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "I'm afraid we're running about twenty minutes late. There's an accident on the expressway.",
+    "marked": "I'm <b>afraid</b> / we're running about <b>twenty minutes</b> late. //<br>There's an <b>accident</b> / on the expressway. //"
+  },
+  "prompts": [
+    {
+      "q": "你订好了周六的位子，但人数从八个变成十一个。打电话给餐厅，问包间能不能坐下，不行的话有什么安排。",
+      "ref": "Hi, this is Lee. I have a booking for eight people this Saturday at seven, in the private room. A few more relatives are flying in, so we'll actually be eleven. Is there any way the room can fit eleven? If it's too tight, could you put two tables together in a quieter part of the main dining area instead?",
+      "ref_zh": "你好，我是 Lee。我订了这周六七点的包间，八个人。又有几个亲戚要飞过来，所以实际上是十一个人。包间能坐得下十一个吗？如果太挤，能不能在大厅安静一点的地方拼两张桌子？"
+    },
+    {
+      "q": "家里孩子突然发烧，你需要取消当晚的订位。打电话给餐厅，道歉并问会不会扣订金，能不能改到下周。",
+      "ref": "Hi, this is Lee. I'm really sorry, but I need to cancel tonight's booking for eight. My son has come down with a fever, and we can't leave him. I know it's very short notice. Will the deposit be refunded, or could we move the booking to next Saturday instead? Same time, same room, if possible.",
+      "ref_zh": "你好，我是 Lee。真的很抱歉，我需要取消今晚八个人的订位。我儿子突然发烧了，我们离不开他。我知道通知得很晚。订金能退吗？或者能改到下周六吗？最好同样的时间、同样的包间。"
+    }
+  ],
+  "words": [
+    {
+      "w": "private room",
+      "ipa": "/ˈpraɪvət ruːm/",
+      "zh": "包间",
+      "ex": "We booked a private room for the team dinner."
+    },
+    {
+      "w": "minimum spend",
+      "ipa": "/ˈmɪnɪməm spend/",
+      "zh": "最低消费",
+      "ex": "The private room has a minimum spend of five hundred dollars."
+    },
+    {
+      "w": "high chair",
+      "ipa": "/ˈhaɪ tʃer/",
+      "zh": "儿童餐椅",
+      "ex": "Could we get a high chair for the baby?"
+    },
+    {
+      "w": "allergic",
+      "ipa": "/əˈlɜːrdʒɪk/",
+      "zh": "过敏的",
+      "ex": "My son is allergic to shellfish."
+    },
+    {
+      "w": "cakeage",
+      "ipa": "/ˈkeɪkɪdʒ/",
+      "zh": "（自带蛋糕）切蛋糕费",
+      "ex": "Some restaurants charge cakeage if you bring your own cake."
+    },
+    {
+      "w": "pre-order (v.)",
+      "ipa": "/ˌpriːˈɔːrdər/",
+      "zh": "预先点（菜）",
+      "ex": "We pre-ordered the roast duck when we booked.",
+      "tts_w": "pre-order"
+    },
+    {
+      "w": "mains",
+      "ipa": "/meɪnz/",
+      "zh": "主菜",
+      "ex": "We shared two starters and three mains."
+    },
+    {
+      "w": "candle",
+      "ipa": "/ˈkændəl/",
+      "zh": "蜡烛",
+      "ex": "She blew out all the candles in one go."
+    },
+    {
+      "w": "hold off on",
+      "ipa": "/hoʊld ɔːf ɑːn/",
+      "zh": "暂缓",
+      "ex": "Let's hold off on dessert for now."
+    }
+  ]
+}

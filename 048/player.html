@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Finding Who Really Makes the Decision · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "048", "title": "Finding Who Really Makes the Decision", "meta": "B2 · 约 270 词 · 场景：推动决策", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Org Chart Is Only a Map", "heading_zh": "1. 组织架构图只是一张地图", "rows": [[{"id": "s0_0_0", "md": "You spend three weeks convincing a director to approve your migration plan.", "text": "You spend three weeks convincing a director to approve your migration plan.", "zh": "你花了三周说服一位总监批准你的迁移方案。", "sp": null}, {"id": "s0_0_1", "md": "She says yes in the meeting.", "text": "She says yes in the meeting.", "zh": "她在会上同意了。", "sp": null}, {"id": "s0_0_2", "md": "Then nothing moves, because a senior architect two levels below her quietly has ==doubts==, and the director will not overrule him.", "text": "Then nothing moves, because a senior architect two levels below her quietly has doubts, and the director will not overrule him.", "zh": "然后事情一点都没动，因为她下面隔两级的一位资深架构师心里有疑虑，而总监不会去否掉他。", "sp": null}], [{"id": "s0_1_0", "md": "This happens all the time in large companies.", "text": "This happens all the time in large companies.", "zh": "这种事在大公司里天天发生。", "sp": null}, {"id": "s0_1_1", "md": "The org chart tells you who signs, but not who ==shapes== the decision.", "text": "The org chart tells you who signs, but not who shapes the decision.", "zh": "组织架构图告诉你谁签字，但不告诉你谁在影响决策。", "sp": null}, {"id": "s0_1_2", "md": "Often there is a trusted engineer, a finance partner, or a product lead whose opinion the formal owner always checks first.", "text": "Often there is a trusted engineer, a finance partner, or a product lead whose opinion the formal owner always checks first.", "zh": "往往有一位被信任的工程师、财务伙伴或者产品负责人，名义上的负责人总会先问他们的意见。", "sp": null}, {"id": "s0_1_3", "md": "**Getting a yes from the wrong person is just a slower way of getting a no.**", "text": "Getting a yes from the wrong person is just a slower way of getting a no.", "zh": "从不对的人那里拿到同意，只不过是换一种更慢的方式被拒绝。", "sp": null}], [{"id": "s0_2_0", "md": "None of this is ==sinister==.", "text": "None of this is sinister.", "zh": "这里面没有什么阴谋。", "sp": null}, {"id": "s0_2_1", "md": "Leaders rely on people they trust, especially for technical details they cannot ==verify== themselves.", "text": "Leaders rely on people they trust, especially for technical details they cannot verify themselves.", "zh": "领导依赖自己信任的人，尤其是那些他们自己没法验证的技术细节。", "sp": null}, {"id": "s0_2_2", "md": "Your task is simply to find those people early.", "text": "Your task is simply to find those people early.", "zh": "你要做的只是早点找到这些人。", "sp": null}]]}, {"heading": "2. How to Find the Real Decision", "heading_zh": "2. 怎么找到真正做决定的人", "rows": [[{"id": "s1_0_0", "md": "The easiest method is to ask directly.", "text": "The easiest method is to ask directly.", "zh": "最简单的办法就是直接问。", "sp": null}, {"id": "s1_0_1", "md": "\"Besides you, who else needs to be comfortable with this before it can move forward?\"", "text": "\"Besides you, who else needs to be comfortable with this before it can move forward?\"", "zh": "「除了你，还有谁需要认可这件事，它才能往前推？」", "sp": null}, {"id": "s1_0_2", "md": "Most people will answer honestly, because it saves them trouble later.", "text": "Most people will answer honestly, because it saves them trouble later.", "zh": "大多数人都会如实回答，因为这能省掉他们以后的麻烦。", "sp": null}], [{"id": "s1_1_0", "md": "Next, watch the room.", "text": "Next, watch the room.", "zh": "接着，观察会议室。", "sp": null}, {"id": "s1_1_1", "md": "When a tough question comes up, notice whose face the director looks at before answering.", "text": "When a tough question comes up, notice whose face the director looks at before answering.", "zh": "遇到棘手的问题时，留意总监在回答前先看了谁一眼。", "sp": null}, {"id": "s1_1_2", "md": "That glance often tells you more than any ==hierarchy== diagram.", "text": "That glance often tells you more than any hierarchy diagram.", "zh": "那一眼往往比任何层级图告诉你的都多。", "sp": null}], [{"id": "s1_2_0", "md": "Once you know the ==influencers==, meet them one by one before the big meeting.", "text": "Once you know the influencers, meet them one by one before the big meeting.", "zh": "一旦知道了谁有影响力，就在大会之前一个一个去聊。", "sp": null}, {"id": "s1_2_1", "md": "Share the draft, __ask for their input__, and adjust the plan where they have a point.", "text": "Share the draft, ask for their input, and adjust the plan where they have a point.", "zh": "把草稿给他们看，听听他们的意见，有道理的地方就调整方案。", "sp": null}, {"id": "s1_2_2", "md": "**Nobody likes to be surprised in public, and nobody blocks a plan they helped to shape.**", "text": "Nobody likes to be surprised in public, and nobody blocks a plan they helped to shape.", "zh": "没人喜欢在公开场合被突然袭击，也没人会去拦一个自己参与塑造过的方案。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, __close the loop__ in writing.", "text": "Finally, close the loop in writing.", "zh": "最后，用书面形式收个尾。", "sp": null}, {"id": "s1_3_1", "md": "After the decision, send a short summary that names who agreed and what happens next.", "text": "After the decision, send a short summary that names who agreed and what happens next.", "zh": "决定做出后，发一份简短的纪要，写明谁同意了、接下来做什么。", "sp": null}, {"id": "s1_3_2", "md": "A written record makes the decision ==stick==, even when the real decision makers were never on the invite.", "text": "A written record makes the decision stick, even when the real decision makers were never on the invite.", "zh": "有了书面记录，决定才能落地，哪怕真正拍板的人根本不在会议邀请里。", "sp": null}]]}], "gist": [{"q": "为什么总监在会上同意了，项目却没有推进？", "a": "因为她下面一位资深架构师心存疑虑，而总监不会推翻他的意见；签字的人和真正影响决策的人不是同一个。"}, {"q": "怎么找到真正影响决策的人？", "a": "直接问「除了你，还有谁需要认可这件事」；开会时观察遇到难题总监先看谁。"}, {"q": "找到之后怎么做？", "a": "大会前逐个单聊，分享草稿、征求意见、按合理意见调整；决定后写邮件总结谁同意了、下一步是什么。"}], "dictation": [{"id": "s0_1_3", "text": "Getting a yes from the wrong person is just a slower way of getting a no."}, {"id": "s0_1_1", "text": "The org chart tells you who signs, but not who shapes the decision."}, {"id": "s1_2_2", "text": "Nobody likes to be surprised in public, and nobody blocks a plan they helped to shape."}, {"id": "s1_3_1", "text": "After the decision, send a short summary that names who agreed and what happens next."}], "shadow": {"text": "Next, watch the room. When a tough question comes up, notice whose face the director looks at before answering. That glance often tells you more than any hierarchy diagram.", "marked": "Next, / <b>watch</b> the room. //<br>When a <b>tough</b> question comes up, / notice <b>whose</b> face the director looks at / <b>before</b> answering. //<br>That <b>glance</b> / often tells you <b>more</b> / than any hierarchy diagram. //"}, "prompts": [{"q": "你想推动把日志系统迁移到新平台，名义上的决策人是基础架构负责人。用 30 秒问他：还有谁需要认可这件事？问得自然、不显得绕过他。", "ref": "Thanks for supporting the migration, that really helps. I want to make sure we don't hit surprises later. Besides you, is there anyone else who should be comfortable with this before we start? For example, does the security team or the cost owner usually need to review changes like this? I'd rather talk to them now than discover a concern two weeks in.", "ref_zh": "谢谢你支持这次迁移，真的帮了大忙。我想确保后面不会出意外。除了你之外，在我们开始前还有谁需要认可这件事吗？比如说，像这样的改动，安全团队或者成本负责人通常需要 review 吗？我宁愿现在就去找他们聊，也不想做了两周才发现有顾虑。", "id": "ref0"}, {"q": "大评审会前，你约了一位关键的资深工程师单独聊你的方案。用 30 秒开场，请他提意见。", "ref": "Thanks for making time. Next week I'm presenting the caching proposal, and you know this service better than anyone, so I wanted your view before it goes in front of a big group. Here's the draft. I'm most unsure about the invalidation part. Where do you see the biggest risk? If you think something's wrong, I'd much rather fix it now.", "ref_zh": "谢谢你抽时间。下周我要讲缓存方案，你比谁都了解这个服务，所以我想在拿到大场合之前先听听你的看法。这是草稿。我最没把握的是失效那一块。你觉得最大的风险在哪儿？如果你觉得有什么不对，我非常希望现在就改掉。", "id": "ref1"}], "words": [{"w": "doubt", "ipa": "/daʊt/", "zh": "疑虑", "ex": "I have some doubts about the rollback plan for the database.", "id": "w0"}, {"w": "shape (v.)", "ipa": "/ʃeɪp/", "zh": "塑造、影响", "ex": "Her feedback shaped the final version of the design.", "tts_w": "shape", "id": "w1"}, {"w": "sinister", "ipa": "/ˈsɪnɪstər/", "zh": "阴险的、不怀好意的", "ex": "The delay isn't sinister; they just lost two engineers.", "id": "w2"}, {"w": "verify", "ipa": "/ˈverɪfaɪ/", "zh": "核实、验证", "ex": "Can someone verify the fix in staging before we deploy?", "id": "w3"}, {"w": "hierarchy", "ipa": "/ˈhaɪərɑːrki/", "zh": "层级", "ex": "In a flat hierarchy, decisions often happen in side conversations.", "id": "w4"}, {"w": "influencer", "ipa": "/ˈɪnfluənsər/", "zh": "有影响力的人", "ex": "The lead architect is the key influencer on any storage decision.", "id": "w5"}, {"w": "stick (v.)", "ipa": "/stɪk/", "zh": "（决定）站得住、不被推翻", "ex": "Write it down, or the decision won't stick.", "tts_w": "stick", "id": "w6"}, {"w": "overrule", "ipa": "/ˌoʊvərˈruːl/", "zh": "否决、推翻", "ex": "The VP overruled the team and moved the launch date.", "id": "w7"}, {"w": "glance", "ipa": "/ɡlæns/", "zh": "一瞥", "ex": "One glance at the dashboard told us the deploy had failed.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Org Chart Is Only a Map", "zh": "1. 组织架构图只是一张地图", "start": 0.0, "end": 2.808, "words": [[0.105, 0.355], [0.711, 0.789], [0.803, 1.026], [1.039, 1.368], [1.513, 1.658], [1.671, 1.934], [1.947, 1.987], [2.0, 2.421]]}, {"kind": "s", "id": "s0_0_0", "md": "You spend three weeks convincing a director to approve your migration plan.", "zh": "你花了三周说服一位总监批准你的迁移方案。", "sp": null, "gap": false, "start": 2.808, "end": 7.344, "words": [[2.926, 3.005], [3.019, 3.4], [3.413, 3.742], [3.755, 4.137], [4.15, 4.729], [4.742, 4.782], [4.795, 5.321], [5.334, 5.479], [5.492, 5.913], [5.926, 6.032], [6.045, 6.571], [6.584, 6.94]]}, {"kind": "s", "id": "s0_0_1", "md": "She says yes in the meeting.", "zh": "她在会上同意了。", "sp": null, "gap": false, "start": 7.344, "end": 9.216, "words": [[7.462, 7.607], [7.62, 7.976], [7.989, 8.265], [8.278, 8.344], [8.357, 8.423], [8.436, 8.791]]}, {"kind": "s", "id": "s0_0_2", "md": "Then nothing moves, because a senior architect two levels below her quietly has ==doubts==, and the director will not overrule him.", "zh": "然后事情一点都没动，因为她下面隔两级的一位资深架构师心里有疑虑，而总监不会去否掉他。", "sp": null, "gap": false, "start": 9.216, "end": 17.496, "words": [[9.321, 9.611], [9.624, 10.019], [10.032, 10.571], [10.769, 11.098], [11.111, 11.177], [11.19, 11.676], [11.69, 12.282], [12.295, 12.598], [12.611, 12.966], [12.979, 13.427], [13.44, 13.624], [13.637, 14.203], [14.216, 14.427], [14.44, 14.979], [15.282, 15.374], [15.387, 15.466], [15.479, 15.992], [16.005, 16.137], [16.15, 16.413], [16.427, 16.874], [16.887, 17.098]]}, {"kind": "s", "id": "s0_1_0", "md": "This happens all the time in large companies.", "zh": "这种事在大公司里天天发生。", "sp": null, "gap": true, "start": 17.496, "end": 20.352, "words": [[17.614, 17.746], [17.759, 18.233], [18.325, 18.509], [18.522, 18.601], [18.614, 18.93], [18.943, 19.049], [19.062, 19.351], [19.364, 19.97]]}, {"kind": "s", "id": "s0_1_1", "md": "The org chart tells you who signs, but not who ==shapes== the decision.", "zh": "组织架构图告诉你谁签字，但不告诉你谁在影响决策。", "sp": null, "gap": false, "start": 20.352, "end": 24.552, "words": [[20.457, 20.536], [20.549, 20.786], [20.799, 21.102], [21.115, 21.391], [21.405, 21.51], [21.523, 21.655], [21.668, 22.273], [22.549, 22.707], [22.72, 22.997], [23.01, 23.141], [23.155, 23.536], [23.549, 23.642], [23.655, 24.155]]}, {"kind": "s", "id": "s0_1_2", "md": "Often there is a trusted engineer, a finance partner, or a product lead whose opinion the formal owner always checks first.", "zh": "往往有一位被信任的工程师、财务伙伴或者产品负责人，名义上的负责人总会先问他们的意见。", "sp": null, "gap": false, "start": 24.552, "end": 32.592, "words": [[24.657, 25.012], [25.026, 25.197], [25.21, 25.315], [25.328, 25.381], [25.394, 25.881], [25.894, 26.513], [26.763, 26.802], [26.815, 27.276], [27.289, 27.723], [28.131, 28.223], [28.236, 28.276], [28.289, 28.776], [28.789, 29.091], [29.105, 29.315], [29.328, 29.894], [29.907, 29.999], [30.013, 30.513], [30.591, 30.96], [30.973, 31.394], [31.407, 31.684], [31.697, 32.21]]}, {"kind": "s", "id": "s0_1_3", "md": "**Getting a yes from the wrong person is just a slower way of getting a no.**", "zh": "从不对的人那里拿到同意，只不过是换一种更慢的方式被拒绝。", "sp": null, "gap": false, "start": 32.592, "end": 36.864, "words": [[32.697, 32.921], [32.934, 32.96], [32.974, 33.303], [33.316, 33.46], [33.474, 33.553], [33.566, 33.855], [33.868, 34.368], [34.539, 34.684], [34.697, 34.947], [34.96, 35.0], [35.013, 35.474], [35.487, 35.71], [35.724, 35.816], [35.829, 36.092], [36.105, 36.131], [36.145, 36.487]]}, {"kind": "s", "id": "s0_2_0", "md": "None of this is ==sinister==.", "zh": "这里面没有什么阴谋。", "sp": null, "gap": true, "start": 36.864, "end": 38.736, "words": [[36.969, 37.127], [37.14, 37.232], [37.246, 37.456], [37.469, 37.561], [37.575, 38.18]]}, {"kind": "s", "id": "s0_2_1", "md": "Leaders rely on people they trust, especially for technical details they cannot ==verify== themselves.", "zh": "领导依赖自己信任的人，尤其是那些他们自己没法验证的技术细节。", "sp": null, "gap": false, "start": 38.736, "end": 45.192, "words": [[38.841, 39.17], [39.183, 39.618], [39.631, 39.749], [39.762, 40.104], [40.118, 40.21], [40.223, 40.802], [41.183, 41.762], [41.775, 41.933], [41.947, 42.433], [42.447, 43.039], [43.052, 43.17], [43.183, 43.604], [43.618, 44.104], [44.118, 44.802]]}, {"kind": "s", "id": "s0_2_2", "md": "Your task is simply to find those people early.", "zh": "你要做的只是早点找到这些人。", "sp": null, "gap": false, "start": 45.192, "end": 47.928, "words": [[45.297, 45.376], [45.389, 45.771], [45.784, 45.903], [45.916, 46.205], [46.218, 46.284], [46.297, 46.666], [46.679, 46.863], [46.876, 47.205], [47.218, 47.547]]}, {"kind": "h", "id": "h1", "md": "2. How to Find the Real Decision", "zh": "2. 怎么找到真正做决定的人", "start": 47.928, "end": 50.544, "words": [[48.046, 48.257], [48.783, 48.862], [48.875, 48.954], [48.967, 49.257], [49.27, 49.336], [49.349, 49.599], [49.612, 50.152]]}, {"kind": "s", "id": "s1_0_0", "md": "The easiest method is to ask directly.", "zh": "最简单的办法就是直接问。", "sp": null, "gap": false, "start": 50.544, "end": 53.208, "words": [[50.662, 50.728], [50.741, 51.228], [51.241, 51.583], [51.662, 51.768], [51.781, 51.886], [51.899, 52.228], [52.241, 52.807]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Besides you, who else needs to be comfortable with this before it can move forward?\"", "zh": "「除了你，还有谁需要认可这件事，它才能往前推？」", "sp": null, "gap": false, "start": 53.208, "end": 58.008, "words": [[53.432, 53.721], [53.8, 53.984], [54.445, 54.563], [54.576, 54.8], [54.813, 55.05], [55.063, 55.142], [55.155, 55.3], [55.313, 55.879], [55.892, 56.076], [56.09, 56.274], [56.287, 56.669], [56.682, 56.761], [56.774, 56.919], [56.932, 57.129], [57.142, 57.603]]}, {"kind": "s", "id": "s1_0_2", "md": "Most people will answer honestly, because it saves them trouble later.", "zh": "大多数人都会如实回答，因为这能省掉他们以后的麻烦。", "sp": null, "gap": false, "start": 58.008, "end": 62.04, "words": [[58.113, 58.311], [58.324, 58.64], [58.653, 58.797], [58.811, 59.153], [59.166, 59.719], [59.982, 60.271], [60.284, 60.376], [60.39, 60.771], [60.784, 60.916], [60.929, 61.271], [61.284, 61.653]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, watch the room.", "zh": "接着，观察会议室。", "sp": null, "gap": true, "start": 62.04, "end": 63.912, "words": [[62.145, 62.487], [62.658, 62.895], [62.908, 62.987], [63.001, 63.29]]}, {"kind": "s", "id": "s1_1_1", "md": "When a tough question comes up, notice whose face the director looks at before answering.", "zh": "遇到棘手的问题时，留意总监在回答前先看了谁一眼。", "sp": null, "gap": false, "start": 63.912, "end": 68.904, "words": [[64.03, 64.123], [64.136, 64.188], [64.201, 64.451], [64.465, 64.886], [64.899, 65.201], [65.215, 65.412], [65.833, 66.149], [66.162, 66.346], [66.359, 66.688], [66.701, 66.794], [66.807, 67.254], [67.267, 67.57], [67.583, 67.675], [67.688, 68.03], [68.044, 68.517]]}, {"kind": "s", "id": "s1_1_2", "md": "That glance often tells you more than any ==hierarchy== diagram.", "zh": "那一眼往往比任何层级图告诉你的都多。", "sp": null, "gap": false, "start": 68.904, "end": 73.104, "words": [[69.022, 69.18], [69.193, 69.614], [69.733, 70.088], [70.101, 70.378], [70.391, 70.509], [70.522, 70.865], [70.878, 71.062], [71.207, 71.457], [71.47, 72.088], [72.101, 72.707]]}, {"kind": "s", "id": "s1_2_0", "md": "Once you know the ==influencers==, meet them one by one before the big meeting.", "zh": "一旦知道了谁有影响力，就在大会之前一个一个去聊。", "sp": null, "gap": true, "start": 73.104, "end": 77.568, "words": [[73.222, 73.407], [73.42, 73.499], [73.512, 73.683], [73.696, 73.815], [73.828, 74.67], [74.972, 75.17], [75.183, 75.341], [75.354, 75.565], [75.578, 75.749], [75.762, 76.091], [76.104, 76.459], [76.472, 76.565], [76.578, 76.788], [76.801, 77.17]]}, {"kind": "s", "id": "s1_2_1", "md": "Share the draft, __ask for their input__, and adjust the plan where they have a point.", "zh": "把草稿给他们看，听听他们的意见，有道理的地方就调整方案。", "sp": null, "gap": false, "start": 77.568, "end": 82.416, "words": [[77.673, 77.897], [77.91, 77.989], [78.002, 78.529], [78.818, 79.081], [79.094, 79.2], [79.213, 79.384], [79.397, 79.857], [80.186, 80.252], [80.265, 80.634], [80.647, 80.752], [80.765, 81.134], [81.147, 81.252], [81.265, 81.371], [81.384, 81.502], [81.515, 81.568], [81.581, 82.015]]}, {"kind": "s", "id": "s1_2_2", "md": "**Nobody likes to be surprised in public, and nobody blocks a plan they helped to shape.**", "zh": "没人喜欢在公开场合被突然袭击，也没人会去拦一个自己参与塑造过的方案。", "sp": null, "gap": false, "start": 82.416, "end": 87.576, "words": [[82.521, 82.903], [82.916, 83.205], [83.219, 83.311], [83.324, 83.442], [83.455, 83.995], [84.008, 84.1], [84.113, 84.561], [84.89, 84.995], [85.008, 85.403], [85.416, 85.784], [85.798, 85.85], [85.863, 86.245], [86.258, 86.377], [86.39, 86.679], [86.692, 86.745], [86.758, 87.192]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, __close the loop__ in writing.", "zh": "最后，用书面形式收个尾。", "sp": null, "gap": true, "start": 87.576, "end": 90.12, "words": [[87.734, 88.181], [88.444, 88.787], [88.8, 88.905], [88.918, 89.194], [89.208, 89.326], [89.339, 89.721]]}, {"kind": "s", "id": "s1_3_1", "md": "After the decision, send a short summary that names who agreed and what happens next.", "zh": "决定做出后，发一份简短的纪要，写明谁同意了、接下来做什么。", "sp": null, "gap": false, "start": 90.12, "end": 95.544, "words": [[90.225, 90.462], [90.475, 90.567], [90.581, 91.094], [91.409, 91.594], [91.607, 91.646], [91.659, 91.975], [91.988, 92.449], [92.462, 92.686], [92.699, 93.081], [93.094, 93.238], [93.252, 93.725], [93.936, 94.067], [94.081, 94.199], [94.212, 94.594], [94.607, 95.146]]}, {"kind": "s", "id": "s1_3_2", "md": "A written record makes the decision ==stick==, even when the real decision makers were never on the invite.", "zh": "有了书面记录，决定才能落地，哪怕真正拍板的人根本不在会议邀请里。", "sp": null, "gap": false, "start": 95.544, "end": 101.712, "words": [[95.649, 95.715], [95.728, 96.018], [96.031, 96.439], [96.452, 96.741], [96.755, 96.847], [96.86, 97.373], [97.386, 97.781], [98.215, 98.439], [98.452, 98.597], [98.61, 98.715], [98.728, 99.044], [99.057, 99.505], [99.518, 99.912], [99.926, 100.044], [100.057, 100.518], [100.531, 100.623], [100.636, 100.702], [100.715, 101.32]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

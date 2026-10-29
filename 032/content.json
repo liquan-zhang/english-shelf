@@ -1,0 +1,190 @@
+{
+  "id": "032",
+  "title": "Making Your Work Visible Without Bragging",
+  "meta": "B2 · 约 270 词 · 场景：成果同步",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Quiet Work Is Invisible Work",
+      "paragraphs": [
+        [
+          "Many engineers believe that good work speaks for itself.",
+          "In a large company, it usually doesn't.",
+          "Your manager sees a ==fraction== of what you do, and their manager sees even less."
+        ],
+        [
+          "The reason is not unfairness; it is ==bandwidth==.",
+          "Leaders track dozens of projects, and the ones nobody talks about __fall off the radar__.",
+          "**If you don't tell the story of your work, someone else will tell a shorter version, or nobody will.**"
+        ],
+        [
+          "Still, many people hold back because they are afraid of sounding ==arrogant==.",
+          "That fear is reasonable.",
+          "Nobody enjoys the colleague who turns every update into a __victory lap__.",
+          "The fix is to change how you share, not whether you share."
+        ]
+      ],
+      "heading_zh": "1. 闷头干的活就是看不见的活",
+      "paragraphs_zh": [
+        [
+          "很多工程师相信，好的工作自己会说话。",
+          "在大公司里，通常并不会。",
+          "你的经理只看得到你做的一小部分，他的经理看到的就更少了。"
+        ],
+        [
+          "原因不是不公平，而是精力有限。",
+          "领导同时盯着几十个项目，没人提起的那些就会从视野里消失。",
+          "如果你不讲自己工作的故事，别人就会讲一个缩水版，或者干脆没人讲。"
+        ],
+        [
+          "可很多人还是不敢说，因为怕显得自大。",
+          "这种担心是合理的。",
+          "没人喜欢那种把每次汇报都变成庆功会的同事。",
+          "解决办法是改变分享的方式，而不是不分享。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Teach, Don't Boast",
+      "paragraphs": [
+        [
+          "The trick is to share your work as information that helps other people.",
+          "Instead of \"I made the service faster,\" try \"We cut page load time by a third; here is what worked, in case your team has the same problem.\"",
+          "The second version is useful, so nobody hears it as bragging."
+        ],
+        [
+          "Always __lead with the problem__, then the ==outcome==.",
+          "\"Users were dropping off at checkout; after the fix, completion went up eight percent.\"",
+          "Numbers do the ==persuading== for you, so you don't need big adjectives."
+        ],
+        [
+          "Give credit generously and by name.",
+          "Saying \"Mei found the root cause\" shows you as someone who ==elevates== the team, which is exactly what leaders look for.",
+          "**Credit is not a fixed pie; sharing it usually makes your own slice bigger.**"
+        ],
+        [
+          "Finally, pick the right channel.",
+          "A short note in the team channel or a five-minute demo __goes further than__ a long email that nobody opens.",
+          "People remember what they saw working."
+        ]
+      ],
+      "heading_zh": "2. 分享经验，而不是炫耀",
+      "paragraphs_zh": [
+        [
+          "诀窍在于，把你的工作当成对别人有帮助的信息来分享。",
+          "别说「我把服务优化快了」，试试说「我们把页面加载时间缩短了三分之一；这是有效的做法，万一你们团队也遇到同样的问题可以参考」。",
+          "第二种说法是有用的，所以没人会觉得你在炫耀。"
+        ],
+        [
+          "永远先讲问题，再讲结果。",
+          "「用户在结账环节大量流失；修复之后，完成率提升了百分之八。」",
+          "数字会替你说服别人，你根本用不着那些夸张的形容词。"
+        ],
+        [
+          "大方地把功劳分出去，而且要点名。",
+          "说一句「是 Mei 找到了根因」，会让你显得是那种能成就团队的人，而这正是领导看重的。",
+          "功劳不是一块固定大小的饼；分出去，你自己那块通常反而更大。"
+        ],
+        [
+          "最后，选对渠道。",
+          "在团队群里发一条简短的消息，或者做一个五分钟的 demo，比一封没人打开的长邮件管用得多。",
+          "人们会记住自己亲眼看到跑起来的东西。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么在大公司里「好工作自己会说话」不成立？",
+      "a": "领导的精力（带宽）有限，要跟几十个项目，没人提的项目就会掉出视野。"
+    },
+    {
+      "q": "怎样分享成果才不像自夸？",
+      "a": "把成果当作对别人有用的信息来分享（讲做法、方便别的团队借鉴）；先讲问题再讲结果，用数字代替形容词。"
+    },
+    {
+      "q": "作者对「功劳」有什么看法？",
+      "a": "功劳不是固定大小的饼，大方地点名感谢别人，反而让自己显得能成就团队，分到的更多。"
+    }
+  ],
+  "dictation": [
+    "If you don't tell the story of your work, someone else will tell a shorter version, or nobody will.",
+    "Credit is not a fixed pie; sharing it usually makes your own slice bigger.",
+    "Your manager sees a fraction of what you do, and their manager sees even less.",
+    "Numbers do the persuading for you, so you don't need big adjectives."
+  ],
+  "shadow": {
+    "text": "Give credit generously and by name. Saying \"Mei found the root cause\" shows you as someone who elevates the team, which is exactly what leaders look for. Credit is not a fixed pie; sharing it usually makes your own slice bigger.",
+    "marked": "Give <b>credit</b> generously / and by <b>name</b>. //<br>Saying \"<b>Mei</b> found the root cause\" / shows you as someone who <b>elevates</b> the team, / which is <b>exactly</b> what leaders look for. //<br>Credit is <b>not</b> a fixed pie; / sharing it usually makes your <b>own</b> slice <b>bigger</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你的团队把一个接口的 P99 延迟降了一半。在部门周会上用 30 秒分享，要讲问题、结果、做法，并点名感谢同事。",
+      "ref": "Quick share from our team. Search results were slow for users with large histories, with P ninety-nine latency close to two seconds. Over the past month we cut that in half. Most of the gain came from one change: Arjun noticed we were loading the full history on every request, and moved it to a paginated query. If your service has a similar pattern, we're happy to walk you through it.",
+      "ref_zh": "我们团队简单分享一下。之前历史记录多的用户搜索结果很慢，P99 延迟接近两秒。过去一个月我们把它砍掉了一半。大部分收益来自一个改动：Arjun 发现我们每次请求都在加载完整的历史记录，于是把它改成了分页查询。如果你们的服务也有类似的写法，我们很乐意带你们过一遍。"
+    },
+    {
+      "q": "你觉得自己做的基础设施工作没人看见。用 30 秒在一对一里跟经理提议一个让这类工作被看见的方式，不显得在邀功。",
+      "ref": "I wanted to run an idea by you. A lot of our platform work is invisible when it goes well, like the build time improvements last quarter. Other teams benefit, but they don't know what changed or why. Would it make sense for me to do a short monthly demo for the product teams? It helps them use the tools better, and it keeps leadership aware of what the platform team delivers.",
+      "ref_zh": "我有个想法想听听你的意见。我们很多平台工作做得好的时候反而看不见，比如上个季度的构建时间优化。其他团队是受益了，但他们不知道改了什么、为什么改。我每个月给产品团队做一个简短的 demo，你觉得有没有意义？这既能帮他们把工具用得更好，也能让管理层知道平台团队交付了什么。"
+    }
+  ],
+  "words": [
+    {
+      "w": "brag",
+      "ipa": "/bræɡ/",
+      "zh": "吹嘘、自夸",
+      "ex": "Sharing the numbers isn't bragging if it helps other teams."
+    },
+    {
+      "w": "fraction",
+      "ipa": "/ˈfrækʃən/",
+      "zh": "一小部分",
+      "ex": "We only tested a fraction of the edge cases."
+    },
+    {
+      "w": "bandwidth",
+      "ipa": "/ˈbændwɪdθ/",
+      "zh": "精力、余力",
+      "ex": "I don't have the bandwidth to take on another project this sprint."
+    },
+    {
+      "w": "arrogant",
+      "ipa": "/ˈærəɡənt/",
+      "zh": "傲慢的",
+      "ex": "I didn't want to sound arrogant, so I let the data speak."
+    },
+    {
+      "w": "outcome",
+      "ipa": "/ˈaʊtkʌm/",
+      "zh": "结果、成效",
+      "ex": "Leadership cares about the outcome, not the number of tickets closed."
+    },
+    {
+      "w": "persuade",
+      "ipa": "/pərˈsweɪd/",
+      "zh": "说服",
+      "ex": "The load test results persuaded the PM to delay the launch.",
+      "tts": "The load test results persuaded the product manager to delay the launch."
+    },
+    {
+      "w": "elevate",
+      "ipa": "/ˈelɪveɪt/",
+      "zh": "提升、成就（他人）",
+      "ex": "Good leads elevate the people around them."
+    },
+    {
+      "w": "generously",
+      "ipa": "/ˈdʒenərəsli/",
+      "zh": "慷慨地、大方地",
+      "ex": "She credited the on-call team generously in the incident summary."
+    },
+    {
+      "w": "radar",
+      "ipa": "/ˈreɪdɑːr/",
+      "zh": "关注范围（雷达）",
+      "ex": "Is the data migration on the director's radar yet?"
+    }
+  ]
+}

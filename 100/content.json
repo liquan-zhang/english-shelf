@@ -1,0 +1,188 @@
+{
+  "id": "100",
+  "title": "Your Accent Is Not the Problem",
+  "meta": "B2 · 约 270 词 · 场景：口音与清晰表达",
+  "voice": "en-SG-WayneNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Clear, Not Native",
+      "paragraphs": [
+        [
+          "Many engineers spend years trying to sound like native speakers.",
+          "They watch films, copy accents, and feel embarrassed every time a vowel comes out wrong."
+        ],
+        [
+          "But walk around any global office in Singapore.",
+          "You will hear Indian English, Singlish, Australian, British, Chinese and Filipino accents, sometimes in the same meeting.",
+          "The people who are easy to follow are not the ones with the most ==polished== accent.",
+          "They are the ones who speak clearly."
+        ],
+        [
+          "**Nobody needs you to sound like a native speaker; they need to understand you the first time.**",
+          "That is a different goal, and a much more ==achievable== one.",
+          "==Intelligibility== comes from a few habits, not from changing who you are."
+        ]
+      ],
+      "heading_zh": "1. 要清楚，不要地道",
+      "paragraphs_zh": [
+        [
+          "很多工程师花了好几年，想让自己听起来像母语者。",
+          "他们看电影、模仿口音，每次元音发得不对都觉得尴尬。"
+        ],
+        [
+          "但你去新加坡任何一个全球化办公室转一圈。",
+          "你会听到印度英语、新加坡式英语、澳洲、英国、中国和菲律宾口音，有时候就在同一个会上。",
+          "那些让人容易听懂的人，并不是口音最纯正的那些。",
+          "而是说话清楚的那些。"
+        ],
+        [
+          "没人需要你听起来像母语者；大家需要的是第一遍就能听懂你。",
+          "这是一个不同的目标，而且容易实现得多。",
+          "让人听得懂靠的是几个习惯，而不是改变你自己。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Four Habits That Matter More Than Accent",
+      "paragraphs": [
+        [
+          "First, slow down on the words that carry the meaning.",
+          "Names, numbers and the key verb in each sentence deserve an extra half second.",
+          "You can rush the small words, and listeners will __fill in the gaps__."
+        ],
+        [
+          "Second, speak in short ==chunks==, with a clear pause between ideas, not in the middle of them.",
+          "Short chunks are easy to follow, even with a strong accent and a weak connection."
+        ],
+        [
+          "Third, get the stress right.",
+          "Putting the weight on the wrong ==syllable== confuses listeners far more than an unusual vowel.",
+          "When you learn a new technical word, check where the stress falls before you use it in a meeting."
+        ],
+        [
+          "Fourth, ==signpost== your structure.",
+          "Phrases like \"two points\", \"the main issue is\", and \"so, in short\" __give listeners a map__, so they can follow you even if they miss a word or two.",
+          "**Clarity is a skill you can practice; your accent is just part of who you are.**"
+        ]
+      ],
+      "heading_zh": "2. 比口音更重要的四个习惯",
+      "paragraphs_zh": [
+        [
+          "第一，在承载意思的词上放慢。",
+          "名字、数字和每句话里的关键动词，值得多给半秒。",
+          "小词可以说快一点，听的人自己会补上。"
+        ],
+        [
+          "第二，分成短块来说，停顿放在意思和意思之间，而不是一个意思的中间。",
+          "短块很好跟，哪怕口音很重、网络很差。"
+        ],
+        [
+          "第三，重音要放对。",
+          "重音放错音节，比一个不太标准的元音更让人困惑。",
+          "学一个新的技术词时，在会上用之前先查一下重音在哪儿。"
+        ],
+        [
+          "第四，把结构标出来。",
+          "像「两点」「主要问题是」「所以简单说」这类短语，相当于给听的人一张地图，就算漏听一两个词也能跟上你。",
+          "清晰是可以练的技能；口音只是你的一部分。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为口音和清晰度哪个更重要？",
+      "a": "清晰度；在新加坡的全球办公室里，好懂的人不是口音最地道的，而是说得清楚的。"
+    },
+    {
+      "q": "作者为什么说“听起来像母语者”不是正确目标？",
+      "a": "别人需要的是第一次就听懂你；可懂度来自几个习惯，更容易实现，也不需要改变你是谁。"
+    },
+    {
+      "q": "文中的四个习惯是什么？",
+      "a": "在承载意思的词（名字、数字、关键动词）上放慢；按意群短句表达，在意思之间停顿；重音放对音节；用路标短语交代结构。"
+    }
+  ],
+  "dictation": [
+    "Nobody needs you to sound like a native speaker; they need to understand you the first time.",
+    "First, slow down on the words that carry the meaning.",
+    "Names, numbers and the key verb in each sentence deserve an extra half second.",
+    "Clarity is a skill you can practice; your accent is just part of who you are."
+  ],
+  "shadow": {
+    "text": "First, slow down on the words that carry the meaning. Names, numbers and the key verb in each sentence deserve an extra half second. You can rush the small words, and listeners will fill in the gaps.",
+    "marked": "First, <b>slow down</b> / on the words that <b>carry</b> the meaning. //<br><b>Names</b>, <b>numbers</b> / and the key <b>verb</b> in each sentence / deserve an extra <b>half</b> second. //<br>You can <b>rush</b> the small words, / and listeners will fill in the <b>gaps</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你要在全球周会上用英语汇报一次故障，担心自己的口音。用分块、重音和路标短语，30 秒说完。",
+      "ref": "Two points on yesterday's outage. First, what happened. At nine in the evening, the cache cluster ran out of memory, and uploads failed for forty minutes. Second, what we're doing. We've doubled the memory, and we're adding an alert, so next time we'll catch it before users do. So, in short, it's fixed, and it won't happen silently again.",
+      "ref_zh": "关于昨天的故障，说两点。第一，发生了什么。晚上九点，缓存集群内存耗尽，上传失败了四十分钟。第二，我们在做什么。内存已经扩了一倍，还在加告警，下次我们能赶在用户之前发现。所以简单说，问题已经修好了，而且不会再悄无声息地发生。"
+    },
+    {
+      "q": "一位新加坡同事说他担心自己的 Singlish 口音太重，不敢在全球会议上发言。用文中的观点鼓励他。",
+      "ref": "Honestly, your accent isn't the issue. I understand you perfectly in our team meetings. What helps in the big calls is slowing down on the key words and pausing between ideas, and you already do that when you present your demos. Try opening with something like 'I have two points', and people will follow you easily. Nobody expects you to sound British.",
+      "ref_zh": "说实话，你的口音不是问题。我们组会上你说的我完全听得懂。在大会上管用的是关键词说慢一点、意思之间停一停，你讲 demo 的时候其实已经在这么做了。开头试试说「我有两点」，大家就能很轻松地跟上你。没人指望你说一口英国腔。"
+    }
+  ],
+  "words": [
+    {
+      "w": "polished",
+      "ipa": "/ˈpɑːlɪʃt/",
+      "zh": "精致的、打磨过的",
+      "ex": "The slides don't need to be polished, they just need to be clear."
+    },
+    {
+      "w": "achievable",
+      "ipa": "/əˈtʃiːvəbəl/",
+      "zh": "可实现的",
+      "ex": "Let's set an achievable goal for this sprint."
+    },
+    {
+      "w": "intelligibility",
+      "ipa": "/ɪnˌtelɪdʒəˈbɪləti/",
+      "zh": "可懂度、清晰易懂",
+      "ex": "For global calls, intelligibility matters more than a perfect accent."
+    },
+    {
+      "w": "chunk (n.)",
+      "ipa": "/tʃʌŋk/",
+      "zh": "（语言的）意群、一块",
+      "ex": "Break the update into small chunks so people can follow.",
+      "tts_w": "chunk"
+    },
+    {
+      "w": "syllable",
+      "ipa": "/ˈsɪləbəl/",
+      "zh": "音节",
+      "ex": "In 'develop', the stress is on the second syllable."
+    },
+    {
+      "w": "signpost (v.)",
+      "ipa": "/ˈsaɪnˌpoʊst/",
+      "zh": "（用路标语）提示结构",
+      "ex": "Signpost your talk early: 'I'll cover three risks.'",
+      "tts_w": "signpost"
+    },
+    {
+      "w": "fill in the gaps",
+      "ipa": "/fɪl ɪn ðə ɡæps/",
+      "zh": "补全缺失部分",
+      "ex": "The logs fill in the gaps that the dashboard misses."
+    },
+    {
+      "w": "rush (v.)",
+      "ipa": "/rʌʃ/",
+      "zh": "仓促做、赶",
+      "ex": "Don't rush the conclusion, that's the part people remember.",
+      "tts_w": "rush"
+    },
+    {
+      "w": "enunciate",
+      "ipa": "/ɪˈnʌnsiˌeɪt/",
+      "zh": "清晰地发音",
+      "ex": "Enunciate the numbers clearly when you read out the results."
+    }
+  ]
+}

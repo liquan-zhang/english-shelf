@@ -1,0 +1,88 @@
+{
+  "id": "132",
+  "type": "dialogue",
+  "title": "Choosing a Phone Plan",
+  "meta": "B2 · 约 330 词 · 场景：电信店选套餐与携号转网",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Sales Staff", "name_zh": "店员", "voice": "en-SG-WayneNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. At the Telco Shop",
+      "heading_zh": "1. 在电信门店",
+      "lines": [
+        {"sp": "B", "en": "Hi there, how can I help you today?", "zh": "您好，今天有什么可以帮您？"},
+        {"sp": "A", "en": "Hi, I'm __looking for__ a new mobile plan. I'd like to ==switch== from my current provider.", "zh": "你好，我想办个新的手机套餐，打算从现在的运营商转过来。"},
+        {"sp": "B", "en": "Sure. Do you want to __keep your number__? We can ==port== it over for free.", "zh": "好的。您想保留原号码吗？我们可以免费帮您携号转网。"},
+        {"sp": "A", "en": "**Yes, I'd like to keep my number. How long does the transfer usually take?**", "zh": "对，我想保留号码。转网一般要多久？"},
+        {"sp": "B", "en": "Usually within one working day. How much data do you use in a month?", "zh": "一般一个工作日内。您每个月大概用多少流量？"},
+        {"sp": "A", "en": "Quite a lot. I often use my phone as a hotspot, so maybe sixty to eighty gigabytes.", "zh": "挺多的。我经常拿手机开热点，大概六十到八十个 G。"},
+        {"sp": "B", "en": "Then I'd suggest our SIM-only plan. It's thirty dollars a month for one hundred gigabytes.", "zh": "那我推荐我们的纯 SIM 卡套餐，每月三十块，一百个 G。"},
+        {"sp": "A", "en": "Is that on a ==contract==, or can I cancel anytime?", "zh": "这个要签合约吗？还是随时可以取消？"},
+        {"sp": "B", "en": "There's a twelve-month contract, or a no-contract version for five dollars more.", "zh": "有十二个月合约的，也有无合约的，每月贵五块。"},
+        {"sp": "A", "en": "I'd rather go with no contract. Does it include ==roaming== in Malaysia? I drive up to Johor Bahru sometimes.", "zh": "我宁愿选无合约的。包含马来西亚漫游吗？我有时候开车去新山。"},
+        {"sp": "B", "en": "Yes, you get five gigabytes of roaming data in Malaysia and Indonesia every month.", "zh": "包含，每个月在马来西亚和印尼有五个 G 的漫游流量。"},
+        {"sp": "A", "en": "Great, let's go with that one. What do you need from me?", "zh": "太好了，就办这个吧。需要我提供什么？"},
+        {"sp": "B", "en": "Just your passport or employment pass, and I'll __sign you up__ right now.", "zh": "护照或者工作准证就行，我现在就帮您办。"}
+      ]
+    },
+    {
+      "heading": "2. Back at the Shop",
+      "heading_zh": "2. 回到门店",
+      "lines": [
+        {"sp": "A", "en": "Hi, I signed up here yesterday, but my new SIM __still isn't working__. I have no signal at all.", "zh": "你好，我昨天在这里办的卡，但新 SIM 卡还是用不了，一点信号都没有。"},
+        {"sp": "B", "en": "Sorry about that. Let me check. Ah, the transfer from your old provider is still ==pending==.", "zh": "不好意思，我查一下。啊，您原运营商那边的转网还在处理中。"},
+        {"sp": "A", "en": "Is there anything I can do? I'm waiting for an important call from my son's school.", "zh": "我能做点什么吗？我在等儿子学校打来的一个重要电话。"},
+        {"sp": "B", "en": "Your old provider may have a ==hold== on the number. Do you have any unpaid bills with them?", "zh": "可能是原运营商把号码锁住了。您在他们那边还有没交的账单吗？"},
+        {"sp": "A", "en": "**Possibly the final bill. Could you tell me exactly what I need to do to get this sorted today?**", "zh": "可能还有最后一期账单。你能告诉我具体要怎么做，今天就把这事搞定吗？"},
+        {"sp": "B", "en": "Call them to clear the balance, then let me know. I'll __push it through__ manually, and it should work within an hour.", "zh": "给他们打电话把欠款结清，然后告诉我。我手动帮您推进，一小时内应该就能用了。"},
+        {"sp": "A", "en": "OK. In the meantime, could you give me a ==temporary== number so I'm reachable?", "zh": "好的。在这之前，能不能先给我一个临时号码，让别人能联系上我？"},
+        {"sp": "B", "en": "Sure. I'll give you a prepaid SIM with a temporary number, free of charge.", "zh": "可以。我给您一张预付卡，带一个临时号码，不收费。"},
+        {"sp": "A", "en": "That's a big help. Thanks for __sorting this out__.", "zh": "帮大忙了。谢谢你帮我处理。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」最后选了什么套餐？为什么？", "a": "纯 SIM 卡、无合约的套餐，一百 G 流量，含马来西亚漫游；因为流量用得多、不想被合约绑住、常去新山。"},
+    {"q": "第二天新卡为什么用不了？", "a": "原运营商那边转网还没完成，可能因为还有一笔未付的最后账单，号码被锁住了。"},
+    {"q": "店员给出了哪些解决办法？", "a": "让「你」先结清原运营商的欠款，他再手动推进转网，一小时内可用；同时免费给一张带临时号码的预付卡。"}
+  ],
+  "dictation": [
+    "Yes, I'd like to keep my number. How long does the transfer usually take?",
+    "Is that on a contract, or can I cancel anytime?",
+    "Possibly the final bill. Could you tell me exactly what I need to do to get this sorted today?",
+    "OK. In the meantime, could you give me a temporary number so I'm reachable?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Hi, I signed up here yesterday, but my new SIM still isn't working. I have no signal at all.",
+    "marked": "Hi, / I signed up here <b>yesterday</b>, / but my new <b>SIM</b> / <b>still</b> isn't working. //<br>I have <b>no signal</b> / at <b>all</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "月底账单里多了一笔你没想到的漫游费。打给客服，说明情况，请对方解释并争取减免。",
+      "ref": "Hi, I'm calling about my latest bill. There's a roaming charge of about forty dollars, but I thought my plan included roaming in Malaysia. I was only in Johor Bahru for the weekend. Could you check what the charge is for? If it's a mistake, I'd like it removed. And if I went over the limit, could you waive it this one time?",
+      "ref_zh": "你好，我打来是想问一下最近这期账单。里面有一笔大概四十块的漫游费，但我以为我的套餐包含马来西亚漫游。我只是周末去了一趟新山。能帮我查一下这笔费用是什么吗？如果是弄错了，希望能撤掉。如果是我超出了额度，这次能不能帮我免掉？"
+    },
+    {
+      "q": "你签了十二个月合约，但现在想提前解约换套餐。去门店问清楚违约金和最划算的做法。",
+      "ref": "Hi, I'm on a twelve-month contract, and I still have about five months left. I'd like to switch to a cheaper plan, because I'm using much less data now. Is there an early termination fee? If so, how much is it? Or is there a way to downgrade within the same contract without paying a penalty?",
+      "ref_zh": "你好，我签的是十二个月的合约，现在还剩五个月左右。我想换一个便宜点的套餐，因为我现在流量用得少多了。提前解约有违约金吗？有的话是多少？或者有没有办法在同一个合约里降档，不用付违约金？"
+    }
+  ],
+  "words": [
+    {"w": "switch (v.)", "ipa": "/swɪtʃ/", "zh": "换成；转换", "ex": "We switched to a cheaper electricity provider last month.", "tts_w": "switch"},
+    {"w": "port (v.)", "ipa": "/pɔːrt/", "zh": "携号转网", "ex": "Can I port my number from my old provider?", "tts_w": "port"},
+    {"w": "contract", "ipa": "/ˈkɑːntrækt/", "zh": "合约", "ex": "I don't want to be locked into a two-year contract."},
+    {"w": "roaming", "ipa": "/ˈroʊmɪŋ/", "zh": "漫游", "ex": "Turn off data roaming before you land in Bangkok."},
+    {"w": "pending", "ipa": "/ˈpendɪŋ/", "zh": "待处理的", "ex": "My refund is still pending after a week."},
+    {"w": "hold (n.)", "ipa": "/hoʊld/", "zh": "冻结；锁定", "ex": "The bank put a hold on my card after a strange payment.", "tts_w": "hold"},
+    {"w": "temporary", "ipa": "/ˈtempəreri/", "zh": "临时的", "ex": "We're staying in a temporary apartment until our flat is ready."},
+    {"w": "hotspot", "ipa": "/ˈhɑːtspɑːt/", "zh": "热点（手机共享网络）", "ex": "Can you turn on your hotspot so I can check my email?"},
+    {"w": "push through", "ipa": "/pʊʃ θruː/", "zh": "推进办成", "ex": "The agent pushed my application through in two days."},
+    {"w": "sort out", "ipa": "/sɔːrt aʊt/", "zh": "解决；处理好", "ex": "Let me sort out the parking before the guests arrive."}
+  ]
+}

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Changing Plans Mid-Quarter · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "078", "title": "Changing Plans Mid-Quarter", "meta": "B2 · 约 270 词 · 场景：计划调整", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Changing Is Fine; Quietly Is Not", "heading_zh": "1. 改可以，悄悄改不行", "rows": [[{"id": "s0_0_0", "md": "Six weeks into the quarter, a major customer ==churns==, and leadership wants to shift the team to retention work.", "text": "Six weeks into the quarter, a major customer churns, and leadership wants to shift the team to retention work.", "zh": "季度进行到第六周，一个大客户流失了，管理层想把团队转去做留存。", "sp": null}, {"id": "s0_0_1", "md": "Your carefully negotiated plan is suddenly out of date.", "text": "Your carefully negotiated plan is suddenly out of date.", "zh": "你辛辛苦苦谈下来的计划一下子就过时了。", "sp": null}], [{"id": "s0_1_0", "md": "Changing course is not a sign of bad planning.", "text": "Changing course is not a sign of bad planning.", "zh": "调整方向并不说明计划做得不好。", "sp": null}, {"id": "s0_1_1", "md": "A plan that never changes in a fast market is probably being ignored.", "text": "A plan that never changes in a fast market is probably being ignored.", "zh": "在一个变化很快的市场里，一份从来不变的计划，很可能根本没人在看。", "sp": null}, {"id": "s0_1_2", "md": "**The damage comes from changing the plan quietly, not from changing it.**", "text": "The damage comes from changing the plan quietly, not from changing it.", "zh": "伤害来自悄悄地改计划，而不是改计划本身。", "sp": null}], [{"id": "s0_2_0", "md": "When plans shift without an announcement, other teams keep building on old ==assumptions==.", "text": "When plans shift without an announcement, other teams keep building on old assumptions.", "zh": "计划变了却没有通知，其他团队就会继续基于旧的假设往下做。", "sp": null}, {"id": "s0_2_1", "md": "A partner team finishes an API you no longer need, and a PM promises customers a feature you have just dropped.", "text": "A partner team finishes an API you no longer need, and a PM promises customers a feature you have just dropped.", "zh": "合作团队做完了一个你已经不需要的 API，某个 PM 向客户承诺了一个你刚砍掉的功能。", "sp": null}, {"id": "s0_2_2", "md": "Trust ==erodes== much faster than the plan itself changes, and next quarter everyone pads their estimates to protect themselves.", "text": "Trust erodes much faster than the plan itself changes, and next quarter everyone pads their estimates to protect themselves.", "zh": "信任流失的速度比计划本身变化快得多，下个季度大家都会在估时里加 buffer 来保护自己。", "sp": null}]]}, {"heading": "2. A Change Note in Four Sentences", "heading_zh": "2. 四句话的变更说明", "rows": [[{"id": "s1_0_0", "md": "When you change direction, send a short change note to every ==downstream== team.", "text": "When you change direction, send a short change note to every downstream team.", "zh": "当你调整方向时，给每个下游团队发一份简短的变更说明。", "sp": null}, {"id": "s1_0_1", "md": "It needs only four sentences, and each one answers a different question.", "text": "It needs only four sentences, and each one answers a different question.", "zh": "只需要四句话，每一句回答一个不同的问题。", "sp": null}, {"id": "s1_0_2", "md": "Keep it short enough that people actually read it to the end.", "text": "Keep it short enough that people actually read it to the end.", "zh": "写得足够短，短到大家真的会读到最后。", "sp": null}], [{"id": "s1_1_0", "md": "What changed in the world: \"Our largest customer in the region left, citing slow reporting.\"", "text": "What changed in the world: \"Our largest customer in the region left, citing slow reporting.\"", "zh": "外部发生了什么变化：「我们在这个区域最大的客户走了，理由是报表太慢。」", "sp": null}, {"id": "s1_1_1", "md": "What changes in the plan: \"We are moving two engineers to reporting speed for six weeks.\"", "text": "What changes in the plan: \"We are moving two engineers to reporting speed for six weeks.\"", "zh": "计划有什么变化：「我们把两个工程师调去做报表提速，为期六周。」", "sp": null}, {"id": "s1_1_2", "md": "What it costs: \"The new admin dashboard moves from this quarter to next.\"", "text": "What it costs: \"The new admin dashboard moves from this quarter to next.\"", "zh": "代价是什么：「新的管理后台从这个季度推到下个季度。」", "sp": null}, {"id": "s1_1_3", "md": "Who is affected: \"Design and the sales team, who were planning a demo.\"", "text": "Who is affected: \"Design and the sales team, who were planning a demo.\"", "zh": "影响到谁：「设计团队，还有原本在准备 demo 的销售团队。」", "sp": null}], [{"id": "s1_2_0", "md": "**Saying the cost out loud is what makes the change credible.**", "text": "Saying the cost out loud is what makes the change credible.", "zh": "把代价说出来，正是让这次调整显得可信的关键。", "sp": null}, {"id": "s1_2_1", "md": "It shows the decision was ==deliberate==, not a ==knee-jerk== reaction to whoever complained last.", "text": "It shows the decision was deliberate, not a knee-jerk reaction to whoever complained last.", "zh": "它说明这个决定是深思熟虑的，而不是对最后一个来抱怨的人的条件反射。", "sp": null}, {"id": "s1_2_2", "md": "It also gives affected teams a chance to __raise concerns__ before the new plan is __locked in__.", "text": "It also gives affected teams a chance to raise concerns before the new plan is locked in.", "zh": "它也让受影响的团队有机会在新计划定死之前提出顾虑。", "sp": null}, {"id": "s1_2_3", "md": "A plan that changes openly is still a plan; a plan that changes silently is just a rumor.", "text": "A plan that changes openly is still a plan; a plan that changes silently is just a rumor.", "zh": "公开调整的计划仍然是计划；悄悄调整的计划只是传言。", "sp": null}]]}], "gist": [{"q": "作者认为季度中途改计划本身有问题吗？", "a": "没有，市场变化快，从不改的计划多半没人在看；问题在于悄悄地改。"}, {"q": "悄悄改计划会造成什么后果？", "a": "其他团队按旧假设继续做，做出不再需要的接口、承诺已砍掉的功能；信任流失，下季度大家都给估时加水分自保。"}, {"q": "变更说明的四句话分别回答什么？", "a": "外部发生了什么变化；计划改了什么；代价是什么（哪些事推迟）；影响到谁。"}], "dictation": [{"id": "s0_1_1", "text": "A plan that never changes in a fast market is probably being ignored."}, {"id": "s0_1_2", "text": "The damage comes from changing the plan quietly, not from changing it."}, {"id": "s1_2_0", "text": "Saying the cost out loud is what makes the change credible."}, {"id": "s1_2_3", "text": "A plan that changes openly is still a plan; a plan that changes silently is just a rumor."}], "shadow": {"text": "Saying the cost out loud is what makes the change credible. It shows the decision was deliberate, not a knee-jerk reaction to whoever complained last.", "marked": "Saying the <b>cost</b> out loud / is what makes the change <b>credible</b>. //<br>It shows the decision was <b>deliberate</b>, / not a <b>knee-jerk</b> reaction / to whoever <b>complained</b> last. //"}, "prompts": [{"q": "季度中途，老板要求你的团队转去做稳定性。用 30 秒在跨团队周会上按四句话说明这次变更。", "ref": "I want to share a change to our plan. Last week we had two major outages, and our biggest partner has asked for a stability review. So we're moving three engineers to reliability work for the next five weeks. The cost is that the new search filters slip to next quarter. This mainly affects the design team and marketing, who were planning a campaign around search.", "ref_zh": "我想同步一下我们计划的调整。上周我们出了两次大故障，最大的合作方要求做一次稳定性评审。所以接下来五周，我们要调三个工程师去做稳定性。代价是新的搜索筛选推到下个季度。主要影响的是设计团队和市场团队，他们原本在围绕搜索策划一场活动。", "id": "ref0"}, {"q": "兄弟团队抱怨你们“又改计划了，没人通知”。用 30 秒承认问题并提出以后的做法。", "ref": "You're right, and I'm sorry. We decided to move the export work two weeks ago, and you heard about it from a ticket, not from us. That's on me. Going forward, whenever our plan changes, I'll send a short note to every team that depends on us, covering what changed, why, what slips, and who's affected, before anything is locked in.", "ref_zh": "你说得对，我很抱歉。我们两周前就决定挪走导出那块工作，而你是从一个工单里知道的，不是我们告诉你的。这是我的问题。以后只要我们的计划有变，我都会在定下来之前给每个依赖我们的团队发一份简短说明，讲清楚改了什么、为什么改、什么延期了、影响到谁。", "id": "ref1"}], "words": [{"w": "churn (v.)", "ipa": "/tʃɜːrn/", "zh": "（客户）流失", "ex": "Customers who hit this bug in their first week tend to churn.", "tts_w": "churn", "id": "w0"}, {"w": "assumption", "ipa": "/əˈsʌmpʃən/", "zh": "假设、前提", "ex": "Our capacity plan was based on the assumption of steady growth.", "id": "w1"}, {"w": "erode", "ipa": "/ɪˈroʊd/", "zh": "侵蚀、逐渐削弱", "ex": "Every missed deadline erodes the client's trust a little more.", "id": "w2"}, {"w": "downstream", "ipa": "/ˌdaʊnˈstriːm/", "zh": "下游的", "ex": "Changing this schema will break several downstream services.", "id": "w3"}, {"w": "deliberate", "ipa": "/dɪˈlɪbərət/", "zh": "深思熟虑的、有意的", "ex": "Dropping the old Android version was a deliberate choice.", "id": "w4"}, {"w": "knee-jerk", "ipa": "/ˈniː ˌdʒɜːrk/", "zh": "条件反射式的、未经思考的", "ex": "Freezing all releases was a knee-jerk response to one bad deploy.", "id": "w5"}, {"w": "credible", "ipa": "/ˈkredəbəl/", "zh": "可信的", "ex": "The plan only became credible once we added real estimates.", "id": "w6"}, {"w": "cite", "ipa": "/saɪt/", "zh": "援引、列举（理由）", "ex": "The client cited slow support as the main reason for leaving.", "id": "w7"}, {"w": "rumor", "ipa": "/ˈruːmər/", "zh": "传闻、小道消息", "ex": "There's a rumor that the project is being cancelled; can we clarify?", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Changing Is Fine; Quietly Is Not", "zh": "1. 改可以，悄悄改不行", "start": 0.0, "end": 3.384, "words": [[0.105, 0.355], [0.776, 1.171], [1.184, 1.303], [1.316, 1.75], [2.013, 2.474], [2.487, 2.605], [2.618, 3.0]]}, {"kind": "s", "id": "s0_0_0", "md": "Six weeks into the quarter, a major customer ==churns==, and leadership wants to shift the team to retention work.", "zh": "季度进行到第六周，一个大客户流失了，管理层想把团队转去做留存。", "sp": null, "gap": false, "start": 3.384, "end": 10.296, "words": [[3.502, 3.766], [3.779, 4.055], [4.068, 4.226], [4.239, 4.331], [4.345, 4.766], [5.16, 5.187], [5.2, 5.634], [5.647, 6.095], [6.108, 6.647], [6.884, 7.042], [7.055, 7.608], [7.621, 7.897], [7.91, 8.002], [8.016, 8.358], [8.371, 8.463], [8.476, 8.831], [8.845, 8.976], [8.989, 9.529], [9.542, 9.897]]}, {"kind": "s", "id": "s0_0_1", "md": "Your carefully negotiated plan is suddenly out of date.", "zh": "你辛辛苦苦谈下来的计划一下子就过时了。", "sp": null, "gap": false, "start": 10.296, "end": 13.776, "words": [[10.401, 10.52], [10.533, 10.98], [10.993, 11.704], [11.717, 12.125], [12.243, 12.335], [12.349, 12.77], [12.783, 12.888], [12.901, 12.993], [13.007, 13.388]]}, {"kind": "s", "id": "s0_1_0", "md": "Changing course is not a sign of bad planning.", "zh": "调整方向并不说明计划做得不好。", "sp": null, "gap": true, "start": 13.776, "end": 16.704, "words": [[13.881, 14.223], [14.237, 14.618], [14.723, 14.829], [14.842, 15.079], [15.092, 15.131], [15.144, 15.5], [15.513, 15.618], [15.631, 15.881], [15.894, 16.315]]}, {"kind": "s", "id": "s0_1_1", "md": "A plan that never changes in a fast market is probably being ignored.", "zh": "在一个变化很快的市场里，一份从来不变的计划，很可能根本没人在看。", "sp": null, "gap": false, "start": 16.704, "end": 21.6, "words": [[16.809, 16.875], [16.888, 17.217], [17.23, 17.415], [17.428, 17.783], [17.796, 18.283], [18.296, 18.467], [18.48, 18.533], [18.546, 19.02], [19.033, 19.454], [19.691, 19.796], [19.809, 20.283], [20.296, 20.665], [20.678, 21.204]]}, {"kind": "s", "id": "s0_1_2", "md": "**The damage comes from changing the plan quietly, not from changing it.**", "zh": "伤害来自悄悄地改计划，而不是改计划本身。", "sp": null, "gap": false, "start": 21.6, "end": 25.848, "words": [[21.718, 21.797], [21.811, 22.218], [22.232, 22.508], [22.521, 22.679], [22.692, 23.1], [23.113, 23.192], [23.205, 23.547], [23.561, 24.153], [24.468, 24.626], [24.639, 24.797], [24.811, 25.271], [25.284, 25.455]]}, {"kind": "s", "id": "s0_2_0", "md": "When plans shift without an announcement, other teams keep building on old ==assumptions==.", "zh": "计划变了却没有通知，其他团队就会继续基于旧的假设往下做。", "sp": null, "gap": true, "start": 25.848, "end": 31.368, "words": [[25.966, 26.098], [26.111, 26.519], [26.532, 26.966], [26.98, 27.361], [27.374, 27.44], [27.453, 28.045], [28.427, 28.637], [28.651, 29.006], [29.019, 29.322], [29.387, 29.743], [29.756, 29.927], [30.032, 30.23], [30.243, 30.98]]}, {"kind": "s", "id": "s0_2_1", "md": "A partner team finishes an API you no longer need, and a PM promises customers a feature you have just dropped.", "zh": "合作团队做完了一个你已经不需要的 API，某个 PM 向客户承诺了一个你刚砍掉的功能。", "sp": null, "gap": false, "start": 31.368, "end": 38.376, "words": [[31.473, 31.526], [31.539, 31.907], [31.921, 32.157], [32.171, 32.671], [32.684, 32.829], [32.855, 33.473], [33.486, 33.631], [33.644, 33.776], [33.789, 34.184], [34.197, 34.526], [34.855, 34.921], [34.934, 34.986], [35.0, 35.381], [35.394, 35.881], [35.894, 36.394], [36.407, 36.46], [36.473, 36.934], [36.947, 37.052], [37.065, 37.21], [37.223, 37.486], [37.5, 37.973]]}, {"kind": "s", "id": "s0_2_2", "md": "Trust ==erodes== much faster than the plan itself changes, and next quarter everyone pads their estimates to protect themselves.", "zh": "信任流失的速度比计划本身变化快得多，下个季度大家都会在估时里加 buffer 来保护自己。", "sp": null, "gap": false, "start": 38.376, "end": 46.32, "words": [[38.481, 38.85], [38.863, 39.284], [39.297, 39.652], [39.665, 40.244], [40.258, 40.389], [40.402, 40.481], [40.494, 40.823], [40.837, 41.218], [41.231, 41.823], [42.073, 42.218], [42.231, 42.494], [42.508, 42.929], [43.087, 43.547], [43.56, 43.994], [44.008, 44.205], [44.218, 44.718], [44.731, 44.823], [44.837, 45.218], [45.231, 45.929]]}, {"kind": "h", "id": "h1", "md": "2. A Change Note in Four Sentences", "zh": "2. 四句话的变更说明", "start": 46.32, "end": 49.416, "words": [[46.438, 46.715], [47.083, 47.149], [47.162, 47.544], [47.557, 47.899], [47.965, 48.057], [48.07, 48.333], [48.346, 49.017]]}, {"kind": "s", "id": "s1_0_0", "md": "When you change direction, send a short change note to every ==downstream== team.", "zh": "当你调整方向时，给每个下游团队发一份简短的变更说明。", "sp": null, "gap": false, "start": 49.416, "end": 54.144, "words": [[49.521, 49.613], [49.627, 49.719], [49.732, 50.061], [50.074, 50.613], [50.929, 51.113], [51.127, 51.166], [51.179, 51.495], [51.508, 51.85], [51.863, 52.166], [52.298, 52.455], [52.574, 52.837], [52.85, 53.429], [53.442, 53.745]]}, {"kind": "s", "id": "s1_0_1", "md": "It needs only four sentences, and each one answers a different question.", "zh": "只需要四句话，每一句回答一个不同的问题。", "sp": null, "gap": false, "start": 54.144, "end": 58.632, "words": [[54.249, 54.355], [54.368, 54.749], [54.762, 55.065], [55.078, 55.328], [55.341, 55.999], [56.21, 56.368], [56.526, 56.723], [56.736, 56.999], [57.012, 57.341], [57.355, 57.42], [57.433, 57.723], [57.736, 58.249]]}, {"kind": "s", "id": "s1_0_2", "md": "Keep it short enough that people actually read it to the end.", "zh": "写得足够短，短到大家真的会读到最后。", "sp": null, "gap": false, "start": 58.632, "end": 62.016, "words": [[58.737, 58.908], [58.921, 59.0], [59.014, 59.329], [59.343, 59.645], [59.658, 59.79], [59.803, 60.211], [60.224, 60.645], [60.658, 60.882], [60.895, 60.987], [61.0, 61.093], [61.106, 61.224], [61.237, 61.619]]}, {"kind": "s", "id": "s1_1_0", "md": "What changed in the world: \"Our largest customer in the region left, citing slow reporting.\"", "zh": "外部发生了什么变化：「我们在这个区域最大的客户走了，理由是报表太慢。」", "sp": null, "gap": true, "start": 62.016, "end": 68.112, "words": [[62.121, 62.253], [62.266, 62.713], [62.727, 62.805], [62.819, 62.898], [62.911, 63.345], [63.779, 63.911], [63.924, 64.411], [64.424, 64.911], [64.924, 65.069], [65.082, 65.161], [65.174, 65.595], [65.608, 66.003], [66.24, 66.7], [66.713, 67.069], [67.082, 67.595]]}, {"kind": "s", "id": "s1_1_1", "md": "What changes in the plan: \"We are moving two engineers to reporting speed for six weeks.\"", "zh": "计划有什么变化：「我们把两个工程师调去做报表提速，为期六周。」", "sp": null, "gap": false, "start": 68.112, "end": 73.968, "words": [[68.217, 68.388], [68.401, 68.888], [68.901, 68.967], [68.98, 69.059], [69.073, 69.494], [69.823, 69.954], [69.967, 70.059], [70.073, 70.494], [70.507, 70.783], [70.796, 71.375], [71.388, 71.507], [71.52, 72.033], [72.046, 72.507], [72.52, 72.691], [72.704, 73.02], [73.033, 73.559]]}, {"kind": "s", "id": "s1_1_2", "md": "What it costs: \"The new admin dashboard moves from this quarter to next.\"", "zh": "代价是什么：「新的管理后台从这个季度推到下个季度。」", "sp": null, "gap": false, "start": 73.968, "end": 78.888, "words": [[74.086, 74.192], [74.205, 74.271], [74.284, 74.889], [75.165, 75.258], [75.271, 75.547], [75.56, 75.981], [75.994, 76.652], [76.665, 77.086], [77.1, 77.271], [77.284, 77.429], [77.442, 77.797], [77.81, 77.915], [77.929, 78.481]]}, {"kind": "s", "id": "s1_1_3", "md": "Who is affected: \"Design and the sales team, who were planning a demo.\"", "zh": "影响到谁：「设计团队，还有原本在准备 demo 的销售团队。」", "sp": null, "gap": false, "start": 78.888, "end": 83.568, "words": [[79.006, 79.125], [79.138, 79.243], [79.256, 79.796], [80.125, 80.691], [80.783, 80.875], [80.888, 80.967], [80.98, 81.388], [81.401, 81.704], [82.099, 82.164], [82.177, 82.309], [82.322, 82.691], [82.704, 82.756], [82.77, 83.164]]}, {"kind": "s", "id": "s1_2_0", "md": "**Saying the cost out loud is what makes the change credible.**", "zh": "把代价说出来，正是让这次调整显得可信的关键。", "sp": null, "gap": true, "start": 83.568, "end": 87.216, "words": [[83.686, 83.963], [83.976, 84.068], [84.081, 84.489], [84.502, 84.673], [84.686, 85.094], [85.252, 85.357], [85.371, 85.568], [85.581, 85.857], [85.871, 85.95], [85.963, 86.305], [86.318, 86.831]]}, {"kind": "s", "id": "s1_2_1", "md": "It shows the decision was ==deliberate==, not a ==knee-jerk== reaction to whoever complained last.", "zh": "它说明这个决定是深思熟虑的，而不是对最后一个来抱怨的人的条件反射。", "sp": null, "gap": false, "start": 87.216, "end": 93.048, "words": [[87.321, 87.4], [87.413, 87.729], [87.742, 87.848], [87.861, 88.427], [88.505, 88.716], [88.729, 89.334], [89.769, 89.913], [89.927, 89.953], [89.966, 90.479], [90.492, 91.111], [91.124, 91.229], [91.242, 91.677], [91.69, 92.163], [92.177, 92.65]]}, {"kind": "s", "id": "s1_2_2", "md": "It also gives affected teams a chance to __raise concerns__ before the new plan is __locked in__.", "zh": "它也让受影响的团队有机会在新计划定死之前提出顾虑。", "sp": null, "gap": false, "start": 93.048, "end": 98.448, "words": [[93.153, 93.232], [93.245, 93.561], [93.574, 93.824], [93.837, 94.324], [94.337, 94.666], [94.68, 94.732], [94.745, 95.14], [95.153, 95.258], [95.272, 95.587], [95.601, 96.219], [96.232, 96.601], [96.614, 96.693], [96.706, 96.943], [96.956, 97.39], [97.403, 97.522], [97.535, 97.89], [97.903, 98.061]]}, {"kind": "s", "id": "s1_2_3", "md": "A plan that changes openly is still a plan; a plan that changes silently is just a rumor.", "zh": "公开调整的计划仍然是计划；悄悄调整的计划只是传言。", "sp": null, "gap": false, "start": 98.448, "end": 104.76, "words": [[98.553, 98.619], [98.632, 98.935], [98.948, 99.106], [99.119, 99.619], [99.632, 100.198], [100.211, 100.33], [100.343, 100.606], [100.619, 100.672], [100.685, 101.132], [101.593, 101.632], [101.645, 101.961], [101.974, 102.106], [102.119, 102.58], [102.593, 103.29], [103.461, 103.606], [103.619, 103.869], [103.882, 103.909], [103.922, 104.369]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

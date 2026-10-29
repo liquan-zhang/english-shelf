@@ -1,0 +1,181 @@
+{
+  "id": "070",
+  "title": "Planning for the Thing That Will Go Wrong",
+  "meta": "B2 · 约 270 词 · 场景：上线预案",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Imagine It Already Failed",
+      "paragraphs": [
+        [
+          "Ask a team what could go wrong with a launch, and you usually get polite, ==generic== answers.",
+          "\"Maybe performance.\"",
+          "\"Maybe some edge cases.\"",
+          "Nobody wants to sound negative about a project everyone has worked hard on."
+        ],
+        [
+          "Now try a different question: it is three weeks after launch, and the project was a disaster; what happened?",
+          "Suddenly people get specific.",
+          "Someone remembers the partner team never confirmed their capacity, and someone else admits the migration script was never tested on real data."
+        ],
+        [
+          "This exercise, often called a ==pre-mortem==, works because it gives people permission to be ==pessimistic==.",
+          "**It is easier to explain a failure that has already happened than to predict one that might.**",
+          "Concerns that felt rude to raise now __count as__ useful input.",
+          "Within twenty minutes, the room has a list of real risks instead of polite guesses."
+        ]
+      ],
+      "heading_zh": "1. 假设它已经失败了",
+      "paragraphs_zh": [
+        [
+          "问一个团队上线可能出什么问题，你通常只会得到一些客气又笼统的回答。",
+          "「可能是性能吧。」",
+          "「可能有些边界情况。」",
+          "大家都辛辛苦苦做了这个项目，没人想显得唱衰。"
+        ],
+        [
+          "现在换个问法：上线三周后，这个项目彻底搞砸了，发生了什么？",
+          "大家一下子就具体起来了。",
+          "有人想起合作团队一直没确认他们的容量，还有人承认迁移脚本从来没在真实数据上测过。"
+        ],
+        [
+          "这个练习通常叫事前验尸，它管用是因为它允许大家悲观。",
+          "解释一个已经发生的失败，比预测一个可能发生的失败要容易。",
+          "那些原本说出来显得冒犯的担忧，现在都算是有用的输入。",
+          "二十分钟之内，屋里就有了一份真实风险清单，而不是一堆客气的猜测。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. From Fears to a Playbook",
+      "paragraphs": [
+        [
+          "A pre-mortem produces a long list, and you cannot prepare for everything.",
+          "Pick the two or three failures that are both likely and painful.",
+          "For each one, write down an early ==indicator== and a first response."
+        ],
+        [
+          "For example, if the partner API slows down, the indicator might be P ninety-nine latency above one second.",
+          "The first response is to switch on cached results and __page the partner's on-call__.",
+          "Now the engineer on duty has a plan instead of a ==puzzle== at three in the morning."
+        ],
+        [
+          "**Preparation does not stop things from going wrong; it stops you from being surprised.**",
+          "Keep the ==playbook== short, link it from the launch doc, and __walk through it__ once before release day.",
+          "A plan nobody has read is barely better than no plan at all."
+        ]
+      ],
+      "heading_zh": "2. 从担忧到预案手册",
+      "paragraphs_zh": [
+        [
+          "事前验尸会产出一长串清单，你不可能每一项都做准备。",
+          "挑出两三个既可能发生、又很要命的失败。",
+          "每一个都写下一个早期信号和一个第一响应动作。"
+        ],
+        [
+          "比如，如果合作方的 API 变慢，早期信号可以是 P99 延迟超过一秒。",
+          "第一响应动作是打开缓存结果，并呼叫合作方的 on-call。",
+          "这样凌晨三点值班的工程师手里就有一份方案，而不是一道谜题。"
+        ],
+        [
+          "准备不能阻止事情出错；它能让你不被打个措手不及。",
+          "预案手册要短，从上线文档里链过去，发布日之前带大家过一遍。",
+          "一份没人读过的方案，比没有方案也好不了多少。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "直接问“可能出什么问题”为什么效果不好？",
+      "a": "大家只会给出礼貌、泛泛的回答，比如“可能性能”“可能有边界情况”，没人想显得消极。"
+    },
+    {
+      "q": "“事前验尸”是怎么做的？为什么有效？",
+      "a": "假设上线三周后项目失败了，问发生了什么；它允许大家悲观，解释已发生的失败比预测可能的失败容易。"
+    },
+    {
+      "q": "如何把清单变成可用的预案？",
+      "a": "挑两三个既可能又痛的失败，各写一个早期指标和第一反应；预案要短、挂在上线文档里，并在发布前走一遍。"
+    }
+  ],
+  "dictation": [
+    "It is easier to explain a failure that has already happened than to predict one that might.",
+    "Pick the two or three failures that are both likely and painful.",
+    "Preparation does not stop things from going wrong; it stops you from being surprised.",
+    "A plan nobody has read is barely better than no plan at all."
+  ],
+  "shadow": {
+    "text": "For example, if the partner API slows down, the indicator might be P ninety-nine latency above one second. The first response is to switch on cached results and page the partner's on-call. Now the engineer on duty has a plan instead of a puzzle at three in the morning.",
+    "marked": "For example, / if the partner API <b>slows</b> down, / the indicator might be / P ninety-nine latency / above <b>one</b> second. //<br>The first <b>response</b> / is to switch on <b>cached</b> results / and page the partner's <b>on-call</b>. //<br>Now the engineer on duty / has a <b>plan</b> / instead of a <b>puzzle</b> / at three in the <b>morning</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "下个月要上线一个依赖外部合作方的大功能。在启动会上用 30 秒带大家做一次“事前验尸”。",
+      "ref": "Before we dive into the timeline, I'd like to try a quick exercise. Imagine it's six weeks after launch, and this project went badly wrong. Take two minutes and write down what you think happened. Be as specific and pessimistic as you like; nothing is off limits. Then we'll pick the two or three most likely failures and write a first response for each.",
+      "ref_zh": "在过时间线之前，我想先做个小练习。假设现在是上线六周后，这个项目彻底搞砸了。花两分钟写下你觉得发生了什么。想多具体、多悲观都行；没有什么不能说的。然后我们挑出最可能的两三个失败，每个写一个第一响应动作。"
+    },
+    {
+      "q": "同事觉得写预案是浪费时间：“出了问题再说”。用 30 秒说服他至少为一个风险写好预案。",
+      "ref": "I get that we can't plan for everything, and I don't want a thirty-page document either. But think about the partner API. If it slows down at three in the morning, whoever is on call will be guessing. One short paragraph, what latency number to watch and what switch to flip, takes us twenty minutes now. It saves someone an hour of panic later.",
+      "ref_zh": "我明白我们不可能什么都预案到，我也不想要一份三十页的文档。但想想合作方的 API。如果它凌晨三点变慢，当班的 on-call 只能靠猜。一小段话，写清楚盯哪个延迟数字、拨哪个开关，现在只要花我们二十分钟。以后就能省掉某个人一小时的手忙脚乱。"
+    }
+  ],
+  "words": [
+    {
+      "w": "generic",
+      "ipa": "/dʒəˈnerɪk/",
+      "zh": "泛泛的、笼统的",
+      "ex": "The feedback was too generic to act on."
+    },
+    {
+      "w": "pre-mortem",
+      "ipa": "/ˌpriːˈmɔːrtəm/",
+      "zh": "事前验尸（预想失败原因的复盘）",
+      "ex": "Let's run a quick pre-mortem before we lock the launch date."
+    },
+    {
+      "w": "pessimistic",
+      "ipa": "/ˌpesəˈmɪstɪk/",
+      "zh": "悲观的",
+      "ex": "I'm a bit pessimistic about hitting the date with two people out."
+    },
+    {
+      "w": "indicator",
+      "ipa": "/ˈɪndɪˌkeɪtər/",
+      "zh": "指标、迹象",
+      "ex": "Queue length is our best early indicator of trouble."
+    },
+    {
+      "w": "puzzle",
+      "ipa": "/ˈpʌzəl/",
+      "zh": "难题、谜团",
+      "ex": "Why the job only fails on Mondays is still a puzzle."
+    },
+    {
+      "w": "playbook",
+      "ipa": "/ˈpleɪˌbʊk/",
+      "zh": "预案、操作手册",
+      "ex": "Follow the database failover playbook if replication lag keeps growing."
+    },
+    {
+      "w": "capacity",
+      "ipa": "/kəˈpæsəti/",
+      "zh": "容量、承载能力；人力余量",
+      "ex": "The partner team doesn't have the capacity to support us this month."
+    },
+    {
+      "w": "edge case",
+      "ipa": "/ˈedʒ keɪs/",
+      "zh": "边界情况",
+      "ex": "Empty user names are an edge case we never tested."
+    },
+    {
+      "w": "disaster",
+      "ipa": "/dɪˈzæstər/",
+      "zh": "灾难、彻底失败",
+      "ex": "The demo was almost a disaster until we switched to the backup build."
+    }
+  ]
+}

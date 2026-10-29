@@ -1,0 +1,85 @@
+{
+  "id": "139",
+  "type": "dialogue",
+  "title": "Hiring a Babysitter",
+  "meta": "B2 · 约 270 词 · 场景：面试保姆与谈价定规矩",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Babysitter", "name_zh": "保姆", "voice": "en-IN-NeerjaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. The Interview",
+      "heading_zh": "1. 面试",
+      "lines": [
+        {"sp": "A", "en": "**Thanks for coming over, Priya. Could you tell me a bit about your experience with young kids?**", "zh": "谢谢你过来，Priya。能简单说说你带小孩的经验吗？"},
+        {"sp": "B", "en": "Of course. I've been babysitting for five years, mostly toddlers. I also have a ==first aid== certificate.", "zh": "当然。我做保姆五年了，主要带一到三岁的孩子。我还有急救证书。"},
+        {"sp": "A", "en": "That's great. Our son is two and a half. We mainly need help on Friday evenings, from six to eleven.", "zh": "太好了。我们儿子两岁半。主要是周五晚上需要人，六点到十一点。"},
+        {"sp": "B", "en": "Friday evenings are fine for me. What's his ==routine== like?", "zh": "周五晚上我可以。他的作息是怎样的？"},
+        {"sp": "A", "en": "Dinner at six thirty, then a bath, and bed by eight. He usually falls asleep quickly if you read to him.", "zh": "六点半吃晚饭，然后洗澡，八点前上床。给他读读书，他一般很快就睡着。"},
+        {"sp": "B", "en": "Sounds easy enough. Does he have any ==medical== conditions I should know about?", "zh": "听起来不难。他有什么我需要知道的健康问题吗？"},
+        {"sp": "A", "en": "No allergies, but he has ==eczema==, so please use only the cream in the bathroom drawer.", "zh": "没有过敏，但他有湿疹，所以请只用浴室抽屉里那支药膏。"},
+        {"sp": "B", "en": "Understood. And may I ask about the rate?", "zh": "明白了。那可以问一下时薪吗？"},
+        {"sp": "A", "en": "We were thinking eighteen dollars an hour. Does that sound ==reasonable==?", "zh": "我们想的是每小时十八块。你觉得合理吗？"},
+        {"sp": "B", "en": "I usually charge twenty, but I'm happy to be flexible for a regular booking.", "zh": "我一般收二十，不过如果是固定的活，我可以灵活一点。"}
+      ]
+    },
+    {
+      "heading": "2. Sorting Out the Details",
+      "heading_zh": "2. 敲定细节",
+      "lines": [
+        {"sp": "A", "en": "Let's __meet in the middle__ at nineteen an hour, then. Would that work for you?", "zh": "那我们折中一下，每小时十九块。你看行吗？"},
+        {"sp": "B", "en": "That works. But if it goes past eleven, could you __cover my taxi__ home?", "zh": "可以。不过如果超过十一点，能帮我出回家的打车费吗？"},
+        {"sp": "A", "en": "**Of course. And if we're running late, we'll always let you know by text.**", "zh": "当然。如果我们要晚回来，一定会提前发短信告诉你。"},
+        {"sp": "B", "en": "Thank you. What are your rules on ==screen time==?", "zh": "谢谢。关于看屏幕，你们有什么规定？"},
+        {"sp": "A", "en": "No screens after dinner, please. And no visitors while you're here.", "zh": "晚饭后请不要让他看屏幕。另外你在的时候请不要带客人来。"},
+        {"sp": "B", "en": "Absolutely. Should I call you if he wakes up and won't settle?", "zh": "没问题。如果他醒了哄不睡，我要给你打电话吗？"},
+        {"sp": "A", "en": "Yes, call me first, then my wife. Our numbers are on the fridge, along with the ==emergency== contacts.", "zh": "要，先打给我，再打给我太太。我们的电话贴在冰箱上，紧急联系人也在那儿。"},
+        {"sp": "B", "en": "Perfect. Could we do a ==trial== evening first, so he can __get used to__ me?", "zh": "好的。能不能先试一个晚上，让他熟悉一下我？"},
+        {"sp": "A", "en": "**Good idea. How about this Friday, while we're still at home?**", "zh": "好主意。这周五怎么样，我们那时还在家？"},
+        {"sp": "B", "en": "Sounds good. See you on Friday at six.", "zh": "好的。周五六点见。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "孩子的作息和健康方面，「你」交代了什么？", "a": "六点半晚饭、洗澡、八点前上床，读书容易睡着；没有过敏，但有湿疹，只能用浴室抽屉里的药膏。"},
+    {"q": "时薪是怎么谈定的？", "a": "「你」出十八，保姆平时收二十，最后折中定十九；超过十一点由「你」出她回家的打车费。"},
+    {"q": "双方定了哪些规矩和下一步？", "a": "晚饭后不看屏幕、不带访客；孩子醒了先打给「你」再打给太太；先在这周五、父母还在家时试一晚。"}
+  ],
+  "dictation": [
+    "Thanks for coming over, Priya. Could you tell me a bit about your experience with young kids?",
+    "We were thinking eighteen dollars an hour. Does that sound reasonable?",
+    "Let's meet in the middle at nineteen an hour, then. Would that work for you?",
+    "Of course. And if we're running late, we'll always let you know by text."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Dinner at six thirty, then a bath, and bed by eight. He usually falls asleep quickly if you read to him.",
+    "marked": "<b>Dinner</b> at six <b>thirty</b>, / then a <b>bath</b>, / and <b>bed</b> by eight. //<br>He usually falls asleep <b>quickly</b> / if you <b>read</b> to him. //"
+  },
+  "prompts": [
+    {
+      "q": "保姆第一次单独带孩子，你出门前要在三十秒内交代清楚最重要的几件事。",
+      "ref": "OK, we're heading out. Dinner is in the fridge, just heat it up for two minutes. He can have one episode of his cartoon, then bath and bed by eight. If he cries for us, give him his blue bunny. Our numbers are on the fridge. If anything feels wrong, call us right away, even if it seems small.",
+      "ref_zh": "好，我们出门了。晚饭在冰箱里，热两分钟就行。他可以看一集动画片，然后洗澡，八点前睡觉。如果他哭着找我们，把那只蓝色小兔子给他。我们的电话在冰箱上。如果觉得有什么不对，马上给我们打电话，哪怕是小事。"
+    },
+    {
+      "q": "保姆连续两次迟到半小时，影响你们出门。礼貌但坦率地跟她谈一谈。",
+      "ref": "Priya, can I have a quick word? The last two Fridays you arrived about half an hour late, and we almost missed our dinner booking. I know traffic can be bad, but we really need you here at six. If six is getting difficult for you, please tell me, and we can see if another time works better.",
+      "ref_zh": "Priya，能简单聊两句吗？最近两个周五你都晚到了半小时左右，我们差点赶不上订好的晚餐。我知道有时候会堵车，但我们确实需要你六点到。如果六点对你来说越来越难，请告诉我，我们可以看看换个时间是不是更合适。"
+    }
+  ],
+  "words": [
+    {"w": "first aid", "ipa": "/ˌfɜːrst ˈeɪd/", "zh": "急救", "ex": "There's a first aid kit under the kitchen sink."},
+    {"w": "routine", "ipa": "/ruːˈtiːn/", "zh": "日常作息", "ex": "Her bedtime routine is bath, book and then lights out."},
+    {"w": "medical", "ipa": "/ˈmedɪkəl/", "zh": "医疗的；健康方面的", "ex": "Please list any medical conditions on the form."},
+    {"w": "eczema", "ipa": "/ɪɡˈziːmə/", "zh": "湿疹", "ex": "His eczema gets worse in hot, humid weather."},
+    {"w": "reasonable", "ipa": "/ˈriːzənəbəl/", "zh": "合理的", "ex": "The rent is reasonable for this area."},
+    {"w": "meet in the middle", "ipa": "/miːt ɪn ðə ˈmɪdəl/", "zh": "各让一步；折中", "ex": "You want eighty, I offered sixty, so let's meet in the middle."},
+    {"w": "screen time", "ipa": "/ˈskriːn taɪm/", "zh": "看屏幕的时间", "ex": "We limit screen time to half an hour a day."},
+    {"w": "emergency", "ipa": "/ɪˈmɜːrdʒənsi/", "zh": "紧急情况", "ex": "In an emergency, call nine nine five."},
+    {"w": "trial", "ipa": "/ˈtraɪəl/", "zh": "试用；试做", "ex": "The gym offers a free one-week trial."}
+  ]
+}

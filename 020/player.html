@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Keeping a Remote Audience Awake · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "020", "title": "Keeping a Remote Audience Awake", "meta": "B2 · 约 290 词 · 场景：线上汇报", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. You Are Competing with Their Inbox", "heading_zh": "1. 你在跟他们的收件箱抢注意力", "rows": [[{"id": "s0_0_0", "md": "In a meeting room, you can see when people ==drift== away.", "text": "In a meeting room, you can see when people drift away.", "zh": "在会议室里，你能看出大家什么时候走神了。", "sp": null}, {"id": "s0_0_1", "md": "On a video call, you see a grid of muted squares, half of them with cameras off.", "text": "On a video call, you see a grid of muted squares, half of them with cameras off.", "zh": "在视频会上，你看到的是一格格静音的小方块，一半还关着摄像头。", "sp": null}, {"id": "s0_0_2", "md": "Somewhere behind those squares, your audience has email, chat, and a dashboard they are quietly ==monitoring==.", "text": "Somewhere behind those squares, your audience has email, chat, and a dashboard they are quietly monitoring.", "zh": "在那些小方块后面，你的听众开着邮件、聊天工具，还有一个他们正在悄悄盯着的看板。", "sp": null}], [{"id": "s0_1_0", "md": "This means a remote talk cannot be the same talk you would give in person.", "text": "This means a remote talk cannot be the same talk you would give in person.", "zh": "这意味着远程分享不能照搬线下的讲法。", "sp": null}, {"id": "s0_1_1", "md": "Your slides are not just competing with silence; they are competing with every notification on the listener's screen.", "text": "Your slides are not just competing with silence; they are competing with every notification on the listener's screen.", "zh": "你的幻灯片不只是在跟沉默竞争，它在跟听众屏幕上的每一条通知竞争。", "sp": null}, {"id": "s0_1_2", "md": "**Online, attention is not something you earn once; you have to win it back every few minutes.**", "text": "Online, attention is not something you earn once; you have to win it back every few minutes.", "zh": "在线上，注意力不是赢一次就完事的，你得每隔几分钟就重新把它抢回来。", "sp": null}], [{"id": "s0_2_0", "md": "The good news is that small changes make a big difference.", "text": "The good news is that small changes make a big difference.", "zh": "好消息是，小小的改变就能带来很大的不同。", "sp": null}, {"id": "s0_2_1", "md": "You do not need to be more ==charismatic==, you need to be more ==deliberate== about rhythm.", "text": "You do not need to be more charismatic, you need to be more deliberate about rhythm.", "zh": "你不需要更有个人魅力，你需要更刻意地把控节奏。", "sp": null}]]}, {"heading": "2. Change Something Every Five Minutes", "heading_zh": "2. 每五分钟变一次花样", "rows": [[{"id": "s1_0_0", "md": "Plan your talk in short blocks, and make sure something changes at the end of each one.", "text": "Plan your talk in short blocks, and make sure something changes at the end of each one.", "zh": "把分享拆成一个个短小的模块，确保每个模块结束时都有点变化。", "sp": null}, {"id": "s1_0_1", "md": "Switch from slides to a live screen, ask a question, or ==hand over== to a colleague.", "text": "Switch from slides to a live screen, ask a question, or hand over to a colleague.", "zh": "从幻灯片切到实时屏幕、抛一个问题，或者交给同事来讲。", "sp": null}, {"id": "s1_0_2", "md": "**A change in what people see or hear pulls their eyes back to your window.**", "text": "A change in what people see or hear pulls their eyes back to your window.", "zh": "大家看到的或听到的一有变化，视线就会被拉回你的窗口。", "sp": null}], [{"id": "s1_1_0", "md": "Use the chat ==actively==, because it is easier than unmuting.", "text": "Use the chat actively, because it is easier than unmuting.", "zh": "多用聊天框，因为打字比解除静音容易。", "sp": null}, {"id": "s1_1_1", "md": "\"Type one if you've hit this bug, and two if you haven't.\"", "text": "\"Type one if you've hit this bug, and two if you haven't.\"", "zh": "「遇到过这个 bug 的打一，没遇到过的打二。」", "sp": null}, {"id": "s1_1_2", "md": "Within seconds, the room __comes alive__, and you have real data to react to.", "text": "Within seconds, the room comes alive, and you have real data to react to.", "zh": "几秒钟之内，全场就活跃起来了，你也有了可以回应的真实数据。", "sp": null}], [{"id": "s1_2_0", "md": "Call on people by name, but warn them first.", "text": "Call on people by name, but warn them first.", "zh": "可以点名，但要先打个招呼。", "sp": null}, {"id": "s1_2_1", "md": "\"In a minute, I'll ask Hana how her team handles alerts.\"", "text": "\"In a minute, I'll ask Hana how her team handles alerts.\"", "zh": "「等会儿我会问问 Hana，她们团队是怎么处理告警的。」", "sp": null}, {"id": "s1_2_2", "md": "Hana starts listening ==closely==, and so does everyone else, because they know it could be them next.", "text": "Hana starts listening closely, and so does everyone else, because they know it could be them next.", "zh": "Hana 会开始认真听，其他人也一样，因为他们知道下一个可能就是自己。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, __cut your content__ by about a third compared with an in-person version.", "text": "Finally, cut your content by about a third compared with an in-person version.", "zh": "最后，内容要比线下版本砍掉三分之一左右。", "sp": null}, {"id": "s1_3_1", "md": "Remote listeners tire faster, and nobody has ever complained that a call ended early.", "text": "Remote listeners tire faster, and nobody has ever complained that a call ended early.", "zh": "远程听众更容易累，而且从来没人抱怨过会议提前结束。", "sp": null}, {"id": "s1_3_2", "md": "Leave the details in a written doc, and __use the live time__ for the parts that need a conversation.", "text": "Leave the details in a written doc, and use the live time for the parts that need a conversation.", "zh": "细节留在书面文档里，现场时间用在需要讨论的部分。", "sp": null}]]}], "gist": [{"q": "作者认为线上汇报和线下汇报最大的不同是什么？", "a": "线上看不到听众的状态，而且你在和他们屏幕上的邮件、消息、通知争夺注意力，注意力需要每隔几分钟重新赢回。"}, {"q": "作者建议多久做一次变化？可以怎么变？", "a": "大约每五分钟；切换到实时画面、提一个问题、交给同事讲，或让大家在聊天框里回复。"}, {"q": "点名提问时作者有什么技巧？内容量应怎样调整？", "a": "提前预告要点谁，让对方和其他人都专心听；内容比线下版本削减约三分之一，细节放到书面文档。"}], "dictation": [{"id": "s0_1_2", "text": "Online, attention is not something you earn once; you have to win it back every few minutes."}, {"id": "s1_0_2", "text": "A change in what people see or hear pulls their eyes back to your window."}, {"id": "s1_1_0", "text": "Use the chat actively, because it is easier than unmuting."}, {"id": "s1_3_1", "text": "Remote listeners tire faster, and nobody has ever complained that a call ended early."}], "shadow": {"text": "Call on people by name, but warn them first. \"In a minute, I'll ask Hana how her team handles alerts.\"", "marked": "Call on people by <b>name</b>, / but <b>warn</b> them first. //<br>\"In a <b>minute</b>, / I'll ask <b>Hana</b> / how <b>her</b> team handles alerts.\" //"}, "prompts": [{"q": "你在给几个海外团队做线上分享，讲到第十分钟，感觉大家都在干别的。用 30 秒做一次“变化”：用聊天框互动，并预告接下来要点名。", "ref": "Let me pause the slides for a second and get a quick pulse check. In the chat, type one if your team has had a deploy rolled back this quarter, and two if not. Okay, I'm seeing lots of ones, that's what I expected. In a moment, I'm going to ask Carlos what his team changed after their last rollback, so Carlos, get ready.", "ref_zh": "我先暂停一下幻灯片，快速摸个底。在聊天框里，如果你们团队这个季度有过部署被回滚，就打一，没有就打二。好，我看到好多一，跟我预想的一样。等会儿我会请 Carlos 讲讲他们团队上次回滚之后改了什么，Carlos 准备一下。", "id": "ref0"}, {"q": "你要把一个六十分钟的线下培训改成线上版本。用 30 秒向同事说明你打算怎么调整结构。", "ref": "For the online version, I want to cut it down to about forty minutes. I'll split it into short blocks of five or six minutes each, and end every block with something different, a poll in the chat, a quick live demo, or a question for a specific person. The detailed examples will go into a written guide that people can read afterward, so the live time is mostly discussion.", "ref_zh": "线上版本我想压缩到四十分钟左右。我会把它拆成每段五六分钟的短模块，每段结尾都换个花样，比如聊天框里的投票、一段简短的现场演示，或者点名问某个人一个问题。详细的例子会放进一份书面指南，大家会后可以看，这样现场时间主要用来讨论。", "id": "ref1"}], "words": [{"w": "drift (away)", "ipa": "/drɪft/", "zh": "走神、注意力漂走", "ex": "I could see people drift away during the long architecture section.", "tts_w": "drift", "id": "w0"}, {"w": "monitor (v.)", "ipa": "/ˈmɑːnɪtər/", "zh": "监控、盯着", "ex": "Keep monitoring the error rate for an hour after the deploy.", "tts_w": "monitor", "id": "w1"}, {"w": "charismatic", "ipa": "/ˌkærɪzˈmætɪk/", "zh": "有魅力的、有感染力的", "ex": "You don't have to be charismatic to give a clear tech talk.", "id": "w2"}, {"w": "deliberate", "ipa": "/dɪˈlɪbərət/", "zh": "刻意的、有意为之的", "ex": "Keeping the first release small was a deliberate choice.", "id": "w3"}, {"w": "actively", "ipa": "/ˈæktɪvli/", "zh": "积极地、主动地", "ex": "We're actively looking into the login failures.", "id": "w4"}, {"w": "closely", "ipa": "/ˈkloʊsli/", "zh": "仔细地、密切地", "ex": "We'll watch the memory usage closely during the canary.", "id": "w5"}, {"w": "come alive", "ipa": "/kʌm əˈlaɪv/", "zh": "活跃起来", "ex": "The retro really came alive once we started using sticky notes.", "id": "w6"}, {"w": "call on", "ipa": "/kɔːl ɑːn/", "zh": "点名（让某人发言）", "ex": "Feel free to call on me if you need the backend view.", "id": "w7"}, {"w": "notification", "ipa": "/ˌnoʊtɪfɪˈkeɪʃən/", "zh": "通知、提醒", "ex": "I mute all notifications when I'm on call for deep debugging.", "id": "w8"}, {"w": "hand over (to)", "ipa": "/hænd ˈoʊvər/", "zh": "交接、把发言交给", "ex": "I'll hand over to Mei for the database part of the demo.", "tts_w": "hand over", "id": "w9"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. You Are Competing with Their Inbox", "zh": "1. 你在跟他们的收件箱抢注意力", "start": 0.0, "end": 2.712, "words": [[0.105, 0.355], [0.724, 0.789], [0.803, 0.908], [0.921, 1.382], [1.395, 1.526], [1.539, 1.684], [1.697, 2.329]]}, {"kind": "s", "id": "s0_0_0", "md": "In a meeting room, you can see when people ==drift== away.", "zh": "在会议室里，你能看出大家什么时候走神了。", "sp": null, "gap": false, "start": 2.712, "end": 5.904, "words": [[2.817, 2.883], [2.896, 2.936], [2.949, 3.317], [3.33, 3.554], [3.857, 3.936], [3.949, 4.08], [4.094, 4.344], [4.357, 4.475], [4.488, 4.804], [4.817, 5.12], [5.133, 5.515]]}, {"kind": "s", "id": "s0_0_1", "md": "On a video call, you see a grid of muted squares, half of them with cameras off.", "zh": "在视频会上，你看到的是一格格静音的小方块，一半还关着摄像头。", "sp": null, "gap": false, "start": 5.904, "end": 11.616, "words": [[6.009, 6.101], [6.115, 6.154], [6.167, 6.562], [6.575, 6.93], [7.351, 7.417], [7.43, 7.68], [7.693, 7.759], [7.772, 8.18], [8.193, 8.299], [8.312, 8.654], [8.667, 9.338], [9.72, 9.97], [9.983, 10.075], [10.088, 10.246], [10.259, 10.391], [10.404, 10.825], [10.838, 11.233]]}, {"kind": "s", "id": "s0_0_2", "md": "Somewhere behind those squares, your audience has email, chat, and a dashboard they are quietly ==monitoring==.", "zh": "在那些小方块后面，你的听众开着邮件、聊天工具，还有一个他们正在悄悄盯着的看板。", "sp": null, "gap": false, "start": 11.616, "end": 18.456, "words": [[11.734, 12.116], [12.129, 12.498], [12.511, 12.721], [12.734, 13.34], [13.55, 13.721], [13.734, 14.195], [14.208, 14.405], [14.537, 14.998], [15.234, 15.695], [16.024, 16.09], [16.103, 16.169], [16.182, 16.774], [16.787, 16.879], [16.892, 16.998], [17.011, 17.484], [17.498, 18.077]]}, {"kind": "s", "id": "s0_1_0", "md": "This means a remote talk cannot be the same talk you would give in person.", "zh": "这意味着远程分享不能照搬线下的讲法。", "sp": null, "gap": true, "start": 18.456, "end": 22.584, "words": [[18.561, 18.759], [18.772, 18.995], [19.009, 19.061], [19.074, 19.535], [19.548, 19.956], [19.969, 20.364], [20.377, 20.482], [20.495, 20.588], [20.601, 20.943], [20.956, 21.259], [21.272, 21.351], [21.364, 21.482], [21.495, 21.64], [21.653, 21.732], [21.745, 22.193]]}, {"kind": "s", "id": "s0_1_1", "md": "Your slides are not just competing with silence; they are competing with every notification on the listener's screen.", "zh": "你的幻灯片不只是在跟沉默竞争，它在跟听众屏幕上的每一条通知竞争。", "sp": null, "gap": false, "start": 22.584, "end": 29.688, "words": [[22.689, 22.86], [22.873, 23.255], [23.268, 23.426], [23.439, 23.808], [23.821, 24.11], [24.123, 24.702], [24.716, 24.86], [24.873, 25.531], [25.834, 25.939], [25.952, 26.058], [26.071, 26.61], [26.623, 26.808], [26.966, 27.255], [27.268, 28.163], [28.255, 28.347], [28.36, 28.452], [28.466, 28.887], [28.9, 29.295]]}, {"kind": "s", "id": "s0_1_2", "md": "**Online, attention is not something you earn once; you have to win it back every few minutes.**", "zh": "在线上，注意力不是赢一次就完事的，你得每隔几分钟就重新把它抢回来。", "sp": null, "gap": false, "start": 29.688, "end": 35.856, "words": [[29.793, 30.293], [30.688, 31.188], [31.201, 31.333], [31.346, 31.701], [31.714, 32.07], [32.083, 32.201], [32.214, 32.451], [32.464, 32.938], [33.333, 33.399], [33.412, 33.583], [33.596, 33.675], [33.688, 33.859], [33.872, 33.977], [33.991, 34.346], [34.504, 34.701], [34.714, 34.912], [34.925, 35.464]]}, {"kind": "s", "id": "s0_2_0", "md": "The good news is that small changes make a big difference.", "zh": "好消息是，小小的改变就能带来很大的不同。", "sp": null, "gap": true, "start": 35.856, "end": 39.432, "words": [[35.974, 36.053], [36.067, 36.251], [36.264, 36.672], [36.79, 36.895], [36.909, 37.053], [37.067, 37.474], [37.488, 37.935], [37.948, 38.159], [38.172, 38.224], [38.238, 38.474], [38.488, 39.053]]}, {"kind": "s", "id": "s0_2_1", "md": "You do not need to be more ==charismatic==, you need to be more ==deliberate== about rhythm.", "zh": "你不需要更有个人魅力，你需要更刻意地把控节奏。", "sp": null, "gap": false, "start": 39.432, "end": 44.136, "words": [[39.55, 39.643], [39.656, 39.774], [39.787, 40.011], [40.024, 40.221], [40.235, 40.3], [40.314, 40.419], [40.432, 40.629], [40.643, 41.419], [41.814, 41.879], [41.893, 42.05], [42.064, 42.129], [42.143, 42.261], [42.274, 42.511], [42.524, 43.09], [43.103, 43.419], [43.432, 43.748]]}, {"kind": "h", "id": "h1", "md": "2. Change Something Every Five Minutes", "zh": "2. 每五分钟变一次花样", "start": 44.136, "end": 47.256, "words": [[44.254, 44.465], [44.939, 45.254], [45.268, 45.649], [45.794, 46.031], [46.044, 46.347], [46.36, 46.86]]}, {"kind": "s", "id": "s1_0_0", "md": "Plan your talk in short blocks, and make sure something changes at the end of each one.", "zh": "把分享拆成一个个短小的模块，确保每个模块结束时都有点变化。", "sp": null, "gap": false, "start": 47.256, "end": 52.152, "words": [[47.374, 47.585], [47.598, 47.717], [47.73, 48.045], [48.059, 48.138], [48.151, 48.453], [48.467, 49.006], [49.269, 49.374], [49.388, 49.559], [49.572, 49.795], [49.809, 50.19], [50.203, 50.677], [50.69, 50.769], [50.782, 50.861], [50.874, 51.138], [51.151, 51.23], [51.243, 51.427], [51.44, 51.769]]}, {"kind": "s", "id": "s1_0_1", "md": "Switch from slides to a live screen, ask a question, or ==hand over== to a colleague.", "zh": "从幻灯片切到实时屏幕、抛一个问题，或者交给同事来讲。", "sp": null, "gap": false, "start": 52.152, "end": 57.552, "words": [[52.27, 52.547], [52.56, 52.744], [52.757, 53.244], [53.257, 53.402], [53.415, 53.481], [53.494, 53.823], [53.836, 54.244], [54.665, 54.823], [54.836, 54.889], [54.902, 55.415], [55.836, 55.902], [55.915, 56.244], [56.257, 56.455], [56.468, 56.599], [56.613, 56.678], [56.691, 57.152]]}, {"kind": "s", "id": "s1_0_2", "md": "**A change in what people see or hear pulls their eyes back to your window.**", "zh": "大家看到的或听到的一有变化，视线就会被拉回你的窗口。", "sp": null, "gap": false, "start": 57.552, "end": 61.896, "words": [[57.657, 57.697], [57.71, 58.091], [58.105, 58.184], [58.197, 58.355], [58.368, 58.697], [58.71, 59.17], [59.315, 59.447], [59.46, 59.776], [59.789, 60.091], [60.105, 60.276], [60.289, 60.552], [60.565, 60.815], [60.828, 60.934], [60.947, 61.078], [61.091, 61.499]]}, {"kind": "s", "id": "s1_1_0", "md": "Use the chat ==actively==, because it is easier than unmuting.", "zh": "多用聊天框，因为打字比解除静音容易。", "sp": null, "gap": true, "start": 61.896, "end": 65.808, "words": [[62.001, 62.225], [62.238, 62.33], [62.343, 62.659], [62.672, 63.264], [63.541, 63.87], [63.883, 63.975], [63.988, 64.159], [64.278, 64.672], [64.685, 64.83], [64.843, 65.409]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Type one if you've hit this bug, and two if you haven't.\"", "zh": "「遇到过这个 bug 的打一，没遇到过的打二。」", "sp": null, "gap": false, "start": 65.808, "end": 69.36, "words": [[65.992, 66.084], [66.163, 66.374], [66.387, 66.492], [66.505, 66.663], [66.676, 66.874], [66.887, 67.071], [67.084, 67.453], [67.782, 67.874], [67.887, 68.19], [68.203, 68.308], [68.321, 68.426], [68.44, 68.874]]}, {"kind": "s", "id": "s1_1_2", "md": "Within seconds, the room __comes alive__, and you have real data to react to.", "zh": "几秒钟之内，全场就活跃起来了，你也有了可以回应的真实数据。", "sp": null, "gap": false, "start": 69.36, "end": 74.76, "words": [[69.478, 69.755], [69.768, 70.413], [70.663, 70.768], [70.781, 71.176], [71.189, 71.452], [71.465, 71.965], [72.36, 72.439], [72.452, 72.584], [72.597, 72.886], [72.899, 73.163], [73.176, 73.492], [73.505, 73.636], [73.649, 74.097], [74.11, 74.373]]}, {"kind": "s", "id": "s1_2_0", "md": "Call on people by name, but warn them first.", "zh": "可以点名，但要先打个招呼。", "sp": null, "gap": true, "start": 74.76, "end": 77.76, "words": [[74.865, 75.023], [75.036, 75.168], [75.181, 75.484], [75.497, 75.628], [75.642, 76.023], [76.339, 76.471], [76.484, 76.668], [76.681, 76.799], [76.813, 77.365]]}, {"kind": "s", "id": "s1_2_1", "md": "\"In a minute, I'll ask Hana how her team handles alerts.\"", "zh": "「等会儿我会问问 Hana，她们团队是怎么处理告警的。」", "sp": null, "gap": false, "start": 77.76, "end": 81.6, "words": [[77.944, 77.984], [77.984, 78.023], [78.036, 78.392], [78.786, 78.931], [78.944, 79.234], [79.247, 79.536], [79.549, 79.72], [79.734, 79.878], [79.892, 80.194], [80.207, 80.576], [80.589, 81.155]]}, {"kind": "s", "id": "s1_2_2", "md": "Hana starts listening ==closely==, and so does everyone else, because they know it could be them next.", "zh": "Hana 会开始认真听，其他人也一样，因为他们知道下一个可能就是自己。", "sp": null, "gap": false, "start": 81.6, "end": 87.312, "words": [[81.718, 81.916], [81.929, 82.258], [82.271, 82.692], [82.705, 83.31], [83.574, 83.679], [83.692, 83.889], [83.903, 84.113], [84.126, 84.508], [84.521, 84.955], [85.192, 85.468], [85.482, 85.6], [85.613, 85.863], [85.876, 85.955], [85.968, 86.113], [86.126, 86.245], [86.258, 86.403], [86.416, 86.929]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, __cut your content__ by about a third compared with an in-person version.", "zh": "最后，内容要比线下版本砍掉三分之一左右。", "sp": null, "gap": true, "start": 87.312, "end": 92.304, "words": [[87.483, 87.957], [88.22, 88.404], [88.417, 88.536], [88.549, 89.062], [89.075, 89.22], [89.233, 89.47], [89.483, 89.522], [89.536, 90.022], [90.036, 90.549], [90.562, 90.72], [90.733, 90.825], [90.891, 91.483], [91.496, 91.904]]}, {"kind": "s", "id": "s1_3_1", "md": "Remote listeners tire faster, and nobody has ever complained that a call ended early.", "zh": "远程听众更容易累，而且从来没人抱怨过会议提前结束。", "sp": null, "gap": false, "start": 92.304, "end": 97.992, "words": [[92.409, 92.791], [92.804, 93.304], [93.317, 93.725], [93.738, 94.317], [94.738, 94.817], [94.83, 95.251], [95.265, 95.462], [95.475, 95.712], [95.725, 96.251], [96.265, 96.37], [96.383, 96.436], [96.449, 96.909], [97.028, 97.238], [97.251, 97.607]]}, {"kind": "s", "id": "s1_3_2", "md": "Leave the details in a written doc, and __use the live time__ for the parts that need a conversation.", "zh": "细节留在书面文档里，现场时间用在需要讨论的部分。", "sp": null, "gap": false, "start": 97.992, "end": 103.968, "words": [[98.097, 98.321], [98.334, 98.439], [98.453, 99.058], [99.071, 99.242], [99.255, 99.347], [99.36, 99.689], [99.703, 100.137], [100.453, 100.558], [100.571, 100.821], [100.834, 100.939], [100.953, 101.387], [101.4, 101.703], [101.716, 101.834], [101.847, 101.926], [101.939, 102.347], [102.36, 102.518], [102.531, 102.716], [102.729, 102.768], [102.781, 103.584]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+{
+  "id": "029",
+  "title": "Turning Lessons Learned into Real Changes",
+  "meta": "B2 · 约 270 词 · 场景：复盘行动项跟进",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Graveyard of Action Items",
+      "paragraphs": [
+        [
+          "Open any team's postmortem folder and count the action items that were never done.",
+          "Most teams find a ==graveyard==.",
+          "The same lessons appear again and again: \"improve monitoring,\" \"communicate better,\" \"be more careful.\""
+        ],
+        [
+          "These items fail because they describe a wish, not a change.",
+          "Nobody can tell when \"be more careful\" is finished, so it never is.",
+          "Three months later, a new incident __brings the same lesson back__, and everyone nods again.",
+          "**Good intentions do not survive a busy quarter; mechanisms do.**"
+        ],
+        [
+          "A ==mechanism== is something that works even when people are tired, busy, or new.",
+          "It might be an alert, a safer default setting, or a check in the deploy ==pipeline==.",
+          "It does not depend on anyone remembering the incident."
+        ]
+      ],
+      "heading_zh": "1. 待办事项的坟场",
+      "paragraphs_zh": [
+        [
+          "随便打开哪个团队的复盘文件夹，数数有多少待办事项从来没做完。",
+          "大多数团队会发现那是一片坟场。",
+          "同样的教训一遍又一遍地出现：「完善监控」「加强沟通」「更加小心」。"
+        ],
+        [
+          "这些事项之所以落空，是因为它们描述的是一个愿望，而不是一个改动。",
+          "没人说得清「更加小心」什么时候算完成，所以它永远完成不了。",
+          "三个月后，一个新事故又把同样的教训翻出来，大家又一起点头。",
+          "良好的意愿熬不过一个忙碌的季度；机制才能。"
+        ],
+        [
+          "机制就是那种在人累了、忙了或者刚来的时候，依然能起作用的东西。",
+          "它可以是一条告警、一个更安全的默认配置，或者发布流水线里的一道检查。",
+          "它不依赖任何人还记得那次事故。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Owner, Date, Proof",
+      "paragraphs": [
+        [
+          "Take each lesson and ask, \"What would have stopped this automatically?\"",
+          "\"Be careful with ==migrations==\" becomes \"the pipeline blocks any migration that has not passed a ==dry run==.\"",
+          "Now the lesson lives in the system, not in someone's memory.",
+          "It keeps working even after the people who wrote the postmortem have moved to other teams."
+        ],
+        [
+          "Every item needs one owner and a realistic date.",
+          "Name one person, not a team, because shared ownership usually means no ownership.",
+          "Then __cut the list down__ to the two or three changes that matter most.",
+          "**Three finished fixes beat ten open tickets.**"
+        ],
+        [
+          "Finally, decide how you will ==verify== that the change works.",
+          "Run a ==drill== in staging, break the thing on purpose, and confirm the new check catches it.",
+          "A fix that has never been tested is only a hope.",
+          "Then __close the loop__ in the next team meeting, so people see that postmortems actually lead somewhere."
+        ]
+      ],
+      "heading_zh": "2. 负责人、截止日期、验证",
+      "paragraphs_zh": [
+        [
+          "拿着每一条教训问自己：「什么东西能自动拦住这件事？」",
+          "「做迁移要小心」就变成了「流水线会拦下任何没跑过 dry run 的迁移」。",
+          "这样，教训就沉淀进了系统里，而不是靠某个人的记忆。",
+          "哪怕写复盘的那批人都转去了别的团队，它也照样起作用。"
+        ],
+        [
+          "每一项都需要一个负责人和一个靠谱的截止日期。",
+          "要点名到一个人，而不是一个团队，因为大家一起负责，通常就等于没人负责。",
+          "然后把清单砍到最重要的两三项改动。",
+          "做完三个修复，胜过挂着十个没关的工单。"
+        ],
+        [
+          "最后，想清楚你要怎么验证这个改动真的有效。",
+          "在测试环境搞一次演练，故意把东西弄坏，确认新加的检查能拦住它。",
+          "一个从来没测过的修复，只是一个愿望。",
+          "然后在下一次团队会议上把这件事闭环，让大家看到复盘是真的能带来结果的。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么很多复盘行动项从来没被完成？",
+      "a": "它们描述的是愿望而不是改变，比如「更小心」，没人能判断什么时候算完成。"
+    },
+    {
+      "q": "作者说什么能扛过忙碌的季度？举例说明。",
+      "a": "机制：告警、更安全的默认配置、发布流水线里的检查，不依赖任何人记得这次事故。"
+    },
+    {
+      "q": "把教训变成改进需要哪几步？",
+      "a": "问「什么能自动拦住它」；每项一个负责人和现实的日期，精简到两三项；在预发环境演练验证，并在团队会上闭环。"
+    }
+  ],
+  "dictation": [
+    "Good intentions do not survive a busy quarter; mechanisms do.",
+    "Three finished fixes beat ten open tickets.",
+    "Now the lesson lives in the system, not in someone's memory.",
+    "Name one person, not a team, because shared ownership usually means no ownership."
+  ],
+  "shadow": {
+    "text": "These items fail because they describe a wish, not a change. Nobody can tell when \"be more careful\" is finished, so it never is.",
+    "marked": "These items <b>fail</b> / because they describe a <b>wish</b>, / <b>not</b> a change. //<br><b>Nobody</b> can tell / when \"be more <b>careful</b>\" is <b>finished</b>, / so it <b>never</b> is. //"
+  },
+  "prompts": [
+    {
+      "q": "复盘会上有人写下行动项「以后上线前要更仔细检查配置」。用 30 秒把它改写成一个可以落地的机制，并指定负责人和日期。",
+      "ref": "I agree with the spirit, but checking more carefully is hard to measure. What would have caught this automatically? A config diff check in the pipeline would have flagged the wrong region name before deploy. Could we make that the action item instead? Priya, would you be able to own it, with a target of the end of next sprint? Then we'll test it in staging with a broken config.",
+      "ref_zh": "出发点我同意，但「检查得更仔细」很难衡量。什么东西能自动发现这个问题？流水线里加一个配置 diff 检查，就能在发布前把错误的地区名标出来。我们能不能把这个作为待办？Priya，你能负责吗？目标是下个 sprint 结束前。然后我们在测试环境用一份错误的配置来验证它。"
+    },
+    {
+      "q": "上次复盘列了十几个行动项，大部分没做。用 30 秒向团队提议精简清单并约定怎么验证。",
+      "ref": "Looking back at our last postmortem, we wrote fourteen action items and finished three. I don't think the problem is effort; the list was just too long. This time, let's pick the two changes that would have prevented the outage, give each one a single owner, and agree how we'll prove they work. I'll add a check-in to our team meeting in two weeks.",
+      "ref_zh": "回头看上次复盘，我们写了十四个待办，只完成了三个。我觉得问题不在不够努力，而是清单太长了。这次我们就挑两个能避免这次故障的改动，每个只定一个负责人，再约定好怎么证明它们有效。我会在两周后的团队会议上加一个进度检查。"
+    }
+  ],
+  "words": [
+    {
+      "w": "graveyard",
+      "ipa": "/ˈɡreɪvjɑːrd/",
+      "zh": "墓地（喻：被遗忘的地方）",
+      "ex": "Our backlog has become a graveyard of old tickets."
+    },
+    {
+      "w": "intention",
+      "ipa": "/ɪnˈtenʃən/",
+      "zh": "意图、打算",
+      "ex": "Good intentions won't stop the next outage; an alert will."
+    },
+    {
+      "w": "mechanism",
+      "ipa": "/ˈmekənɪzəm/",
+      "zh": "机制",
+      "ex": "We need a mechanism, not a reminder in the wiki."
+    },
+    {
+      "w": "pipeline",
+      "ipa": "/ˈpaɪplaɪn/",
+      "zh": "（构建发布）流水线",
+      "ex": "The pipeline now fails if test coverage drops."
+    },
+    {
+      "w": "migration",
+      "ipa": "/maɪˈɡreɪʃən/",
+      "zh": "（数据库）迁移",
+      "ex": "The schema migration locked the table for ten minutes."
+    },
+    {
+      "w": "dry run",
+      "ipa": "/ˈdraɪ rʌn/",
+      "zh": "演练、试运行",
+      "ex": "Do a dry run first so we can see which rows would change."
+    },
+    {
+      "w": "verify",
+      "ipa": "/ˈverɪfaɪ/",
+      "zh": "核实、验证",
+      "ex": "Please verify the fix in staging before closing the ticket."
+    },
+    {
+      "w": "drill",
+      "ipa": "/drɪl/",
+      "zh": "演练",
+      "ex": "We run a failover drill every quarter."
+    },
+    {
+      "w": "ownership",
+      "ipa": "/ˈoʊnərʃɪp/",
+      "zh": "归属、负责",
+      "ex": "Ownership of the alert rules is unclear after the reorg."
+    }
+  ]
+}

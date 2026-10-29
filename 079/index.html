@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Connecting Daily Work to the Big Goal · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "079", "title": "Connecting Daily Work to the Big Goal", "meta": "B2 · 约 270 词 · 场景：团队对齐", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Ticket and the Reason", "heading_zh": "1. 工单和背后的理由", "rows": [[{"id": "s0_0_0", "md": "Ask an engineer what they are working on, and you usually hear a ticket.", "text": "Ask an engineer what they are working on, and you usually hear a ticket.", "zh": "问一个工程师在做什么，你听到的通常是一个工单。", "sp": null}, {"id": "s0_0_1", "md": "\"I'm adding retry logic to the upload service.\"", "text": "\"I'm adding retry logic to the upload service.\"", "zh": "「我在给上传服务加重试逻辑。」", "sp": null}, {"id": "s0_0_2", "md": "Ask why, and the answer is often a shrug, or \"It was in the sprint.\"", "text": "Ask why, and the answer is often a shrug, or \"It was in the sprint.\"", "zh": "再问为什么，回答往往是耸耸肩，或者「迭代里排了这个」。", "sp": null}], [{"id": "s0_1_0", "md": "That gap matters more than it seems.", "text": "That gap matters more than it seems.", "zh": "这个断层比看起来要严重。", "sp": null}, {"id": "s0_1_1", "md": "Engineers who don't know the goal make ==sensible== local choices that are wrong for the bigger picture.", "text": "Engineers who don't know the goal make sensible local choices that are wrong for the bigger picture.", "zh": "不知道目标的工程师，会做出局部合理、但从全局看是错的选择。", "sp": null}, {"id": "s0_1_2", "md": "They ==polish== an edge case nobody hits, or skip the one metric the whole project depends on.", "text": "They polish an edge case nobody hits, or skip the one metric the whole project depends on.", "zh": "他们会去打磨一个没人会碰到的边界情况，或者漏掉整个项目都依赖的那个指标。", "sp": null}, {"id": "s0_1_3", "md": "Nobody is being lazy; they simply cannot see what matters most.", "text": "Nobody is being lazy; they simply cannot see what matters most.", "zh": "没人在偷懒；他们只是看不到什么最重要。", "sp": null}], [{"id": "s0_2_0", "md": "**People make better small decisions when they can see the big one.**", "text": "People make better small decisions when they can see the big one.", "zh": "人们看得见大决策的时候，小决策就会做得更好。", "sp": null}, {"id": "s0_2_1", "md": "Explaining the goal once at a kickoff is not enough, because it fades by the second week.", "text": "Explaining the goal once at a kickoff is not enough, because it fades by the second week.", "zh": "只在启动会上讲一次目标是不够的，因为到第二周就淡了。", "sp": null}, {"id": "s0_2_2", "md": "The link has to be ==reinforced== in everyday work, in tickets, standups, and code reviews.", "text": "The link has to be reinforced in everyday work, in tickets, standups, and code reviews.", "zh": "这个关联必须在日常工作里反复强化，在工单里、站会上、code review 里。", "sp": null}]]}, {"heading": "2. The So-That Chain", "heading_zh": "2. 「为了」链条", "rows": [[{"id": "s1_0_0", "md": "A simple habit helps: describe the work with the words \"so that.\"", "text": "A simple habit helps: describe the work with the words \"so that.\"", "zh": "有个简单的习惯会很有帮助：用「为了」来描述工作。", "sp": null}, {"id": "s1_0_1", "md": "\"I'm adding retry logic so that uploads on weak networks succeed, so that new creators finish their first video, so that first-week ==retention== goes up.\"", "text": "\"I'm adding retry logic so that uploads on weak networks succeed, so that new creators finish their first video, so that first-week retention goes up.\"", "zh": "「我加重试逻辑，是为了让弱网下的上传能成功，为了让新创作者能完成第一个视频，为了让首周留存涨上去。」", "sp": null}, {"id": "s1_0_2", "md": "Each step connects the ticket one level higher, until it reaches a goal the company actually tracks.", "text": "Each step connects the ticket one level higher, until it reaches a goal the company actually tracks.", "zh": "每一步都把这个工单往上连一层，直到连到一个公司真正在追踪的目标。", "sp": null}], [{"id": "s1_1_0", "md": "As a lead, ==model== this yourself in standups and planning.", "text": "As a lead, model this yourself in standups and planning.", "zh": "作为 TL，你自己要在站会和规划会上带头这么做。", "sp": null}, {"id": "s1_1_1", "md": "When a link in the chain is missing, that is useful information.", "text": "When a link in the chain is missing, that is useful information.", "zh": "当链条中某一环缺了，这本身就是有用的信息。", "sp": null}, {"id": "s1_1_2", "md": "Either the work is less important than it looks, or the goal needs to be explained better.", "text": "Either the work is less important than it looks, or the goal needs to be explained better.", "zh": "要么这项工作没有看起来那么重要，要么目标需要讲得更清楚。", "sp": null}], [{"id": "s1_2_0", "md": "**If you cannot finish the sentence, question the ticket before you start it.**", "text": "If you cannot finish the sentence, question the ticket before you start it.", "zh": "如果你补不全这句话，那就在动手之前先质疑这个工单。", "sp": null}, {"id": "s1_2_1", "md": "Over time, the team starts asking these questions without you, and many ==priorities== __sort themselves out__.", "text": "Over time, the team starts asking these questions without you, and many priorities sort themselves out.", "zh": "时间长了，团队不用你也会自己问这些问题，很多优先级问题会自然理顺。", "sp": null}, {"id": "s1_2_2", "md": "That is when a team feels ==aligned== rather than managed, and you can __step back__ from the details.", "text": "That is when a team feels aligned rather than managed, and you can step back from the details.", "zh": "到那时，团队感受到的是对齐而不是被管，你也就可以从细节里抽身了。", "sp": null}]]}], "gist": [{"q": "工程师不知道工作背后的目标，会带来什么问题？", "a": "会做出局部合理但整体错误的选择，比如打磨没人遇到的边界情况，却忽略整个项目依赖的关键指标。"}, {"q": "“so that 链条”是什么？", "a": "用“so that”把一张工单逐级连到更高的目标，直到连到公司真正追踪的指标。"}, {"q": "如果链条连不上，说明什么？", "a": "要么这项工作没看起来那么重要，要么目标需要讲得更清楚；说不完这句话就先质疑这张工单。"}], "dictation": [{"id": "s0_2_0", "text": "People make better small decisions when they can see the big one."}, {"id": "s0_2_1", "text": "Explaining the goal once at a kickoff is not enough, because it fades by the second week."}, {"id": "s1_1_2", "text": "Either the work is less important than it looks, or the goal needs to be explained better."}, {"id": "s1_2_0", "text": "If you cannot finish the sentence, question the ticket before you start it."}], "shadow": {"text": "As a lead, model this yourself in standups and planning. When a link in the chain is missing, that is useful information. Either the work is less important than it looks, or the goal needs to be explained better.", "marked": "As a <b>lead</b>, / model this <b>yourself</b> / in standups and planning. //<br>When a link in the chain is <b>missing</b>, / that is <b>useful</b> information. //<br><b>Either</b> the work is less important / than it <b>looks</b>, / <b>or</b> the goal needs to be <b>explained</b> better. //"}, "prompts": [{"q": "站会上，新同事只说“我在改缓存过期策略”。用 30 秒示范用 so-that 链条说清这项工作和团队目标的关系。", "ref": "Let me try putting that in a so-that chain, because I think it's more important than it sounds. We're changing the cache expiry so that product pages show the right price, so that fewer users hit checkout errors, so that our conversion goal for the quarter stays on track. So if you have to choose between speed and accuracy here, choose accuracy.", "ref_zh": "我试着用「为了」链条来说一下，因为我觉得这件事比听起来重要。我们改缓存过期时间，是为了让商品页显示正确的价格，为了让更少的用户在下单时报错，为了让我们这个季度的转化目标不掉队。所以如果在这里要在速度和准确性之间选，选准确性。", "id": "ref0"}, {"q": "你发现团队有一张工单怎么都连不到季度目标。用 30 秒在规划会上提出质疑。", "ref": "Before we commit to this ticket, can I test it quickly? I tried to finish the sentence, 'we're doing this so that...', and I couldn't connect it to any of our three quarterly goals. Maybe I'm missing context. If someone can explain the link, great. If not, I'd suggest we move it to the backlog and use that week on the onboarding work instead.", "ref_zh": "在我们认领这个工单之前，我能快速检验一下吗？我试着补全「我们做这个是为了……」这句话，结果没法把它跟我们三个季度目标中的任何一个连起来。可能是我缺了点背景。如果有人能讲清楚这个关联，那很好。如果讲不清，我建议把它挪到 backlog，把那一周用在新手引导上。", "id": "ref1"}], "words": [{"w": "sensible", "ipa": "/ˈsensəbəl/", "zh": "合理的、明智的", "ex": "Caching the results seems like a sensible first step.", "id": "w0"}, {"w": "polish (v.)", "ipa": "/ˈpɑːlɪʃ/", "zh": "打磨、润色", "ex": "Let's ship it now and polish the animations next sprint.", "tts_w": "polish", "id": "w1"}, {"w": "reinforce", "ipa": "/ˌriːɪnˈfɔːrs/", "zh": "强化、加强", "ex": "The weekly demo reinforces why this project matters.", "id": "w2"}, {"w": "retention", "ipa": "/rɪˈtenʃən/", "zh": "留存（率）", "ex": "Week-one retention went up after we simplified sign-up.", "id": "w3"}, {"w": "model (v.)", "ipa": "/ˈmɑːdəl/", "zh": "以身作则、示范", "ex": "Leads should model good code review habits.", "tts_w": "model", "id": "w4"}, {"w": "priority", "ipa": "/praɪˈɔːrəti/", "zh": "优先事项", "ex": "Fixing the login crash is our top priority this week.", "id": "w5"}, {"w": "align (v.)", "ipa": "/əˈlaɪn/", "zh": "对齐、使一致", "ex": "Let's align on the goal before we discuss the design.", "tts_w": "align", "id": "w6"}, {"w": "shrug", "ipa": "/ʃrʌɡ/", "zh": "耸肩（表示不知道或无所谓）", "ex": "When I asked about the deadline, he just gave a shrug.", "id": "w7"}, {"w": "kickoff", "ipa": "/ˈkɪkˌɔːf/", "zh": "项目启动会", "ex": "We'll share the success metrics at the kickoff on Monday.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Ticket and the Reason", "zh": "1. 工单和背后的理由", "start": 0.0, "end": 2.4, "words": [[0.118, 0.382], [0.724, 0.829], [0.842, 1.263], [1.421, 1.5], [1.513, 1.592], [1.605, 2.013]]}, {"kind": "s", "id": "s0_0_0", "md": "Ask an engineer what they are working on, and you usually hear a ticket.", "zh": "问一个工程师在做什么，你听到的通常是一个工单。", "sp": null, "gap": false, "start": 2.4, "end": 6.456, "words": [[2.505, 2.742], [2.755, 2.834], [2.847, 3.347], [3.361, 3.479], [3.492, 3.597], [3.611, 3.729], [3.742, 4.084], [4.097, 4.334], [4.742, 4.821], [4.834, 4.926], [4.939, 5.347], [5.361, 5.558], [5.571, 5.624], [5.637, 6.058]]}, {"kind": "s", "id": "s0_0_1", "md": "\"I'm adding retry logic to the upload service.\"", "zh": "「我在给上传服务加重试逻辑。」", "sp": null, "gap": false, "start": 6.456, "end": 9.816, "words": [[6.64, 6.706], [6.706, 7.035], [7.048, 7.522], [7.535, 8.035], [8.048, 8.14], [8.153, 8.285], [8.298, 8.667], [8.68, 9.311]]}, {"kind": "s", "id": "s0_0_2", "md": "Ask why, and the answer is often a shrug, or \"It was in the sprint.\"", "zh": "再问为什么，回答往往是耸耸肩，或者「迭代里排了这个」。", "sp": null, "gap": false, "start": 9.816, "end": 14.76, "words": [[9.921, 10.184], [10.198, 10.579], [11.013, 11.106], [11.119, 11.211], [11.224, 11.619], [11.632, 11.737], [11.75, 12.079], [12.092, 12.119], [12.132, 12.698], [12.934, 13.171], [13.355, 13.421], [13.434, 13.579], [13.592, 13.671], [13.684, 13.75], [13.763, 14.263]]}, {"kind": "s", "id": "s0_1_0", "md": "That gap matters more than it seems.", "zh": "这个断层比看起来要严重。", "sp": null, "gap": true, "start": 14.76, "end": 17.184, "words": [[14.878, 15.049], [15.063, 15.313], [15.326, 15.721], [15.734, 15.984], [15.997, 16.115], [16.128, 16.221], [16.234, 16.786]]}, {"kind": "s", "id": "s0_1_1", "md": "Engineers who don't know the goal make ==sensible== local choices that are wrong for the bigger picture.", "zh": "不知道目标的工程师，会做出局部合理、但从全局看是错的选择。", "sp": null, "gap": false, "start": 17.184, "end": 23.016, "words": [[17.289, 17.816], [17.829, 17.934], [17.947, 18.276], [18.289, 18.473], [18.487, 18.592], [18.605, 18.987], [19.237, 19.421], [19.434, 20.039], [20.052, 20.381], [20.395, 20.921], [20.934, 21.079], [21.092, 21.237], [21.25, 21.631], [21.645, 21.75], [21.763, 21.855], [21.868, 22.131], [22.145, 22.618]]}, {"kind": "s", "id": "s0_1_2", "md": "They ==polish== an edge case nobody hits, or skip the one metric the whole project depends on.", "zh": "他们会去打磨一个没人会碰到的边界情况，或者漏掉整个项目都依赖的那个指标。", "sp": null, "gap": false, "start": 23.016, "end": 28.752, "words": [[23.134, 23.227], [23.24, 23.661], [23.674, 23.792], [23.805, 24.029], [24.042, 24.358], [24.371, 24.726], [24.74, 25.148], [25.542, 25.674], [25.687, 26.029], [26.042, 26.148], [26.161, 26.411], [26.424, 26.871], [26.884, 26.963], [26.977, 27.2], [27.213, 27.687], [27.7, 28.082], [28.095, 28.358]]}, {"kind": "s", "id": "s0_1_3", "md": "Nobody is being lazy; they simply cannot see what matters most.", "zh": "没人在偷懒；他们只是看不到什么最重要。", "sp": null, "gap": false, "start": 28.752, "end": 33.528, "words": [[28.857, 29.423], [29.436, 29.568], [29.581, 29.884], [29.897, 30.37], [30.699, 30.791], [30.805, 31.173], [31.186, 31.594], [31.607, 31.976], [31.989, 32.186], [32.199, 32.607], [32.62, 33.134]]}, {"kind": "s", "id": "s0_2_0", "md": "**People make better small decisions when they can see the big one.**", "zh": "人们看得见大决策的时候，小决策就会做得更好。", "sp": null, "gap": true, "start": 33.528, "end": 37.104, "words": [[33.646, 33.91], [33.923, 34.199], [34.212, 34.475], [34.489, 34.791], [34.804, 35.396], [35.41, 35.528], [35.541, 35.646], [35.66, 35.804], [35.817, 36.081], [36.094, 36.199], [36.212, 36.423], [36.436, 36.712]]}, {"kind": "s", "id": "s0_2_1", "md": "Explaining the goal once at a kickoff is not enough, because it fades by the second week.", "zh": "只在启动会上讲一次目标是不够的，因为到第二周就淡了。", "sp": null, "gap": false, "start": 37.104, "end": 42.672, "words": [[37.209, 37.709], [37.722, 37.801], [37.815, 38.13], [38.143, 38.446], [38.459, 38.538], [38.551, 38.604], [38.617, 39.143], [39.236, 39.341], [39.354, 39.643], [39.657, 40.143], [40.42, 40.709], [40.722, 40.815], [40.828, 41.275], [41.288, 41.42], [41.433, 41.525], [41.538, 41.92], [41.933, 42.275]]}, {"kind": "s", "id": "s0_2_2", "md": "The link has to be ==reinforced== in everyday work, in tickets, standups, and code reviews.", "zh": "这个关联必须在日常工作里反复强化，在工单里、站会上、code review 里。", "sp": null, "gap": false, "start": 42.672, "end": 49.392, "words": [[42.79, 42.869], [42.883, 43.119], [43.133, 43.369], [43.383, 43.475], [43.488, 43.672], [43.685, 44.488], [44.501, 44.633], [44.764, 45.238], [45.251, 45.738], [46.014, 46.133], [46.146, 46.764], [47.027, 47.79], [47.988, 48.119], [48.133, 48.383], [48.396, 49.001]]}, {"kind": "h", "id": "h1", "md": "2. The So-That Chain", "zh": "2. 「为了」链条", "start": 49.392, "end": 51.312, "words": [[49.51, 49.76], [50.076, 50.168], [50.181, 50.602], [50.616, 50.931]]}, {"kind": "s", "id": "s1_0_0", "md": "A simple habit helps: describe the work with the words \"so that.\"", "zh": "有个简单的习惯会很有帮助：用「为了」来描述工作。", "sp": null, "gap": false, "start": 51.312, "end": 55.536, "words": [[51.417, 51.47], [51.483, 51.865], [51.878, 52.233], [52.246, 52.733], [53.009, 53.457], [53.47, 53.562], [53.575, 53.838], [53.851, 53.983], [53.996, 54.088], [54.101, 54.483], [54.588, 54.786], [54.799, 55.128]]}, {"kind": "s", "id": "s1_0_1", "md": "\"I'm adding retry logic so that uploads on weak networks succeed, so that new creators finish their first video, so that first-week ==retention== goes up.\"", "zh": "「我加重试逻辑，是为了让弱网下的上传能成功，为了让新创作者能完成第一个视频，为了让首周留存涨上去。」", "sp": null, "gap": false, "start": 55.536, "end": 65.328, "words": [[55.733, 55.733], [55.812, 56.128], [56.141, 56.575], [56.589, 57.049], [57.26, 57.391], [57.404, 57.589], [57.602, 58.141], [58.154, 58.312], [58.325, 58.562], [58.575, 59.075], [59.089, 59.707], [60.089, 60.194], [60.207, 60.391], [60.404, 60.602], [60.615, 61.154], [61.168, 61.536], [61.549, 61.694], [61.707, 62.062], [62.075, 62.51], [62.891, 62.983], [62.997, 63.154], [63.168, 63.72], [63.733, 64.233], [64.247, 64.536], [64.549, 64.812]]}, {"kind": "s", "id": "s1_0_2", "md": "Each step connects the ticket one level higher, until it reaches a goal the company actually tracks.", "zh": "每一步都把这个工单往上连一层，直到连到一个公司真正在追踪的目标。", "sp": null, "gap": false, "start": 65.328, "end": 71.664, "words": [[65.433, 65.631], [65.644, 66.012], [66.025, 66.446], [66.46, 66.565], [66.578, 66.986], [66.999, 67.315], [67.328, 67.604], [67.617, 68.025], [68.446, 68.696], [68.71, 68.841], [68.854, 69.183], [69.196, 69.275], [69.289, 69.591], [69.604, 69.71], [69.723, 70.249], [70.262, 70.644], [70.657, 71.275]]}, {"kind": "s", "id": "s1_1_0", "md": "As a lead, ==model== this yourself in standups and planning.", "zh": "作为 TL，你自己要在站会和规划会上带头这么做。", "sp": null, "gap": true, "start": 71.664, "end": 75.336, "words": [[71.769, 71.888], [71.901, 71.953], [71.967, 72.374], [72.703, 73.019], [73.032, 73.203], [73.217, 73.638], [73.651, 73.743], [73.756, 74.401], [74.414, 74.493], [74.506, 74.94]]}, {"kind": "s", "id": "s1_1_1", "md": "When a link in the chain is missing, that is useful information.", "zh": "当链条中某一环缺了，这本身就是有用的信息。", "sp": null, "gap": false, "start": 75.336, "end": 79.392, "words": [[75.454, 75.547], [75.56, 75.625], [75.639, 75.915], [75.928, 76.007], [76.02, 76.112], [76.125, 76.533], [76.639, 76.757], [76.77, 77.27], [77.652, 77.797], [77.81, 77.941], [77.954, 78.336], [78.349, 78.994]]}, {"kind": "s", "id": "s1_1_2", "md": "Either the work is less important than it looks, or the goal needs to be explained better.", "zh": "要么这项工作没有看起来那么重要，要么目标需要讲得更清楚。", "sp": null, "gap": false, "start": 79.392, "end": 84.696, "words": [[79.484, 79.695], [79.708, 79.8], [79.813, 80.116], [80.195, 80.326], [80.339, 80.589], [80.603, 81.155], [81.168, 81.287], [81.3, 81.405], [81.418, 81.866], [82.129, 82.234], [82.247, 82.339], [82.353, 82.721], [82.879, 83.102], [83.116, 83.208], [83.221, 83.339], [83.353, 83.918], [83.931, 84.313]]}, {"kind": "s", "id": "s1_2_0", "md": "**If you cannot finish the sentence, question the ticket before you start it.**", "zh": "如果你补不全这句话，那就在动手之前先质疑这个工单。", "sp": null, "gap": true, "start": 84.696, "end": 88.848, "words": [[84.801, 84.906], [84.92, 85.012], [85.025, 85.367], [85.38, 85.696], [85.709, 85.801], [85.814, 86.42], [86.657, 87.064], [87.078, 87.183], [87.196, 87.512], [87.525, 87.854], [87.867, 87.946], [87.959, 88.288], [88.301, 88.459]]}, {"kind": "s", "id": "s1_2_1", "md": "Over time, the team starts asking these questions without you, and many ==priorities== __sort themselves out__.", "zh": "时间长了，团队不用你也会自己问这些问题，很多优先级问题会自然理顺。", "sp": null, "gap": false, "start": 88.848, "end": 95.496, "words": [[88.953, 89.151], [89.164, 89.637], [89.953, 90.058], [90.072, 90.361], [90.374, 90.743], [90.835, 91.322], [91.335, 91.493], [91.506, 91.993], [92.006, 92.414], [92.427, 92.637], [92.966, 93.085], [93.098, 93.348], [93.361, 94.032], [94.045, 94.309], [94.322, 94.835], [94.848, 95.098]]}, {"kind": "s", "id": "s1_2_2", "md": "That is when a team feels ==aligned== rather than managed, and you can __step back__ from the details.", "zh": "到那时，团队感受到的是对齐而不是被管，你也就可以从细节里抽身了。", "sp": null, "gap": false, "start": 95.496, "end": 101.04, "words": [[95.601, 95.693], [95.707, 95.799], [95.812, 95.93], [95.943, 96.022], [96.035, 96.404], [96.417, 96.772], [96.785, 97.351], [97.364, 97.693], [97.707, 97.864], [97.878, 98.43], [98.759, 98.851], [98.864, 98.943], [98.957, 99.088], [99.101, 99.443], [99.457, 99.72], [99.733, 99.878], [99.891, 99.97], [99.983, 100.641]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

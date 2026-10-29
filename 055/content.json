@@ -1,0 +1,188 @@
+{
+  "id": "055",
+  "title": "Delegating Without Disappearing",
+  "meta": "B2 · 约 260 词 · 场景：授权与跟进",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Two Ways to Get It Wrong",
+      "paragraphs": [
+        [
+          "There are two classic delegation mistakes, and most new leads make both.",
+          "The first is ==micromanaging==: you hand over a task, then check every commit and rewrite the design doc at midnight.",
+          "The engineer learns that the work was never really theirs."
+        ],
+        [
+          "The second mistake is the opposite.",
+          "You hand over the project, say \"Let me know if you need anything,\" and disappear for a month.",
+          "Then, a week before launch, you discover the plan has drifted far from what the business needed.",
+          "That is not ==trust==; it is ==abdication==."
+        ],
+        [
+          "**Good delegation means giving away the work, but not your attention.**",
+          "The skill is choosing where your attention goes."
+        ]
+      ],
+      "heading_zh": "1. 两种搞砸的方式",
+      "paragraphs_zh": [
+        [
+          "授权有两种经典的错误，大多数新 lead 两种都会犯。",
+          "第一种是微观管理：你把任务交出去，然后每个 commit 都要看，半夜还把设计文档重写一遍。",
+          "工程师从中学到的是：这活从来就不真正属于他。"
+        ],
+        [
+          "第二种错误正好相反。",
+          "你把项目交出去，说一句「有需要随时找我」，然后消失一个月。",
+          "结果上线前一周，你发现方案已经偏离业务需要的东西很远了。",
+          "那不是信任；那是撒手不管。"
+        ],
+        [
+          "好的授权意味着把活交出去，但不把你的关注也交出去。",
+          "真正的功夫在于选择把关注放在哪里。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Delegate Outcomes, Agree on Checkpoints",
+      "paragraphs": [
+        [
+          "Start with the outcome, not the steps.",
+          "\"We need search ==latency== under two hundred milliseconds before the sale event\" leaves room for the engineer to choose the approach.",
+          "A list of instructions leaves no room at all."
+        ],
+        [
+          "Next, be ==explicit== about decision rights.",
+          "Which choices can they make alone, and which ones need a quick chat with you first?",
+          "Changing a library is fine; changing the public API might not be."
+        ],
+        [
+          "Then agree on ==checkpoints== in advance.",
+          "A design review in week one, a demo in week three, and a go or no-go meeting before launch.",
+          "Because the checkpoints are planned, your questions feel like part of the process, not like ==suspicion==."
+        ],
+        [
+          "Between checkpoints, __stay reachable but quiet__.",
+          "If you see a problem, ask a question instead of quietly fixing it yourself.",
+          "**The goal is a person who can run the next project without you, not a project that ran without mistakes.**"
+        ]
+      ],
+      "heading_zh": "2. 交出结果，约定检查点",
+      "paragraphs_zh": [
+        [
+          "从结果讲起，而不是步骤。",
+          "「大促之前，搜索延迟要降到两百毫秒以内」，这给工程师留出了自己选方案的空间。",
+          "一串操作指令则一点空间都不留。"
+        ],
+        [
+          "接着，把决策权讲明白。",
+          "哪些事他可以自己定，哪些需要先跟你简单聊一下？",
+          "换个库没问题；改对外 API 可能就不行了。"
+        ],
+        [
+          "然后，提前约定好检查点。",
+          "第一周做设计评审，第三周做 demo，上线前开一次 go/no-go 会。",
+          "因为检查点是事先定好的，你的提问就像是流程的一部分，而不是不信任。"
+        ],
+        [
+          "在检查点之间，保持随时能找到你，但别出声。",
+          "如果你发现了问题，就提个问题，而不是自己悄悄修掉。",
+          "目标是培养出一个不需要你也能带下一个项目的人，而不是做成一个没出过错的项目。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者说新 lead 常犯的两种授权错误是什么？",
+      "a": "一是事无巨细地管（盯每次提交、半夜重写设计文档）；二是交出去后消失一个月，上线前才发现方向跑偏，这叫甩手不叫信任。"
+    },
+    {
+      "q": "授权时应该交代什么？",
+      "a": "交代结果而不是步骤；明确决策权：哪些可以自己定，哪些要先和你聊。"
+    },
+    {
+      "q": "检查点有什么作用？授权的最终目标是什么？",
+      "a": "事先约定的检查点让你的提问成为流程的一部分而不像怀疑；最终目标是培养出能独立做下个项目的人，而不是一个没犯错的项目。"
+    }
+  ],
+  "dictation": [
+    "Good delegation means giving away the work, but not your attention.",
+    "Start with the outcome, not the steps.",
+    "If you see a problem, ask a question instead of quietly fixing it yourself.",
+    "The goal is a person who can run the next project without you, not a project that ran without mistakes."
+  ],
+  "shadow": {
+    "text": "Then agree on checkpoints in advance. A design review in week one, a demo in week three, and a go or no-go meeting before launch.",
+    "marked": "Then agree on <b>checkpoints</b> / in <b>advance</b>. //<br>A <b>design</b> review in week <b>one</b>, / a <b>demo</b> in week <b>three</b>, / and a <b>go</b> or <b>no-go</b> meeting / before launch. //"
+  },
+  "prompts": [
+    {
+      "q": "你要把一次数据库迁移交给一位资深工程师主导。用 30 秒交代：目标结果、他可以自己决定的范围、需要找你的情况和检查点。",
+      "ref": "I'd like you to own the database migration end to end. The outcome we need is zero data loss and less than five minutes of downtime, finished before the end of the quarter. How you get there is your call, including tools and the order of tables. If you want to change the schema that other teams read, let's talk first. Can we do a design review next Friday and a dry-run demo two weeks after that?",
+      "ref_zh": "我希望你端到端负责这次数据库迁移。我们要的结果是零数据丢失、停机不超过五分钟，在季度末之前完成。怎么做由你决定，包括用什么工具、表的迁移顺序。如果你想改其他团队在读的 schema，我们先聊一下。下周五我们做一次设计评审，再过两周做一次演练 demo，可以吗？"
+    },
+    {
+      "q": "检查点时你发现下属的方案有一个风险，但他还没意识到。用 30 秒用提问引导他，而不是直接接手修改。",
+      "ref": "This looks solid overall, and I like how you've staged the rollout. One thing I'm curious about. What happens to the writes that come in while the old and new tables are both live? Walk me through that part. If you've already thought about it, great. If not, it might be worth an hour before the next checkpoint.",
+      "ref_zh": "整体看下来很扎实，我很喜欢你分阶段灰度的安排。有一点我比较好奇。新旧表同时在线的时候，进来的写请求会怎么处理？给我讲讲这部分。如果你已经考虑过了，那很好。如果还没有，在下一个检查点之前花一个小时想想可能会很值。"
+    }
+  ],
+  "words": [
+    {
+      "w": "micromanage",
+      "ipa": "/ˌmaɪkroʊˈmænɪdʒ/",
+      "zh": "事无巨细地管",
+      "ex": "I don't want to micromanage, so I'll only join the design review."
+    },
+    {
+      "w": "trust",
+      "ipa": "/trʌst/",
+      "zh": "信任",
+      "ex": "Giving her the launch decision showed real trust."
+    },
+    {
+      "w": "abdication",
+      "ipa": "/ˌæbdɪˈkeɪʃən/",
+      "zh": "放弃（责任）、甩手",
+      "ex": "Leaving the team alone during the incident felt like abdication."
+    },
+    {
+      "w": "latency",
+      "ipa": "/ˈleɪtənsi/",
+      "zh": "延迟",
+      "ex": "Latency doubled after the cache was disabled."
+    },
+    {
+      "w": "explicit",
+      "ipa": "/ɪkˈsplɪsɪt/",
+      "zh": "明确的",
+      "ex": "Let's be explicit about who can approve a rollback."
+    },
+    {
+      "w": "checkpoint",
+      "ipa": "/ˈtʃekpɔɪnt/",
+      "zh": "检查点、节点",
+      "ex": "Our next checkpoint is the demo on Wednesday."
+    },
+    {
+      "w": "suspicion",
+      "ipa": "/səˈspɪʃən/",
+      "zh": "怀疑",
+      "ex": "Too many status pings can feel like suspicion."
+    },
+    {
+      "w": "drift (v.)",
+      "ipa": "/drɪft/",
+      "zh": "偏离、漂移",
+      "ex": "Without a weekly sync, the scope started to drift.",
+      "tts_w": "drift"
+    },
+    {
+      "w": "reachable",
+      "ipa": "/ˈriːtʃəbl/",
+      "zh": "联系得上的",
+      "ex": "I'll be reachable on chat during the rollout if you need me."
+    }
+  ]
+}

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Asking Someone to Repeat Without Embarrassment · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "092", "title": "Asking Someone to Repeat Without Embarrassment", "meta": "B2 · 约 290 词 · 场景：请人重复", "voice": "en-SG-WayneNeural", "rate": "-5%", "sections": [{"heading": "1. The Cost of Nodding Along", "heading_zh": "1. 跟着点头的代价", "rows": [[{"id": "s0_0_0", "md": "Almost everyone in a global team has done it.", "text": "Almost everyone in a global team has done it.", "zh": "在全球化团队里，几乎每个人都干过这种事。", "sp": null}, {"id": "s0_0_1", "md": "A colleague speaks quickly, with an accent you are not used to, and you miss a key word.", "text": "A colleague speaks quickly, with an accent you are not used to, and you miss a key word.", "zh": "同事语速很快，带着你不熟的口音，你漏听了一个关键词。", "sp": null}, {"id": "s0_0_2", "md": "Instead of asking, you __nod along__ and hope it becomes clear later.", "text": "Instead of asking, you nod along and hope it becomes clear later.", "zh": "你没开口问，而是跟着点头，指望之后自然就明白了。", "sp": null}], [{"id": "s0_1_0", "md": "Sometimes it does.", "text": "Sometimes it does.", "zh": "有时候确实会明白。", "sp": null}, {"id": "s0_1_1", "md": "Often it does not, and the ==misunderstanding== shows up weeks later as the wrong feature or a missed deadline.", "text": "Often it does not, and the misunderstanding shows up weeks later as the wrong feature or a missed deadline.", "zh": "但更多时候不会，几周后这个误解就冒出来了，变成做错的功能或者错过的 deadline。", "sp": null}, {"id": "s0_1_2", "md": "**Pretending to understand feels polite in the moment, but it is the least polite choice in the long run.**", "text": "Pretending to understand feels polite in the moment, but it is the least polite choice in the long run.", "zh": "假装听懂，当下显得很礼貌，但长远看是最不礼貌的选择。", "sp": null}], [{"id": "s0_2_0", "md": "Asking someone to repeat is not a sign of weak English.", "text": "Asking someone to repeat is not a sign of weak English.", "zh": "请别人重复一遍，并不说明你英语差。", "sp": null}, {"id": "s0_2_1", "md": "Native speakers do it all the time, and they rarely ==apologize== for it.", "text": "Native speakers do it all the time, and they rarely apologize for it.", "zh": "母语者天天这么干，而且很少为此道歉。", "sp": null}, {"id": "s0_2_2", "md": "The difference is that they ask in a ==targeted== way that makes repeating easy.", "text": "The difference is that they ask in a targeted way that makes repeating easy.", "zh": "区别在于，他们问得很有针对性，让对方很容易重复。", "sp": null}]]}, {"heading": "2. Ask for the Missing Piece", "heading_zh": "2. 只问漏掉的那一块", "rows": [[{"id": "s1_0_0", "md": "Instead of a general \"Sorry?\", repeat the part you did catch and ask for the rest.", "text": "Instead of a general \"Sorry?\", repeat the part you did catch and ask for the rest.", "zh": "别笼统地来一句「Sorry？」，而是把你听到的那部分复述出来，再问剩下的。", "sp": null}, {"id": "s1_0_1", "md": "\"You said the release moves to Thursday, and then what was the second part?\"", "text": "\"You said the release moves to Thursday, and then what was the second part?\"", "zh": "「你说发布挪到周四，然后第二点是什么来着？」", "sp": null}, {"id": "s1_0_2", "md": "This shows you were listening and tells the speaker exactly what to ==clarify==.", "text": "This shows you were listening and tells the speaker exactly what to clarify.", "zh": "这说明你在认真听，也让对方清楚该澄清哪一块。", "sp": null}], [{"id": "s1_1_0", "md": "If a single word is the problem, ask about that word.", "text": "If a single word is the problem, ask about that word.", "zh": "如果只是某一个词没听清，就只问那个词。", "sp": null}, {"id": "s1_1_1", "md": "\"Sorry, did you say fifty or fifteen?\" or \"Could you spell the name of that service?\"", "text": "\"Sorry, did you say fifty or fifteen?\" or \"Could you spell the name of that service?\"", "zh": "「不好意思，你说的是五十还是十五？」或者「那个服务的名字能拼一下吗？」", "sp": null}, {"id": "s1_1_2", "md": "Numbers and names are the most common ==trouble spots==, so it is worth checking them every time.", "text": "Numbers and names are the most common trouble spots, so it is worth checking them every time.", "zh": "数字和名字是最容易出岔子的地方，所以每次都值得确认一下。", "sp": null}], [{"id": "s1_2_0", "md": "**Blame the line, not the person.**", "text": "Blame the line, not the person.", "zh": "怪线路，别怪人。", "sp": null}, {"id": "s1_2_1", "md": "\"The audio __cut out__ for a second\" or \"I think I missed that because of the noise here\" __takes the pressure off__ both of you.", "text": "\"The audio cut out for a second\" or \"I think I missed that because of the noise here\" takes the pressure off both of you.", "zh": "「刚才声音断了一下」或者「我这边太吵，好像没听到」，能给你们俩都减点压力。", "sp": null}, {"id": "s1_2_2", "md": "Nobody has to feel that their accent is the problem, even if it partly is.", "text": "Nobody has to feel that their accent is the problem, even if it partly is.", "zh": "谁都不用觉得是自己的口音有问题，哪怕确实有一部分原因在这儿。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, if you are still not sure, __play it back__ in your own words.", "text": "Finally, if you are still not sure, play it back in your own words.", "zh": "最后，如果还是不确定，就用自己的话复述一遍。", "sp": null}, {"id": "s1_3_1", "md": "\"Just to confirm, you need the report by Friday, not Monday, right?\"", "text": "\"Just to confirm, you need the report by Friday, not Monday, right?\"", "zh": "「我确认一下，报告是周五要，不是周一，对吧？」", "sp": null}, {"id": "s1_3_2", "md": "It takes five seconds and saves a week of ==rework==.", "text": "It takes five seconds and saves a week of rework.", "zh": "花五秒钟，能省下一周的返工。", "sp": null}]]}], "gist": [{"q": "为什么假装听懂是最不礼貌的选择？", "a": "当下看似礼貌，但误解几周后会变成做错的功能或错过的截止日期。"}, {"q": "比起笼统的 \"Sorry?\"，作者建议怎么请人重复？", "a": "复述你听到的部分，只问没听清的那部分；单个词就问那个词，数字和名字一定要核对。"}, {"q": "“怪线路不怪人”和最后一步分别指什么？", "a": "把没听清归因于音频或噪音，减轻双方压力；最后用自己的话复述确认，五秒钟省掉一周返工。"}], "dictation": [{"id": "s0_1_2", "text": "Pretending to understand feels polite in the moment, but it is the least polite choice in the long run."}, {"id": "s0_2_0", "text": "Asking someone to repeat is not a sign of weak English."}, {"id": "s1_2_0", "text": "Blame the line, not the person."}, {"id": "s1_3_2", "text": "It takes five seconds and saves a week of rework."}], "shadow": {"text": "Instead of a general \"Sorry?\", repeat the part you did catch and ask for the rest. \"You said the release moves to Thursday, and then what was the second part?\" This shows you were listening and tells the speaker exactly what to clarify.", "marked": "Instead of a general \"<b>Sorry</b>?\", / repeat the part you <b>did</b> catch / and ask for the <b>rest</b>. //<br>\"You said the release moves to <b>Thursday</b>, / and then what was the <b>second</b> part?\" //<br>This shows you were <b>listening</b> / and tells the speaker <b>exactly</b> / what to <b>clarify</b>. //"}, "prompts": [{"q": "印度同事在会上语速很快地说了一大段，你只听到 migrate the database 和 next sprint，中间没听清。精准地请他重复，30 秒。", "ref": "Sorry, Rahul, I want to make sure I got that right. You said we need to migrate the database in the next sprint, but I missed the part in the middle. Was it the user database or the logging one? And who's doing the migration? The audio dropped a little on my side.", "ref_zh": "不好意思 Rahul，我想确认一下我理解得对不对。你说我们下个 sprint 要迁移数据库，但中间那部分我没听到。是用户库还是日志库？迁移由谁来做？我这边刚才声音有点断。", "id": "ref0"}, {"q": "电话里合作方说了一个数字，你不确定是 fifteen 还是 fifty，截止时间也没听清。用复述来确认。", "ref": "Sorry, the line's a bit unclear on my end. Did you say fifteen thousand requests or fifty thousand? Fifty, got it, thanks. And just to confirm the timing, you need the first version by the end of this month, not the end of next month, right? Great, I'll send a short summary after the call.", "ref_zh": "不好意思，我这边信号不太清楚。你说的是一万五千次请求还是五万次？五万，好的，谢谢。时间上我也确认一下，第一版是这个月底要，不是下个月底，对吧？好，挂了电话我发个简短的纪要。", "id": "ref1"}], "words": [{"w": "misunderstanding", "ipa": "/ˌmɪsʌndərˈstændɪŋ/", "zh": "误解", "ex": "The delay came from a misunderstanding about who owned the API.", "id": "w0"}, {"w": "apologize", "ipa": "/əˈpɑːləˌdʒaɪz/", "zh": "道歉", "ex": "No need to apologize, just send the numbers when you have them.", "id": "w1"}, {"w": "targeted", "ipa": "/ˈtɑːrɡɪtɪd/", "zh": "有针对性的", "ex": "Instead of a general reminder, send a targeted message to the two owners.", "id": "w2"}, {"w": "clarify", "ipa": "/ˈklerəˌfaɪ/", "zh": "澄清、说明", "ex": "Could you clarify whether this applies to all regions?", "id": "w3"}, {"w": "trouble spot", "ipa": "/ˈtrʌbəl spɑːt/", "zh": "容易出问题的地方", "ex": "Time zone conversion is a classic trouble spot in our scheduler.", "id": "w4"}, {"w": "rework", "ipa": "/ˈriːˌwɜːrk/", "zh": "返工", "ex": "Unclear specs lead to weeks of rework.", "id": "w5"}, {"w": "nod along", "ipa": "/nɑːd əˈlɔːŋ/", "zh": "跟着点头（假装听懂）", "ex": "I nodded along, but honestly I lost him after the second slide.", "id": "w6"}, {"w": "cut out", "ipa": "/kʌt aʊt/", "zh": "（声音）断掉", "ex": "Your audio keeps cutting out, could you turn off your video?", "id": "w7"}, {"w": "catch (v.)", "ipa": "/kætʃ/", "zh": "听清、听到", "ex": "Sorry, I didn't catch the last part, could you say it again?", "tts_w": "catch", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Cost of Nodding Along", "zh": "1. 跟着点头的代价", "start": 0.0, "end": 3.6, "words": [[0.103, 0.734], [0.945, 1.103], [1.116, 1.458], [1.471, 1.629], [1.642, 2.037], [2.05, 2.668]]}, {"kind": "s", "id": "s0_0_0", "md": "Almost everyone in a global team has done it.", "zh": "在全球化团队里，几乎每个人都干过这种事。", "sp": null, "gap": false, "start": 3.6, "end": 7.416, "words": [[3.703, 4.124], [4.137, 4.584], [4.597, 4.729], [4.742, 4.834], [4.847, 5.229], [5.242, 5.545], [5.558, 5.808], [5.821, 6.084], [6.097, 6.479]]}, {"kind": "s", "id": "s0_0_1", "md": "A colleague speaks quickly, with an accent you are not used to, and you miss a key word.", "zh": "同事语速很快，带着你不熟的口音，你漏听了一个关键词。", "sp": null, "gap": false, "start": 7.416, "end": 14.256, "words": [[7.519, 7.69], [7.703, 8.111], [8.124, 8.492], [8.505, 9.19], [9.361, 9.624], [9.637, 9.769], [9.782, 10.229], [10.242, 10.387], [10.4, 10.519], [10.532, 10.769], [10.782, 11.084], [11.098, 11.427], [11.716, 11.927], [11.94, 12.058], [12.071, 12.374], [12.387, 12.492], [12.505, 12.769], [12.782, 13.321]]}, {"kind": "s", "id": "s0_0_2", "md": "Instead of asking, you __nod along__ and hope it becomes clear later.", "zh": "你没开口问，而是跟着点头，指望之后自然就明白了。", "sp": null, "gap": false, "start": 14.256, "end": 19.608, "words": [[14.359, 14.819], [14.832, 15.003], [15.017, 15.674], [15.885, 16.056], [16.069, 16.319], [16.332, 16.674], [16.688, 16.845], [16.859, 17.161], [17.174, 17.319], [17.332, 17.78], [17.793, 18.069], [18.082, 18.674]]}, {"kind": "s", "id": "s0_1_0", "md": "Sometimes it does.", "zh": "有时候确实会明白。", "sp": null, "gap": true, "start": 19.608, "end": 22.272, "words": [[19.711, 20.461], [20.474, 20.671], [20.684, 21.342]]}, {"kind": "s", "id": "s0_1_1", "md": "Often it does not, and the ==misunderstanding== shows up weeks later as the wrong feature or a missed deadline.", "zh": "但更多时候不会，几周后这个误解就冒出来了，变成做错的功能或者错过的 deadline。", "sp": null, "gap": false, "start": 22.272, "end": 29.832, "words": [[22.375, 22.756], [22.769, 22.888], [22.901, 23.177], [23.19, 23.638], [23.901, 24.085], [24.098, 24.177], [24.19, 25.151], [25.164, 25.572], [25.585, 25.783], [25.796, 26.111], [26.125, 26.546], [26.559, 26.73], [26.743, 26.875], [26.888, 27.164], [27.177, 27.677], [27.69, 27.835], [27.848, 27.875], [27.888, 28.23], [28.243, 28.901]]}, {"kind": "s", "id": "s0_1_2", "md": "**Pretending to understand feels polite in the moment, but it is the least polite choice in the long run.**", "zh": "假装听懂，当下显得很礼貌，但长远看是最不礼貌的选择。", "sp": null, "gap": false, "start": 29.832, "end": 36.744, "words": [[29.935, 30.514], [30.527, 30.658], [30.671, 31.25], [31.264, 31.579], [31.593, 31.974], [31.987, 32.079], [32.093, 32.171], [32.185, 32.777], [33.014, 33.237], [33.25, 33.343], [33.356, 33.487], [33.5, 33.593], [33.606, 34.0], [34.014, 34.356], [34.369, 34.777], [34.79, 34.908], [34.921, 35.0], [35.014, 35.316], [35.329, 35.803]]}, {"kind": "s", "id": "s0_2_0", "md": "Asking someone to repeat is not a sign of weak English.", "zh": "请别人重复一遍，并不说明你英语差。", "sp": null, "gap": true, "start": 36.744, "end": 41.232, "words": [[36.847, 37.32], [37.333, 37.794], [37.807, 37.939], [37.952, 38.373], [38.386, 38.57], [38.583, 38.781], [38.794, 38.833], [38.847, 39.176], [39.189, 39.36], [39.373, 39.583], [39.597, 40.294]]}, {"kind": "s", "id": "s0_2_1", "md": "Native speakers do it all the time, and they rarely ==apologize== for it.", "zh": "母语者天天这么干，而且很少为此道歉。", "sp": null, "gap": false, "start": 41.232, "end": 46.944, "words": [[41.335, 41.795], [41.808, 42.348], [42.361, 42.585], [42.598, 42.821], [42.835, 43.019], [43.032, 43.15], [43.164, 43.664], [43.927, 44.15], [44.164, 44.295], [44.308, 44.703], [44.716, 45.4], [45.414, 45.585], [45.598, 46.019]]}, {"kind": "s", "id": "s0_2_2", "md": "The difference is that they ask in a ==targeted== way that makes repeating easy.", "zh": "区别在于，他们问得很有针对性，让对方很容易重复。", "sp": null, "gap": false, "start": 46.944, "end": 52.32, "words": [[47.047, 47.218], [47.231, 47.718], [47.731, 47.889], [47.902, 48.112], [48.126, 48.323], [48.336, 48.652], [48.665, 48.783], [48.797, 48.889], [48.902, 49.428], [49.441, 49.652], [49.665, 49.862], [49.876, 50.205], [50.218, 50.823], [50.836, 51.389]]}, {"kind": "h", "id": "h1", "md": "2. Ask for the Missing Piece", "zh": "2. 只问漏掉的那一块", "start": 52.32, "end": 55.992, "words": [[52.423, 53.094], [53.317, 53.66], [53.673, 53.817], [53.831, 53.909], [53.923, 54.383], [54.396, 55.067]]}, {"kind": "s", "id": "s1_0_0", "md": "Instead of a general \"Sorry?\", repeat the part you did catch and ask for the rest.", "zh": "别笼统地来一句「Sorry？」，而是把你听到的那部分复述出来，再问剩下的。", "sp": null, "gap": false, "start": 55.992, "end": 61.968, "words": [[56.095, 56.542], [56.555, 56.7], [56.713, 56.792], [56.805, 57.213], [57.226, 57.924], [58.108, 58.503], [58.516, 58.634], [58.647, 58.91], [58.924, 59.042], [59.055, 59.279], [59.292, 59.687], [59.7, 59.884], [59.897, 60.187], [60.2, 60.331], [60.345, 60.424], [60.437, 61.042]]}, {"kind": "s", "id": "s1_0_1", "md": "\"You said the release moves to Thursday, and then what was the second part?\"", "zh": "「你说发布挪到周四，然后第二点是什么来着？」", "sp": null, "gap": false, "start": 61.968, "end": 67.32, "words": [[62.071, 62.242], [62.255, 62.544], [62.557, 62.65], [62.663, 63.097], [63.11, 63.413], [63.426, 63.557], [63.571, 64.268], [64.531, 64.742], [64.755, 64.992], [65.005, 65.176], [65.189, 65.386], [65.4, 65.492], [65.505, 65.939], [65.952, 66.386]]}, {"kind": "s", "id": "s1_0_2", "md": "This shows you were listening and tells the speaker exactly what to ==clarify==.", "zh": "这说明你在认真听，也让对方清楚该澄清哪一块。", "sp": null, "gap": false, "start": 67.32, "end": 72.504, "words": [[67.423, 67.659], [67.673, 68.054], [68.067, 68.199], [68.212, 68.344], [68.357, 68.896], [68.909, 69.094], [69.107, 69.423], [69.436, 69.528], [69.541, 70.002], [70.015, 70.515], [70.528, 70.765], [70.778, 70.896], [70.909, 71.594]]}, {"kind": "s", "id": "s1_1_0", "md": "If a single word is the problem, ask about that word.", "zh": "如果只是某一个词没听清，就只问那个词。", "sp": null, "gap": true, "start": 72.504, "end": 77.184, "words": [[72.607, 72.804], [72.817, 72.857], [72.87, 73.304], [73.317, 73.567], [73.58, 73.738], [73.751, 73.909], [73.922, 74.607], [74.843, 75.172], [75.186, 75.488], [75.501, 75.712], [75.725, 76.251]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Sorry, did you say fifty or fifteen?\" or \"Could you spell the name of that service?\"", "zh": "「不好意思，你说的是五十还是十五？」或者「那个服务的名字能拼一下吗？」", "sp": null, "gap": false, "start": 77.184, "end": 84.312, "words": [[77.287, 77.997], [78.195, 78.418], [78.431, 78.576], [78.589, 78.892], [78.905, 79.431], [79.445, 79.576], [79.589, 80.431], [80.616, 81.063], [81.155, 81.352], [81.366, 81.51], [81.523, 81.879], [81.892, 81.971], [81.984, 82.287], [82.3, 82.445], [82.458, 82.629], [82.642, 83.392]]}, {"kind": "s", "id": "s1_1_2", "md": "Numbers and names are the most common ==trouble spots==, so it is worth checking them every time.", "zh": "数字和名字是最容易出岔子的地方，所以每次都值得确认一下。", "sp": null, "gap": false, "start": 84.312, "end": 91.128, "words": [[84.415, 84.967], [84.98, 85.125], [85.138, 85.52], [85.533, 85.665], [85.678, 85.757], [85.77, 86.099], [86.112, 86.467], [86.48, 86.823], [86.836, 87.52], [87.744, 88.007], [88.02, 88.138], [88.151, 88.309], [88.323, 88.599], [88.612, 89.02], [89.033, 89.283], [89.296, 89.586], [89.599, 90.191]]}, {"kind": "s", "id": "s1_2_0", "md": "**Blame the line, not the person.**", "zh": "怪线路，别怪人。", "sp": null, "gap": true, "start": 91.128, "end": 94.512, "words": [[91.231, 91.573], [91.586, 91.678], [91.691, 92.204], [92.441, 92.717], [92.731, 92.862], [92.875, 93.586]]}, {"kind": "s", "id": "s1_2_1", "md": "\"The audio __cut out__ for a second\" or \"I think I missed that because of the noise here\" __takes the pressure off__ both of you.", "zh": "「刚才声音断了一下」或者「我这边太吵，好像没听到」，能给你们俩都减点压力。", "sp": null, "gap": false, "start": 94.512, "end": 102.624, "words": [[94.615, 94.772], [94.786, 95.115], [95.128, 95.365], [95.378, 95.562], [95.575, 95.733], [95.746, 95.786], [95.799, 96.43], [96.523, 96.904], [96.97, 97.036], [97.049, 97.391], [97.404, 97.496], [97.509, 97.825], [97.838, 98.009], [98.023, 98.391], [98.404, 98.509], [98.523, 98.615], [98.628, 99.009], [99.023, 99.549], [99.641, 99.904], [99.917, 100.062], [100.075, 100.523], [100.536, 100.759], [100.773, 101.049], [101.062, 101.246], [101.259, 101.694]]}, {"kind": "s", "id": "s1_2_2", "md": "Nobody has to feel that their accent is the problem, even if it partly is.", "zh": "谁都不用觉得是自己的口音有问题，哪怕确实有一部分原因在这儿。", "sp": null, "gap": false, "start": 102.624, "end": 108.576, "words": [[102.727, 103.24], [103.253, 103.477], [103.49, 103.608], [103.621, 103.937], [103.95, 104.161], [104.174, 104.358], [104.371, 104.832], [104.845, 104.977], [104.99, 105.121], [105.135, 105.753], [105.977, 106.345], [106.358, 106.542], [106.556, 106.7], [106.713, 107.161], [107.174, 107.648]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, if you are still not sure, __play it back__ in your own words.", "zh": "最后，如果还是不确定，就用自己的话复述一遍。", "sp": null, "gap": true, "start": 108.576, "end": 114.48, "words": [[108.679, 109.508], [109.731, 109.955], [109.968, 110.1], [110.113, 110.218], [110.231, 110.521], [110.534, 110.731], [110.744, 111.271], [111.521, 111.81], [111.823, 111.981], [111.994, 112.284], [112.297, 112.442], [112.455, 112.626], [112.639, 112.85], [112.863, 113.547]]}, {"kind": "s", "id": "s1_3_1", "md": "\"Just to confirm, you need the report by Friday, not Monday, right?\"", "zh": "「我确认一下，报告是周五要，不是周一，对吧？」", "sp": null, "gap": false, "start": 114.48, "end": 120.744, "words": [[114.583, 114.859], [114.872, 114.977], [114.991, 115.714], [115.964, 116.135], [116.148, 116.372], [116.385, 116.477], [116.491, 116.938], [116.951, 117.135], [117.148, 117.859], [118.096, 118.398], [118.412, 119.056], [119.293, 119.819]]}, {"kind": "s", "id": "s1_3_2", "md": "It takes five seconds and saves a week of ==rework==.", "zh": "花五秒钟，能省下一周的返工。", "sp": null, "gap": false, "start": 120.744, "end": 125.112, "words": [[120.847, 121.057], [121.07, 121.386], [121.399, 121.689], [121.702, 122.228], [122.241, 122.399], [122.412, 122.912], [122.926, 123.005], [123.018, 123.333], [123.347, 123.557], [123.57, 124.202]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

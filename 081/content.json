@@ -1,0 +1,182 @@
+{
+  "id": "081",
+  "title": "Small Talk Before the Meeting Starts",
+  "meta": "B2 · 约 290 词 · 场景：会前闲聊",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Two Minutes Nobody Plans For",
+      "paragraphs": [
+        [
+          "Most people treat the first two minutes of a meeting as dead time.",
+          "They check messages, stare at the agenda, or wait in silence for the last person to join.",
+          "But those two minutes are often the only ==informal== contact you have with people from other teams."
+        ],
+        [
+          "Nobody remembers the slides from a weekly sync.",
+          "They remember who said hello, who asked about their trip, and who made them laugh.",
+          "**Small talk is not a break from work; it is how people decide whether they trust you.**"
+        ],
+        [
+          "The problem is that many of us go blank when there is no agenda.",
+          "We __wait for someone else__ to start, and the silence grows ==awkward==.",
+          "The fix is not to become more ==outgoing==.",
+          "The fix is to have a simple pattern ready before you walk in."
+        ]
+      ],
+      "heading_zh": "1. 没人准备的那两分钟",
+      "paragraphs_zh": [
+        [
+          "大多数人把会议开始前的两分钟当成垃圾时间。",
+          "他们刷消息、盯着议程看，或者干等着最后一个人进会。",
+          "但这两分钟，往往是你和其他团队的人唯一一次非正式接触。"
+        ],
+        [
+          "周会上的 PPT 没人记得住。",
+          "大家记得的是谁打了招呼，谁问了他们出去玩得怎么样，谁把他们逗笑了。",
+          "闲聊不是工作之余的休息；人家就是靠这个来判断能不能信任你。"
+        ],
+        [
+          "问题是，一没有议程，很多人脑子就一片空白。",
+          "我们等着别人先开口，沉默越拖越尴尬。",
+          "解决办法不是让自己变得更外向。",
+          "而是进门之前，心里先备好一个简单的套路。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Notice, Ask, Add",
+      "paragraphs": [
+        [
+          "First, notice something small and ==neutral== that everyone shares.",
+          "It could be the weather, the coffee machine, or the fact that it is Friday.",
+          "\"Everyone looks a bit tired today, long week?\" is enough to __get the ball rolling__."
+        ],
+        [
+          "Next, ask a question that is easy to answer.",
+          "\"Did you end up going to that concert?\" works better than \"How are you?\", because it shows you __paid attention__ and gives the other person something ==concrete== to say."
+        ],
+        [
+          "Then add one small detail about yourself.",
+          "If they say the concert was great, you can say, \"Nice, I've been meaning to see them live.\"",
+          "**One question and one detail are enough to turn a silent room into a warm one.**"
+        ],
+        [
+          "When the host starts the meeting, let the chat go.",
+          "You do not need to finish the story.",
+          "A quick \"Let's __pick this up__ later\" leaves the door open, and people will ==associate== you with that small, friendly moment."
+        ]
+      ],
+      "heading_zh": "2. 观察、提问、补一句",
+      "paragraphs_zh": [
+        [
+          "第一步，注意到一件大家都有份的、不起眼又不敏感的小事。",
+          "可以是天气、咖啡机，或者今天是周五。",
+          "「今天大家看着都有点累啊，这周挺长的吧？」这一句就足够把话头打开了。"
+        ],
+        [
+          "第二步，问一个好回答的问题。",
+          "「那场演唱会你最后去了吗？」比「最近怎么样？」好用，因为它说明你上了心，也让对方有具体的东西可聊。"
+        ],
+        [
+          "第三步，补一句关于自己的小细节。",
+          "如果对方说演唱会特别棒，你可以说：「真好，我一直想去看他们的现场。」",
+          "一个问题加一个细节，就能把一屋子的冷场变得热乎起来。"
+        ],
+        [
+          "主持人一开始开会，就别再聊了。",
+          "你不需要把故事讲完。",
+          "一句「回头再接着聊」，给后面留了个口子，大家也会把你和那个轻松友好的小片刻联系在一起。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者怎么看会议开始前的那两分钟？",
+      "a": "不是空白时间，而是和其他组同事唯一的非正式接触；人们正是通过闲聊决定是否信任你。"
+    },
+    {
+      "q": "作者说冷场的解决办法是什么？",
+      "a": "不是让自己变得更外向，而是进门前准备好一个简单的套路。"
+    },
+    {
+      "q": "文中的套路有哪几步？",
+      "a": "Notice 注意一个大家共有的中性小事；Ask 问一个好回答的具体问题；Add 补一句关于自己的小细节；会议开始就自然收住，约“回头再聊”。"
+    }
+  ],
+  "dictation": [
+    "Small talk is not a break from work; it is how people decide whether they trust you.",
+    "The fix is to have a simple pattern ready before you walk in.",
+    "Next, ask a question that is easy to answer.",
+    "One question and one detail are enough to turn a silent room into a warm one."
+  ],
+  "shadow": {
+    "text": "Then add one small detail about yourself. If they say the concert was great, you can say, \"Nice, I've been meaning to see them live.\" One question and one detail are enough to turn a silent room into a warm one.",
+    "marked": "Then <b>add</b> one small <b>detail</b> / about <b>yourself</b>. //<br>If they say the concert was <b>great</b>, / you can say, / \"<b>Nice</b>, I've been <b>meaning</b> to see them <b>live</b>.\" //<br><b>One</b> question / and <b>one</b> detail / are enough to turn a <b>silent</b> room / into a <b>warm</b> one. //"
+  },
+  "prompts": [
+    {
+      "q": "周一部门会你提前进了会议室，只有一位伦敦办公室的同事在，他上周刚休假回来。用 Notice, Ask, Add 和他闲聊 30 秒。",
+      "ref": "Morning! You look pretty relaxed, so I guess the holiday did its job? I remember you said you were heading to Portugal. Did you make it to Lisbon in the end? Nice. I've been meaning to go there for years, mostly for the food. Let's grab a coffee after this and you can tell me where to eat.",
+      "ref_zh": "早啊！你看着挺放松的，假期效果不错吧？我记得你说要去葡萄牙。最后去成里斯本了吗？真好。我想去那儿好多年了，主要是冲着吃的。会后一起喝杯咖啡，你给我推荐几家馆子。"
+    },
+    {
+      "q": "线上会议大家都开着摄像头等主持人，场面很安静。你来打破沉默，30 秒。",
+      "ref": "Hi everyone, it's quiet today, are we all saving our energy for Friday? Priya, I saw your post about the half marathon last weekend. How did it go? That's impressive. I tried running outdoors in Singapore once and the humidity defeated me in ten minutes. Okay, looks like we're all here, let's pick this up after the call.",
+      "ref_zh": "大家好，今天挺安静啊，是都在给周五攒电吗？Priya，我看到你发的上周末半马的动态了。跑得怎么样？太厉害了。我在新加坡试过一次户外跑，十分钟就被湿度打败了。好，看样子人都到齐了，这个我们会后再接着聊。"
+    }
+  ],
+  "words": [
+    {
+      "w": "informal",
+      "ipa": "/ɪnˈfɔːrməl/",
+      "zh": "非正式的",
+      "ex": "Most of our real decisions start in informal chats, not in meetings."
+    },
+    {
+      "w": "awkward",
+      "ipa": "/ˈɔːkwərd/",
+      "zh": "尴尬的、别扭的",
+      "ex": "There was an awkward pause after he asked about the budget."
+    },
+    {
+      "w": "outgoing",
+      "ipa": "/ˈaʊtˌɡoʊɪŋ/",
+      "zh": "外向的、爱社交的",
+      "ex": "You don't have to be outgoing to be good at small talk."
+    },
+    {
+      "w": "neutral",
+      "ipa": "/ˈnuːtrəl/",
+      "zh": "中性的、不偏不倚的",
+      "ex": "The weather is a safe, neutral topic with almost anyone."
+    },
+    {
+      "w": "concrete",
+      "ipa": "/ˈkɑːnkriːt/",
+      "zh": "具体的、实在的",
+      "ex": "Give me one concrete example of where the process slowed you down."
+    },
+    {
+      "w": "associate (v.)",
+      "ipa": "/əˈsoʊʃiˌeɪt/",
+      "zh": "把……联系在一起",
+      "ex": "People still associate our team with that outage last year.",
+      "tts_w": "associate"
+    },
+    {
+      "w": "icebreaker",
+      "ipa": "/ˈaɪsˌbreɪkər/",
+      "zh": "破冰的话或活动",
+      "ex": "A quick question about the weekend is a good icebreaker."
+    },
+    {
+      "w": "rapport",
+      "ipa": "/ræˈpɔːr/",
+      "zh": "融洽关系",
+      "ex": "She built good rapport with the vendor before the hard negotiation."
+    }
+  ]
+}

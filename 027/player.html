@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Defending a Technical Decision · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "027", "title": "Defending a Technical Decision", "meta": "B2 · 约 260 词 · 场景：被质疑旧决策", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Defend the Reasoning, Not the Result", "heading_zh": "1. 为思路辩护，而不是为结果辩护", "rows": [[{"id": "s0_0_0", "md": "Six months ago, you chose a message queue instead of direct calls between services.", "text": "Six months ago, you chose a message queue instead of direct calls between services.", "zh": "六个月前，你选了消息队列，而不是服务之间直接调用。", "sp": null}, {"id": "s0_0_1", "md": "Now a director asks in a review why the system is so complicated.", "text": "Now a director asks in a review why the system is so complicated.", "zh": "现在有位总监在评审会上问，这个系统为什么这么复杂。", "sp": null}, {"id": "s0_0_2", "md": "You have about one minute to __make your case__.", "text": "You have about one minute to make your case.", "zh": "你大概只有一分钟来讲清楚你的理由。", "sp": null}], [{"id": "s0_1_0", "md": "The weak answer tries to ==justify== the result.", "text": "The weak answer tries to justify the result.", "zh": "弱的回答是想证明结果是对的。", "sp": null}, {"id": "s0_1_1", "md": "\"It was the right call, and it works fine\" sounds like you are protecting your ==ego==.", "text": "\"It was the right call, and it works fine\" sounds like you are protecting your ego.", "zh": "「当时那么选没错，现在也跑得好好的」，听起来像是在维护自己的面子。", "sp": null}, {"id": "s0_1_2", "md": "It also invites the next question, and the one after that.", "text": "It also invites the next question, and the one after that.", "zh": "而且它还会招来下一个问题，然后再下一个。", "sp": null}, {"id": "s0_1_3", "md": "The strong answer explains the reasoning, so people can judge it for themselves.", "text": "The strong answer explains the reasoning, so people can judge it for themselves.", "zh": "强的回答是把思路讲出来，让大家自己去判断。", "sp": null}], [{"id": "s0_2_0", "md": "**You are not defending a choice; you are showing how you made it.**", "text": "You are not defending a choice; you are showing how you made it.", "zh": "你不是在为一个选择辩护，而是在展示你是怎么做出这个选择的。", "sp": null}, {"id": "s0_2_1", "md": "If the reasoning was ==sound==, the decision holds up even when the outcome is mixed.", "text": "If the reasoning was sound, the decision holds up even when the outcome is mixed.", "zh": "如果思路站得住，哪怕结果有好有坏，这个决策也经得起推敲。", "sp": null}, {"id": "s0_2_2", "md": "If it was not, it is better that you __spot the flaw__ before someone else does.", "text": "If it was not, it is better that you spot the flaw before someone else does.", "zh": "如果思路有问题，那最好是你自己先发现漏洞，而不是让别人先发现。", "sp": null}]]}, {"heading": "2. Context, Options, Evidence", "heading_zh": "2. 背景、选项、证据", "rows": [[{"id": "s1_0_0", "md": "Start with the ==constraints== you faced at the time.", "text": "Start with the constraints you faced at the time.", "zh": "先讲清楚当时面临的约束。", "sp": null}, {"id": "s1_0_1", "md": "\"We had three teams shipping on different schedules, and direct calls kept breaking each other's releases.\"", "text": "\"We had three teams shipping on different schedules, and direct calls kept breaking each other's releases.\"", "zh": "「当时有三个团队按不同的节奏发版，直接调用老是把彼此的发布搞挂。」", "sp": null}, {"id": "s1_0_2", "md": "Context makes an old decision look far less ==arbitrary==.", "text": "Context makes an old decision look far less arbitrary.", "zh": "有了背景，一个旧决策看起来就没那么拍脑袋了。", "sp": null}], [{"id": "s1_1_0", "md": "Then show the ==alternatives== you rejected.", "text": "Then show the alternatives you rejected.", "zh": "然后讲你否掉了哪些备选方案。", "sp": null}, {"id": "s1_1_1", "md": "\"We looked at a shared library and a single deployment, and both would have slowed every team down.\"", "text": "\"We looked at a shared library and a single deployment, and both would have slowed every team down.\"", "zh": "「我们看过共享库和统一部署，这两个方案都会拖慢每个团队。」", "sp": null}, {"id": "s1_1_2", "md": "This proves you __did your homework__ and did not just follow your gut.", "text": "This proves you did your homework and did not just follow your gut.", "zh": "这证明你做过功课，不是凭感觉拍板的。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, share the evidence and its limits.", "text": "Finally, share the evidence and its limits.", "zh": "最后，拿出证据，也讲清楚证据的局限。", "sp": null}, {"id": "s1_2_1", "md": "\"Release conflicts dropped to almost zero, but debugging got harder, and that cost is real.\"", "text": "\"Release conflicts dropped to almost zero, but debugging got harder, and that cost is real.\"", "zh": "「发布冲突基本降到了零，但排查问题变难了，这个代价是实打实的。」", "sp": null}, {"id": "s1_2_2", "md": "**Naming the downside yourself takes the weapon out of your critic's hand.**", "text": "Naming the downside yourself takes the weapon out of your critic's hand.", "zh": "自己先把缺点说出来，批评你的人手里就没了武器。", "sp": null}], [{"id": "s1_3_0", "md": "End by saying what data would change your mind.", "text": "End by saying what data would change your mind.", "zh": "结尾说一下，什么样的数据会让你改变主意。", "sp": null}, {"id": "s1_3_1", "md": "That one sentence is the difference between confidence and ==stubbornness==, and senior people __notice the difference__ right away.", "text": "That one sentence is the difference between confidence and stubbornness, and senior people notice the difference right away.", "zh": "就这一句话，区分了自信和固执，而资深的人一下子就能听出这个区别。", "sp": null}]]}], "gist": [{"q": "被质疑旧决策时，弱的回答和强的回答区别在哪？", "a": "弱的回答为结果辩护（「当时是对的、现在跑得好」），像在护面子；强的回答讲清推理过程，让大家自己判断。"}, {"q": "作者建议回答的结构是什么？", "a": "当时的约束条件 → 否掉了哪些备选方案 → 证据及其局限（主动讲代价）→ 什么数据会让你改变主意。"}, {"q": "为什么要主动说出决策的缺点？", "a": "自己先讲出代价，就等于缴了批评者的武器，也显得自信而不是固执。"}], "dictation": [{"id": "s0_2_0", "text": "You are not defending a choice; you are showing how you made it."}, {"id": "s1_2_2", "text": "Naming the downside yourself takes the weapon out of your critic's hand."}, {"id": "s1_0_2", "text": "Context makes an old decision look far less arbitrary."}, {"id": "s1_3_0", "text": "End by saying what data would change your mind."}], "shadow": {"text": "Finally, share the evidence and its limits. \"Release conflicts dropped to almost zero, but debugging got harder, and that cost is real.\" Naming the downside yourself takes the weapon out of your critic's hand.", "marked": "Finally, / share the <b>evidence</b> / and its <b>limits</b>. //<br>\"Release conflicts dropped to <b>almost zero</b>, / <b>but</b> debugging got <b>harder</b>, / and that cost is <b>real</b>.\" //<br><b>Naming</b> the downside <b>yourself</b> / takes the <b>weapon</b> / out of your critic's hand. //"}, "prompts": [{"q": "新来的总监问你：「当初为什么要自研配置中心，不直接用现成方案？」用 30 秒按「约束、备选、证据、什么会让我改主意」来回答。", "ref": "Good question. Two years ago we needed config changes to reach every region in under ten seconds, and the open source options we tested took close to a minute. We also looked at buying a hosted service, but it couldn't run inside our private network. Since then, change propagation has stayed fast and we've had no config outages. The cost is maintenance. If a hosted option now meets the latency bar, I'd be open to switching.", "ref_zh": "好问题。两年前我们要求配置变更在十秒内推到所有地区，而我们测过的开源方案都要将近一分钟。我们也考虑过买托管服务，但它没法跑在我们的内网里。从那以后，变更下发一直很快，也没出过配置相关的故障。代价是维护成本。如果现在有托管方案能达到延迟要求，我愿意考虑切过去。", "id": "ref0"}, {"q": "同事说你选的数据库「太小众、招人难」。承认这个代价，同时讲清楚当时的理由。", "ref": "That's a fair point, and I'll admit hiring is harder because of it. When we made the choice, our main constraint was write volume. The mainstream option needed three times the hardware for the same load, and we had a fixed budget. So we accepted a smaller talent pool in exchange for lower cost. If our write volume drops or the budget changes, I'd happily reopen that decision.", "ref_zh": "这个点说得对，我承认因为这个，招人确实更难了。当时做选择时，我们最主要的约束是写入量。主流方案在同样负载下需要三倍的机器，而我们的预算是固定的。所以我们用更小的人才池，换来了更低的成本。如果写入量下降了，或者预算有变化，我很乐意重新讨论这个决策。", "id": "ref1"}], "words": [{"w": "justify", "ipa": "/ˈdʒʌstɪfaɪ/", "zh": "为……辩护、证明合理", "ex": "Can we justify a new service for just two endpoints?", "id": "w0"}, {"w": "ego", "ipa": "/ˈiːɡoʊ/", "zh": "自尊心、面子", "ex": "Let's leave ego out of it and look at the benchmark.", "id": "w1"}, {"w": "sound (adj.)", "ipa": "/saʊnd/", "zh": "合理的、站得住的", "ex": "The plan is sound, but the timeline is too tight.", "tts_w": "sound", "id": "w2"}, {"w": "flaw", "ipa": "/flɔː/", "zh": "缺陷、漏洞", "ex": "We found a flaw in the retry logic during load testing.", "id": "w3"}, {"w": "constraint", "ipa": "/kənˈstreɪnt/", "zh": "约束、限制", "ex": "Our main constraint was a fixed hardware budget.", "id": "w4"}, {"w": "arbitrary", "ipa": "/ˈɑːrbɪtreri/", "zh": "随意的、武断的", "ex": "The thirty-second timeout looks arbitrary; where did it come from?", "id": "w5"}, {"w": "alternative", "ipa": "/ɔːlˈtɜːrnətɪv/", "zh": "备选方案", "ex": "We considered two alternatives before picking this design.", "id": "w6"}, {"w": "stubbornness", "ipa": "/ˈstʌbərnnəs/", "zh": "固执", "ex": "Holding on to the old design now looks like stubbornness.", "id": "w7"}, {"w": "downside", "ipa": "/ˈdaʊnsaɪd/", "zh": "缺点、负面影响", "ex": "The downside is that local debugging gets harder.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Defend the Reasoning, Not the Result", "zh": "1. 为思路辩护，而不是为结果辩护", "start": 0.0, "end": 3.192, "words": [[0.105, 0.421], [0.763, 1.092], [1.105, 1.171], [1.184, 1.697], [2.026, 2.197], [2.211, 2.289], [2.303, 2.789]]}, {"kind": "s", "id": "s0_0_0", "md": "Six months ago, you chose a message queue instead of direct calls between services.", "zh": "六个月前，你选了消息队列，而不是服务之间直接调用。", "sp": null, "gap": false, "start": 3.192, "end": 8.496, "words": [[3.31, 3.547], [3.56, 3.81], [3.824, 4.166], [4.455, 4.534], [4.547, 4.837], [4.85, 4.889], [4.903, 5.324], [5.337, 5.626], [5.639, 6.074], [6.087, 6.179], [6.192, 6.6], [6.613, 7.008], [7.021, 7.389], [7.403, 8.1]]}, {"kind": "s", "id": "s0_0_1", "md": "Now a director asks in a review why the system is so complicated.", "zh": "现在有位总监在评审会上问，这个系统为什么这么复杂。", "sp": null, "gap": false, "start": 8.496, "end": 12.96, "words": [[8.601, 8.799], [8.812, 8.864], [8.878, 9.364], [9.378, 9.772], [9.785, 9.891], [9.904, 9.957], [9.97, 10.483], [10.496, 10.707], [10.72, 10.812], [10.825, 11.378], [11.496, 11.575], [11.588, 11.772], [11.785, 12.575]]}, {"kind": "s", "id": "s0_0_2", "md": "You have about one minute to __make your case__.", "zh": "你大概只有一分钟来讲清楚你的理由。", "sp": null, "gap": false, "start": 12.96, "end": 15.528, "words": [[13.065, 13.171], [13.184, 13.342], [13.355, 13.644], [13.657, 13.894], [13.907, 14.144], [14.157, 14.25], [14.263, 14.486], [14.499, 14.618], [14.631, 15.131]]}, {"kind": "s", "id": "s0_1_0", "md": "The weak answer tries to ==justify== the result.", "zh": "弱的回答是想证明结果是对的。", "sp": null, "gap": true, "start": 15.528, "end": 18.648, "words": [[15.646, 15.725], [15.739, 15.989], [16.002, 16.37], [16.541, 16.91], [16.923, 17.028], [17.041, 17.646], [17.66, 17.752], [17.765, 18.252]]}, {"kind": "s", "id": "s0_1_1", "md": "\"It was the right call, and it works fine\" sounds like you are protecting your ==ego==.", "zh": "「当时那么选没错，现在也跑得好好的」，听起来像是在维护自己的面子。", "sp": null, "gap": false, "start": 18.648, "end": 23.496, "words": [[18.819, 18.845], [18.845, 18.977], [18.99, 19.082], [19.095, 19.359], [19.372, 19.727], [20.135, 20.187], [20.201, 20.266], [20.28, 20.53], [20.543, 20.938], [21.28, 21.582], [21.595, 21.753], [21.766, 21.872], [21.885, 21.977], [21.99, 22.516], [22.53, 22.661], [22.674, 23.109]]}, {"kind": "s", "id": "s0_1_2", "md": "It also invites the next question, and the one after that.", "zh": "而且它还会招来下一个问题，然后再下一个。", "sp": null, "gap": false, "start": 23.496, "end": 27.072, "words": [[23.601, 23.693], [23.707, 24.049], [24.062, 24.457], [24.47, 24.549], [24.562, 24.812], [24.825, 25.364], [25.693, 25.746], [25.759, 25.851], [25.864, 26.049], [26.062, 26.364], [26.378, 26.693]]}, {"kind": "s", "id": "s0_1_3", "md": "The strong answer explains the reasoning, so people can judge it for themselves.", "zh": "强的回答是把思路讲出来，让大家自己去判断。", "sp": null, "gap": false, "start": 27.072, "end": 31.656, "words": [[27.19, 27.243], [27.256, 27.677], [27.69, 27.993], [28.006, 28.493], [28.506, 28.585], [28.598, 29.085], [29.414, 29.546], [29.559, 29.888], [29.901, 30.046], [30.059, 30.335], [30.348, 30.414], [30.427, 30.546], [30.559, 31.269]]}, {"kind": "s", "id": "s0_2_0", "md": "**You are not defending a choice; you are showing how you made it.**", "zh": "你不是在为一个选择辩护，而是在展示你是怎么做出这个选择的。", "sp": null, "gap": true, "start": 31.656, "end": 35.376, "words": [[31.761, 31.88], [31.893, 31.985], [31.998, 32.248], [32.261, 32.722], [32.735, 32.774], [32.788, 33.353], [33.682, 33.748], [33.761, 33.853], [33.867, 34.222], [34.235, 34.393], [34.406, 34.538], [34.551, 34.814], [34.827, 34.998]]}, {"kind": "s", "id": "s0_2_1", "md": "If the reasoning was ==sound==, the decision holds up even when the outcome is mixed.", "zh": "如果思路站得住，哪怕结果有好有坏，这个决策也经得起推敲。", "sp": null, "gap": false, "start": 35.376, "end": 40.536, "words": [[35.481, 35.6], [35.613, 35.692], [35.705, 36.152], [36.165, 36.323], [36.337, 36.797], [37.179, 37.258], [37.271, 37.718], [37.731, 38.06], [38.073, 38.271], [38.481, 38.744], [38.758, 38.889], [38.902, 39.008], [39.021, 39.455], [39.468, 39.573], [39.587, 40.152]]}, {"kind": "s", "id": "s0_2_2", "md": "If it was not, it is better that you __spot the flaw__ before someone else does.", "zh": "如果思路有问题，那最好是你自己先发现漏洞，而不是让别人先发现。", "sp": null, "gap": false, "start": 40.536, "end": 45.096, "words": [[40.641, 40.747], [40.76, 40.812], [40.825, 40.97], [40.983, 41.339], [41.747, 41.812], [41.825, 41.957], [41.97, 42.233], [42.247, 42.365], [42.378, 42.47], [42.483, 42.891], [42.904, 42.983], [42.997, 43.365], [43.378, 43.747], [43.76, 44.062], [44.075, 44.26], [44.273, 44.707]]}, {"kind": "h", "id": "h1", "md": "2. Context, Options, Evidence", "zh": "2. 背景、选项、证据", "start": 45.096, "end": 48.456, "words": [[45.214, 45.451], [45.885, 46.543], [46.754, 47.372], [47.491, 48.057]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with the ==constraints== you faced at the time.", "zh": "先讲清楚当时面临的约束。", "sp": null, "gap": false, "start": 48.456, "end": 51.288, "words": [[48.561, 48.864], [48.877, 49.009], [49.022, 49.127], [49.14, 49.811], [49.824, 49.93], [49.943, 50.324], [50.338, 50.417], [50.43, 50.509], [50.522, 50.89]]}, {"kind": "s", "id": "s1_0_1", "md": "\"We had three teams shipping on different schedules, and direct calls kept breaking each other's releases.\"", "zh": "「当时有三个团队按不同的节奏发版，直接调用老是把彼此的发布搞挂。」", "sp": null, "gap": false, "start": 51.288, "end": 57.768, "words": [[51.472, 51.538], [51.538, 51.735], [51.749, 52.038], [52.051, 52.446], [52.551, 53.012], [53.025, 53.156], [53.17, 53.525], [53.538, 54.196], [54.485, 54.591], [54.604, 55.025], [55.038, 55.38], [55.393, 55.683], [55.696, 56.104], [56.117, 56.275], [56.288, 56.538], [56.551, 57.249]]}, {"kind": "s", "id": "s1_0_2", "md": "Context makes an old decision look far less ==arbitrary==.", "zh": "有了背景，一个旧决策看起来就没那么拍脑袋了。", "sp": null, "gap": false, "start": 57.768, "end": 61.512, "words": [[57.873, 58.386], [58.4, 58.623], [58.636, 58.781], [58.873, 59.123], [59.136, 59.663], [59.676, 59.86], [59.873, 60.189], [60.202, 60.439], [60.452, 61.123]]}, {"kind": "s", "id": "s1_1_0", "md": "Then show the ==alternatives== you rejected.", "zh": "然后讲你否掉了哪些备选方案。", "sp": null, "gap": true, "start": 61.512, "end": 63.912, "words": [[61.63, 61.749], [61.762, 61.986], [61.999, 62.13], [62.144, 62.828], [62.841, 62.933], [62.946, 63.512]]}, {"kind": "s", "id": "s1_1_1", "md": "\"We looked at a shared library and a single deployment, and both would have slowed every team down.\"", "zh": "「我们看过共享库和统一部署，这两个方案都会拖慢每个团队。」", "sp": null, "gap": false, "start": 63.912, "end": 69.96, "words": [[64.096, 64.162], [64.162, 64.386], [64.399, 64.478], [64.491, 64.517], [64.53, 64.899], [64.912, 65.57], [65.636, 65.754], [65.767, 65.82], [65.833, 66.215], [66.228, 66.767], [67.175, 67.267], [67.28, 67.609], [67.623, 67.741], [67.754, 67.873], [67.886, 68.372], [68.609, 68.846], [68.859, 69.136], [69.149, 69.504]]}, {"kind": "s", "id": "s1_1_2", "md": "This proves you __did your homework__ and did not just follow your gut.", "zh": "这证明你做过功课，不是凭感觉拍板的。", "sp": null, "gap": false, "start": 69.96, "end": 73.512, "words": [[70.078, 70.236], [70.249, 70.618], [70.631, 70.71], [70.723, 70.868], [70.881, 70.999], [71.013, 71.552], [71.697, 71.763], [71.776, 71.894], [71.907, 72.144], [72.157, 72.368], [72.381, 72.631], [72.644, 72.776], [72.789, 73.131]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, share the evidence and its limits.", "zh": "最后，拿出证据，也讲清楚证据的局限。", "sp": null, "gap": true, "start": 73.512, "end": 76.752, "words": [[73.683, 74.104], [74.407, 74.63], [74.644, 74.749], [74.762, 75.407], [75.551, 75.683], [75.696, 75.841], [75.854, 76.367]]}, {"kind": "s", "id": "s1_2_1", "md": "\"Release conflicts dropped to almost zero, but debugging got harder, and that cost is real.\"", "zh": "「发布冲突基本降到了零，但排查问题变难了，这个代价是实打实的。」", "sp": null, "gap": false, "start": 76.752, "end": 82.992, "words": [[76.936, 77.107], [77.186, 77.726], [77.739, 78.16], [78.173, 78.331], [78.344, 78.791], [78.805, 79.291], [79.568, 79.765], [79.778, 80.344], [80.357, 80.555], [80.568, 81.041], [81.357, 81.41], [81.423, 81.607], [81.62, 82.002], [82.015, 82.134], [82.147, 82.568]]}, {"kind": "s", "id": "s1_2_2", "md": "**Naming the downside yourself takes the weapon out of your critic's hand.**", "zh": "自己先把缺点说出来，批评你的人手里就没了武器。", "sp": null, "gap": false, "start": 82.992, "end": 87.168, "words": [[83.097, 83.387], [83.4, 83.505], [83.518, 84.058], [84.071, 84.558], [84.571, 84.913], [84.926, 85.031], [85.045, 85.479], [85.584, 85.742], [85.755, 85.821], [85.834, 85.953], [85.966, 86.374], [86.387, 86.768]]}, {"kind": "s", "id": "s1_3_0", "md": "End by saying what data would change your mind.", "zh": "结尾说一下，什么样的数据会让你改变主意。", "sp": null, "gap": true, "start": 87.168, "end": 89.904, "words": [[87.273, 87.392], [87.405, 87.536], [87.55, 87.957], [87.971, 88.168], [88.181, 88.471], [88.484, 88.629], [88.642, 88.971], [88.984, 89.076], [89.089, 89.51]]}, {"kind": "s", "id": "s1_3_1", "md": "That one sentence is the difference between confidence and ==stubbornness==, and senior people __notice the difference__ right away.", "zh": "就这一句话，区分了自信和固执，而资深的人一下子就能听出这个区别。", "sp": null, "gap": false, "start": 89.904, "end": 96.768, "words": [[90.009, 90.246], [90.259, 90.509], [90.522, 91.049], [91.141, 91.259], [91.272, 91.404], [91.417, 91.851], [91.865, 92.233], [92.246, 92.957], [92.97, 93.062], [93.075, 93.799], [94.075, 94.207], [94.22, 94.601], [94.615, 94.943], [94.957, 95.259], [95.272, 95.378], [95.391, 95.825], [95.838, 95.996], [96.009, 96.391]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

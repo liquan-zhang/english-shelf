@@ -1,0 +1,83 @@
+{
+  "id": "115",
+  "type": "dialogue",
+  "title": "Asking the Bartender for Something Non-Alcoholic",
+  "meta": "B2 · 约 240 词 · 场景：点无酒精饮品与婉拒劝酒",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Bartender", "name_zh": "调酒师", "voice": "en-US-AvaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Finding the Right Drink",
+      "heading_zh": "1. 找一杯合适的饮品",
+      "lines": [
+        {"sp": "B", "en": "Hey there, what are we having tonight?", "zh": "嗨，今晚喝点什么？"},
+        {"sp": "A", "en": "**I'm not drinking tonight. What do you have that's alcohol-free but not too sweet?**", "zh": "我今晚不喝酒。有没有无酒精、又不太甜的？"},
+        {"sp": "B", "en": "Good question. Most people just get a soda. Do you like something ==citrusy== or more ==bitter==?", "zh": "问得好。大多数人就点个汽水。你喜欢柑橘味的，还是偏苦一点的？"},
+        {"sp": "A", "en": "Bitter, I think. Something that __feels like__ a proper drink, not a kids' juice.", "zh": "苦一点的吧。要有点正经喝酒的感觉，别像小孩喝的果汁。"},
+        {"sp": "B", "en": "Then try our ==zero-proof== spritz. It's grapefruit, tonic and a non-alcoholic aperitif.", "zh": "那试试我们的零度气泡酒。西柚、汤力水，加一种无酒精开胃酒。"},
+        {"sp": "A", "en": "Sounds good. Just to __double-check__, there's no alcohol in it at all? Not even a little?", "zh": "听着不错。我再确认一下，里面完全没有酒精吧？一点都没有？"},
+        {"sp": "B", "en": "Good that you asked. Normally I add a dash of ==bitters==, and that does have alcohol. I'll __leave it out__.", "zh": "幸好你问了。平时我会加几滴苦精，那个是含酒精的。我不放就是了。"},
+        {"sp": "A", "en": "Thanks, I appreciate that. I'm on medication this week, so I need to be careful.", "zh": "谢谢，很感激。我这周在吃药，得注意点。"}
+      ]
+    },
+    {
+      "heading": "2. Saying No Without the Awkwardness",
+      "heading_zh": "2. 不尴尬地说不",
+      "lines": [
+        {"sp": "B", "en": "Here's your spritz. Oh, and your table's celebrating, right? The owner wants to send over a round of shots.", "zh": "你的气泡饮来了。对了，你们那桌在庆祝吧？老板想送一轮小杯烈酒。"},
+        {"sp": "A", "en": "That's really ==generous== of him. The others will love it, but __count me out__, please.", "zh": "老板太大方了。其他人肯定喜欢，不过我就不要了。"},
+        {"sp": "B", "en": "Are you sure? It's just one. Nobody's going to judge you.", "zh": "确定吗？就一小杯而已，没人会说你的。"},
+        {"sp": "A", "en": "**Thanks, but I'll pass. Could you make me something fun to toast with instead?**", "zh": "谢谢，但我不喝了。能给我弄点好玩的、可以一起干杯的吗？"},
+        {"sp": "B", "en": "Sure. How about a ginger and lime ==shooter== in the same glass? Nobody will know the difference.", "zh": "可以。用同样的杯子给你做一杯姜汁青柠小杯饮怎么样？别人看不出区别。"},
+        {"sp": "A", "en": "That's perfect. I don't want to __make a big deal__ out of it.", "zh": "太好了。我不想把这事搞得太显眼。"},
+        {"sp": "B", "en": "Totally get it. Happens more than you'd think. I'll bring them all over together.", "zh": "完全理解，这种情况比你想的多多了。我一起端过去。"},
+        {"sp": "A", "en": "**You're a lifesaver. Can you put my drinks on the same tab as the table?**", "zh": "你真是救了我。我的饮品能记在那桌的账上吗？"},
+        {"sp": "B", "en": "Already done. Enjoy the ==celebration==.", "zh": "已经记好了。玩得开心。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」想要什么样的饮品？", "a": "完全无酒精、不太甜、偏苦一点、有喝酒感觉的饮品。"},
+    {"q": "为什么「你」要再三确认没有酒精？调酒师发现了什么？", "a": "因为这周在吃药；调酒师说平时会加含酒精的苦精，这次不放。"},
+    {"q": "老板送酒时「你」是怎么处理的？", "a": "礼貌拒绝，请调酒师用同样杯子做一杯姜汁青柠无酒精小杯饮，好一起干杯又不显眼。"}
+  ],
+  "dictation": [
+    "I'm not drinking tonight. What do you have that's alcohol-free but not too sweet?",
+    "Sounds good. Just to double-check, there's no alcohol in it at all? Not even a little?",
+    "Thanks, but I'll pass. Could you make me something fun to toast with instead?",
+    "That's perfect. I don't want to make a big deal out of it."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "That's really generous of him. The others will love it, but count me out, please.",
+    "marked": "That's really <b>generous</b> of him. //<br>The <b>others</b> will love it, / but <b>count me out</b>, / please. //"
+  },
+  "prompts": [
+    {
+      "q": "公司聚餐时，经理举着酒杯让你「至少喝一杯」。你不想喝，用轻松的方式拒绝，又不让场面冷下来。",
+      "ref": "Thanks, really, but I'm sticking to soda tonight. I've got an early start with my son tomorrow, and he doesn't care how late I stayed out. But I'm definitely joining the toast, so fill my glass with soda. To a great quarter, everyone, and thanks for all the hard work.",
+      "ref_zh": "真的谢谢，但我今晚就喝汽水了。明天一早要陪儿子，他可不管我昨晚多晚回家。不过干杯我一定参加，给我倒上汽水。敬这个精彩的季度，大家辛苦了。"
+    },
+    {
+      "q": "在餐厅你想点一款无酒精啤酒，问服务员有没有、是什么牌子、酒精含量是否真的为零。",
+      "ref": "Hi, do you have any non-alcoholic beer? If you do, which brand is it? I just want to check, is it completely zero alcohol, or is it the kind with a tiny bit in it? I'm driving tonight, so I'd rather be safe. If you don't have one, a ginger beer would be fine.",
+      "ref_zh": "你好，你们有无酒精啤酒吗？有的话是什么牌子？我想确认一下，是完全零酒精，还是含一点点的那种？我今晚要开车，想稳妥点。没有的话，来一杯姜汁汽水也行。"
+    }
+  ],
+  "words": [
+    {"w": "citrusy", "ipa": "/ˈsɪtrəsi/", "zh": "柑橘味的", "ex": "This tea has a light, citrusy taste."},
+    {"w": "bitter", "ipa": "/ˈbɪtər/", "zh": "苦的", "ex": "Bitter gourd is too bitter for my kid."},
+    {"w": "zero-proof", "ipa": "/ˈzɪroʊ pruːf/", "zh": "零酒精的（饮品）", "ex": "More bars now have a zero-proof menu."},
+    {"w": "bitters", "ipa": "/ˈbɪtərz/", "zh": "苦精（调酒用，含酒精）", "ex": "Ask them to skip the bitters if you can't have alcohol."},
+    {"w": "shooter", "ipa": "/ˈʃuːtər/", "zh": "一口饮的小杯饮品", "ex": "They served a mango shooter before the meal."},
+    {"w": "celebration", "ipa": "/ˌseləˈbreɪʃən/", "zh": "庆祝", "ex": "We're having a small celebration for my daughter's birthday."},
+    {"w": "count me out", "ipa": "/kaʊnt mi aʊt/", "zh": "我就不参加了", "ex": "A run at six in the morning? Count me out."},
+    {"w": "leave out", "ipa": "/liːv aʊt/", "zh": "不放，省去", "ex": "Can you leave out the chilli in my noodles?"},
+    {"w": "generous", "ipa": "/ˈdʒenərəs/", "zh": "大方的", "ex": "It was very generous of our neighbours to lend us their stroller."},
+    {"w": "tab", "ipa": "/tæb/", "zh": "（酒吧）记账单", "ex": "Can I start a tab? I'll pay at the end."}
+  ]
+}

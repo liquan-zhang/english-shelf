@@ -1,0 +1,235 @@
+{
+  "id": "142",
+  "type": "dialogue",
+  "title": "Dealing with a Noisy Neighbor",
+  "meta": "B2 · 约 290 词 · 场景：楼上邻居噪音沟通",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Neighbour",
+      "name_zh": "邻居",
+      "voice": "en-SG-WayneNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Knocking on the Neighbour's Door",
+      "heading_zh": "1. 敲开邻居家的门",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "Hi, sorry to bother you. I'm Lee, and I live __right below__ you.",
+          "zh": "你好，不好意思打扰一下。我姓李，就住你们楼下。"
+        },
+        {
+          "sp": "B",
+          "en": "Oh, hi! Nice to finally meet you. Is everything okay?",
+          "zh": "哦，你好！终于见到你了。怎么了，有什么事吗？"
+        },
+        {
+          "sp": "A",
+          "en": "**I hope you don't mind me mentioning it, but there's been some noise late at night recently.**",
+          "zh": "希望你别介意我提这个，最近晚上挺晚的时候有点吵。"
+        },
+        {
+          "sp": "B",
+          "en": "Oh no, really? What kind of noise?",
+          "zh": "啊，真的吗？是什么样的声音？"
+        },
+        {
+          "sp": "A",
+          "en": "It sounds like furniture being dragged around, usually after eleven. Our son is three, and it ==wakes== him up.",
+          "zh": "听起来像是在拖家具，一般是十一点以后。我儿子三岁，会被吵醒。"
+        },
+        {
+          "sp": "B",
+          "en": "I'm so sorry. We just moved in, so we've been ==unpacking== and moving things around after work.",
+          "zh": "真不好意思。我们刚搬进来，下班后一直在拆箱、挪东西。"
+        },
+        {
+          "sp": "A",
+          "en": "That makes sense. I totally __get it__. Moving is exhausting.",
+          "zh": "可以理解。我完全明白，搬家真的很累。"
+        },
+        {
+          "sp": "B",
+          "en": "It really is. Honestly, I had no idea the sound ==carried== that much.",
+          "zh": "可不是嘛。说实话，我完全没想到声音会传得这么远。"
+        },
+        {
+          "sp": "A",
+          "en": "Would it be possible to __wrap up__ the heavy stuff by ten? That would really help.",
+          "zh": "重的东西能不能十点前弄完？那样就帮大忙了。"
+        },
+        {
+          "sp": "B",
+          "en": "Of course. And we'll put some felt pads under the chairs too.",
+          "zh": "当然可以。我们还会在椅子脚下贴毛毡垫。"
+        },
+        {
+          "sp": "A",
+          "en": "That's really ==considerate== of you. Thanks for being so understanding.",
+          "zh": "你们真体贴。谢谢这么通情达理。"
+        }
+      ]
+    },
+    {
+      "heading": "2. The Noise Comes Back",
+      "heading_zh": "2. 噪音又来了",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "Hi again. Sorry, the furniture noise has stopped, but there was drilling at eight this morning.",
+          "zh": "又是我，不好意思。拖家具的声音已经没了，但今天早上八点有人在钻墙。"
+        },
+        {
+          "sp": "B",
+          "en": "Ah, that's our ==contractor==. He's putting up shelves and a TV ==bracket==.",
+          "zh": "啊，那是我们请的装修师傅。他在装架子和电视挂架。"
+        },
+        {
+          "sp": "A",
+          "en": "**I see. Is there any chance he could start a bit later on weekends?**",
+          "zh": "明白了。周末他能不能晚一点开工？"
+        },
+        {
+          "sp": "B",
+          "en": "Actually, management says no ==renovation== work before nine. He shouldn't have started that early. I'll talk to him.",
+          "zh": "其实物业规定九点前不能装修。他不该那么早开工，我去跟他说。"
+        },
+        {
+          "sp": "A",
+          "en": "Thanks. Our son naps from one to three, so __if possible__, could he avoid those hours too?",
+          "zh": "谢谢。我儿子一点到三点午睡，如果可以的话，这段时间也能避开吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Sure, I'll __pass that on__. It should all be done by Wednesday.",
+          "zh": "没问题，我会转告他。周三之前应该就全部弄完了。"
+        },
+        {
+          "sp": "A",
+          "en": "Great. Let me give you my number, so we can just text if anything __comes up__.",
+          "zh": "太好了。我把电话留给你，有什么事直接发消息就行。"
+        },
+        {
+          "sp": "B",
+          "en": "Good idea. And please tell me straight away if it's still loud. I'd rather know.",
+          "zh": "好主意。如果还是吵，请马上告诉我，我宁愿知道。"
+        },
+        {
+          "sp": "A",
+          "en": "**Will do. And if you ever need anything, we're just downstairs.**",
+          "zh": "一定。你们有什么需要也随时找我们，我们就在楼下。"
+        },
+        {
+          "sp": "B",
+          "en": "Thanks, Lee. Let's grab a coffee once the place is sorted.",
+          "zh": "谢谢你，李先生。等家里收拾好了一起喝杯咖啡吧。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "「你」第一次上门反映的是什么噪音？对方怎么解释的？",
+      "a": "深夜十一点后拖家具的声音，吵醒了三岁的儿子；对方刚搬来，下班后在拆箱挪东西，没意识到声音传得这么远。"
+    },
+    {
+      "q": "第一次沟通后双方约定了什么？",
+      "a": "重活十点前做完，椅子脚下贴毛毡垫。"
+    },
+    {
+      "q": "周六早上的钻墙声是怎么回事？最后怎么处理的？",
+      "a": "是装修师傅在装架子和电视挂架，物业规定九点前不许装修；邻居会去说，并避开午睡时间，周三前完工，双方还互留了电话。"
+    }
+  ],
+  "dictation": [
+    "I hope you don't mind me mentioning it, but there's been some noise late at night recently.",
+    "Would it be possible to wrap up the heavy stuff by ten? That would really help.",
+    "I see. Is there any chance he could start a bit later on weekends?",
+    "Great. Let me give you my number, so we can just text if anything comes up."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Hi again. Sorry, the furniture noise has stopped, but there was drilling at eight this morning.",
+    "marked": "Hi <b>again</b>. //<br><b>Sorry</b>, / the <b>furniture</b> noise has <b>stopped</b>, / but there was <b>drilling</b> / at <b>eight</b> this morning. //"
+  },
+  "prompts": [
+    {
+      "q": "楼下邻居说你家小孩晚上跑跳太吵。用 30 秒回应：道歉、解释、给出具体改进办法。",
+      "ref": "Oh, I'm really sorry about that. I had no idea it was that loud downstairs. Our son gets a burst of energy right before bed. We'll put down some play mats this weekend, and we'll try to keep him calm after nine. If it's still bad, please just knock or text me. I'd much rather know.",
+      "ref_zh": "啊，真的很抱歉，我完全不知道楼下听得这么清楚。我儿子睡前总是特别兴奋。这周末我们会铺上游戏垫，九点以后尽量让他安静下来。如果还是吵，直接敲门或者给我发消息就行，我宁愿知道。"
+    },
+    {
+      "q": "隔壁每天晚上在走廊抽烟，烟飘进你家。友好地提出来，并提一个折中方案。",
+      "ref": "Hi, sorry to bring this up. I've noticed the smoke from the corridor comes straight into our flat in the evenings, and we have a young child. I totally understand you need a break. Would you mind smoking down at the void deck or by the stairwell instead? It would make a big difference for us.",
+      "ref_zh": "你好，不好意思提这件事。我发现晚上走廊的烟会直接飘进我们家，我们家有小孩。我完全理解你需要放松一下。能不能麻烦你去楼下架空层或者楼梯间那边抽？对我们来说帮助会很大。"
+    }
+  ],
+  "words": [
+    {
+      "w": "wake (someone) up",
+      "ipa": "/weɪk ʌp/",
+      "zh": "吵醒；叫醒",
+      "ex": "The thunder woke the baby up at three in the morning.",
+      "tts_w": "wake someone up",
+      "tts": "The thunder woke the baby up at three in the morning."
+    },
+    {
+      "w": "unpack",
+      "ipa": "/ʌnˈpæk/",
+      "zh": "拆箱整理",
+      "ex": "We still haven't unpacked the boxes in the study."
+    },
+    {
+      "w": "carry (v.)",
+      "ipa": "/ˈkæri/",
+      "zh": "（声音）传播",
+      "ex": "Sound really carries in this building at night.",
+      "tts_w": "carry"
+    },
+    {
+      "w": "considerate",
+      "ipa": "/kənˈsɪdərət/",
+      "zh": "体贴的，为人着想的",
+      "ex": "It was considerate of them to warn us about the party."
+    },
+    {
+      "w": "contractor",
+      "ipa": "/ˈkɑːntræktər/",
+      "zh": "装修承包商，施工师傅",
+      "ex": "Our contractor said the kitchen will take two weeks."
+    },
+    {
+      "w": "bracket",
+      "ipa": "/ˈbrækɪt/",
+      "zh": "支架，挂架",
+      "ex": "We need a bracket to mount the TV on the wall."
+    },
+    {
+      "w": "renovation",
+      "ipa": "/ˌrenəˈveɪʃən/",
+      "zh": "装修",
+      "ex": "Renovation work is only allowed on weekdays here."
+    },
+    {
+      "w": "wrap up",
+      "ipa": "/ræp ʌp/",
+      "zh": "结束，收尾",
+      "ex": "Let's wrap up the cleaning before the guests arrive."
+    },
+    {
+      "w": "pass on",
+      "ipa": "/pæs ɑːn/",
+      "zh": "转告",
+      "ex": "I'll pass on your message to the manager."
+    }
+  ]
+}

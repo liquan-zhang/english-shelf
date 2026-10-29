@@ -1,0 +1,189 @@
+{
+  "id": "008",
+  "title": "Disagreeing with a Senior Leader in Public",
+  "meta": "B2 · 约 280 词 · 场景：向上表达异议",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. What Leaders Say in Private",
+      "paragraphs": [
+        [
+          "Ask senior leaders what frustrates them, and many give the same answer.",
+          "\"Nobody tells me when my idea is bad until it's too late.\"",
+          "The higher you go, the more people __filter what they say__, and the less ==accurate== your picture of reality becomes."
+        ],
+        [
+          "So most leaders do want pushback.",
+          "What they do not want is to lose face in front of a large group, or to feel ==ambushed== by a surprise attack on their plan.",
+          "**The problem is rarely that you disagree; it is how and where you do it.**"
+        ],
+        [
+          "Public disagreement with a senior person is not about being brave.",
+          "It is about making it easy for them to change their mind without looking ==weak==."
+        ]
+      ],
+      "heading_zh": "1. 领导私下怎么说",
+      "paragraphs_zh": [
+        [
+          "问高层领导最让他们头疼的是什么，很多人的回答都一样。",
+          "「我的想法不行，没人告诉我，直到为时已晚。」",
+          "位置越高，大家说话就越会过滤，你对现实的判断也就越失真。"
+        ],
+        [
+          "所以大多数领导其实是想要反对意见的。",
+          "他们不想要的，是当着一大群人丢面子，或者被一场针对自己方案的突然袭击打个措手不及。",
+          "问题很少在于你不同意，而在于你怎么表达、在哪儿表达。"
+        ],
+        [
+          "当众反对一位高层，跟勇不勇敢没关系。",
+          "关键是让对方能轻松改变主意，又不显得软弱。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Give Them a Door, Not a Wall",
+      "paragraphs": [
+        [
+          "Start by asking for room.",
+          "\"Can I offer a different view on the timeline?\"",
+          "It takes two seconds, and it __signals respect__ while still letting you speak."
+        ],
+        [
+          "Then lead with evidence, not opinion.",
+          "\"In the last two launches of this size, testing took six weeks, not three.\"",
+          "Data shifts the conversation from \"me against you\" to \"us looking at the same facts.\""
+        ],
+        [
+          "Most importantly, offer a way forward that does not ==require== them to fully reverse.",
+          "Suggest a smaller pilot, an extra checkpoint, or a date to review the risk together.",
+          "**People change direction more easily when you give them a door instead of a wall.**"
+        ],
+        [
+          "Know when to stop.",
+          "If the leader still disagrees, say \"Understood, I'll ==flag== it if we see early signs,\" and then __drop it__ in the meeting.",
+          "If the issue is serious, __follow up one on one__ afterward.",
+          "A ==calm== disagreement handled this way usually earns more trust than quiet agreement ever could."
+        ]
+      ],
+      "heading_zh": "2. 给他们一扇门，而不是一堵墙",
+      "paragraphs_zh": [
+        [
+          "先请求一个发言的空间。",
+          "「关于时间线，我能提一个不同的看法吗？」",
+          "只要两秒钟，既表达了尊重，又能让你把话说出来。"
+        ],
+        [
+          "然后用证据开路，而不是观点。",
+          "「最近两次这种规模的上线，测试都花了六周，不是三周。」",
+          "数据能把对话从「我对你」变成「我们一起看同一组事实」。"
+        ],
+        [
+          "最重要的是，给出一条不需要他完全推翻自己的路。",
+          "建议先做个小范围试点、加一个检查点，或者约个时间一起复盘风险。",
+          "你给人一扇门而不是一堵墙，他们就更容易调转方向。"
+        ],
+        [
+          "要知道什么时候收手。",
+          "如果领导还是不同意，就说「明白，如果看到早期苗头我会及时提出来」，然后在会上就不再提了。",
+          "如果问题确实严重，会后再单独找他聊。",
+          "这样处理的一次心平气和的反对，通常比默默同意更能赢得信任。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者说高层私下最常抱怨的是什么？",
+      "a": "没人在为时已晚之前告诉他们方案不好；层级越高，听到的信息越被过滤。"
+    },
+    {
+      "q": "公开反对高层时，作者建议的几个做法是什么？",
+      "a": "先征求发言空间；用证据而不是观点开头；给出不需要对方完全推翻的出路，比如小规模试点或检查点；对方仍坚持时适可而止，严重问题会后单独沟通。"
+    },
+    {
+      "q": "“给门而不是给墙”是什么意思？",
+      "a": "给对方一个体面调整方向的台阶，而不是逼他当众认错。"
+    }
+  ],
+  "dictation": [
+    "The problem is rarely that you disagree; it is how and where you do it.",
+    "People change direction more easily when you give them a door instead of a wall.",
+    "Then lead with evidence, not opinion.",
+    "If the issue is serious, follow up one on one afterward."
+  ],
+  "shadow": {
+    "text": "Most importantly, offer a way forward that does not require them to fully reverse. Suggest a smaller pilot, an extra checkpoint, or a date to review the risk together.",
+    "marked": "Most <b>importantly</b>, / offer a way <b>forward</b> / that does <b>not</b> require them / to <b>fully</b> reverse. //<br>Suggest a smaller <b>pilot</b>, / an extra <b>checkpoint</b>, / or a <b>date</b> / to review the risk <b>together</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "全员会上，业务负责人宣布新功能三周后全球上线。你认为测试时间不够。用 30 秒公开表达不同意见：先征求空间，再用数据，最后给一个台阶。",
+      "ref": "Can I offer a slightly different view on the timeline? Looking at our last two launches of this size, testing took about six weeks, mostly because of payment edge cases. I'd hate for us to rush and then roll back in front of users. What if we launch in two smaller markets in three weeks, as planned, and go global once we've seen a clean week of data?",
+      "ref_zh": "关于时间线，我能提一个稍微不同的看法吗？看我们最近两次这种规模的上线，测试都花了大概六周，主要是卡在支付的各种边界情况上。我很不希望我们赶着上线，然后当着用户的面回滚。要不我们按原计划三周后先在两个小市场上线，等看到一周干净的数据再全球放量？"
+    },
+    {
+      "q": "你刚才在会上提了异议，但总监还是坚持原计划。用 30 秒得体地收住，并说明你会怎样跟进风险。",
+      "ref": "Understood, and thanks for hearing me out. Let's go with the plan as it is. To stay safe, I'll set up a dashboard for error rates in the new flow, and I'll flag it right away if we see early warning signs. Would it be okay if I grabbed fifteen minutes with you later this week to walk through the rollback steps?",
+      "ref_zh": "明白，谢谢你听我说完。那就按现在的方案来。为了稳妥起见，我会给新流程搭一个错误率的看板，一有预警信号我马上同步。这周晚些时候能不能约你十五分钟，一起过一下回滚步骤？"
+    }
+  ],
+  "words": [
+    {
+      "w": "accurate",
+      "ipa": "/ˈækjərət/",
+      "zh": "准确的",
+      "ex": "We need accurate numbers before we promise a date."
+    },
+    {
+      "w": "ambush (v.)",
+      "ipa": "/ˈæmbʊʃ/",
+      "zh": "突然发难、伏击",
+      "ex": "Share the concern before the review, so the team doesn't feel ambushed.",
+      "tts_w": "ambush"
+    },
+    {
+      "w": "weak",
+      "ipa": "/wiːk/",
+      "zh": "软弱的、站不住的",
+      "ex": "The business case looks weak without the cost numbers."
+    },
+    {
+      "w": "require",
+      "ipa": "/rɪˈkwaɪər/",
+      "zh": "需要、要求",
+      "ex": "This change requires a database migration."
+    },
+    {
+      "w": "flag (v.)",
+      "ipa": "/flæɡ/",
+      "zh": "提出、标记（风险）",
+      "ex": "I'll flag it in the channel if the error rate goes up.",
+      "tts_w": "flag"
+    },
+    {
+      "w": "calm",
+      "ipa": "/kɑːm/",
+      "zh": "冷静的",
+      "ex": "Her calm tone kept the incident call from turning into a blame game."
+    },
+    {
+      "w": "pushback",
+      "ipa": "/ˈpʊʃbæk/",
+      "zh": "反对意见、阻力",
+      "ex": "We got some pushback from sales on the new pricing."
+    },
+    {
+      "w": "lose face",
+      "ipa": "/luːz feɪs/",
+      "zh": "丢面子",
+      "ex": "Give him a way to change the plan without losing face."
+    },
+    {
+      "w": "evidence",
+      "ipa": "/ˈevɪdəns/",
+      "zh": "证据",
+      "ex": "Do we have any evidence that users want this feature?"
+    }
+  ]
+}

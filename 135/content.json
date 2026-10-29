@@ -1,0 +1,83 @@
+{
+  "id": "135",
+  "type": "dialogue",
+  "title": "Shopping for a Gift with Help from Staff",
+  "meta": "B2 · 约 240 词 · 场景：请店员挑礼物与调货包装",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Shop Assistant", "name_zh": "店员", "voice": "en-US-AvaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Asking for Ideas",
+      "heading_zh": "1. 请店员出主意",
+      "lines": [
+        {"sp": "B", "en": "Hi, are you looking for anything in particular?", "zh": "您好，有什么特别想找的吗？"},
+        {"sp": "A", "en": "**Yes, I need a birthday gift for my mother-in-law. Could you help me pick something?**", "zh": "有，我要给岳母买生日礼物。你能帮我挑一挑吗？"},
+        {"sp": "B", "en": "Of course. What's your ==budget==, and what kind of things does she like?", "zh": "当然。您的预算是多少？她平时喜欢什么样的东西？"},
+        {"sp": "A", "en": "Around two hundred dollars. She likes elegant things, __nothing too flashy__.", "zh": "两百块左右。她喜欢优雅一点的，别太花哨。"},
+        {"sp": "B", "en": "Our silk scarves are very popular for that. This one is a ==classic== pattern, one hundred and eighty.", "zh": "我们的真丝围巾很受欢迎。这条是经典款，一百八十块。"},
+        {"sp": "A", "en": "It's lovely. Is it ==practical==, though? She's visiting from Beijing, and it's cold there in winter.", "zh": "很好看。不过实用吗？她是从北京来玩的，那边冬天很冷。"},
+        {"sp": "B", "en": "Silk is light but surprisingly warm. She can wear it under a coat, too.", "zh": "真丝很轻，但出乎意料地保暖，也可以搭在大衣里面。"},
+        {"sp": "A", "en": "That works. Do you have it in a darker colour, maybe navy?", "zh": "那挺好。有深一点的颜色吗？比如藏青色？"},
+        {"sp": "B", "en": "Let me check. Hmm, navy is __out of stock__ here, I'm afraid.", "zh": "我查一下。嗯，恐怕藏青色这家店卖完了。"}
+      ]
+    },
+    {
+      "heading": "2. Wrapping and a Back-up Plan",
+      "heading_zh": "2. 包装和调货",
+      "lines": [
+        {"sp": "B", "en": "Good news, though. Our Orchard branch has two in navy. I can ==reserve== one for you.", "zh": "不过有好消息，我们乌节路分店还有两条藏青色的，我可以帮您预留一条。"},
+        {"sp": "A", "en": "Could they hold it until tomorrow evening? I can __swing by__ after work.", "zh": "能留到明天晚上吗？我下班顺路过去拿。"},
+        {"sp": "B", "en": "Sure, I'll put it under your name until closing tomorrow.", "zh": "可以，我用您的名字留到明天打烊。"},
+        {"sp": "A", "en": "Great. Do you offer gift wrapping? And could I get a gift receipt, in case she wants to change it?", "zh": "太好了。你们提供礼品包装吗？另外能开一张礼品收据吗，万一她想换？"},
+        {"sp": "B", "en": "Yes to both. Wrapping is ==complimentary==, and she can ==exchange== it within thirty days.", "zh": "都可以。包装免费，三十天内可以换货。"},
+        {"sp": "A", "en": "**Perfect. And could you take the price tag off? I'd rather she didn't see it.**", "zh": "太好了。还有，能把价签拿掉吗？我不想让她看到价格。"},
+        {"sp": "B", "en": "Of course. Would you like a card as well? You can write a message, and they'll put it in the box.", "zh": "当然。要不要再配张卡片？您写好祝福，那边会放进盒子里。"},
+        {"sp": "A", "en": "**Yes, please. Thanks, you've been a huge help.**", "zh": "好的，麻烦了。谢谢，你帮了大忙。"},
+        {"sp": "B", "en": "My pleasure. I hope she loves it!", "zh": "不客气。希望她喜欢！"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」给店员提供了哪些挑礼物的信息？", "a": "给岳母买生日礼物，预算两百块左右，她喜欢优雅、不花哨的东西，从北京来，那边冬天冷。"},
+    {"q": "想要的颜色没货，店员怎么处理的？", "a": "乌节路分店有两条藏青色的，帮「你」用名字预留到明天打烊，「你」下班去取。"},
+    {"q": "关于包装和换货，「你」提了哪些要求？", "a": "要礼品包装（免费）、礼品收据（三十天内可换）、拿掉价签，再配一张写祝福的卡片。"}
+  ],
+  "dictation": [
+    "Yes, I need a birthday gift for my mother-in-law. Could you help me pick something?",
+    "Around two hundred dollars. She likes elegant things, nothing too flashy.",
+    "Could they hold it until tomorrow evening? I can swing by after work.",
+    "Perfect. And could you take the price tag off? I'd rather she didn't see it."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Great. Do you offer gift wrapping? And could I get a gift receipt, in case she wants to change it?",
+    "marked": "<b>Great</b>. //<br>Do you offer <b>gift wrapping</b>? //<br>And could I get a <b>gift receipt</b>, / in case she wants to <b>change</b> it? //"
+  },
+  "prompts": [
+    {
+      "q": "同事要离职，你代表团队去买一份告别礼物。跟店员说清预算、对方的喜好，请对方推荐。",
+      "ref": "Hi, I'm buying a farewell gift for a colleague who's leaving our team. We've collected about one hundred and fifty dollars. He loves coffee and travels a lot, so something useful for that would be great. Nothing too personal, since it's from the whole team. What would you suggest? And could you wrap it nicely?",
+      "ref_zh": "你好，我要给一位离开团队的同事买告别礼物。大家凑了一百五十块左右。他很爱喝咖啡，经常出差，所以买点这方面实用的东西就很好。别太私人化，因为是整个团队送的。你有什么推荐？另外能帮忙包装得好看一点吗？"
+    },
+    {
+      "q": "你送的礼物尺码不合适，对方拿着礼品收据让你去换。到店里说明情况。",
+      "ref": "Hi, I bought this sweater here as a gift last week, but it's a bit too small for my friend. Here's the gift receipt. Could I exchange it for a size up in the same colour? If you don't have that size, would it be possible to get store credit instead? She'd like to choose something herself.",
+      "ref_zh": "你好，我上周在这儿买了这件毛衣当礼物，但朋友穿着有点小。这是礼品收据。能换同颜色大一码的吗？如果没有那个尺码，能不能换成店内额度？她想自己挑。"
+    }
+  ],
+  "words": [
+    {"w": "budget", "ipa": "/ˈbʌdʒɪt/", "zh": "预算", "ex": "Our budget for the birthday party is about three hundred dollars."},
+    {"w": "classic", "ipa": "/ˈklæsɪk/", "zh": "经典的", "ex": "A white shirt is a classic that never goes out of style."},
+    {"w": "practical", "ipa": "/ˈpræktɪkəl/", "zh": "实用的", "ex": "A stroller with big wheels is more practical on uneven paths."},
+    {"w": "out of stock", "ipa": "/aʊt əv stɑːk/", "zh": "缺货", "ex": "The size I want is out of stock online."},
+    {"w": "reserve (v.)", "ipa": "/rɪˈzɜːrv/", "zh": "预留", "ex": "Could you reserve a table by the window for us?", "tts_w": "reserve"},
+    {"w": "swing by", "ipa": "/swɪŋ baɪ/", "zh": "顺路过去", "ex": "I'll swing by the pharmacy on my way home."},
+    {"w": "complimentary", "ipa": "/ˌkɑːmpləˈmentəri/", "zh": "免费赠送的", "ex": "The bakery offers complimentary gift boxes this month."},
+    {"w": "exchange (v.)", "ipa": "/ɪksˈtʃeɪndʒ/", "zh": "换货", "ex": "Can I exchange these shoes for a bigger size?", "tts_w": "exchange"},
+    {"w": "gift receipt", "ipa": "/ɡɪft rɪˈsiːt/", "zh": "礼品收据（不显示价格）", "ex": "Ask for a gift receipt so they can return it if needed."}
+  ]
+}

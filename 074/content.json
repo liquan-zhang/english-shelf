@@ -1,0 +1,180 @@
+{
+  "id": "074",
+  "title": "Cutting Scope to Hit a Date",
+  "meta": "B2 · 约 280 词 · 场景：项目延期",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Cut Happens Anyway",
+      "paragraphs": [
+        [
+          "When a project runs late, scope gets cut whether you plan it or not.",
+          "The only question is whether you cut it on purpose in week four, or by accident in the last three days.",
+          "Pretending otherwise only means that someone else, or the calendar, makes the cut for you."
+        ],
+        [
+          "Accidental cuts are the expensive kind.",
+          "Testing gets skipped, error handling gets ==sloppy==, and documentation quietly ==evaporates==.",
+          "The feature ships on time but __falls apart__ in the first month, and the team spends the next quarter cleaning up."
+        ],
+        [
+          "**Cutting scope early is a decision; cutting it late is a symptom.**",
+          "The earlier you admit that the date and the scope don't fit, the more room you have to ==maneuver==.",
+          "Saying it in week four feels uncomfortable, but saying it the night before launch feels much worse."
+        ]
+      ],
+      "heading_zh": "1. 砍需求迟早会发生",
+      "paragraphs_zh": [
+        [
+          "项目一旦延期，不管你计划没计划，范围都会被砍。",
+          "唯一的问题是，你是在第四周主动砍，还是在最后三天被动砍。",
+          "假装不会发生，只意味着由别人，或者由日历，替你来砍。"
+        ],
+        [
+          "被动砍是代价最高的那种。",
+          "测试被跳过，错误处理草草了事，文档悄无声息地消失了。",
+          "功能按时上线了，但第一个月就散架，团队下个季度都在收拾烂摊子。"
+        ],
+        [
+          "早砍范围是一个决定；晚砍范围是一个症状。",
+          "你越早承认日期和范围对不上，就越有腾挪的空间。",
+          "第四周说出来会觉得别扭，但上线前一晚才说会难受得多。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Cut Slices, Not Corners",
+      "paragraphs": [
+        [
+          "Start from the user's journey, not the task list.",
+          "Ask which steps a user absolutely needs on day one to get real value.",
+          "For a new payments flow, that might be paying by card, but not saving cards or splitting bills."
+        ],
+        [
+          "Cut whole ==slices== of functionality rather than shaving a little quality off everything.",
+          "A smaller feature that works well beats a full feature that ==misbehaves==.",
+          "Users notice missing features far less than they notice broken ones."
+        ],
+        [
+          "When you present the cut, frame it as a ==sequence==, not a loss.",
+          "\"We launch card payments on the fifteenth, and saved cards follow two weeks later.\"",
+          "**People accept a smaller first release much more easily when they can see the second one.**",
+          "It also helps to __be upfront__ about what you cut and why, so nobody discovers it in a demo."
+        ]
+      ],
+      "heading_zh": "2. 砍整块，别偷工减料",
+      "paragraphs_zh": [
+        [
+          "从用户路径出发，而不是从任务清单出发。",
+          "问一问：用户第一天绝对需要哪些步骤才能拿到真正的价值？",
+          "对一个新的支付流程来说，可能是用银行卡付款，而不是保存卡片或者 AA 分账。"
+        ],
+        [
+          "整块整块地砍功能，而不是每样都削掉一点质量。",
+          "一个小而好用的功能，胜过一个完整却总出毛病的功能。",
+          "用户对缺了的功能，远没有对坏掉的功能那么在意。"
+        ],
+        [
+          "汇报砍掉的部分时，把它包装成一个先后顺序，而不是一种损失。",
+          "「十五号先上银行卡支付，两周后再上保存卡片。」",
+          "人们看得到第二版的时候，接受一个小一点的首版要容易得多。",
+          "另外最好坦白说清楚砍了什么、为什么砍，免得有人在 demo 时才发现。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者为什么说范围“总会被砍”？",
+      "a": "项目延期时范围一定会缩，区别只在于第四周主动砍，还是最后三天被动砍。"
+    },
+    {
+      "q": "被动砍范围会砍掉什么？后果是什么？",
+      "a": "测试、错误处理和文档；功能按时上线但第一个月就出问题，团队下个季度都在收拾。"
+    },
+    {
+      "q": "应该怎么砍、怎么汇报？",
+      "a": "从用户旅程出发砍掉完整的功能切片而不是全面降质量；汇报时讲成先后顺序，让人看到第二个版本。"
+    }
+  ],
+  "dictation": [
+    "Cutting scope early is a decision; cutting it late is a symptom.",
+    "A smaller feature that works well beats a full feature that misbehaves.",
+    "Users notice missing features far less than they notice broken ones.",
+    "People accept a smaller first release much more easily when they can see the second one."
+  ],
+  "shadow": {
+    "text": "Cut whole slices of functionality rather than shaving a little quality off everything. A smaller feature that works well beats a full feature that misbehaves. Users notice missing features far less than they notice broken ones.",
+    "marked": "Cut <b>whole</b> slices of functionality / rather than shaving a little <b>quality</b> / off <b>everything</b>. //<br>A <b>smaller</b> feature that works <b>well</b> / beats a <b>full</b> feature / that <b>misbehaves</b>. //<br>Users notice <b>missing</b> features / far <b>less</b> / than they notice <b>broken</b> ones. //"
+  },
+  "prompts": [
+    {
+      "q": "项目进行到第四周，你发现按现有范围肯定赶不上发布日。用 30 秒向 PM 提出砍范围的建议，讲成先后顺序。",
+      "ref": "I want to raise this now rather than in the last week. At our current pace, we won't finish everything by the launch date. My suggestion is to launch with the core flow, creating and sharing a playlist, and move collaborative editing to a follow-up release two weeks later. That way the date holds, quality doesn't suffer, and users still get the main value on day one.",
+      "ref_zh": "我想现在就提出来，而不是等到最后一周。按目前的进度，上线日之前我们做不完所有东西。我的建议是先上核心流程，也就是创建和分享歌单，把协同编辑挪到两周后的下一个版本。这样日期保住了，质量不打折扣，用户第一天也能拿到主要价值。"
+    },
+    {
+      "q": "工程师提议“每个功能都做简单一点，测试也少写点”来赶日期。用 30 秒说明为什么应该砍整块功能而不是降质量。",
+      "ref": "I understand the idea, and I know everyone wants to hit the date. But if we cut a little from everything, we end up with five features that all half work, and we spend next month fixing them. I'd rather ship three features that are solid and drop the other two completely for now. Users forgive a missing feature much more easily than a broken one.",
+      "ref_zh": "我理解这个思路，也知道大家都想赶上日期。但如果每样都砍一点，最后我们会得到五个都只能用一半的功能，下个月全花在修它们上。我宁愿先上三个扎实的功能，另外两个暂时整个砍掉。用户对缺一个功能的容忍度，比对一个坏掉的功能高得多。"
+    }
+  ],
+  "words": [
+    {
+      "w": "sloppy",
+      "ipa": "/ˈslɑːpi/",
+      "zh": "马虎的、草率的",
+      "ex": "The code got sloppy in the last sprint because of the deadline."
+    },
+    {
+      "w": "evaporate",
+      "ipa": "/ɪˈvæpəˌreɪt/",
+      "zh": "（悄悄）消失、蒸发",
+      "ex": "Our buffer evaporated when two engineers got sick."
+    },
+    {
+      "w": "maneuver (v.)",
+      "ipa": "/məˈnuːvər/",
+      "zh": "调整、周旋",
+      "ex": "If we tell the client now, we still have room to maneuver.",
+      "tts_w": "maneuver"
+    },
+    {
+      "w": "slice",
+      "ipa": "/slaɪs/",
+      "zh": "切片、一块完整的功能",
+      "ex": "Let's ship a thin slice end to end before adding more options."
+    },
+    {
+      "w": "misbehave",
+      "ipa": "/ˌmɪsbɪˈheɪv/",
+      "zh": "运行异常、表现不正常",
+      "ex": "The app starts to misbehave when the network drops."
+    },
+    {
+      "w": "sequence",
+      "ipa": "/ˈsiːkwəns/",
+      "zh": "顺序、先后安排",
+      "ex": "Let's agree on the sequence of releases before we talk dates."
+    },
+    {
+      "w": "scope",
+      "ipa": "/skoʊp/",
+      "zh": "范围",
+      "ex": "If we keep the date, we have to reduce the scope."
+    },
+    {
+      "w": "symptom",
+      "ipa": "/ˈsɪmptəm/",
+      "zh": "症状、表象",
+      "ex": "Slow reviews are a symptom of too much work in progress."
+    },
+    {
+      "w": "upfront",
+      "ipa": "/ˌʌpˈfrʌnt/",
+      "zh": "坦率的、提前说明的",
+      "ex": "Please be upfront with the client about what's not included."
+    }
+  ]
+}

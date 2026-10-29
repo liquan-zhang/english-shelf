@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Calm Is Contagious · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "068", "title": "Calm Is Contagious", "meta": "B2 · 约 280 词 · 场景：危机沟通", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Room Copies You", "heading_zh": "1. 整个房间都在模仿你", "rows": [[{"id": "s0_0_0", "md": "Join any outage call and you can tell within a minute how it is going.", "text": "Join any outage call and you can tell within a minute how it is going.", "zh": "随便进一个故障会议，一分钟之内你就能感觉到进展如何。", "sp": null}, {"id": "s0_0_1", "md": "Not from the graphs, but from the voices.", "text": "Not from the graphs, but from the voices.", "zh": "不是看曲线，而是听声音。", "sp": null}, {"id": "s0_0_2", "md": "Fast, overlapping speech, sharp questions, and long silences all ==signal== panic.", "text": "Fast, overlapping speech, sharp questions, and long silences all signal panic.", "zh": "语速快、抢着说话、问话很冲、长时间冷场，这些都是慌了的信号。", "sp": null}], [{"id": "s0_1_0", "md": "People in a crisis watch the person in charge and copy them.", "text": "People in a crisis watch the person in charge and copy them.", "zh": "危机中的人会盯着负责的那个人，跟着他学。", "sp": null}, {"id": "s0_1_1", "md": "If the lead talks quickly and sounds ==irritated==, everyone speeds up and starts making small mistakes.", "text": "If the lead talks quickly and sounds irritated, everyone speeds up and starts making small mistakes.", "zh": "如果指挥说话很快、听着很烦躁，所有人都会跟着提速，开始犯小错。", "sp": null}, {"id": "s0_1_2", "md": "If the lead sounds steady, the room __settles down__ and people start thinking again.", "text": "If the lead sounds steady, the room settles down and people start thinking again.", "zh": "如果指挥听起来很稳，整个会就会安定下来，大家又能开始思考了。", "sp": null}], [{"id": "s0_2_0", "md": "This matters even more on global teams.", "text": "This matters even more on global teams.", "zh": "在跨国团队里，这一点更重要。", "sp": null}, {"id": "s0_2_1", "md": "When half the call is joining from another time zone, often in a second language, a rushed voice is much harder to follow.", "text": "When half the call is joining from another time zone, often in a second language, a rushed voice is much harder to follow.", "zh": "当会上一半人是从另一个时区接进来的，而且常常用的是第二语言，急促的语速会让人更难跟上。", "sp": null}, {"id": "s0_2_2", "md": "Speaking calmly is also speaking clearly, and clarity saves minutes.", "text": "Speaking calmly is also speaking clearly, and clarity saves minutes.", "zh": "说话冷静，也就是说话清楚，而清楚能省下好几分钟。", "sp": null}], [{"id": "s0_3_0", "md": "**Your tone during an incident is part of the fix, not a side detail.**", "text": "Your tone during an incident is part of the fix, not a side detail.", "zh": "故障期间你的语气本身就是修复的一部分，而不是细枝末节。", "sp": null}, {"id": "s0_3_1", "md": "Calm does not mean slow or ==indifferent==.", "text": "Calm does not mean slow or indifferent.", "zh": "冷静不等于慢，也不等于无所谓。", "sp": null}, {"id": "s0_3_2", "md": "It means your voice stays level while your actions stay fast.", "text": "It means your voice stays level while your actions stay fast.", "zh": "它的意思是，声音保持平稳，动作保持迅速。", "sp": null}]]}, {"heading": "2. What a Calm Voice Sounds Like", "heading_zh": "2. 冷静的声音听起来是什么样", "rows": [[{"id": "s1_0_0", "md": "First, slow your speech down a little and lower your volume.", "text": "First, slow your speech down a little and lower your volume.", "zh": "第一，语速稍微放慢一点，音量压低一点。", "sp": null}, {"id": "s1_0_1", "md": "It feels strange, but on a call it ==projects== control.", "text": "It feels strange, but on a call it projects control.", "zh": "这感觉有点怪，但在会上它会传递出掌控感。", "sp": null}, {"id": "s1_0_2", "md": "Second, use short factual sentences, like \"Rollback is at fifty percent, and errors are flat.\"", "text": "Second, use short factual sentences, like \"Rollback is at fifty percent, and errors are flat.\"", "zh": "第二，用简短的事实句，比如「回滚到百分之五十了，报错持平。」", "sp": null}], [{"id": "s1_1_0", "md": "Third, replace blame with questions about the system.", "text": "Third, replace blame with questions about the system.", "zh": "第三，用针对系统的提问来代替追责。", "sp": null}, {"id": "s1_1_1", "md": "\"Who pushed this?\" makes people ==defensive== and quiet, exactly when you need them talking.", "text": "\"Who pushed this?\" makes people defensive and quiet, exactly when you need them talking.", "zh": "「谁推的这个？」会让人防御心起来、不吭声，偏偏这时候你最需要大家开口。", "sp": null}, {"id": "s1_1_2", "md": "\"What changed in the last hour?\" gets you the same information without the fear.", "text": "\"What changed in the last hour?\" gets you the same information without the fear.", "zh": "「过去一小时改了什么？」能拿到同样的信息，又不会让人害怕。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, __name the next step__ even when you are not sure it will work.", "text": "Finally, name the next step even when you are not sure it will work.", "zh": "最后，哪怕你不确定管不管用，也要说出下一步。", "sp": null}, {"id": "s1_2_1", "md": "\"We'll try restarting the cache nodes; if that doesn't help in five minutes, we fail over to the backup region.\"", "text": "\"We'll try restarting the cache nodes; if that doesn't help in five minutes, we fail over to the backup region.\"", "zh": "「我们先重启缓存节点；五分钟内不见效，就切到备用机房。」", "sp": null}, {"id": "s1_2_2", "md": "**People can handle bad news; what they cannot handle is not knowing what happens next.**", "text": "People can handle bad news; what they cannot handle is not knowing what happens next.", "zh": "人们扛得住坏消息；扛不住的是不知道接下来会发生什么。", "sp": null}, {"id": "s1_2_3", "md": "A ==composed== lead gives them that, one step at a time.", "text": "A composed lead gives them that, one step at a time.", "zh": "一个镇定的指挥，就是一步一步地把这个交给大家。", "sp": null}]]}], "gist": [{"q": "作者说在故障电话里，怎么判断事情进展如何？", "a": "听声音而不是看图表：语速快、抢话、尖锐提问和长时间沉默都说明大家在慌。"}, {"q": "为什么说语气是修复的一部分？", "a": "人们会模仿负责人：负责人急躁大家就加速出错，负责人稳住大家才能重新思考。冷静不等于慢或冷漠。"}, {"q": "让声音显得冷静的具体做法有哪些？", "a": "放慢语速、降低音量；用简短的事实句；用关于系统的提问代替追责；即使不确定也说出下一步。"}], "dictation": [{"id": "s0_3_0", "text": "Your tone during an incident is part of the fix, not a side detail."}, {"id": "s0_3_2", "text": "It means your voice stays level while your actions stay fast."}, {"id": "s1_1_2", "text": "\"What changed in the last hour?\" gets you the same information without the fear."}, {"id": "s1_2_2", "text": "People can handle bad news; what they cannot handle is not knowing what happens next."}], "shadow": {"text": "Calm does not mean slow or indifferent. It means your voice stays level while your actions stay fast.", "marked": "<b>Calm</b> does not mean / <b>slow</b> / or <b>indifferent</b>. //<br>It means your <b>voice</b> stays level / while your <b>actions</b> / stay <b>fast</b>. //"}, "prompts": [{"q": "故障电话里大家抢着说话、互相质问“谁改的”。你接过话头，用 30 秒让大家冷静下来并给出下一步。", "ref": "Okay, let's take a breath. Here's where we are: errors are still high, but they're not getting worse. We don't need to know who changed what right now. The useful question is, what changed in the last hour? Arjun, can you pull the deploy log? Meanwhile, we'll restart the cache nodes. If that doesn't help in five minutes, we fail over. Next check-in at ten past.", "ref_zh": "好，大家先缓口气。现在的情况是：报错还是很高，但没有继续恶化。现在不需要搞清楚谁改了什么。有用的问题是，过去一小时改了什么？Arjun，你能把部署记录拉一下吗？同时我们先重启缓存节点。五分钟内不见效，我们就切机房。十分的时候再碰一次。", "id": "ref0"}, {"q": "你的经理在故障中不停在群里追问、语气很急。私下用 30 秒跟他沟通，请他配合保持冷静的节奏。", "ref": "Hey, I know this outage is stressful, and you're getting pressure from above. One thing that would really help: the team is reading every message you send, and the fast questions are making people rush. Could we agree that I'll send you a short update every fifteen minutes, and you route your questions through me? That keeps the engineers focused, and you still get what you need.", "ref_zh": "嘿，我知道这次故障压力很大，上面也在给你压力。有件事会很有帮助：团队会看你发的每一条消息，连珠炮式的追问会让大家手忙脚乱。我们能不能这样约定：我每十五分钟给你发一条简短同步，你的问题都通过我来转？这样工程师能专心干活，你也能拿到你需要的信息。", "id": "ref1"}], "words": [{"w": "signal (v.)", "ipa": "/ˈsɪɡnəl/", "zh": "表明、预示", "ex": "A sudden drop in traffic usually signals a client-side bug.", "tts_w": "signal", "id": "w0"}, {"w": "irritated", "ipa": "/ˈɪrɪˌteɪtɪd/", "zh": "恼火的、烦躁的", "ex": "He sounded irritated when the vendor missed the deadline again.", "id": "w1"}, {"w": "indifferent", "ipa": "/ɪnˈdɪfərənt/", "zh": "冷漠的、漠不关心的", "ex": "Users aren't indifferent to latency; they just leave quietly.", "id": "w2"}, {"w": "project (v.)", "ipa": "/prəˈdʒekt/", "zh": "展现、传达（某种形象）", "ex": "Try to project confidence when you present the new timeline.", "tts_w": "project", "id": "w3"}, {"w": "defensive", "ipa": "/dɪˈfensɪv/", "zh": "防御性的、戒备的", "ex": "The author got defensive when the review focused on naming.", "id": "w4"}, {"w": "composed", "ipa": "/kəmˈpoʊzd/", "zh": "镇定的、沉着的", "ex": "She stayed composed even when the client joined the incident call.", "id": "w5"}, {"w": "contagious", "ipa": "/kənˈteɪdʒəs/", "zh": "有感染力的、会传染的", "ex": "Her energy in the kickoff was contagious.", "id": "w6"}, {"w": "overlapping", "ipa": "/ˌoʊvərˈlæpɪŋ/", "zh": "重叠的、相互打断的", "ex": "We have three overlapping projects all touching the same service.", "id": "w7"}, {"w": "steady", "ipa": "/ˈstedi/", "zh": "稳定的、沉稳的", "ex": "Latency has been steady since the cache fix.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Room Copies You", "zh": "1. 整个房间都在模仿你", "start": 0.0, "end": 2.064, "words": [[0.105, 0.329], [0.724, 0.789], [0.803, 1.026], [1.039, 1.46], [1.474, 1.671]]}, {"kind": "s", "id": "s0_0_0", "md": "Join any outage call and you can tell within a minute how it is going.", "zh": "随便进一个故障会议，一分钟之内你就能感觉到进展如何。", "sp": null, "gap": false, "start": 2.064, "end": 6.096, "words": [[2.169, 2.446], [2.459, 2.696], [2.709, 3.011], [3.025, 3.406], [3.656, 3.735], [3.748, 3.84], [3.853, 3.972], [3.985, 4.222], [4.235, 4.524], [4.538, 4.577], [4.59, 4.919], [4.932, 5.117], [5.13, 5.196], [5.209, 5.314], [5.327, 5.696]]}, {"kind": "s", "id": "s0_0_1", "md": "Not from the graphs, but from the voices.", "zh": "不是看曲线，而是听声音。", "sp": null, "gap": false, "start": 6.096, "end": 8.928, "words": [[6.201, 6.412], [6.425, 6.57], [6.583, 6.649], [6.662, 7.28], [7.491, 7.636], [7.649, 7.82], [7.833, 7.899], [7.912, 8.53]]}, {"kind": "s", "id": "s0_0_2", "md": "Fast, overlapping speech, sharp questions, and long silences all ==signal== panic.", "zh": "语速快、抢着说话、问话很冲、长时间冷场，这些都是慌了的信号。", "sp": null, "gap": false, "start": 8.928, "end": 15.336, "words": [[9.112, 9.533], [9.757, 10.389], [10.402, 10.981], [11.204, 11.52], [11.533, 12.204], [12.454, 12.639], [12.652, 12.941], [12.954, 13.704], [13.875, 14.112], [14.125, 14.481], [14.494, 14.941]]}, {"kind": "s", "id": "s0_1_0", "md": "People in a crisis watch the person in charge and copy them.", "zh": "危机中的人会盯着负责的那个人，跟着他学。", "sp": null, "gap": true, "start": 15.336, "end": 19.032, "words": [[15.454, 15.731], [15.744, 15.81], [15.823, 15.875], [15.889, 16.428], [16.441, 16.744], [16.757, 16.862], [16.875, 17.283], [17.297, 17.402], [17.415, 17.875], [17.941, 18.02], [18.033, 18.415], [18.428, 18.639]]}, {"kind": "s", "id": "s0_1_1", "md": "If the lead talks quickly and sounds ==irritated==, everyone speeds up and starts making small mistakes.", "zh": "如果指挥说话很快、听着很烦躁，所有人都会跟着提速，开始犯小错。", "sp": null, "gap": false, "start": 19.032, "end": 25.464, "words": [[19.137, 19.242], [19.256, 19.348], [19.361, 19.598], [19.611, 19.914], [19.927, 20.466], [20.479, 20.598], [20.611, 21.058], [21.071, 21.664], [22.058, 22.479], [22.493, 22.927], [22.94, 23.164], [23.348, 23.453], [23.466, 23.795], [23.808, 24.111], [24.124, 24.414], [24.427, 25.072]]}, {"kind": "s", "id": "s0_1_2", "md": "If the lead sounds steady, the room __settles down__ and people start thinking again.", "zh": "如果指挥听起来很稳，整个会就会安定下来，大家又能开始思考了。", "sp": null, "gap": false, "start": 25.464, "end": 30.648, "words": [[25.569, 25.701], [25.714, 25.806], [25.819, 26.135], [26.148, 26.517], [26.53, 26.911], [27.293, 27.372], [27.385, 27.727], [27.74, 28.122], [28.135, 28.556], [28.767, 28.872], [28.885, 29.201], [29.214, 29.49], [29.503, 29.885], [29.898, 30.267]]}, {"kind": "s", "id": "s0_2_0", "md": "This matters even more on global teams.", "zh": "在跨国团队里，这一点更重要。", "sp": null, "gap": true, "start": 30.648, "end": 33.552, "words": [[30.766, 30.924], [30.937, 31.372], [31.53, 31.753], [31.766, 32.069], [32.082, 32.187], [32.201, 32.569], [32.582, 33.148]]}, {"kind": "s", "id": "s0_2_1", "md": "When half the call is joining from another time zone, often in a second language, a rushed voice is much harder to follow.", "zh": "当会上一半人是从另一个时区接进来的，而且常常用的是第二语言，急促的语速会让人更难跟上。", "sp": null, "gap": false, "start": 33.552, "end": 41.28, "words": [[33.67, 33.763], [33.776, 34.052], [34.065, 34.17], [34.184, 34.539], [34.552, 34.684], [34.697, 35.078], [35.091, 35.276], [35.289, 35.631], [35.644, 35.947], [35.96, 36.315], [36.723, 37.078], [37.091, 37.184], [37.197, 37.249], [37.263, 37.657], [37.67, 38.184], [38.552, 38.565], [38.578, 38.973], [38.986, 39.42], [39.539, 39.67], [39.684, 39.986], [39.999, 40.315], [40.328, 40.394], [40.407, 40.894]]}, {"kind": "s", "id": "s0_2_2", "md": "Speaking calmly is also speaking clearly, and clarity saves minutes.", "zh": "说话冷静，也就是说话清楚，而清楚能省下好几分钟。", "sp": null, "gap": false, "start": 41.28, "end": 46.608, "words": [[41.385, 41.819], [41.833, 42.412], [42.583, 42.754], [42.767, 43.122], [43.135, 43.648], [43.662, 44.162], [44.477, 44.583], [44.596, 45.135], [45.241, 45.635], [45.648, 46.214]]}, {"kind": "s", "id": "s0_3_0", "md": "**Your tone during an incident is part of the fix, not a side detail.**", "zh": "故障期间你的语气本身就是修复的一部分，而不是细枝末节。", "sp": null, "gap": true, "start": 46.608, "end": 51.072, "words": [[46.713, 46.832], [46.845, 47.134], [47.147, 47.437], [47.45, 47.529], [47.542, 48.069], [48.187, 48.292], [48.305, 48.569], [48.582, 48.647], [48.661, 48.726], [48.74, 49.305], [49.608, 49.753], [49.766, 49.792], [49.805, 50.147], [50.161, 50.687]]}, {"kind": "s", "id": "s0_3_1", "md": "Calm does not mean slow or ==indifferent==.", "zh": "冷静不等于慢，也不等于无所谓。", "sp": null, "gap": false, "start": 51.072, "end": 53.856, "words": [[51.177, 51.375], [51.388, 51.533], [51.546, 51.769], [51.783, 52.006], [52.019, 52.611], [52.743, 52.875], [52.888, 53.467]]}, {"kind": "s", "id": "s0_3_2", "md": "It means your voice stays level while your actions stay fast.", "zh": "它的意思是，声音保持平稳，动作保持迅速。", "sp": null, "gap": false, "start": 53.856, "end": 57.648, "words": [[53.961, 54.04], [54.053, 54.303], [54.317, 54.435], [54.448, 54.777], [54.79, 55.132], [55.145, 55.474], [55.659, 55.79], [55.803, 55.974], [55.988, 56.422], [56.435, 56.672], [56.685, 57.251]]}, {"kind": "h", "id": "h1", "md": "2. What a Calm Voice Sounds Like", "zh": "2. 冷静的声音听起来是什么样", "start": 57.648, "end": 59.808, "words": [[57.753, 57.937], [57.964, 58.082], [58.095, 58.148], [58.161, 58.477], [58.49, 58.793], [58.806, 59.122], [59.135, 59.411]]}, {"kind": "s", "id": "s1_0_0", "md": "First, slow your speech down a little and lower your volume.", "zh": "第一，语速稍微放慢一点，音量压低一点。", "sp": null, "gap": false, "start": 59.808, "end": 63.72, "words": [[59.979, 60.374], [60.663, 60.913], [60.926, 61.071], [61.084, 61.4], [61.413, 61.637], [61.65, 61.703], [61.716, 62.111], [62.361, 62.466], [62.479, 62.755], [62.769, 62.887], [62.9, 63.321]]}, {"kind": "s", "id": "s1_0_1", "md": "It feels strange, but on a call it ==projects== control.", "zh": "这感觉有点怪，但在会上它会传递出掌控感。", "sp": null, "gap": false, "start": 63.72, "end": 67.224, "words": [[63.838, 63.931], [63.944, 64.259], [64.273, 64.904], [65.115, 65.246], [65.259, 65.352], [65.365, 65.417], [65.431, 65.694], [65.707, 65.786], [65.799, 66.286], [66.299, 66.838]]}, {"kind": "s", "id": "s1_0_2", "md": "Second, use short factual sentences, like \"Rollback is at fifty percent, and errors are flat.\"", "zh": "第二，用简短的事实句，比如「回滚到百分之五十了，报错持平。」", "sp": null, "gap": false, "start": 67.224, "end": 74.28, "words": [[67.342, 67.79], [68.198, 68.382], [68.395, 68.671], [68.685, 69.263], [69.277, 69.908], [70.132, 70.382], [70.527, 71.145], [71.224, 71.329], [71.342, 71.448], [71.461, 71.816], [71.829, 72.342], [72.685, 72.829], [72.842, 73.185], [73.198, 73.29], [73.303, 73.777]]}, {"kind": "s", "id": "s1_1_0", "md": "Third, replace blame with questions about the system.", "zh": "第三，用针对系统的提问来代替追责。", "sp": null, "gap": true, "start": 74.28, "end": 77.808, "words": [[74.438, 74.885], [75.254, 75.648], [75.662, 75.964], [75.977, 76.122], [76.135, 76.622], [76.635, 76.872], [76.885, 76.964], [76.977, 77.412]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Who pushed this?\" makes people ==defensive== and quiet, exactly when you need them talking.", "zh": "「谁推的这个？」会让人防御心起来、不吭声，偏偏这时候你最需要大家开口。", "sp": null, "gap": false, "start": 77.808, "end": 83.424, "words": [[78.019, 78.045], [78.045, 78.361], [78.374, 78.808], [79.111, 79.321], [79.334, 79.65], [79.663, 80.308], [80.321, 80.44], [80.453, 80.926], [81.4, 81.953], [81.966, 82.111], [82.124, 82.216], [82.229, 82.426], [82.44, 82.571], [82.584, 83.045]]}, {"kind": "s", "id": "s1_1_2", "md": "\"What changed in the last hour?\" gets you the same information without the fear.", "zh": "「过去一小时改了什么？」能拿到同样的信息，又不会让人害怕。", "sp": null, "gap": false, "start": 83.424, "end": 87.96, "words": [[83.608, 83.621], [83.7, 84.108], [84.121, 84.174], [84.187, 84.266], [84.279, 84.635], [84.648, 84.911], [85.306, 85.503], [85.516, 85.621], [85.635, 85.74], [85.753, 86.056], [86.069, 86.7], [86.713, 87.056], [87.069, 87.148], [87.161, 87.569]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, __name the next step__ even when you are not sure it will work.", "zh": "最后，哪怕你不确定管不管用，也要说出下一步。", "sp": null, "gap": true, "start": 87.96, "end": 92.136, "words": [[88.144, 88.565], [88.96, 89.144], [89.157, 89.236], [89.249, 89.526], [89.539, 89.881], [90.105, 90.328], [90.342, 90.473], [90.486, 90.578], [90.592, 90.671], [90.684, 90.92], [90.934, 91.17], [91.184, 91.249], [91.263, 91.394], [91.407, 91.749]]}, {"kind": "s", "id": "s1_2_1", "md": "\"We'll try restarting the cache nodes; if that doesn't help in five minutes, we fail over to the backup region.\"", "zh": "「我们先重启缓存节点；五分钟内不见效，就切到备用机房。」", "sp": null, "gap": false, "start": 92.136, "end": 99.288, "words": [[92.333, 92.399], [92.399, 92.649], [92.662, 93.294], [93.307, 93.386], [93.399, 93.781], [93.794, 94.281], [94.689, 94.768], [94.781, 94.978], [94.991, 95.307], [95.32, 95.57], [95.583, 95.675], [95.689, 95.991], [96.004, 96.465], [96.741, 96.899], [96.912, 97.36], [97.465, 97.689], [97.702, 97.781], [97.794, 97.899], [97.912, 98.399], [98.412, 98.768]]}, {"kind": "s", "id": "s1_2_2", "md": "**People can handle bad news; what they cannot handle is not knowing what happens next.**", "zh": "人们扛得住坏消息；扛不住的是不知道接下来会发生什么。", "sp": null, "gap": false, "start": 99.288, "end": 104.832, "words": [[99.406, 99.67], [99.683, 99.828], [99.841, 100.235], [100.249, 100.512], [100.525, 100.959], [101.354, 101.499], [101.512, 101.63], [101.643, 101.998], [102.012, 102.433], [102.446, 102.551], [102.564, 102.906], [102.92, 103.301], [103.314, 103.459], [103.472, 103.893], [103.906, 104.433]]}, {"kind": "s", "id": "s1_2_3", "md": "A ==composed== lead gives them that, one step at a time.", "zh": "一个镇定的指挥，就是一步一步地把这个交给大家。", "sp": null, "gap": false, "start": 104.832, "end": 108.432, "words": [[104.937, 105.003], [105.016, 105.582], [105.595, 105.911], [105.924, 106.2], [106.214, 106.398], [106.411, 106.7], [107.003, 107.2], [107.214, 107.477], [107.49, 107.556], [107.569, 107.608], [107.621, 108.042]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+{
+  "id": "012",
+  "title": "When the Demo Breaks in Front of Everyone",
+  "meta": "B2 · 约 270 词 · 场景：演示翻车",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. They Are Watching You, Not the Bug",
+      "paragraphs": [
+        [
+          "You click the button, and nothing happens.",
+          "You click again, and an error message fills the screen in front of forty people and your skip-level manager.",
+          "In that moment, it feels like the demo, the project, and maybe your career are all ==collapsing== together."
+        ],
+        [
+          "They are not.",
+          "Everyone in that room has seen software break, and most of them have broken it themselves.",
+          "**What people remember is not the failure; it is how calmly you handled it.**"
+        ],
+        [
+          "A ==frozen== presenter who keeps clicking and apologizing makes the audience ==uncomfortable==.",
+          "A presenter who __takes it in stride__ actually builds trust, because it shows how they will behave during a real outage."
+        ]
+      ],
+      "heading_zh": "1. 大家在看你，不是在看 bug",
+      "paragraphs_zh": [
+        [
+          "你点了按钮，什么反应都没有。",
+          "你又点了一下，一个报错弹满了屏幕，当着四十个人和你老板的老板的面。",
+          "那一刻，你感觉 demo、项目，甚至你的职业生涯都在一起崩塌。"
+        ],
+        [
+          "其实并没有。",
+          "那屋里每个人都见过软件出问题，大多数人自己也搞崩过。",
+          "大家记住的不是故障本身，而是你处理得有多镇定。"
+        ],
+        [
+          "一个僵在台上、不停地点、不停道歉的讲者，会让听众浑身不自在。",
+          "而一个能坦然应对的讲者反而能建立信任，因为这让人看到他在真正的线上故障里会怎么表现。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Name It, Limit It, Move On",
+      "paragraphs": [
+        [
+          "First, name what happened in one light sentence.",
+          "\"Well, that's the live part of a live demo.\"",
+          "A small joke ==releases== the tension, for you and for the room."
+        ],
+        [
+          "Second, give yourself a strict limit.",
+          "**Try one quick fix, and if it does not work in thirty seconds, switch to plan B.**",
+          "Debugging in front of an audience almost never ends well, and every extra minute __drains the energy__ out of the room."
+        ],
+        [
+          "That means you need a plan B before you start.",
+          "Record a short video of the ==flow==, or keep screenshots of the key moments in a backup slide.",
+          "\"Let me show you a recording from this morning, and I'll walk you through it.\"",
+          "Most people will not even mind, because the story you are telling is still the same."
+        ],
+        [
+          "Finally, __follow up afterward__.",
+          "Send a short note explaining the cause and, if possible, a working link.",
+          "That message often leaves a better ==impression== than a perfect demo would have."
+        ]
+      ],
+      "heading_zh": "2. 点明、限时、继续",
+      "paragraphs_zh": [
+        [
+          "第一，用一句轻松的话点明发生了什么。",
+          "「好吧，这就是现场演示的『现场』部分。」",
+          "一个小玩笑能释放紧张情绪，对你和对全场都是。"
+        ],
+        [
+          "第二，给自己定一个严格的时限。",
+          "试一次快速修复，三十秒内不行就切到 B 计划。",
+          "当着观众的面 debug 几乎从来没有好结果，多耗一分钟，全场的劲头就泄掉一分。"
+        ],
+        [
+          "这意味着开始之前你就得准备好 B 计划。",
+          "录一段流程的短视频，或者把关键画面截图放在备用的幻灯片里。",
+          "「我给大家放一段今天早上录的视频，我边放边讲。」",
+          "大多数人根本不会介意，因为你讲的故事还是同一个。"
+        ],
+        [
+          "最后，会后跟进。",
+          "发一条简短的说明，讲清原因，可能的话附上一个能用的链接。",
+          "这条消息留下的印象，往往比一次完美的 demo 还要好。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为演示翻车时观众真正在看什么？",
+      "a": "看你怎么应对，而不是看 bug 本身；冷静处理反而能建立信任。"
+    },
+    {
+      "q": "翻车后的三步是什么？",
+      "a": "用一句轻松的话点明；给自己设限，三十秒修不好就切换备用方案；会后发说明和可用链接跟进。"
+    },
+    {
+      "q": "作者建议提前准备什么备用方案？",
+      "a": "录一段流程视频，或在备用幻灯片里放关键环节的截图。"
+    }
+  ],
+  "dictation": [
+    "What people remember is not the failure; it is how calmly you handled it.",
+    "Try one quick fix, and if it does not work in thirty seconds, switch to plan B.",
+    "That means you need a plan B before you start.",
+    "Everyone in that room has seen software break, and most of them have broken it themselves."
+  ],
+  "shadow": {
+    "text": "Second, give yourself a strict limit. Try one quick fix, and if it does not work in thirty seconds, switch to plan B.",
+    "marked": "<b>Second</b>, / give yourself a <b>strict</b> limit. //<br>Try <b>one</b> quick fix, / and if it does <b>not</b> work / in <b>thirty</b> seconds, / switch to plan <b>B</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你在部门大会上演示新搜索功能，点了查询后页面一直转圈。用 30 秒稳住场面并切换到备用录屏。",
+      "ref": "Well, that's the live part of a live demo. Let me try one refresh. Okay, it looks like the test server is having a bad day, so I won't make you watch me debug. I recorded the same flow this morning, so let me play that instead and talk you through it. The key moment is coming up in about ten seconds, right when the results load.",
+      "ref_zh": "好吧，这就是现场演示的「现场」部分。我刷新一下试试。好，看起来测试服务器今天状态不太好，我就不让大家看我 debug 了。今天早上我录了同样的流程，我放那段给大家，边放边讲。关键的地方大概十秒后出现，就在结果加载出来的时候。"
+    },
+    {
+      "q": "演示翻车后的当天下午，你给参会者发一条跟进消息。用 30 秒口述这条消息的内容。",
+      "ref": "Hi everyone, thanks again for sitting through this morning's demo, including the unplanned part. The issue was an expired token on our test server, not the search feature itself, and it's fixed now. Here's a link to the working version, so you can try it yourself. If you have questions or want a quick live walkthrough with your team, just reply here and I'll set something up.",
+      "ref_zh": "大家好，再次感谢各位看完今天上午的 demo，包括那段计划外的插曲。问题出在测试服务器上的一个 token 过期了，不是搜索功能本身的问题，现在已经修好了。这是能正常用的版本链接，大家可以自己试试。如果有问题，或者想给你们团队现场快速过一遍，直接在这里回复，我来约时间。"
+    }
+  ],
+  "words": [
+    {
+      "w": "collapse",
+      "ipa": "/kəˈlæps/",
+      "zh": "崩塌、垮掉",
+      "ex": "The whole service collapsed when the cache cluster went down."
+    },
+    {
+      "w": "frozen",
+      "ipa": "/ˈfroʊzən/",
+      "zh": "僵住的、卡住的",
+      "ex": "The screen froze, and so did I."
+    },
+    {
+      "w": "uncomfortable",
+      "ipa": "/ʌnˈkʌmftərbəl/",
+      "zh": "不自在的",
+      "ex": "It was uncomfortable to admit the bug in front of the client, but necessary."
+    },
+    {
+      "w": "release (v.)",
+      "ipa": "/rɪˈliːs/",
+      "zh": "释放、缓解",
+      "ex": "A quick laugh released some of the pressure on the incident call.",
+      "tts_w": "release"
+    },
+    {
+      "w": "flow (n.)",
+      "ipa": "/floʊ/",
+      "zh": "流程",
+      "ex": "The checkout flow has too many steps on mobile.",
+      "tts_w": "flow"
+    },
+    {
+      "w": "impression",
+      "ipa": "/ɪmˈpreʃən/",
+      "zh": "印象",
+      "ex": "The quick follow-up made a good impression on the partner team."
+    },
+    {
+      "w": "take it in stride",
+      "ipa": "/teɪk ɪt ɪn straɪd/",
+      "zh": "从容应对",
+      "ex": "When the build failed during the demo, she took it in stride."
+    },
+    {
+      "w": "drain",
+      "ipa": "/dreɪn/",
+      "zh": "耗尽、消耗",
+      "ex": "Endless status meetings drain the team's energy."
+    },
+    {
+      "w": "skip-level",
+      "ipa": "/ˈskɪp ˌlevəl/",
+      "zh": "隔级的（上级的上级）",
+      "ex": "I have a skip-level chat with the director every month."
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "id": "078",
+  "title": "Changing Plans Mid-Quarter",
+  "meta": "B2 · 约 270 词 · 场景：计划调整",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Changing Is Fine; Quietly Is Not",
+      "paragraphs": [
+        [
+          "Six weeks into the quarter, a major customer ==churns==, and leadership wants to shift the team to retention work.",
+          "Your carefully negotiated plan is suddenly out of date."
+        ],
+        [
+          "Changing course is not a sign of bad planning.",
+          "A plan that never changes in a fast market is probably being ignored.",
+          "**The damage comes from changing the plan quietly, not from changing it.**"
+        ],
+        [
+          "When plans shift without an announcement, other teams keep building on old ==assumptions==.",
+          "A partner team finishes an API you no longer need, and a PM promises customers a feature you have just dropped.",
+          "Trust ==erodes== much faster than the plan itself changes, and next quarter everyone pads their estimates to protect themselves."
+        ]
+      ],
+      "heading_zh": "1. 改可以，悄悄改不行",
+      "paragraphs_zh": [
+        [
+          "季度进行到第六周，一个大客户流失了，管理层想把团队转去做留存。",
+          "你辛辛苦苦谈下来的计划一下子就过时了。"
+        ],
+        [
+          "调整方向并不说明计划做得不好。",
+          "在一个变化很快的市场里，一份从来不变的计划，很可能根本没人在看。",
+          "伤害来自悄悄地改计划，而不是改计划本身。"
+        ],
+        [
+          "计划变了却没有通知，其他团队就会继续基于旧的假设往下做。",
+          "合作团队做完了一个你已经不需要的 API，某个 PM 向客户承诺了一个你刚砍掉的功能。",
+          "信任流失的速度比计划本身变化快得多，下个季度大家都会在估时里加 buffer 来保护自己。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. A Change Note in Four Sentences",
+      "paragraphs": [
+        [
+          "When you change direction, send a short change note to every ==downstream== team.",
+          "It needs only four sentences, and each one answers a different question.",
+          "Keep it short enough that people actually read it to the end."
+        ],
+        [
+          "What changed in the world: \"Our largest customer in the region left, citing slow reporting.\"",
+          "What changes in the plan: \"We are moving two engineers to reporting speed for six weeks.\"",
+          "What it costs: \"The new admin dashboard moves from this quarter to next.\"",
+          "Who is affected: \"Design and the sales team, who were planning a demo.\""
+        ],
+        [
+          "**Saying the cost out loud is what makes the change credible.**",
+          "It shows the decision was ==deliberate==, not a ==knee-jerk== reaction to whoever complained last.",
+          "It also gives affected teams a chance to __raise concerns__ before the new plan is __locked in__.",
+          "A plan that changes openly is still a plan; a plan that changes silently is just a rumor."
+        ]
+      ],
+      "heading_zh": "2. 四句话的变更说明",
+      "paragraphs_zh": [
+        [
+          "当你调整方向时，给每个下游团队发一份简短的变更说明。",
+          "只需要四句话，每一句回答一个不同的问题。",
+          "写得足够短，短到大家真的会读到最后。"
+        ],
+        [
+          "外部发生了什么变化：「我们在这个区域最大的客户走了，理由是报表太慢。」",
+          "计划有什么变化：「我们把两个工程师调去做报表提速，为期六周。」",
+          "代价是什么：「新的管理后台从这个季度推到下个季度。」",
+          "影响到谁：「设计团队，还有原本在准备 demo 的销售团队。」"
+        ],
+        [
+          "把代价说出来，正是让这次调整显得可信的关键。",
+          "它说明这个决定是深思熟虑的，而不是对最后一个来抱怨的人的条件反射。",
+          "它也让受影响的团队有机会在新计划定死之前提出顾虑。",
+          "公开调整的计划仍然是计划；悄悄调整的计划只是传言。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为季度中途改计划本身有问题吗？",
+      "a": "没有，市场变化快，从不改的计划多半没人在看；问题在于悄悄地改。"
+    },
+    {
+      "q": "悄悄改计划会造成什么后果？",
+      "a": "其他团队按旧假设继续做，做出不再需要的接口、承诺已砍掉的功能；信任流失，下季度大家都给估时加水分自保。"
+    },
+    {
+      "q": "变更说明的四句话分别回答什么？",
+      "a": "外部发生了什么变化；计划改了什么；代价是什么（哪些事推迟）；影响到谁。"
+    }
+  ],
+  "dictation": [
+    "A plan that never changes in a fast market is probably being ignored.",
+    "The damage comes from changing the plan quietly, not from changing it.",
+    "Saying the cost out loud is what makes the change credible.",
+    "A plan that changes openly is still a plan; a plan that changes silently is just a rumor."
+  ],
+  "shadow": {
+    "text": "Saying the cost out loud is what makes the change credible. It shows the decision was deliberate, not a knee-jerk reaction to whoever complained last.",
+    "marked": "Saying the <b>cost</b> out loud / is what makes the change <b>credible</b>. //<br>It shows the decision was <b>deliberate</b>, / not a <b>knee-jerk</b> reaction / to whoever <b>complained</b> last. //"
+  },
+  "prompts": [
+    {
+      "q": "季度中途，老板要求你的团队转去做稳定性。用 30 秒在跨团队周会上按四句话说明这次变更。",
+      "ref": "I want to share a change to our plan. Last week we had two major outages, and our biggest partner has asked for a stability review. So we're moving three engineers to reliability work for the next five weeks. The cost is that the new search filters slip to next quarter. This mainly affects the design team and marketing, who were planning a campaign around search.",
+      "ref_zh": "我想同步一下我们计划的调整。上周我们出了两次大故障，最大的合作方要求做一次稳定性评审。所以接下来五周，我们要调三个工程师去做稳定性。代价是新的搜索筛选推到下个季度。主要影响的是设计团队和市场团队，他们原本在围绕搜索策划一场活动。"
+    },
+    {
+      "q": "兄弟团队抱怨你们“又改计划了，没人通知”。用 30 秒承认问题并提出以后的做法。",
+      "ref": "You're right, and I'm sorry. We decided to move the export work two weeks ago, and you heard about it from a ticket, not from us. That's on me. Going forward, whenever our plan changes, I'll send a short note to every team that depends on us, covering what changed, why, what slips, and who's affected, before anything is locked in.",
+      "ref_zh": "你说得对，我很抱歉。我们两周前就决定挪走导出那块工作，而你是从一个工单里知道的，不是我们告诉你的。这是我的问题。以后只要我们的计划有变，我都会在定下来之前给每个依赖我们的团队发一份简短说明，讲清楚改了什么、为什么改、什么延期了、影响到谁。"
+    }
+  ],
+  "words": [
+    {
+      "w": "churn (v.)",
+      "ipa": "/tʃɜːrn/",
+      "zh": "（客户）流失",
+      "ex": "Customers who hit this bug in their first week tend to churn.",
+      "tts_w": "churn"
+    },
+    {
+      "w": "assumption",
+      "ipa": "/əˈsʌmpʃən/",
+      "zh": "假设、前提",
+      "ex": "Our capacity plan was based on the assumption of steady growth."
+    },
+    {
+      "w": "erode",
+      "ipa": "/ɪˈroʊd/",
+      "zh": "侵蚀、逐渐削弱",
+      "ex": "Every missed deadline erodes the client's trust a little more."
+    },
+    {
+      "w": "downstream",
+      "ipa": "/ˌdaʊnˈstriːm/",
+      "zh": "下游的",
+      "ex": "Changing this schema will break several downstream services."
+    },
+    {
+      "w": "deliberate",
+      "ipa": "/dɪˈlɪbərət/",
+      "zh": "深思熟虑的、有意的",
+      "ex": "Dropping the old Android version was a deliberate choice."
+    },
+    {
+      "w": "knee-jerk",
+      "ipa": "/ˈniː ˌdʒɜːrk/",
+      "zh": "条件反射式的、未经思考的",
+      "ex": "Freezing all releases was a knee-jerk response to one bad deploy."
+    },
+    {
+      "w": "credible",
+      "ipa": "/ˈkredəbəl/",
+      "zh": "可信的",
+      "ex": "The plan only became credible once we added real estimates."
+    },
+    {
+      "w": "cite",
+      "ipa": "/saɪt/",
+      "zh": "援引、列举（理由）",
+      "ex": "The client cited slow support as the main reason for leaving."
+    },
+    {
+      "w": "rumor",
+      "ipa": "/ˈruːmər/",
+      "zh": "传闻、小道消息",
+      "ex": "There's a rumor that the project is being cancelled; can we clarify?"
+    }
+  ]
+}

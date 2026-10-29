@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Turning a Messy Discussion into a Decision · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "002", "title": "Turning a Messy Discussion into a Decision", "meta": "B2 · 约 270 词 · 场景：会议收敛", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Forty Minutes and No Answer", "heading_zh": "1. 四十分钟，没有结论", "rows": [[{"id": "s0_0_0", "md": "You have probably sat through this meeting.", "text": "You have probably sat through this meeting.", "zh": "这种会你大概率开过。", "sp": null}, {"id": "s0_0_1", "md": "Six smart people discuss a caching problem for forty minutes.", "text": "Six smart people discuss a caching problem for forty minutes.", "zh": "六个聪明人围着一个缓存问题讨论了四十分钟。", "sp": null}, {"id": "s0_0_2", "md": "Every comment is reasonable, but the conversation __goes in circles__, and the hour ends with \"Let's take this offline.\"", "text": "Every comment is reasonable, but the conversation goes in circles, and the hour ends with \"Let's take this offline.\"", "zh": "每个人说的都有道理，但讨论一直在原地打转，最后一句「我们会后再聊」就散了。", "sp": null}], [{"id": "s0_1_0", "md": "The problem is rarely a lack of ideas.", "text": "The problem is rarely a lack of ideas.", "zh": "问题很少是缺点子。", "sp": null}, {"id": "s0_1_1", "md": "It is that nobody has said out loud what the options are and how the group will choose between them.", "text": "It is that nobody has said out loud what the options are and how the group will choose between them.", "zh": "而是没有人把选项有哪些、大家要怎么选，明明白白地说出来。", "sp": null}, {"id": "s0_1_2", "md": "Without that, each person is arguing for a ==slightly== different question.", "text": "Without that, each person is arguing for a slightly different question.", "zh": "没有这一步，每个人争的其实都是一个略有不同的问题。", "sp": null}, {"id": "s0_1_3", "md": "Some people are ==optimizing== for speed, others for cost, and nobody notices the gap.", "text": "Some people are optimizing for speed, others for cost, and nobody notices the gap.", "zh": "有人在优化速度，有人在优化成本，却没人注意到这个错位。", "sp": null}], [{"id": "s0_2_0", "md": "**A discussion only becomes a decision when someone gives it edges.**", "text": "A discussion only becomes a decision when someone gives it edges.", "zh": "只有有人给讨论划出边界，它才能变成决定。", "sp": null}, {"id": "s0_2_1", "md": "That person does not need to be the most senior one in the room.", "text": "That person does not need to be the most senior one in the room.", "zh": "这个人不一定得是屋里级别最高的。", "sp": null}, {"id": "s0_2_2", "md": "It just needs to be someone willing to __step back__ and ==summarize== where things stand.", "text": "It just needs to be someone willing to step back and summarize where things stand.", "zh": "只要有人愿意退一步，总结一下现在讨论到哪儿了就行。", "sp": null}]]}, {"heading": "2. Three Questions That Pull a Room Together", "heading_zh": "2. 把讨论收拢的三个问题", "rows": [[{"id": "s1_0_0", "md": "Start by naming the options.", "text": "Start by naming the options.", "zh": "先把选项点出来。", "sp": null}, {"id": "s1_0_1", "md": "\"I'm hearing two ==camps==, either we add a cache now, or we fix the slow query first.\"", "text": "\"I'm hearing two camps, either we add a cache now, or we fix the slow query first.\"", "zh": "「我听下来大家分成两派：要么现在就加缓存，要么先把慢查询修了。」", "sp": null}, {"id": "s1_0_2", "md": "Even if your summary is a bit off, people will correct it, and the ==fog== starts to clear.", "text": "Even if your summary is a bit off, people will correct it, and the fog starts to clear.", "zh": "就算你总结得有点偏，大家也会纠正你，迷雾就开始散了。", "sp": null}], [{"id": "s1_1_0", "md": "Next, ask what really matters.", "text": "Next, ask what really matters.", "zh": "接着问，什么才是真正重要的。", "sp": null}, {"id": "s1_1_1", "md": "\"Is the main concern speed of delivery, or long-term cost?\"", "text": "\"Is the main concern speed of delivery, or long-term cost?\"", "zh": "「我们最关心的是交付速度，还是长期成本？」", "sp": null}, {"id": "s1_1_2", "md": "Once the group agrees on one ==criterion==, many arguments simply disappear, because they were __measuring different things__.", "text": "Once the group agrees on one criterion, many arguments simply disappear, because they were measuring different things.", "zh": "大家一旦对一个标准达成一致，很多争论自然就消失了，因为之前大家衡量的根本不是一回事。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, ask how expensive it is to be wrong.", "text": "Finally, ask how expensive it is to be wrong.", "zh": "最后，问一下做错的代价有多大。", "sp": null}, {"id": "s1_2_1", "md": "If the choice is easy to ==reverse==, there is no reason to keep debating.", "text": "If the choice is easy to reverse, there is no reason to keep debating.", "zh": "如果这个选择很容易回退，那就没必要再争下去了。", "sp": null}, {"id": "s1_2_2", "md": "**Pick one, set a date to review it, and move on.**", "text": "Pick one, set a date to review it, and move on.", "zh": "选一个，定个时间复盘，然后往前走。", "sp": null}], [{"id": "s1_3_0", "md": "Then close the loop out loud.", "text": "Then close the loop out loud.", "zh": "然后当众把这件事闭环。", "sp": null}, {"id": "s1_3_1", "md": "\"So we're going with the query fix, and we'll check latency again next Friday.\"", "text": "\"So we're going with the query fix, and we'll check latency again next Friday.\"", "zh": "「那我们就先修查询，下周五再看一次延迟。」", "sp": null}, {"id": "s1_3_2", "md": "Saying it clearly gives people a chance to object now, instead of __in the hallway__ later.", "text": "Saying it clearly gives people a chance to object now, instead of in the hallway later.", "zh": "把话说清楚，大家就有机会现在提出异议，而不是事后在走廊里嘀咕。", "sp": null}]]}], "gist": [{"q": "作者认为讨论迟迟定不下来，根本原因是什么？", "a": "不是缺点子，而是没人明确说出有哪些选项、用什么标准来选，每个人其实在争论略有不同的问题。"}, {"q": "把讨论收敛成决定要问哪三个问题？", "a": "有哪几个选项；最看重的标准是什么；选错的代价有多大。"}, {"q": "如果一个决定很容易回退，作者建议怎么做？", "a": "不要继续争论，选一个，定个复盘日期，然后往前走；最后把结论大声说出来。"}], "dictation": [{"id": "s0_2_0", "text": "A discussion only becomes a decision when someone gives it edges."}, {"id": "s1_2_2", "text": "Pick one, set a date to review it, and move on."}, {"id": "s0_1_2", "text": "Without that, each person is arguing for a slightly different question."}, {"id": "s1_2_1", "text": "If the choice is easy to reverse, there is no reason to keep debating."}], "shadow": {"text": "Finally, ask how expensive it is to be wrong. If the choice is easy to reverse, there is no reason to keep debating. Pick one, set a date to review it, and move on.", "marked": "<b>Finally</b>, / ask how <b>expensive</b> it is / to be <b>wrong</b>. //<br>If the choice is <b>easy</b> to <b>reverse</b>, / there is <b>no</b> reason / to keep <b>debating</b>. //<br><b>Pick</b> one, / set a <b>date</b> to review it, / and <b>move on</b>. //"}, "prompts": [{"q": "大家为“先做 A/B 实验还是直接上线新推荐策略”讨论了半小时没有结论。用 30 秒把选项和判断标准说清楚，推动大家做决定。", "ref": "Can I try to pull this together? I'm hearing two options. We either run an A/B test for two weeks, or we ship the new ranking to everyone now. It seems like the real question is how much risk we can accept on engagement. Since we can roll back with one config change, I'd suggest we ship now and review the numbers next Wednesday. Does anyone strongly object?", "ref_zh": "我来试着收一下？我听下来有两个选项。要么做两周 A/B 实验，要么现在就把新的排序全量推给所有人。看起来真正的问题是，我们在互动指标上能承受多大的风险。既然改一个配置就能回滚，我建议现在就上，下周三再复盘数据。有人强烈反对吗？", "id": "ref0"}, {"q": "会议快结束，决定是“先修慢查询，暂不加缓存”。用 30 秒大声收口，说清决定、负责人和复查时间。", "ref": "Okay, let me close the loop so we're all on the same page. We're going with the query fix first, and we're parking the cache for now. Wei will own the fix, and we'll check P ninety-nine latency again next Friday. If the numbers are still bad by then, we'll come back to the cache option. If anyone disagrees, now is the time to say it.", "ref_zh": "好，我来闭个环，确保大家理解一致。我们先修查询，缓存的事暂时搁置。Wei 负责修复，下周五再看一次 P99 延迟。如果到时候数据还是不行，我们再回头考虑缓存方案。有不同意见的话，现在就说。", "id": "ref1"}], "words": [{"w": "slightly", "ipa": "/ˈslaɪtli/", "zh": "稍微、略微", "ex": "The new build is slightly faster, but not enough to notice.", "id": "w0"}, {"w": "summarize", "ipa": "/ˈsʌməˌraɪz/", "zh": "总结、概括", "ex": "Could you summarize the incident in two sentences for the leads?", "id": "w1"}, {"w": "camp", "ipa": "/kæmp/", "zh": "阵营、派别", "ex": "The team split into two camps over the rewrite.", "id": "w2"}, {"w": "fog", "ipa": "/fɑːɡ/", "zh": "迷雾、混乱不清", "ex": "The dashboard cleared up a lot of the fog around the drop in sign-ups.", "id": "w3"}, {"w": "criterion", "ipa": "/kraɪˈtɪriən/", "zh": "（评判）标准", "ex": "Our main criterion for the vendor is support quality, not price.", "id": "w4"}, {"w": "reverse (v.)", "ipa": "/rɪˈvɜːrs/", "zh": "撤销、回退", "ex": "The flag lets us reverse the change in seconds.", "tts_w": "reverse", "id": "w5"}, {"w": "close the loop", "ipa": "/kloʊz ðə luːp/", "zh": "收尾、给出闭环", "ex": "Let me close the loop with the PM after the meeting.", "id": "w6"}, {"w": "go in circles", "ipa": "/ɡoʊ ɪn ˈsɜːrkəlz/", "zh": "兜圈子", "ex": "We keep going in circles on the API design.", "id": "w7"}, {"w": "edge", "ipa": "/edʒ/", "zh": "边界、轮廓", "ex": "Let's give this project clear edges before we staff it.", "id": "w8"}, {"w": "optimize (for)", "ipa": "/ˈɑːptɪˌmaɪz/", "zh": "以……为优化目标", "ex": "Right now we're optimizing for launch speed, not perfect code.", "tts_w": "optimize", "id": "w9"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Forty Minutes and No Answer", "zh": "1. 四十分钟，没有结论", "start": 0.0, "end": 2.856, "words": [[0.118, 0.395], [0.671, 0.974], [0.987, 1.395], [1.539, 1.684], [1.697, 2.0], [2.013, 2.461]]}, {"kind": "s", "id": "s0_0_0", "md": "You have probably sat through this meeting.", "zh": "这种会你大概率开过。", "sp": null, "gap": false, "start": 2.856, "end": 4.992, "words": [[2.961, 3.027], [3.04, 3.159], [3.172, 3.567], [3.58, 3.909], [3.922, 4.08], [4.093, 4.264], [4.277, 4.593]]}, {"kind": "s", "id": "s0_0_1", "md": "Six smart people discuss a caching problem for forty minutes.", "zh": "六个聪明人围着一个缓存问题讨论了四十分钟。", "sp": null, "gap": false, "start": 4.992, "end": 9.168, "words": [[5.11, 5.413], [5.426, 5.768], [5.781, 6.084], [6.097, 6.545], [6.558, 6.61], [6.624, 7.15], [7.163, 7.61], [7.755, 7.913], [7.926, 8.268], [8.281, 8.768]]}, {"kind": "s", "id": "s0_0_2", "md": "Every comment is reasonable, but the conversation __goes in circles__, and the hour ends with \"Let's take this offline.\"", "zh": "每个人说的都有道理，但讨论一直在原地打转，最后一句「我们会后再聊」就散了。", "sp": null, "gap": false, "start": 9.168, "end": 16.752, "words": [[9.273, 9.536], [9.55, 10.023], [10.247, 10.392], [10.405, 11.05], [11.339, 11.444], [11.457, 11.536], [11.55, 12.326], [12.339, 12.628], [12.642, 12.76], [12.773, 13.444], [13.694, 13.813], [13.826, 13.944], [13.957, 14.405], [14.418, 14.602], [14.615, 14.813], [15.01, 15.221], [15.234, 15.484], [15.497, 15.694], [15.707, 16.247]]}, {"kind": "s", "id": "s0_1_0", "md": "The problem is rarely a lack of ideas.", "zh": "问题很少是缺点子。", "sp": null, "gap": true, "start": 16.752, "end": 19.488, "words": [[16.87, 16.923], [16.936, 17.37], [17.502, 17.634], [17.647, 18.041], [18.055, 18.12], [18.134, 18.41], [18.423, 18.502], [18.515, 19.107]]}, {"kind": "s", "id": "s0_1_1", "md": "It is that nobody has said out loud what the options are and how the group will choose between them.", "zh": "而是没有人把选项有哪些、大家要怎么选，明明白白地说出来。", "sp": null, "gap": false, "start": 19.488, "end": 24.696, "words": [[19.593, 19.672], [19.685, 19.791], [19.804, 19.988], [20.001, 20.422], [20.435, 20.554], [20.567, 20.804], [20.817, 21.027], [21.041, 21.317], [21.33, 21.449], [21.462, 21.554], [21.567, 22.054], [22.067, 22.409], [22.593, 22.672], [22.685, 22.843], [22.856, 22.949], [22.962, 23.238], [23.251, 23.37], [23.383, 23.712], [23.725, 24.106], [24.12, 24.304]]}, {"kind": "s", "id": "s0_1_2", "md": "Without that, each person is arguing for a ==slightly== different question.", "zh": "没有这一步，每个人争的其实都是一个略有不同的问题。", "sp": null, "gap": false, "start": 24.696, "end": 29.04, "words": [[24.814, 25.143], [25.157, 25.446], [25.933, 26.117], [26.13, 26.551], [26.564, 26.683], [26.696, 27.196], [27.209, 27.367], [27.38, 27.433], [27.446, 27.893], [27.907, 28.183], [28.196, 28.657]]}, {"kind": "s", "id": "s0_1_3", "md": "Some people are ==optimizing== for speed, others for cost, and nobody notices the gap.", "zh": "有人在优化速度，有人在优化成本，却没人注意到这个错位。", "sp": null, "gap": false, "start": 29.04, "end": 34.896, "words": [[29.158, 29.329], [29.343, 29.658], [29.672, 29.869], [29.882, 30.579], [30.593, 30.737], [30.751, 31.29], [31.672, 31.948], [31.961, 32.106], [32.119, 32.658], [32.948, 33.066], [33.079, 33.487], [33.501, 33.974], [33.987, 34.079], [34.093, 34.501]]}, {"kind": "s", "id": "s0_2_0", "md": "**A discussion only becomes a decision when someone gives it edges.**", "zh": "只有有人给讨论划出边界，它才能变成决定。", "sp": null, "gap": true, "start": 34.896, "end": 39.12, "words": [[35.001, 35.054], [35.067, 35.712], [35.83, 36.12], [36.133, 36.528], [36.541, 36.58], [36.593, 37.159], [37.343, 37.488], [37.501, 37.883], [37.896, 38.146], [38.159, 38.238], [38.251, 38.738]]}, {"kind": "s", "id": "s0_2_1", "md": "That person does not need to be the most senior one in the room.", "zh": "这个人不一定得是屋里级别最高的。", "sp": null, "gap": false, "start": 39.12, "end": 42.816, "words": [[39.238, 39.396], [39.409, 39.817], [39.831, 40.002], [40.015, 40.331], [40.344, 40.594], [40.607, 40.686], [40.699, 40.831], [40.844, 40.923], [40.936, 41.252], [41.265, 41.699], [41.712, 41.909], [41.923, 42.002], [42.015, 42.081], [42.094, 42.436]]}, {"kind": "s", "id": "s0_2_2", "md": "It just needs to be someone willing to __step back__ and ==summarize== where things stand.", "zh": "只要有人愿意退一步，总结一下现在讨论到哪儿了就行。", "sp": null, "gap": false, "start": 42.816, "end": 47.4, "words": [[42.921, 43.0], [43.013, 43.25], [43.263, 43.474], [43.487, 43.579], [43.592, 43.711], [43.724, 44.079], [44.092, 44.382], [44.395, 44.474], [44.487, 44.842], [44.855, 45.25], [45.395, 45.487], [45.5, 46.079], [46.092, 46.224], [46.237, 46.54], [46.553, 47.0]]}, {"kind": "h", "id": "h1", "md": "2. Three Questions That Pull a Room Together", "zh": "2. 把讨论收拢的三个问题", "start": 47.4, "end": 50.664, "words": [[47.518, 47.768], [48.229, 48.466], [48.479, 48.953], [48.966, 49.111], [49.124, 49.374], [49.387, 49.426], [49.439, 49.742], [49.755, 50.282]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by naming the options.", "zh": "先把选项点出来。", "sp": null, "gap": false, "start": 50.664, "end": 52.68, "words": [[50.769, 51.072], [51.085, 51.19], [51.203, 51.532], [51.546, 51.638], [51.651, 52.296]]}, {"kind": "s", "id": "s1_0_1", "md": "\"I'm hearing two ==camps==, either we add a cache now, or we fix the slow query first.\"", "zh": "「我听下来大家分成两派：要么现在就加缓存，要么先把慢查询修了。」", "sp": null, "gap": false, "start": 52.68, "end": 58.632, "words": [[52.864, 52.877], [52.956, 53.312], [53.325, 53.575], [53.588, 54.154], [54.535, 54.719], [54.733, 54.864], [54.877, 54.969], [54.983, 55.022], [55.035, 55.417], [55.43, 55.759], [56.167, 56.272], [56.285, 56.404], [56.417, 56.733], [56.746, 56.851], [56.864, 57.193], [57.206, 57.548], [57.562, 58.114]]}, {"kind": "s", "id": "s1_0_2", "md": "Even if your summary is a bit off, people will correct it, and the ==fog== starts to clear.", "zh": "就算你总结得有点偏，大家也会纠正你，迷雾就开始散了。", "sp": null, "gap": false, "start": 58.632, "end": 63.984, "words": [[58.737, 58.948], [58.961, 59.066], [59.079, 59.198], [59.211, 59.685], [59.698, 59.816], [59.829, 59.895], [59.908, 60.066], [60.079, 60.5], [60.724, 61.04], [61.053, 61.171], [61.185, 61.619], [61.632, 61.79], [62.106, 62.158], [62.171, 62.25], [62.264, 62.724], [62.737, 63.066], [63.079, 63.171], [63.185, 63.593]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, ask what really matters.", "zh": "接着问，什么才是真正重要的。", "sp": null, "gap": true, "start": 63.984, "end": 66.528, "words": [[64.089, 64.471], [64.892, 65.116], [65.129, 65.326], [65.339, 65.55], [65.563, 66.129]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Is the main concern speed of delivery, or long-term cost?\"", "zh": "「我们最关心的是交付速度，还是长期成本？」", "sp": null, "gap": false, "start": 66.528, "end": 70.656, "words": [[66.699, 66.752], [66.752, 66.817], [66.831, 67.094], [67.107, 67.607], [67.62, 68.054], [68.067, 68.173], [68.186, 68.752], [68.962, 69.081], [69.094, 69.607], [69.62, 70.16]]}, {"kind": "s", "id": "s1_1_2", "md": "Once the group agrees on one ==criterion==, many arguments simply disappear, because they were __measuring different things__.", "zh": "大家一旦对一个标准达成一致，很多争论自然就消失了，因为之前大家衡量的根本不是一回事。", "sp": null, "gap": false, "start": 70.656, "end": 78.264, "words": [[70.774, 70.998], [71.011, 71.13], [71.143, 71.393], [71.406, 71.84], [71.853, 71.998], [72.011, 72.209], [72.222, 72.945], [73.38, 73.616], [73.63, 74.248], [74.261, 74.682], [74.695, 75.393], [75.709, 76.011], [76.024, 76.143], [76.156, 76.274], [76.288, 76.867], [76.88, 77.248], [77.261, 77.867]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, ask how expensive it is to be wrong.", "zh": "最后，问一下做错的代价有多大。", "sp": null, "gap": true, "start": 78.264, "end": 81.384, "words": [[78.435, 78.882], [79.211, 79.448], [79.461, 79.593], [79.606, 80.146], [80.159, 80.238], [80.251, 80.382], [80.396, 80.488], [80.501, 80.632], [80.646, 81.001]]}, {"kind": "s", "id": "s1_2_1", "md": "If the choice is easy to ==reverse==, there is no reason to keep debating.", "zh": "如果这个选择很容易回退，那就没必要再争下去了。", "sp": null, "gap": false, "start": 81.384, "end": 86.112, "words": [[81.489, 81.594], [81.608, 81.687], [81.7, 82.134], [82.213, 82.397], [82.542, 82.844], [82.858, 83.002], [83.016, 83.673], [83.923, 84.068], [84.081, 84.187], [84.2, 84.45], [84.463, 84.845], [84.858, 84.937], [84.95, 85.239], [85.252, 85.726]]}, {"kind": "s", "id": "s1_2_2", "md": "**Pick one, set a date to review it, and move on.**", "zh": "选一个，定个时间复盘，然后往前走。", "sp": null, "gap": false, "start": 86.112, "end": 89.52, "words": [[86.244, 86.401], [86.415, 86.678], [87.086, 87.244], [87.257, 87.323], [87.336, 87.559], [87.573, 87.678], [87.691, 88.059], [88.073, 88.217], [88.507, 88.573], [88.586, 88.822], [88.836, 89.125]]}, {"kind": "s", "id": "s1_3_0", "md": "Then close the loop out loud.", "zh": "然后当众把这件事闭环。", "sp": null, "gap": true, "start": 89.52, "end": 91.488, "words": [[89.638, 90.152], null, [90.165, 90.27], [90.283, 90.52], [90.533, 90.717], [90.731, 91.099]]}, {"kind": "s", "id": "s1_3_1", "md": "\"So we're going with the query fix, and we'll check latency again next Friday.\"", "zh": "「那我们就先修查询，下周五再看一次延迟。」", "sp": null, "gap": false, "start": 91.488, "end": 96.312, "words": [[91.672, 91.685], [91.764, 91.883], [91.896, 92.106], [92.12, 92.251], [92.264, 92.343], [92.356, 92.712], [92.725, 93.264], [93.475, 93.593], [93.606, 93.738], [93.751, 94.001], [94.014, 94.488], [94.501, 94.909], [95.08, 95.343], [95.356, 95.804]]}, {"kind": "s", "id": "s1_3_2", "md": "Saying it clearly gives people a chance to object now, instead of __in the hallway__ later.", "zh": "把话说清楚，大家就有机会现在提出异议，而不是事后在走廊里嘀咕。", "sp": null, "gap": false, "start": 96.312, "end": 101.52, "words": [[96.417, 96.72], [96.733, 96.838], [96.851, 97.299], [97.312, 97.562], [97.575, 97.917], [97.93, 97.97], [97.983, 98.338], [98.351, 98.483], [98.496, 98.957], [98.97, 99.272], [99.733, 100.101], [100.115, 100.194], [100.207, 100.273], [100.286, 100.351], [100.365, 100.707], [100.72, 101.141]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

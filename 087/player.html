@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Talking About Food, Travel, and Home · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "087", "title": "Talking About Food, Travel, and Home", "meta": "B2 · 约 290 词 · 场景：聊食物旅行和家乡", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Three Topics That Work Almost Anywhere", "heading_zh": "1. 几乎在哪儿都好聊的三个话题", "rows": [[{"id": "s0_0_0", "md": "In a team with people from Chennai, Manchester, Jakarta and Shanghai, it can be hard to __find common ground__.", "text": "In a team with people from Chennai, Manchester, Jakarta and Shanghai, it can be hard to find common ground.", "zh": "一个团队里有来自金奈、曼彻斯特、雅加达和上海的人，要找共同话题可能挺难的。", "sp": null}, {"id": "s0_0_1", "md": "Pop culture is different, sports are different, and politics is a ==minefield==.", "text": "Pop culture is different, sports are different, and politics is a minefield.", "zh": "流行文化不一样，体育不一样，政治更是雷区。", "sp": null}], [{"id": "s0_1_0", "md": "Food, travel and home are the exception.", "text": "Food, travel and home are the exception.", "zh": "吃的、旅行和家乡是例外。", "sp": null}, {"id": "s0_1_1", "md": "Everyone eats, most people have a trip they love to talk about, and everyone comes from somewhere.", "text": "Everyone eats, most people have a trip they love to talk about, and everyone comes from somewhere.", "zh": "人人都要吃饭，大多数人都有一趟爱聊的旅行，每个人也都来自某个地方。", "sp": null}, {"id": "s0_1_2", "md": "**These topics are safe because everyone is an expert on their own experience.**", "text": "These topics are safe because everyone is an expert on their own experience.", "zh": "这些话题之所以安全，是因为每个人在自己的经历上都是专家。", "sp": null}], [{"id": "s0_2_0", "md": "If you grew up in China and work in Singapore, you have an ==advantage== here, not a weakness.", "text": "If you grew up in China and work in Singapore, you have an advantage here, not a weakness.", "zh": "如果你在中国长大、在新加坡工作，这在这儿是你的优势，不是短板。", "sp": null}, {"id": "s0_2_1", "md": "Your colleagues are often ==fascinated== by places they have never visited.", "text": "Your colleagues are often fascinated by places they have never visited.", "zh": "同事们往往对自己没去过的地方特别好奇。", "sp": null}, {"id": "s0_2_2", "md": "Your hometown, your favorite breakfast, and the way your family celebrates the new year are all ready-made stories.", "text": "Your hometown, your favorite breakfast, and the way your family celebrates the new year are all ready-made stories.", "zh": "你的家乡、你最爱的早餐、你家怎么过年，都是现成的故事。", "sp": null}]]}, {"heading": "2. Prepare a Few Home Stories", "heading_zh": "2. 准备几个家乡故事", "rows": [[{"id": "s1_0_0", "md": "Prepare three short stories you can tell in under a minute: one about a dish, one about a place, and one about a ==tradition==.", "text": "Prepare three short stories you can tell in under a minute: one about a dish, one about a place, and one about a tradition.", "zh": "准备三个一分钟内能讲完的小故事：一道菜、一个地方、一个习俗。", "sp": null}, {"id": "s1_0_1", "md": "For example: \"In my hometown, people eat noodles for breakfast, and the soup is so spicy that visitors ==underestimate== it every time.\"", "text": "For example: \"In my hometown, people eat noodles for breakfast, and the soup is so spicy that visitors underestimate it every time.\"", "zh": "比如：「我们老家早上吃粉，汤辣得不行，外地人每次都低估它。」", "sp": null}], [{"id": "s1_1_0", "md": "Then turn the topic back with a ==comparison== question.", "text": "Then turn the topic back with a comparison question.", "zh": "然后用一个对比式的问题把话题抛回去。", "sp": null}, {"id": "s1_1_1", "md": "\"What's a typical breakfast where you grew up?\" or \"Is there a dish from home you can't find here?\"", "text": "\"What's a typical breakfast where you grew up?\" or \"Is there a dish from home you can't find here?\"", "zh": "「你们那边早餐一般吃什么？」或者「有没有哪道家乡菜在这边吃不到？」", "sp": null}, {"id": "s1_1_2", "md": "Questions like these __level the playing field__, because both of you get to be the expert.", "text": "Questions like these level the playing field, because both of you get to be the expert.", "zh": "这类问题能把双方拉到同一起跑线，因为你们俩都能当一回专家。", "sp": null}], [{"id": "s1_2_0", "md": "**Be curious about other people's food, but never rank it.**", "text": "Be curious about other people's food, but never rank it.", "zh": "对别人家的吃的要好奇，但千万别给它排高低。", "sp": null}, {"id": "s1_2_1", "md": "Calling a dish \"too oily\" or \"weird\" can sound like a judgment about someone's home.", "text": "Calling a dish \"too oily\" or \"weird\" can sound like a judgment about someone's home.", "zh": "说一道菜「太油」或者「好怪」，听起来就像是在评判人家的家乡。", "sp": null}, {"id": "s1_2_2", "md": "Try \"I've never had that, what does it taste like?\" instead, and you will sound open, not ==picky==.", "text": "Try \"I've never had that, what does it taste like?\" instead, and you will sound open, not picky.", "zh": "换成「我还没吃过，是什么味道？」，你听起来就是开放，而不是挑剔。", "sp": null}], [{"id": "s1_3_0", "md": "Travel works the same way.", "text": "Travel works the same way.", "zh": "旅行也是一样。", "sp": null}, {"id": "s1_3_1", "md": "Ask people for ==recommendations==, because everyone loves __being treated as__ a local guide.", "text": "Ask people for recommendations, because everyone loves being treated as a local guide.", "zh": "多请别人推荐，因为谁都喜欢被当成本地向导。", "sp": null}, {"id": "s1_3_2", "md": "\"If I only had one day in your hometown, where should I go?\" is a question almost nobody can resist.", "text": "\"If I only had one day in your hometown, where should I go?\" is a question almost nobody can resist.", "zh": "「如果我在你老家只能待一天，该去哪儿？」这个问题几乎没人能抵挡。", "sp": null}]]}], "gist": [{"q": "为什么食物、旅行和家乡在多国团队里是安全话题？", "a": "每个人都要吃饭、大多有喜欢的旅行、都来自某个地方；每个人都是自己经历的专家。"}, {"q": "作者为什么说来自中国、在新加坡工作反而是优势？", "a": "同事对没去过的地方很好奇，家乡、早餐、过年方式都是现成的故事。"}, {"q": "聊别人的食物时要注意什么？", "a": "可以好奇但不要评判或排名，别说“太油”“奇怪”；改问“我没吃过，是什么味道？”；旅行话题多请对方推荐。"}], "dictation": [{"id": "s0_1_2", "text": "These topics are safe because everyone is an expert on their own experience."}, {"id": "s1_1_0", "text": "Then turn the topic back with a comparison question."}, {"id": "s1_2_0", "text": "Be curious about other people's food, but never rank it."}, {"id": "s1_2_1", "text": "Calling a dish \"too oily\" or \"weird\" can sound like a judgment about someone's home."}], "shadow": {"text": "Food, travel and home are the exception. Everyone eats, most people have a trip they love to talk about, and everyone comes from somewhere. These topics are safe because everyone is an expert on their own experience.", "marked": "Food, <b>travel</b> and <b>home</b> / are the <b>exception</b>. //<br>Everyone <b>eats</b>, / most people have a <b>trip</b> they love to talk about, / and everyone comes from <b>somewhere</b>. //<br>These topics are <b>safe</b> / because everyone is an <b>expert</b> / on their <b>own</b> experience. //"}, "prompts": [{"q": "英国同事问你：What's your hometown like? 用一个准备好的家乡故事回答，再用比较式问题问回去，30 秒。", "ref": "I'm from a mid-sized city in Hunan, in central China. It's famous for very spicy food, and people there are quite proud of it. My mom honestly thinks the chili here is for children. What about you? Where did you grow up, and is there a dish from home you really miss in Singapore?", "ref_zh": "我来自湖南的一个中等城市，在中国中部。那边以特别能吃辣出名，大家也挺引以为豪的。我妈真心觉得这边的辣椒是给小孩吃的。你呢？你在哪儿长大的？有没有哪道家乡菜在新加坡特别想吃？", "id": "ref0"}, {"q": "澳洲同事带来一种很咸的家乡涂酱让你尝，你觉得味道很怪。得体地回应，并把话题聊下去。", "ref": "Wow, that's strong! Definitely not like anything I grew up with. Is this something people eat every day back home, or just for breakfast? Interesting. It reminds me of the fermented tofu my grandfather loved. Most of my friends couldn't stand it either. Next time I'll bring some in, and you can get your revenge.", "ref_zh": "哇，这个味儿好冲！跟我从小吃的完全不一样。这是你们那边每天都吃的，还是只早餐吃？有意思。让我想起我爷爷最爱的腐乳。我大多数朋友也受不了那个。下次我带点来，你就可以报仇了。", "id": "ref1"}], "words": [{"w": "minefield", "ipa": "/ˈmaɪnˌfiːld/", "zh": "雷区", "ex": "Pricing for that market is a legal minefield, so talk to the lawyers first.", "id": "w0"}, {"w": "advantage", "ipa": "/ədˈvæntɪdʒ/", "zh": "优势", "ex": "Knowing both teams is a real advantage when priorities clash.", "id": "w1"}, {"w": "fascinated", "ipa": "/ˈfæsəˌneɪtɪd/", "zh": "着迷的、极感兴趣的", "ex": "The new hires were fascinated by how the recommendation system works.", "id": "w2"}, {"w": "tradition", "ipa": "/trəˈdɪʃən/", "zh": "传统", "ex": "Friday demos have become a tradition on our team.", "id": "w3"}, {"w": "underestimate", "ipa": "/ˌʌndərˈestəˌmeɪt/", "zh": "低估", "ex": "We underestimated how long the data migration would take.", "id": "w4"}, {"w": "comparison", "ipa": "/kəmˈpærɪsən/", "zh": "比较", "ex": "A side-by-side comparison of the two designs would help us decide.", "id": "w5"}, {"w": "picky", "ipa": "/ˈpɪki/", "zh": "挑剔的", "ex": "He's picky about naming, which is annoying but keeps the code clean.", "id": "w6"}, {"w": "recommendation", "ipa": "/ˌrekəmenˈdeɪʃən/", "zh": "推荐、建议", "ex": "Any recommendations for a good lunch spot near the new office?", "id": "w7"}, {"w": "common ground", "ipa": "/ˈkɑːmən ɡraʊnd/", "zh": "共同点、共识", "ex": "Let's start from the common ground: we both want fewer incidents.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Three Topics That Work Almost Anywhere", "zh": "1. 几乎在哪儿都好聊的三个话题", "start": 0.0, "end": 3.384, "words": [[0.105, 0.329], [0.803, 1.039], [1.053, 1.526], [1.539, 1.684], [1.697, 1.947], [2.066, 2.474], [2.487, 3.0]]}, {"kind": "s", "id": "s0_0_0", "md": "In a team with people from Chennai, Manchester, Jakarta and Shanghai, it can be hard to __find common ground__.", "zh": "一个团队里有来自金奈、曼彻斯特、雅加达和上海的人，要找共同话题可能挺难的。", "sp": null, "gap": false, "start": 3.384, "end": 10.512, "words": [[3.489, 3.568], [3.581, 3.634], [3.647, 3.923], [3.937, 4.081], [4.095, 4.437], [4.45, 4.621], [4.634, 5.121], [5.437, 6.213], [6.41, 6.989], [7.068, 7.16], [7.173, 7.858], [8.239, 8.318], [8.331, 8.437], [8.45, 8.568], [8.581, 8.937], [8.95, 9.002], [9.016, 9.331], [9.345, 9.66], [9.673, 10.121]]}, {"kind": "s", "id": "s0_0_1", "md": "Pop culture is different, sports are different, and politics is a ==minefield==.", "zh": "流行文化不一样，体育不一样，政治更是雷区。", "sp": null, "gap": false, "start": 10.512, "end": 15.552, "words": [[10.63, 10.828], [10.841, 11.262], [11.275, 11.433], [11.446, 11.894], [12.196, 12.538], [12.551, 12.63], [12.644, 13.104], [13.42, 13.486], [13.499, 14.196], [14.301, 14.407], [14.42, 14.459], [14.473, 15.17]]}, {"kind": "s", "id": "s0_1_0", "md": "Food, travel and home are the exception.", "zh": "吃的、旅行和家乡是例外。", "sp": null, "gap": true, "start": 15.552, "end": 18.528, "words": [[15.71, 16.105], [16.42, 16.92], [16.934, 17.026], [17.039, 17.341], [17.355, 17.434], [17.447, 17.513], [17.526, 18.131]]}, {"kind": "s", "id": "s0_1_1", "md": "Everyone eats, most people have a trip they love to talk about, and everyone comes from somewhere.", "zh": "人人都要吃饭，大多数人都有一趟爱聊的旅行，每个人也都来自某个地方。", "sp": null, "gap": false, "start": 18.528, "end": 24.216, "words": [[18.633, 19.041], [19.054, 19.528], [19.804, 20.028], [20.041, 20.331], [20.344, 20.475], [20.489, 20.541], [20.554, 20.87], [20.883, 20.988], [21.002, 21.278], [21.291, 21.37], [21.383, 21.686], [21.699, 22.041], [22.357, 22.449], [22.462, 22.844], [22.857, 23.107], [23.12, 23.265], [23.278, 23.831]]}, {"kind": "s", "id": "s0_1_2", "md": "**These topics are safe because everyone is an expert on their own experience.**", "zh": "这些话题之所以安全，是因为每个人在自己的经历上都是专家。", "sp": null, "gap": false, "start": 24.216, "end": 28.968, "words": [[24.334, 24.492], [24.505, 24.953], [24.966, 25.058], [25.071, 25.505], [25.584, 25.966], [26.111, 26.611], [26.624, 26.782], [26.795, 26.913], [26.927, 27.308], [27.321, 27.427], [27.44, 27.584], [27.598, 27.729], [27.742, 28.584]]}, {"kind": "s", "id": "s0_2_0", "md": "If you grew up in China and work in Singapore, you have an ==advantage== here, not a weakness.", "zh": "如果你在中国长大、在新加坡工作，这在这儿是你的优势，不是短板。", "sp": null, "gap": true, "start": 28.968, "end": 34.512, "words": [[29.073, 29.178], [29.192, 29.284], [29.297, 29.507], [29.521, 29.678], [29.692, 29.784], [29.797, 30.271], [30.442, 30.56], [30.573, 30.797], [30.81, 30.902], [30.915, 31.521], [31.81, 31.876], [31.889, 32.073], [32.086, 32.165], [32.179, 32.679], [32.692, 32.981], [33.297, 33.429], [33.442, 33.481], [33.494, 34.113]]}, {"kind": "s", "id": "s0_2_1", "md": "Your colleagues are often ==fascinated== by places they have never visited.", "zh": "同事们往往对自己没去过的地方特别好奇。", "sp": null, "gap": false, "start": 34.512, "end": 38.448, "words": [[34.63, 34.723], [34.736, 35.144], [35.157, 35.275], [35.288, 35.565], [35.578, 36.301], [36.315, 36.446], [36.459, 36.959], [36.973, 37.078], [37.091, 37.236], [37.249, 37.578], [37.591, 38.065]]}, {"kind": "s", "id": "s0_2_2", "md": "Your hometown, your favorite breakfast, and the way your family celebrates the new year are all ready-made stories.", "zh": "你的家乡、你最爱的早餐、你家怎么过年，都是现成的故事。", "sp": null, "gap": false, "start": 38.448, "end": 45.552, "words": [[38.566, 38.685], [38.698, 39.303], [39.685, 39.777], [39.79, 40.237], [40.251, 40.856], [41.132, 41.198], [41.211, 41.29], [41.303, 41.448], [41.461, 41.606], [41.619, 42.014], [42.027, 42.58], [42.593, 42.672], [42.685, 42.882], [42.895, 43.316], [43.514, 43.685], [43.698, 44.014], [44.027, 44.501], [44.514, 45.159]]}, {"kind": "h", "id": "h1", "md": "2. Prepare a Few Home Stories", "zh": "2. 准备几个家乡故事", "start": 45.552, "end": 48.216, "words": [[45.657, 45.907], [46.249, 46.657], [46.67, 46.723], [46.736, 46.999], [47.013, 47.223], [47.236, 47.815]]}, {"kind": "s", "id": "s1_0_0", "md": "Prepare three short stories you can tell in under a minute: one about a dish, one about a place, and one about a ==tradition==.", "zh": "准备三个一分钟内能讲完的小故事：一道菜、一个地方、一个习俗。", "sp": null, "gap": false, "start": 48.216, "end": 55.704, "words": [[48.334, 48.69], [48.703, 49.005], [49.019, 49.334], [49.348, 49.821], [49.834, 49.94], [49.953, 50.084], [50.098, 50.4], [50.413, 50.571], [50.584, 50.913], [50.927, 50.966], [50.979, 51.413], [51.821, 51.94], [51.953, 52.19], [52.203, 52.269], [52.282, 52.742], [52.979, 53.15], [53.163, 53.374], [53.387, 53.426], [53.44, 54.005], [54.216, 54.348], [54.361, 54.532], [54.545, 54.755], [54.769, 54.795], [54.808, 55.321]]}, {"kind": "s", "id": "s1_0_1", "md": "For example: \"In my hometown, people eat noodles for breakfast, and the soup is so spicy that visitors ==underestimate== it every time.\"", "zh": "比如：「我们老家早上吃粉，汤辣得不行，外地人每次都低估它。」", "sp": null, "gap": false, "start": 55.704, "end": 65.136, "words": [[55.862, 55.954], [55.967, 56.454], [56.941, 57.02], [57.033, 57.165], [57.178, 57.836], [58.125, 58.454], [58.546, 58.77], [58.783, 59.165], [59.178, 59.336], [59.349, 59.967], [60.283, 60.336], [60.349, 60.428], [60.441, 60.757], [60.822, 60.941], [60.954, 61.296], [61.309, 61.901], [61.915, 62.086], [62.099, 62.743], [62.757, 63.678], [63.691, 63.836], [64.02, 64.27], [64.283, 64.678]]}, {"kind": "s", "id": "s1_1_0", "md": "Then turn the topic back with a ==comparison== question.", "zh": "然后用一个对比式的问题把话题抛回去。", "sp": null, "gap": true, "start": 65.136, "end": 68.352, "words": [[65.254, 65.425], [65.439, 65.649], [65.662, 65.741], [65.754, 66.162], [66.175, 66.57], [66.649, 66.807], [66.82, 66.873], [66.886, 67.465], [67.478, 67.965]]}, {"kind": "s", "id": "s1_1_1", "md": "\"What's a typical breakfast where you grew up?\" or \"Is there a dish from home you can't find here?\"", "zh": "「你们那边早餐一般吃什么？」或者「有没有哪道家乡菜在这边吃不到？」", "sp": null, "gap": false, "start": 68.352, "end": 74.328, "words": [[68.536, 68.576], [68.655, 68.734], [68.747, 69.194], [69.207, 69.72], [69.734, 69.878], [69.891, 69.997], [70.01, 70.26], [70.273, 70.51], [71.076, 71.299], [71.734, 71.826], [71.839, 71.997], [72.01, 72.076], [72.089, 72.312], [72.326, 72.484], [72.497, 72.799], [72.813, 72.918], [72.931, 73.194], [73.207, 73.497], [73.51, 73.799]]}, {"kind": "s", "id": "s1_1_2", "md": "Questions like these __level the playing field__, because both of you get to be the expert.", "zh": "这类问题能把双方拉到同一起跑线，因为你们俩都能当一回专家。", "sp": null, "gap": false, "start": 74.328, "end": 79.368, "words": [[74.446, 74.881], [74.894, 75.091], [75.104, 75.341], [75.354, 75.657], [75.67, 75.762], [75.775, 76.118], [76.131, 76.604], [76.894, 77.236], [77.249, 77.538], [77.552, 77.604], [77.617, 77.802], [77.815, 78.025], [78.039, 78.117], [78.131, 78.262], [78.275, 78.381], [78.394, 78.986]]}, {"kind": "s", "id": "s1_2_0", "md": "**Be curious about other people's food, but never rank it.**", "zh": "对别人家的吃的要好奇，但千万别给它排高低。", "sp": null, "gap": true, "start": 79.368, "end": 83.16, "words": [[79.486, 79.592], [79.605, 80.131], [80.144, 80.421], [80.434, 80.671], [80.684, 81.092], [81.105, 81.565], [81.868, 82.0], [82.013, 82.302], [82.315, 82.579], [82.592, 82.776]]}, {"kind": "s", "id": "s1_2_1", "md": "Calling a dish \"too oily\" or \"weird\" can sound like a judgment about someone's home.", "zh": "说一道菜「太油」或者「好怪」，听起来就像是在评判人家的家乡。", "sp": null, "gap": false, "start": 83.16, "end": 88.68, "words": [[83.252, 83.555], [83.568, 83.647], [83.66, 84.121], [84.226, 84.515], [84.528, 85.042], [85.239, 85.436], [85.463, 85.91], [86.147, 86.278], [86.292, 86.555], [86.568, 86.699], [86.713, 86.765], [86.778, 87.292], [87.357, 87.594], [87.607, 87.95], [87.963, 88.292]]}, {"kind": "s", "id": "s1_2_2", "md": "Try \"I've never had that, what does it taste like?\" instead, and you will sound open, not ==picky==.", "zh": "换成「我还没吃过，是什么味道？」，你听起来就是开放，而不是挑剔。", "sp": null, "gap": false, "start": 88.68, "end": 95.376, "words": [[88.785, 89.101], [89.535, 89.693], [89.706, 89.956], [89.969, 90.219], [90.233, 90.509], [90.904, 90.983], [90.996, 91.114], [91.127, 91.22], [91.233, 91.575], [91.588, 91.877], [92.18, 92.759], [93.088, 93.167], [93.18, 93.259], [93.272, 93.391], [93.404, 93.733], [93.746, 94.114], [94.364, 94.575], [94.588, 94.996]]}, {"kind": "s", "id": "s1_3_0", "md": "Travel works the same way.", "zh": "旅行也是一样。", "sp": null, "gap": true, "start": 95.376, "end": 97.176, "words": [[95.481, 95.837], [95.85, 96.1], [96.113, 96.205], [96.218, 96.508], [96.521, 96.797]]}, {"kind": "s", "id": "s1_3_1", "md": "Ask people for ==recommendations==, because everyone loves __being treated as__ a local guide.", "zh": "多请别人推荐，因为谁都喜欢被当成本地向导。", "sp": null, "gap": false, "start": 97.176, "end": 102.528, "words": [[97.281, 97.518], [97.531, 97.86], [97.873, 98.031], [98.044, 98.992], [99.229, 99.571], [99.584, 100.044], [100.058, 100.334], [100.347, 100.597], [100.61, 101.11], [101.189, 101.308], [101.321, 101.373], [101.387, 101.729], [101.742, 102.137]]}, {"kind": "s", "id": "s1_3_2", "md": "\"If I only had one day in your hometown, where should I go?\" is a question almost nobody can resist.", "zh": "「如果我在你老家只能待一天，该去哪儿？」这个问题几乎没人能抵挡。", "sp": null, "gap": false, "start": 102.528, "end": 109.44, "words": [[102.712, 102.712], [102.791, 102.923], [102.936, 103.173], [103.186, 103.331], [103.344, 103.554], [103.567, 103.804], [103.817, 103.896], [103.91, 104.041], [104.054, 104.673], [104.989, 105.12], [105.133, 105.317], [105.331, 105.475], [105.489, 105.831], [106.396, 106.502], [106.515, 106.581], [106.594, 107.146], [107.239, 107.712], [107.725, 108.212], [108.225, 108.423], [108.436, 109.041]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

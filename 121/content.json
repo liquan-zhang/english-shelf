@@ -1,0 +1,86 @@
+{
+  "id": "121",
+  "type": "dialogue",
+  "title": "Seeing a Doctor at a Clinic",
+  "meta": "B2 · 约 270 词 · 场景：全科诊所看病、病假条与复诊",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Doctor", "name_zh": "医生", "voice": "en-US-EmmaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Describing the Symptoms",
+      "heading_zh": "1. 描述症状",
+      "lines": [
+        {"sp": "B", "en": "Hi, come on in and have a seat. What brings you in today?", "zh": "你好，进来坐吧。今天哪里不舒服？"},
+        {"sp": "A", "en": "**I've had a sore throat and a fever since Sunday, and now I've started coughing.**", "zh": "我从周日开始喉咙痛、发烧，现在又开始咳嗽了。"},
+        {"sp": "B", "en": "How high has the ==fever== been? Have you taken anything for it?", "zh": "烧到多少度？吃过什么药吗？"},
+        {"sp": "A", "en": "Around thirty-eight point five at night. I've been taking paracetamol, but it __keeps coming back__.", "zh": "晚上大概三十八度五。我一直在吃扑热息痛，但烧总是反复。"},
+        {"sp": "B", "en": "Is the cough dry, or are you bringing up ==phlegm==?", "zh": "是干咳，还是有痰？"},
+        {"sp": "A", "en": "Mostly dry, but it's worse at night. It's __keeping me up__.", "zh": "主要是干咳，但晚上更严重，咳得我睡不着。"},
+        {"sp": "B", "en": "Any ==allergies== to medication?", "zh": "有药物过敏吗？"},
+        {"sp": "A", "en": "Not that I know of.", "zh": "据我所知没有。"},
+        {"sp": "B", "en": "Let me have a listen. Breathe in deeply. Your chest is clear, but your throat is quite ==inflamed==.", "zh": "我听一下。深呼吸。肺部是清的，不过喉咙发炎挺厉害。"}
+      ]
+    },
+    {
+      "heading": "2. Medicine and Medical Leave",
+      "heading_zh": "2. 开药和病假",
+      "lines": [
+        {"sp": "B", "en": "It looks ==viral==, so antibiotics won't help. I'll give you something for the throat and a cough syrup.", "zh": "看起来是病毒感染，抗生素没用。我给你开点治喉咙的药和止咳糖浆。"},
+        {"sp": "A", "en": "**Could I get a medical certificate? I don't think I can work like this.**", "zh": "能给我开个病假条吗？我这样没法上班。"},
+        {"sp": "B", "en": "Sure. I'll give you two days of ==medical leave==, today and tomorrow.", "zh": "可以。给你两天病假，今天和明天。"},
+        {"sp": "A", "en": "Thanks. And my son is three. __Is there a chance__ he'll catch it from me?", "zh": "谢谢。我儿子三岁，他有可能被我传染吗？"},
+        {"sp": "B", "en": "It's quite ==contagious==, so wear a mask at home and wash your hands often.", "zh": "传染性挺强的，在家戴口罩，勤洗手。"},
+        {"sp": "A", "en": "**Got it. If I'm not better in a few days, should I come back?**", "zh": "明白。如果过几天还不好，要再来复诊吗？"},
+        {"sp": "B", "en": "Yes. If the fever lasts more than three more days, or you feel ==short of breath==, come back straight away.", "zh": "要。如果再烧三天以上，或者感觉喘不上气，马上回来。"},
+        {"sp": "A", "en": "Okay. Sorry, how often should I take the cough syrup? I want to __get it right__.", "zh": "好的。不好意思，止咳糖浆多久喝一次？我想别弄错。"},
+        {"sp": "B", "en": "Ten millilitres three times a day, after meals. The nurse will __go over it__ with you at the counter.", "zh": "每次十毫升，一天三次，饭后喝。护士会在柜台再跟你讲一遍。"},
+        {"sp": "A", "en": "Great. Can I claim this visit with my company's insurance card?", "zh": "好的。这次看病能用公司的保险卡报销吗？"},
+        {"sp": "B", "en": "Yes, just show it when you pay. Get some rest, and drink lots of water.", "zh": "可以，付钱时出示一下就行。好好休息，多喝水。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」有哪些症状？持续多久了？", "a": "从周日开始喉咙痛、发烧，晚上约三十八度五，现在还有干咳，晚上更重。"},
+    {"q": "医生的诊断和处理是什么？", "a": "病毒感染，不用抗生素；开了喉咙药和止咳糖浆，给了两天病假。"},
+    {"q": "什么情况下要回来复诊？", "a": "再烧三天以上，或者感觉喘不上气，就马上回来。"}
+  ],
+  "dictation": [
+    "I've had a sore throat and a fever since Sunday, and now I've started coughing.",
+    "Mostly dry, but it's worse at night. It's keeping me up.",
+    "Thanks. And my son is three. Is there a chance he'll catch it from me?",
+    "Great. Can I claim this visit with my company's insurance card?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Around thirty-eight point five at night. I've been taking paracetamol, but it keeps coming back.",
+    "marked": "Around <b>thirty-eight point five</b> / at <b>night</b>. //<br>I've been taking <b>paracetamol</b>, / but it <b>keeps coming back</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "孩子半夜发烧还呕吐，你打电话给二十四小时诊所，描述症状并问现在要不要马上带去看。",
+      "ref": "Hi, I'm calling about my three-year-old son. He's had a fever since this evening, about thirty-nine degrees, and he just threw up twice. He's still drinking a little water, but he's very tired. Should I bring him in now, or is it okay to wait until the morning? And do I need to book, or can we just walk in?",
+      "ref_zh": "你好，我打电话是因为我三岁的儿子。他从今天傍晚开始发烧，大概三十九度，刚才吐了两次。他还能喝一点水，但很没精神。我应该现在带他过去，还是可以等到早上？需要预约吗，还是直接过去就行？"
+    },
+    {
+      "q": "你吃了医生开的药三天还没好转，再去诊所复诊。说清楚哪里好了、哪里没好，并问下一步怎么办。",
+      "ref": "Hi, doctor, I came in on Monday with a sore throat and fever. The fever's gone now, which is good, but the cough is actually worse, especially at night, and I'm still very tired. I've been taking the syrup three times a day. Do you think I need a different medicine, or maybe a chest X-ray?",
+      "ref_zh": "医生你好，我周一来过，当时喉咙痛、发烧。现在烧退了，这点挺好，但咳嗽反而更严重了，尤其是晚上，人也还是很累。止咳糖浆我一直一天喝三次。你觉得需要换药吗，或者拍个胸片？"
+    }
+  ],
+  "words": [
+    {"w": "fever", "ipa": "/ˈfiːvər/", "zh": "发烧", "ex": "My daughter has had a fever since last night."},
+    {"w": "phlegm", "ipa": "/flem/", "zh": "痰", "ex": "This syrup helps loosen the phlegm."},
+    {"w": "allergy", "ipa": "/ˈælərdʒi/", "zh": "过敏", "ex": "Does your son have any food allergies?"},
+    {"w": "inflamed", "ipa": "/ɪnˈfleɪmd/", "zh": "发炎的", "ex": "His gums are a bit inflamed."},
+    {"w": "viral", "ipa": "/ˈvaɪrəl/", "zh": "病毒性的", "ex": "It's a viral infection, so it should clear up on its own."},
+    {"w": "medical leave", "ipa": "/ˈmedɪkəl liːv/", "zh": "病假", "ex": "I'm on medical leave until Friday."},
+    {"w": "contagious", "ipa": "/kənˈteɪdʒəs/", "zh": "传染性的", "ex": "Hand, foot and mouth disease is very contagious at preschool."},
+    {"w": "short of breath", "ipa": "/ʃɔːrt əv breθ/", "zh": "呼吸急促，喘不上气", "ex": "I get short of breath when I take the stairs."},
+    {"w": "medical certificate", "ipa": "/ˈmedɪkəl sərˈtɪfɪkət/", "zh": "病假条（新加坡常说 MC）", "ex": "Remember to send your medical certificate to HR."},
+    {"w": "keep (someone) up", "ipa": "/kiːp ʌp/", "zh": "让人睡不着", "ex": "The baby kept us up all night.", "tts_w": "keep up"}
+  ]
+}

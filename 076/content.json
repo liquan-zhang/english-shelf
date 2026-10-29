@@ -1,0 +1,180 @@
+{
+  "id": "076",
+  "title": "Making the Case for Technical Debt",
+  "meta": "B2 · 约 270 词 · 场景：资源争取",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Nobody Funds Clean Code",
+      "paragraphs": [
+        [
+          "Engineers often ask for time to fix technical debt and get turned down.",
+          "The request usually sounds like this: \"The code is a mess, and we need a sprint to clean it up.\"",
+          "From the product side, that sounds like a ==detour== with nothing to show at the end."
+        ],
+        [
+          "The problem is not that leaders don't care about quality.",
+          "It is that \"messy code\" is an engineering feeling, not a business ==consequence==.",
+          "**Nobody funds clean code; people fund faster delivery and fewer outages.**"
+        ],
+        [
+          "Debt is a useful ==metaphor== precisely because it has interest.",
+          "Every feature built on top of the messy module costs a little extra, and the extra keeps growing.",
+          "If you can show that interest in numbers, you are no longer asking for a favor; you are proposing a good deal."
+        ]
+      ],
+      "heading_zh": "1. 没人为干净代码买单",
+      "paragraphs_zh": [
+        [
+          "工程师经常申请时间还技术债，然后被驳回。",
+          "申请通常是这么说的：「代码太乱了，我们需要一个迭代来清理。」",
+          "在产品侧听来，这就是绕了个弯路，最后什么也拿不出来。"
+        ],
+        [
+          "问题不在于领导不在乎质量。",
+          "而在于「代码很乱」是工程师的感受，而不是业务上的后果。",
+          "没人为干净代码买单；大家买单的是更快的交付和更少的故障。"
+        ],
+        [
+          "「债」之所以是个好比喻，恰恰因为它有利息。",
+          "每个建在那坨乱代码之上的功能都要多花一点成本，而且这笔额外成本还在不断增长。",
+          "如果你能用数字把这笔利息摆出来，你就不是在求人帮忙了；你是在提一笔划算的买卖。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Show the Interest Payments",
+      "paragraphs": [
+        [
+          "So make the interest visible.",
+          "Count how many of last quarter's incidents started in the old billing module.",
+          "Show that changes there take three times longer to review and ship than anywhere else in the codebase.",
+          "Even a rough count from the incident tracker is far more convincing than a general complaint."
+        ],
+        [
+          "Then propose a ==bounded== investment, not an open-ended cleanup.",
+          "\"Give us four weeks to replace the billing state logic, and we expect billing changes to ship twice as fast.\"",
+          "A clear ==payoff== makes the request comparable to a feature, which is exactly what you want."
+        ],
+        [
+          "**When debt work competes on the same terms as features, it starts to win.**",
+          "And if leaders still say no, you have ==documented== the risk, which matters when the next incident __comes around__.",
+          "Either way, you have __changed the conversation__ from taste to tradeoffs."
+        ]
+      ],
+      "heading_zh": "2. 把利息亮出来",
+      "paragraphs_zh": [
+        [
+          "所以，把利息亮出来。",
+          "数一数上个季度的故障里有多少是从老计费模块开始的。",
+          "说明那里的改动从 review 到上线，要比代码库其他地方多花三倍时间。",
+          "哪怕是从故障系统里粗略数一下，也比泛泛地抱怨有说服力得多。"
+        ],
+        [
+          "然后提一个有边界的投入，而不是没完没了的大扫除。",
+          "「给我们四周时间重写计费状态逻辑，我们预计计费相关的改动上线速度能翻倍。」",
+          "明确的回报让这个申请可以跟一个功能放在一起比较，这正是你想要的。"
+        ],
+        [
+          "当还债的活儿跟功能在同样的规则下竞争，它就开始能赢了。",
+          "而且就算领导还是说不，你也已经把风险记录在案了，等下一次故障来的时候，这就很重要。",
+          "不管怎样，你都已经把讨论从个人喜好变成了利弊权衡。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么“代码太乱需要一个迭代清理”这种请求常被拒？",
+      "a": "在产品侧看来像是没有产出的绕路；“代码乱”是工程感受，不是业务后果。"
+    },
+    {
+      "q": "作者建议用什么证据说明技术债的“利息”？",
+      "a": "统计上季度多少故障出自旧模块、该模块改动的评审和上线时间是其他地方的三倍等，粗略数字也比抱怨有说服力。"
+    },
+    {
+      "q": "提方案时要注意什么？被拒了怎么办？",
+      "a": "提有边界的投入和明确回报，让它能和功能同台比较；即使被拒，也已把风险记录在案。"
+    }
+  ],
+  "dictation": [
+    "Nobody funds clean code; people fund faster delivery and fewer outages.",
+    "Every feature built on top of the messy module costs a little extra, and the extra keeps growing.",
+    "Then propose a bounded investment, not an open-ended cleanup.",
+    "When debt work competes on the same terms as features, it starts to win."
+  ],
+  "shadow": {
+    "text": "So make the interest visible. Count how many of last quarter's incidents started in the old billing module. Show that changes there take three times longer to review and ship than anywhere else in the codebase.",
+    "marked": "So make the <b>interest</b> visible. //<br><b>Count</b> how many of last quarter's incidents / started in the <b>old</b> billing module. //<br>Show that changes there / take <b>three</b> times longer / to review and ship / than <b>anywhere</b> else in the codebase. //"
+  },
+  "prompts": [
+    {
+      "q": "季度规划会上，你想为重构老旧的推送模块争取四周。用 30 秒向产品负责人说明利息和回报。",
+      "ref": "I'd like to ask for four weeks on the notification module, and here's why. Five of our last eight incidents started there, and any change to it takes about three times longer to ship than elsewhere. If we replace the scheduling logic, we expect those changes to take days instead of weeks, and fewer late-night pages. It's a bounded piece of work with a clear payoff.",
+      "ref_zh": "我想申请四周时间处理通知模块，理由是这样的。最近八次故障里有五次是从那里开始的，而且那边的任何改动，上线时间都比其他地方多三倍左右。如果我们重写调度逻辑，预计这类改动就能从几周缩到几天，半夜被叫起来的次数也会更少。这是一块有边界的工作，回报也很明确。"
+    },
+    {
+      "q": "产品负责人听完还是说“这季度功能更重要”。用 30 秒得体地接受，同时把风险记录下来。",
+      "ref": "That's fair, and I understand the pressure on features this quarter. I'll accept that call. What I'd like to do is write a short note on the risk, including the incident numbers and what we expect if nothing changes, and add it to the planning doc. That way, if things get worse, we can come back to it quickly with the data already in front of us.",
+      "ref_zh": "有道理，我也理解这个季度做功能的压力。这个决定我接受。我想做的是写一份简短的风险说明，包括故障数据，以及如果什么都不改我们预计会怎样，然后附到规划文档里。这样如果情况变糟，我们可以带着现成的数据很快再把它拿出来讨论。"
+    }
+  ],
+  "words": [
+    {
+      "w": "detour",
+      "ipa": "/ˈdiːtʊr/",
+      "zh": "绕路、弯路",
+      "ex": "Rewriting the build system was a two-week detour from the roadmap."
+    },
+    {
+      "w": "consequence",
+      "ipa": "/ˈkɑːnsəkwens/",
+      "zh": "后果",
+      "ex": "The consequence of skipping tests was three hotfixes in one week."
+    },
+    {
+      "w": "metaphor",
+      "ipa": "/ˈmetəfɔːr/",
+      "zh": "比喻、隐喻",
+      "ex": "Technical debt is a metaphor that most business leaders understand."
+    },
+    {
+      "w": "bounded",
+      "ipa": "/ˈbaʊndɪd/",
+      "zh": "有边界的、有限度的",
+      "ex": "Let's keep the refactor bounded to the payment service."
+    },
+    {
+      "w": "payoff",
+      "ipa": "/ˈpeɪˌɔːf/",
+      "zh": "回报、收益",
+      "ex": "The payoff from the new cache was a forty percent drop in latency."
+    },
+    {
+      "w": "document (v.)",
+      "ipa": "/ˈdɑːkjəˌment/",
+      "zh": "记录在案、书面记录",
+      "ex": "Please document the decision and the reasons in the design doc.",
+      "tts_w": "document"
+    },
+    {
+      "w": "interest",
+      "ipa": "/ˈɪntrəst/",
+      "zh": "利息（技术债的持续成本）",
+      "ex": "We're paying interest on that shortcut every time we touch the module."
+    },
+    {
+      "w": "open-ended",
+      "ipa": "/ˌoʊpən ˈendɪd/",
+      "zh": "无限期的、没有边界的",
+      "ex": "Leadership won't approve an open-ended cleanup project."
+    },
+    {
+      "w": "comparable",
+      "ipa": "/ˈkɑːmpərəbəl/",
+      "zh": "可比较的",
+      "ex": "Put both options in a comparable format so we can choose."
+    }
+  ]
+}

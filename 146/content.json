@@ -1,0 +1,254 @@
+{
+  "id": "146",
+  "type": "dialogue",
+  "title": "Calling Customer Service",
+  "meta": "B2 · 约 290 词 · 场景：宽带客服：报障与退款",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Customer Service Agent",
+      "name_zh": "客服专员",
+      "voice": "en-AU-NatashaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Getting Through to a Person",
+      "heading_zh": "1. 终于接通人工",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Thanks for holding. My name's Natasha. How can I help you today?",
+          "zh": "感谢您的耐心等待，我是 Natasha。今天有什么可以帮您？"
+        },
+        {
+          "sp": "A",
+          "en": "**Hi, thanks. I've been on hold for twenty minutes, so I'm glad to finally reach a person.**",
+          "zh": "你好，谢谢。我等了二十分钟，终于接通真人了。"
+        },
+        {
+          "sp": "B",
+          "en": "I'm sorry about the wait. We've had a lot of calls this morning.",
+          "zh": "抱歉让您久等了，今天早上来电特别多。"
+        },
+        {
+          "sp": "A",
+          "en": "No worries. Our home ==broadband== has been down since Monday night.",
+          "zh": "没事。我家的宽带从周一晚上就断了。"
+        },
+        {
+          "sp": "B",
+          "en": "That's frustrating. Could I get the phone number on the account?",
+          "zh": "那确实很烦。能告诉我账户上登记的电话号码吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Sure, it's nine one two three, four five six seven.",
+          "zh": "好的，是九一二三，四五六七。"
+        },
+        {
+          "sp": "B",
+          "en": "Thanks, Mr Lee. Have you tried restarting the ==router==?",
+          "zh": "谢谢，李先生。您试过重启路由器吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Yes, __several times__. The light keeps blinking red, and I've already checked all the cables.",
+          "zh": "试了好几次。指示灯一直闪红灯，线我也都检查过了。"
+        },
+        {
+          "sp": "B",
+          "en": "Okay, I can see an ==outage== in your area. Service should be ==restored== by six tonight.",
+          "zh": "好的，我这边看到您所在区域有网络故障，今晚六点前应该能恢复。"
+        },
+        {
+          "sp": "A",
+          "en": "**And if it's still not working by then, what's the next step?**",
+          "zh": "那如果到时候还是不行，下一步怎么办？"
+        },
+        {
+          "sp": "B",
+          "en": "Just call us back, and we'll send a technician __free of charge__.",
+          "zh": "您再打给我们，我们会免费派技术员上门。"
+        }
+      ]
+    },
+    {
+      "heading": "2. A Billing Problem",
+      "heading_zh": "2. 账单出了问题",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "One more thing. I think I __was charged twice__ for this month's bill.",
+          "zh": "还有一件事。我这个月的账单好像被扣了两次款。"
+        },
+        {
+          "sp": "B",
+          "en": "Let me have a look. Yes, I can see two ==payments== of fifty-nine dollars on the fifth.",
+          "zh": "我看一下。是的，五号有两笔五十九块的扣款。"
+        },
+        {
+          "sp": "A",
+          "en": "Could you refund one of them, please?",
+          "zh": "能把其中一笔退给我吗？"
+        },
+        {
+          "sp": "B",
+          "en": "I can't process the ==refund== myself, but I can raise a ==ticket== with our billing team.",
+          "zh": "我这边没法直接退款，不过可以给账务部门提一个工单。"
+        },
+        {
+          "sp": "A",
+          "en": "Okay. How long will that take?",
+          "zh": "好的。大概要多久？"
+        },
+        {
+          "sp": "B",
+          "en": "Usually five to seven working days.",
+          "zh": "一般五到七个工作日。"
+        },
+        {
+          "sp": "A",
+          "en": "**That's fine. Could I get a reference number, so I don't have to explain everything again?**",
+          "zh": "可以。能给我一个工单号吗？这样我就不用从头再讲一遍了。"
+        },
+        {
+          "sp": "B",
+          "en": "Of course. It's C S, four eight two, seven one nine.",
+          "zh": "当然。工单号是 C S，四八二，七一九。"
+        },
+        {
+          "sp": "A",
+          "en": "Let me __read that back__. C S, four eight two, seven one nine?",
+          "zh": "我复述一下：C S，四八二，七一九，对吗？"
+        },
+        {
+          "sp": "B",
+          "en": "That's right. You'll also get an email confirmation within the hour.",
+          "zh": "没错。一小时内您还会收到确认邮件。"
+        },
+        {
+          "sp": "A",
+          "en": "Thanks. Also, since we had no internet for three days, is there any ==compensation==?",
+          "zh": "谢谢。另外，我们家断网三天了，有没有什么补偿？"
+        },
+        {
+          "sp": "B",
+          "en": "Fair question. I can apply a ten-dollar ==credit== to your next bill.",
+          "zh": "这个问得合理。我可以在您下期账单里抵扣十块钱。"
+        },
+        {
+          "sp": "A",
+          "en": "I appreciate that. Thanks for your help, Natasha.",
+          "zh": "谢谢，感谢你的帮助，Natasha。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "「你」家的宽带出了什么问题？客服怎么说？",
+      "a": "从周一晚上就断网了，重启路由器也没用；客服说是区域故障，今晚六点前恢复，不行就免费派技术员。"
+    },
+    {
+      "q": "账单有什么问题？多久能退款？",
+      "a": "这个月被扣了两次五十九块；客服提了工单给账务部门，一般五到七个工作日。"
+    },
+    {
+      "q": "「你」还争取到了什么？",
+      "a": "拿到了工单号并复述确认，还争取到下期账单抵扣十块钱的断网补偿。"
+    }
+  ],
+  "dictation": [
+    "Hi, thanks. I've been on hold for twenty minutes, so I'm glad to finally reach a person.",
+    "Yes, several times. The light keeps blinking red, and I've already checked all the cables.",
+    "That's fine. Could I get a reference number, so I don't have to explain everything again?",
+    "Thanks. Also, since we had no internet for three days, is there any compensation?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "One more thing. I think I was charged twice for this month's bill.",
+    "marked": "One more <b>thing</b>. //<br>I think I was <b>charged twice</b> / for this month's <b>bill</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你网购的儿童安全座椅送错了型号。打电话给客服：说清订单、问题和你要的解决方案（换货并上门取件）。",
+      "ref": "Hi, I'm calling about an order I received yesterday. It's a child car seat, but it's the wrong model. I ordered the one for toddlers, and you sent the infant version. I'd like to exchange it for the right one. Could you arrange for someone to pick up the wrong seat? And could I get a reference number for this?",
+      "ref_zh": "你好，我打电话是关于昨天收到的一个订单。是儿童安全座椅，但型号送错了。我订的是幼儿款，你们送来的是婴儿款。我想换成正确的那款。能安排人上门把错的取走吗？另外能给我一个工单号吗？"
+    },
+    {
+      "q": "你已经打了三次电话投诉同一个问题，还没解决。礼貌但坚定地要求升级处理。",
+      "ref": "Hi, this is my third call about the same issue, and it's still not fixed. I have the reference number from last week. I understand it's not your fault, but I'd like to escalate this. Could you put me through to a supervisor, or have someone senior call me back today? I really need a clear timeline this time.",
+      "ref_zh": "你好，这个问题我已经是第三次打电话了，还是没解决。我有上周的工单号。我知道这不是你的错，但我希望升级处理。能帮我转给主管吗？或者今天让负责人给我回个电话？这次我真的需要一个明确的时间表。"
+    }
+  ],
+  "words": [
+    {
+      "w": "broadband",
+      "ipa": "/ˈbrɔːdbænd/",
+      "zh": "宽带",
+      "ex": "We pay about fifty dollars a month for home broadband."
+    },
+    {
+      "w": "router",
+      "ipa": "/ˈraʊtər/",
+      "zh": "路由器",
+      "ex": "Try unplugging the router for thirty seconds."
+    },
+    {
+      "w": "outage",
+      "ipa": "/ˈaʊtɪdʒ/",
+      "zh": "（服务）中断，故障",
+      "ex": "There was a power outage in our block last night."
+    },
+    {
+      "w": "restore",
+      "ipa": "/rɪˈstɔːr/",
+      "zh": "恢复",
+      "ex": "Water supply will be restored by noon."
+    },
+    {
+      "w": "payment",
+      "ipa": "/ˈpeɪmənt/",
+      "zh": "付款，扣款",
+      "ex": "The payment didn't go through, so I tried again."
+    },
+    {
+      "w": "refund",
+      "ipa": "/ˈriːfʌnd/",
+      "zh": "退款",
+      "ex": "I asked for a refund because the shoes didn't fit."
+    },
+    {
+      "w": "ticket",
+      "ipa": "/ˈtɪkɪt/",
+      "zh": "（客服）工单",
+      "ex": "I've raised a ticket, and someone will email you."
+    },
+    {
+      "w": "compensation",
+      "ipa": "/ˌkɑːmpenˈseɪʃən/",
+      "zh": "补偿，赔偿",
+      "ex": "The airline offered us compensation for the delay."
+    },
+    {
+      "w": "credit (n.)",
+      "ipa": "/ˈkredɪt/",
+      "zh": "（账户）抵扣额",
+      "ex": "They gave me a twenty-dollar credit on my next bill.",
+      "tts_w": "credit"
+    },
+    {
+      "w": "read back",
+      "ipa": "/riːd bæk/",
+      "zh": "复述确认",
+      "ex": "Let me read back your order to make sure it's right."
+    }
+  ]
+}

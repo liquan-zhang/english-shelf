@@ -1,0 +1,188 @@
+{
+  "id": "086",
+  "title": "Keeping a Conversation Going with Follow-up Questions",
+  "meta": "B2 · 约 280 词 · 场景：用追问延续闲聊",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Jumping Versus Digging",
+      "paragraphs": [
+        [
+          "Picture this exchange at the coffee machine.",
+          "\"I went hiking last weekend,\" says your colleague.",
+          "\"Oh, nice,\" you reply, and then you ==abruptly== ask about the project deadline."
+        ],
+        [
+          "Nothing went wrong, exactly, but the conversation just died.",
+          "Your colleague ==volunteered== a topic, and you jumped away from it.",
+          "**Most conversations do not end because people run out of things to say; they end because nobody digs.**"
+        ],
+        [
+          "Digging means staying with the same topic for two or three more questions.",
+          "It can feel ==intrusive== at first, but most people enjoy talking about something they chose to __bring up__ themselves.",
+          "You are not being nosy; you are giving them permission to keep going.",
+          "A good rule is to ask at least two follow-ups before you change the subject."
+        ]
+      ],
+      "heading_zh": "1. 跳开还是深挖",
+      "paragraphs_zh": [
+        [
+          "想象一下咖啡机旁的这段对话。",
+          "「我上周末去徒步了。」同事说。",
+          "「哦，不错。」你回了一句，然后突然问起项目 deadline。"
+        ],
+        [
+          "说起来也没出什么错，但天就这么聊死了。",
+          "同事主动抛了个话题，你却跳开了。",
+          "大多数对话结束，不是因为没话可说；而是因为没人往下挖。"
+        ],
+        [
+          "深挖的意思是，在同一个话题上再多问两三个问题。",
+          "一开始可能会觉得有点冒犯，但大多数人都喜欢聊自己主动提起的事。",
+          "你不是在八卦；你是在给对方接着往下讲的许可。",
+          "一个好用的规矩是：换话题之前，至少追问两句。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Three Follow-ups That Always Work",
+      "paragraphs": [
+        [
+          "The first is the detail question: \"Where did you go?\" or \"How long was the trail?\"",
+          "It is easy to answer and shows you are __tuned in__.",
+          "Keep it light, though, and do not turn the chat into an interview."
+        ],
+        [
+          "The second is the experience question: \"What was the best part?\" or \"Was it as hard as you expected?\"",
+          "This invites a short story, and stories are where people __open up__."
+        ],
+        [
+          "The third is the future question: \"Would you do it again?\" or \"Where's next on your list?\"",
+          "It shows ==curiosity== about the person, not just the event, and it often ==reveals== what they really enjoy."
+        ],
+        [
+          "Between questions, ==echo== a word or two from their answer.",
+          "If they say, \"The view at the top was unreal,\" you can say, \"Unreal? Better than the photos?\"",
+          "**Echoing a single word is the easiest follow-up in English, and it buys you time to think.**"
+        ]
+      ],
+      "heading_zh": "2. 三个百试百灵的追问",
+      "paragraphs_zh": [
+        [
+          "第一种是细节题：「去的哪儿？」或者「那条路线有多长？」",
+          "好回答，也说明你在认真听。",
+          "不过要轻松点，别把闲聊变成面试。"
+        ],
+        [
+          "第二种是体验题：「最棒的是哪一段？」或者「跟你预想的一样累吗？」",
+          "这会引出一个小故事，而人往往是在讲故事的时候才打开话匣子。"
+        ],
+        [
+          "第三种是未来题：「还会再去吗？」或者「下一个想去哪儿？」",
+          "这说明你好奇的是这个人，而不只是这件事，而且往往能看出他真正喜欢什么。"
+        ],
+        [
+          "问题和问题之间，重复一两个对方回答里的词。",
+          "如果他说：「山顶的风景简直不真实。」你可以接：「不真实？比照片还好看？」",
+          "重复一个词，是英语里最省力的追问，还能给你争取点思考时间。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者说大多数对话为什么会冷掉？",
+      "a": "不是没话可说，而是没人往下“挖”：对方抛出话题，我们却跳到别的事上。"
+    },
+    {
+      "q": "三种万能追问分别是什么？",
+      "a": "细节问题（去哪了、多远）；经历问题（最好的部分是什么、比预想难吗）；未来问题（还会再去吗、下一站去哪）。"
+    },
+    {
+      "q": "echo 技巧是什么？有什么好处？",
+      "a": "重复对方回答里的一两个词并加问号接着问；这是最简单的追问，还能给自己争取思考时间。"
+    }
+  ],
+  "dictation": [
+    "Most conversations do not end because people run out of things to say; they end because nobody digs.",
+    "Digging means staying with the same topic for two or three more questions.",
+    "This invites a short story, and stories are where people open up.",
+    "Echoing a single word is the easiest follow-up in English, and it buys you time to think."
+  ],
+  "shadow": {
+    "text": "Between questions, echo a word or two from their answer. If they say, \"The view at the top was unreal,\" you can say, \"Unreal? Better than the photos?\" Echoing a single word is the easiest follow-up in English, and it buys you time to think.",
+    "marked": "Between questions, / <b>echo</b> a word or two / from their <b>answer</b>. //<br>If they say, / \"The <b>view</b> at the top was <b>unreal</b>,\" / you can say, / \"<b>Unreal</b>? / <b>Better</b> than the photos?\" //<br><b>Echoing</b> a single word / is the <b>easiest</b> follow-up in English, / and it buys you <b>time</b> to think. //"
+  },
+  "prompts": [
+    {
+      "q": "印度同事说他上周末回家参加了朋友的婚礼。用细节、经历、未来三种追问，加上 echo，把对话聊 30 秒。",
+      "ref": "Oh, a wedding! Was it back home in India? Three days? Wow. What was the best part, the food or the dancing? Ha, I believe it. I've never been to an Indian wedding. Would you say it was a typical one, or bigger than usual? Next time a friend of yours gets married, I want a full report.",
+      "ref_zh": "哦，婚礼！是回印度老家吗？三天？哇。最棒的是哪部分，吃的还是跳舞？哈，我信。我还没参加过印度婚礼。你觉得这算是典型的规模，还是比一般的更大？下次你朋友结婚，我要听完整汇报。"
+    },
+    {
+      "q": "会前同事随口说 I've started learning to cook. 用 echo 和追问聊 30 秒。",
+      "ref": "Learning to cook? That's great. What made you start? Delivery fatigue, I get that. What's the first dish you managed to get right? Pasta from scratch? That's ambitious. Was it as hard as you expected? I tried making dumplings once and they all fell apart in the pot, so I'm genuinely impressed. What's next on your list?",
+      "ref_zh": "在学做饭？挺好的。怎么想起来学的？外卖吃腻了，懂。第一道做成功的菜是什么？手擀意面？够有野心的。跟你想的一样难吗？我有次试着包饺子，下锅全散了，所以我是真心佩服。下一道打算做什么？"
+    }
+  ],
+  "words": [
+    {
+      "w": "abruptly",
+      "ipa": "/əˈbrʌptli/",
+      "zh": "突然地、生硬地",
+      "ex": "The call ended abruptly when his connection dropped."
+    },
+    {
+      "w": "volunteer (v.)",
+      "ipa": "/ˌvɑːlənˈtɪr/",
+      "zh": "主动提出、主动说起",
+      "ex": "She volunteered to take notes, which helped a lot.",
+      "tts_w": "volunteer"
+    },
+    {
+      "w": "intrusive",
+      "ipa": "/ɪnˈtruːsɪv/",
+      "zh": "冒昧的、侵扰的",
+      "ex": "Asking about salary in the first chat can feel intrusive."
+    },
+    {
+      "w": "curiosity",
+      "ipa": "/ˌkjʊriˈɑːsəti/",
+      "zh": "好奇心",
+      "ex": "Good managers show curiosity about how their people like to work."
+    },
+    {
+      "w": "reveal",
+      "ipa": "/rɪˈviːl/",
+      "zh": "揭示、透露",
+      "ex": "The user interviews revealed a problem we had never seen in the data."
+    },
+    {
+      "w": "echo (v.)",
+      "ipa": "/ˈekoʊ/",
+      "zh": "重复、呼应",
+      "ex": "I echoed her last point to show I'd understood it.",
+      "tts_w": "echo"
+    },
+    {
+      "w": "dig (v.)",
+      "ipa": "/dɪɡ/",
+      "zh": "深挖、追问",
+      "ex": "If the numbers look odd, dig a bit before you report them.",
+      "tts_w": "dig"
+    },
+    {
+      "w": "tuned in",
+      "ipa": "/tuːnd ɪn/",
+      "zh": "专注的、跟得上的",
+      "ex": "Ask a quick question now and then to show you're tuned in."
+    },
+    {
+      "w": "open up",
+      "ipa": "/ˈoʊpən ʌp/",
+      "zh": "敞开心扉、愿意多说",
+      "ex": "He only opened up about the burnout in our third one-on-one."
+    }
+  ]
+}

@@ -1,0 +1,181 @@
+{
+  "id": "088",
+  "title": "Welcoming a New Teammate",
+  "meta": "B2 · 约 280 词 · 场景：欢迎新同事",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The First Week Sticks",
+      "paragraphs": [
+        [
+          "New people remember their first week for a long time.",
+          "They remember who said hello, who invited them to lunch, and who left them alone at a desk with a new laptop.",
+          "That week shapes a sense of ==belonging== that is hard to change later."
+        ],
+        [
+          "Most new teammates feel ==overwhelmed== in their first few days, even if they look calm.",
+          "As a lead, you cannot remove that feeling, but you can make it smaller.",
+          "**A new teammate does not need a perfect onboarding plan; they need one person who clearly wants them there.**"
+        ],
+        [
+          "The welcome is also a message to the rest of the team.",
+          "People watch how you treat the newest person, and they draw ==conclusions== about what kind of team this really is."
+        ]
+      ],
+      "heading_zh": "1. 第一周会一直记得",
+      "paragraphs_zh": [
+        [
+          "新人会把入职第一周记很久。",
+          "他们记得谁打了招呼，谁约他们吃午饭，又是谁把他们和一台新电脑丢在工位上不管。",
+          "那一周塑造的归属感，之后很难再改变。"
+        ],
+        [
+          "大多数新同事头几天都会有点招架不住，哪怕表面看着很淡定。",
+          "作为 lead，你没法消除这种感觉，但可以让它小一点。",
+          "新同事不需要一份完美的入职计划；他们需要一个明显希望他们来的人。"
+        ],
+        [
+          "欢迎新人，也是在给团队其他人传递信号。",
+          "大家会看你怎么对待最新来的人，并由此判断这到底是个什么样的团队。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Four Small Gestures",
+      "paragraphs": [
+        [
+          "Send a short message before day one.",
+          "\"Hi Priya, looking forward to having you on the team on Monday. I'll meet you in the lobby at ten.\"",
+          "It removes the ==uncertainty== of the first morning."
+        ],
+        [
+          "On the first day, introduce them with one ==strength==, not just a job title.",
+          "\"This is Priya, she built a payments dashboard in her last role, so she's the person to ask about charts.\"",
+          "Then make sure someone __takes them to lunch__, so they are not eating alone at their desk."
+        ],
+        [
+          "Give them a simple map of people: who to ask about code, who to ask about process, and who knows the best lunch spots.",
+          "**Knowing who to ask matters more in the first month than knowing the answers.**"
+        ],
+        [
+          "At the end of the first week, __check in__ with an open question.",
+          "\"What's been ==confusing== so far?\" works better than \"Is everything okay?\", because it gives them ==permission== to be honest."
+        ]
+      ],
+      "heading_zh": "2. 四个小举动",
+      "paragraphs_zh": [
+        [
+          "入职前发一条简短的消息。",
+          "「Hi Priya，期待你周一加入团队。我十点在大堂接你。」",
+          "这样就省掉了第一天早上的忐忑。"
+        ],
+        [
+          "第一天介绍他们的时候，带上一个长处，而不只是一个职位。",
+          "「这是 Priya，她上一份工作搭过一个支付看板，图表相关的事问她就对了。」",
+          "然后确保有人带他们去吃午饭，别让他们一个人在工位上吃。"
+        ],
+        [
+          "给他们一张简单的人员地图：代码问谁，流程问谁，谁知道附近最好吃的午饭。",
+          "第一个月里，知道该问谁比知道答案更重要。"
+        ],
+        [
+          "第一周快结束时，用一个开放式问题 check-in 一下。",
+          "「到目前为止有什么让你摸不着头脑的？」比「一切都还好吧？」好用，因为它让对方可以放心说实话。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者为什么说新人的第一周很重要？",
+      "a": "新人会记很久，它决定归属感；新人往往不知所措，同时团队其他人也在看你怎么对待最新的人。"
+    },
+    {
+      "q": "新人最需要的是什么？",
+      "a": "不是完美的入职计划，而是一个明确欢迎他们的人。"
+    },
+    {
+      "q": "文中的四个小动作是什么？",
+      "a": "入职前发短消息约好见面；第一天介绍时带上一个长处并安排人陪吃午饭；给一张“该问谁”的人员地图；第一周末用开放问题 check in。"
+    }
+  ],
+  "dictation": [
+    "A new teammate does not need a perfect onboarding plan; they need one person who clearly wants them there.",
+    "It removes the uncertainty of the first morning.",
+    "Knowing who to ask matters more in the first month than knowing the answers.",
+    "At the end of the first week, check in with an open question."
+  ],
+  "shadow": {
+    "text": "Most new teammates feel overwhelmed in their first few days, even if they look calm. As a lead, you cannot remove that feeling, but you can make it smaller. A new teammate does not need a perfect onboarding plan; they need one person who clearly wants them there.",
+    "marked": "Most new teammates / feel <b>overwhelmed</b> in their first few days, / even if they look <b>calm</b>. //<br>As a lead, / you cannot <b>remove</b> that feeling, / but you can make it <b>smaller</b>. //<br>A new teammate does not need a <b>perfect</b> onboarding plan; / they need <b>one person</b> / who clearly <b>wants</b> them there. //"
+  },
+  "prompts": [
+    {
+      "q": "新同事 Tom 从伦敦调来新加坡，第一天你带他认识团队。用“名字加一个长处”的方式介绍他，并约他吃午饭。",
+      "ref": "Hey everyone, quick one. This is Tom, he just moved over from our London office. Tom spent the last two years making our upload service twice as fast, so if you have performance questions, he's your guy. Tom, a few of us usually grab lunch at the food court downstairs around noon. Want to join us today?",
+      "ref_zh": "大家好，占用一分钟。这是 Tom，刚从伦敦办公室调过来。Tom 过去两年把我们的上传服务提速了一倍，所以有性能方面的问题，找他就对了。Tom，我们几个中午一般十二点左右去楼下美食广场吃饭。今天一起去？"
+    },
+    {
+      "q": "新同事入职第一周的周五，你做一个 30 秒的 check-in。",
+      "ref": "So, you've survived your first week! How are you finding it? Good. What's been the most confusing part so far? Honestly, anything counts, the tools, the acronyms, the people. That makes sense, our release process confuses everyone at first. Let's spend twenty minutes on it Monday morning. And have a proper rest this weekend.",
+      "ref_zh": "怎么样，第一周熬过来了！感觉如何？那就好。到目前为止最让你摸不着头脑的是什么？说真的，什么都算，工具、缩写、人。能理解，我们的发布流程一开始谁都搞不懂。周一早上我们花二十分钟过一遍。这周末好好休息。"
+    }
+  ],
+  "words": [
+    {
+      "w": "belonging",
+      "ipa": "/bɪˈlɔːŋɪŋ/",
+      "zh": "归属感",
+      "ex": "Small rituals like team lunches build a sense of belonging."
+    },
+    {
+      "w": "overwhelmed",
+      "ipa": "/ˌoʊvərˈwelmd/",
+      "zh": "不知所措的、被压垮的",
+      "ex": "I felt overwhelmed by the number of internal tools in my first week."
+    },
+    {
+      "w": "conclusion",
+      "ipa": "/kənˈkluːʒən/",
+      "zh": "结论",
+      "ex": "Don't draw conclusions from one week of data."
+    },
+    {
+      "w": "uncertainty",
+      "ipa": "/ʌnˈsɜːrtənti/",
+      "zh": "不确定性",
+      "ex": "The reorg created a lot of uncertainty, so we need to communicate early."
+    },
+    {
+      "w": "strength",
+      "ipa": "/streŋθ/",
+      "zh": "长处、优势",
+      "ex": "Her biggest strength is turning messy requirements into a clear plan."
+    },
+    {
+      "w": "confusing",
+      "ipa": "/kənˈfjuːzɪŋ/",
+      "zh": "令人困惑的",
+      "ex": "The error message is confusing, users don't know what to do next."
+    },
+    {
+      "w": "permission",
+      "ipa": "/pərˈmɪʃən/",
+      "zh": "允许、许可",
+      "ex": "Saying 'I don't know either' gives the team permission to ask questions."
+    },
+    {
+      "w": "onboarding",
+      "ipa": "/ˈɑːnˌbɔːrdɪŋ/",
+      "zh": "入职引导",
+      "ex": "We cut onboarding time in half with a better setup guide."
+    },
+    {
+      "w": "settle in",
+      "ipa": "/ˈsetəl ɪn/",
+      "zh": "安顿下来、适应",
+      "ex": "Take the first two weeks to settle in before you pick up on-call."
+    }
+  ]
+}

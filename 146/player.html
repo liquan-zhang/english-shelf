@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Calling Customer Service · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "146", "type": "dialogue", "title": "Calling Customer Service", "meta": "B2 · 约 290 词 · 场景：宽带客服：报障与退款", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Customer Service Agent", "name_zh": "客服专员", "voice": "en-AU-NatashaNeural"}}, "gist": [{"q": "「你」家的宽带出了什么问题？客服怎么说？", "a": "从周一晚上就断网了，重启路由器也没用；客服说是区域故障，今晚六点前恢复，不行就免费派技术员。"}, {"q": "账单有什么问题？多久能退款？", "a": "这个月被扣了两次五十九块；客服提了工单给账务部门，一般五到七个工作日。"}, {"q": "「你」还争取到了什么？", "a": "拿到了工单号并复述确认，还争取到下期账单抵扣十块钱的断网补偿。"}], "dictation": [{"id": "s0_1_0", "text": "Hi, thanks. I've been on hold for twenty minutes, so I'm glad to finally reach a person."}, {"id": "s0_7_0", "text": "Yes, several times. The light keeps blinking red, and I've already checked all the cables."}, {"id": "s1_6_0", "text": "That's fine. Could I get a reference number, so I don't have to explain everything again?"}, {"id": "s1_10_0", "text": "Thanks. Also, since we had no internet for three days, is there any compensation?"}], "shadow": {"speaker": "A", "text": "One more thing. I think I was charged twice for this month's bill.", "marked": "One more <b>thing</b>. //<br>I think I was <b>charged twice</b> / for this month's <b>bill</b>. //"}, "prompts": [{"q": "你网购的儿童安全座椅送错了型号。打电话给客服：说清订单、问题和你要的解决方案（换货并上门取件）。", "ref": "Hi, I'm calling about an order I received yesterday. It's a child car seat, but it's the wrong model. I ordered the one for toddlers, and you sent the infant version. I'd like to exchange it for the right one. Could you arrange for someone to pick up the wrong seat? And could I get a reference number for this?", "ref_zh": "你好，我打电话是关于昨天收到的一个订单。是儿童安全座椅，但型号送错了。我订的是幼儿款，你们送来的是婴儿款。我想换成正确的那款。能安排人上门把错的取走吗？另外能给我一个工单号吗？", "id": "ref0"}, {"q": "你已经打了三次电话投诉同一个问题，还没解决。礼貌但坚定地要求升级处理。", "ref": "Hi, this is my third call about the same issue, and it's still not fixed. I have the reference number from last week. I understand it's not your fault, but I'd like to escalate this. Could you put me through to a supervisor, or have someone senior call me back today? I really need a clear timeline this time.", "ref_zh": "你好，这个问题我已经是第三次打电话了，还是没解决。我有上周的工单号。我知道这不是你的错，但我希望升级处理。能帮我转给主管吗？或者今天让负责人给我回个电话？这次我真的需要一个明确的时间表。", "id": "ref1"}], "words": [{"w": "broadband", "ipa": "/ˈbrɔːdbænd/", "zh": "宽带", "ex": "We pay about fifty dollars a month for home broadband.", "id": "w0"}, {"w": "router", "ipa": "/ˈraʊtər/", "zh": "路由器", "ex": "Try unplugging the router for thirty seconds.", "id": "w1"}, {"w": "outage", "ipa": "/ˈaʊtɪdʒ/", "zh": "（服务）中断，故障", "ex": "There was a power outage in our block last night.", "id": "w2"}, {"w": "restore", "ipa": "/rɪˈstɔːr/", "zh": "恢复", "ex": "Water supply will be restored by noon.", "id": "w3"}, {"w": "payment", "ipa": "/ˈpeɪmənt/", "zh": "付款，扣款", "ex": "The payment didn't go through, so I tried again.", "id": "w4"}, {"w": "refund", "ipa": "/ˈriːfʌnd/", "zh": "退款", "ex": "I asked for a refund because the shoes didn't fit.", "id": "w5"}, {"w": "ticket", "ipa": "/ˈtɪkɪt/", "zh": "（客服）工单", "ex": "I've raised a ticket, and someone will email you.", "id": "w6"}, {"w": "compensation", "ipa": "/ˌkɑːmpenˈseɪʃən/", "zh": "补偿，赔偿", "ex": "The airline offered us compensation for the delay.", "id": "w7"}, {"w": "credit (n.)", "ipa": "/ˈkredɪt/", "zh": "（账户）抵扣额", "ex": "They gave me a twenty-dollar credit on my next bill.", "tts_w": "credit", "id": "w8"}, {"w": "read back", "ipa": "/riːd bæk/", "zh": "复述确认", "ex": "Let me read back your order to make sure it's right.", "id": "w9"}], "sections": [{"heading": "1. Getting Through to a Person", "heading_zh": "1. 终于接通人工", "rows": [[{"id": "s0_0_0", "md": "Thanks for holding. My name's Natasha. How can I help you today?", "text": "Thanks for holding. My name's Natasha. How can I help you today?", "zh": "感谢您的耐心等待，我是 Natasha。今天有什么可以帮您？", "sp": "B"}], [{"id": "s0_1_0", "md": "**Hi, thanks. I've been on hold for twenty minutes, so I'm glad to finally reach a person.**", "text": "Hi, thanks. I've been on hold for twenty minutes, so I'm glad to finally reach a person.", "zh": "你好，谢谢。我等了二十分钟，终于接通真人了。", "sp": "A"}], [{"id": "s0_2_0", "md": "I'm sorry about the wait. We've had a lot of calls this morning.", "text": "I'm sorry about the wait. We've had a lot of calls this morning.", "zh": "抱歉让您久等了，今天早上来电特别多。", "sp": "B"}], [{"id": "s0_3_0", "md": "No worries. Our home ==broadband== has been down since Monday night.", "text": "No worries. Our home broadband has been down since Monday night.", "zh": "没事。我家的宽带从周一晚上就断了。", "sp": "A"}], [{"id": "s0_4_0", "md": "That's frustrating. Could I get the phone number on the account?", "text": "That's frustrating. Could I get the phone number on the account?", "zh": "那确实很烦。能告诉我账户上登记的电话号码吗？", "sp": "B"}], [{"id": "s0_5_0", "md": "Sure, it's nine one two three, four five six seven.", "text": "Sure, it's nine one two three, four five six seven.", "zh": "好的，是九一二三，四五六七。", "sp": "A"}], [{"id": "s0_6_0", "md": "Thanks, Mr Lee. Have you tried restarting the ==router==?", "text": "Thanks, Mr Lee. Have you tried restarting the router?", "zh": "谢谢，李先生。您试过重启路由器吗？", "sp": "B"}], [{"id": "s0_7_0", "md": "Yes, __several times__. The light keeps blinking red, and I've already checked all the cables.", "text": "Yes, several times. The light keeps blinking red, and I've already checked all the cables.", "zh": "试了好几次。指示灯一直闪红灯，线我也都检查过了。", "sp": "A"}], [{"id": "s0_8_0", "md": "Okay, I can see an ==outage== in your area. Service should be ==restored== by six tonight.", "text": "Okay, I can see an outage in your area. Service should be restored by six tonight.", "zh": "好的，我这边看到您所在区域有网络故障，今晚六点前应该能恢复。", "sp": "B"}], [{"id": "s0_9_0", "md": "**And if it's still not working by then, what's the next step?**", "text": "And if it's still not working by then, what's the next step?", "zh": "那如果到时候还是不行，下一步怎么办？", "sp": "A"}], [{"id": "s0_10_0", "md": "Just call us back, and we'll send a technician __free of charge__.", "text": "Just call us back, and we'll send a technician free of charge.", "zh": "您再打给我们，我们会免费派技术员上门。", "sp": "B"}]]}, {"heading": "2. A Billing Problem", "heading_zh": "2. 账单出了问题", "rows": [[{"id": "s1_0_0", "md": "One more thing. I think I __was charged twice__ for this month's bill.", "text": "One more thing. I think I was charged twice for this month's bill.", "zh": "还有一件事。我这个月的账单好像被扣了两次款。", "sp": "A"}], [{"id": "s1_1_0", "md": "Let me have a look. Yes, I can see two ==payments== of fifty-nine dollars on the fifth.", "text": "Let me have a look. Yes, I can see two payments of fifty-nine dollars on the fifth.", "zh": "我看一下。是的，五号有两笔五十九块的扣款。", "sp": "B"}], [{"id": "s1_2_0", "md": "Could you refund one of them, please?", "text": "Could you refund one of them, please?", "zh": "能把其中一笔退给我吗？", "sp": "A"}], [{"id": "s1_3_0", "md": "I can't process the ==refund== myself, but I can raise a ==ticket== with our billing team.", "text": "I can't process the refund myself, but I can raise a ticket with our billing team.", "zh": "我这边没法直接退款，不过可以给账务部门提一个工单。", "sp": "B"}], [{"id": "s1_4_0", "md": "Okay. How long will that take?", "text": "Okay. How long will that take?", "zh": "好的。大概要多久？", "sp": "A"}], [{"id": "s1_5_0", "md": "Usually five to seven working days.", "text": "Usually five to seven working days.", "zh": "一般五到七个工作日。", "sp": "B"}], [{"id": "s1_6_0", "md": "**That's fine. Could I get a reference number, so I don't have to explain everything again?**", "text": "That's fine. Could I get a reference number, so I don't have to explain everything again?", "zh": "可以。能给我一个工单号吗？这样我就不用从头再讲一遍了。", "sp": "A"}], [{"id": "s1_7_0", "md": "Of course. It's C S, four eight two, seven one nine.", "text": "Of course. It's C S, four eight two, seven one nine.", "zh": "当然。工单号是 C S，四八二，七一九。", "sp": "B"}], [{"id": "s1_8_0", "md": "Let me __read that back__. C S, four eight two, seven one nine?", "text": "Let me read that back. C S, four eight two, seven one nine?", "zh": "我复述一下：C S，四八二，七一九，对吗？", "sp": "A"}], [{"id": "s1_9_0", "md": "That's right. You'll also get an email confirmation within the hour.", "text": "That's right. You'll also get an email confirmation within the hour.", "zh": "没错。一小时内您还会收到确认邮件。", "sp": "B"}], [{"id": "s1_10_0", "md": "Thanks. Also, since we had no internet for three days, is there any ==compensation==?", "text": "Thanks. Also, since we had no internet for three days, is there any compensation?", "zh": "谢谢。另外，我们家断网三天了，有没有什么补偿？", "sp": "A"}], [{"id": "s1_11_0", "md": "Fair question. I can apply a ten-dollar ==credit== to your next bill.", "text": "Fair question. I can apply a ten-dollar credit to your next bill.", "zh": "这个问得合理。我可以在您下期账单里抵扣十块钱。", "sp": "B"}], [{"id": "s1_12_0", "md": "I appreciate that. Thanks for your help, Natasha.", "text": "I appreciate that. Thanks for your help, Natasha.", "zh": "谢谢，感谢你的帮助，Natasha。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Getting Through to a Person", "zh": "1. 终于接通人工", "start": 0.0, "end": 2.328, "words": [[0.105, 0.368], [0.697, 0.961], [0.974, 1.197], [1.211, 1.355], [1.368, 1.447], [1.461, 1.934]]}, {"kind": "s", "id": "s0_0_0", "md": "Thanks for holding. My name's Natasha. How can I help you today?", "zh": "感谢您的耐心等待，我是 Natasha。今天有什么可以帮您？", "sp": "B", "gap": false, "start": 2.328, "end": 9.144, "words": [[2.431, 2.733], [2.786, 2.904], [2.917, 3.391], [4.46, 4.617], [4.71, 5.039], [5.065, 5.657], [6.749, 6.867], [6.973, 7.091], [7.131, 7.196], [7.249, 7.473], [7.525, 7.67], [7.67, 8.012]]}, {"kind": "s", "id": "s0_1_0", "md": "**Hi, thanks. I've been on hold for twenty minutes, so I'm glad to finally reach a person.**", "zh": "你好，谢谢。我等了二十分钟，终于接通真人了。", "sp": "A", "gap": false, "start": 9.144, "end": 14.544, "words": [[9.262, 9.407], [9.433, 9.881], [10.315, 10.447], [10.46, 10.591], [10.605, 10.736], [10.749, 11.039], [11.052, 11.183], [11.197, 11.473], [11.486, 11.947], [12.223, 12.381], [12.394, 12.499], [12.512, 12.894], [12.907, 12.973], [12.986, 13.42], [13.433, 13.618], [13.631, 13.683], [13.697, 14.157]]}, {"kind": "s", "id": "s0_2_0", "md": "I'm sorry about the wait. We've had a lot of calls this morning.", "zh": "抱歉让您久等了，今天早上来电特别多。", "sp": "B", "gap": false, "start": 14.544, "end": 20.16, "words": [[14.647, 14.791], [14.857, 15.186], [15.265, 15.528], [15.528, 15.633], [15.647, 16.002], [17.11, 17.36], [17.373, 17.583], [17.597, 17.662], [17.676, 17.886], [17.886, 17.965], [18.044, 18.412], [18.452, 18.597], [18.636, 19.097]]}, {"kind": "s", "id": "s0_3_0", "md": "No worries. Our home ==broadband== has been down since Monday night.", "zh": "没事。我家的宽带从周一晚上就断了。", "sp": "A", "gap": false, "start": 20.16, "end": 24.384, "words": [[20.265, 20.436], [20.449, 20.976], [21.41, 21.542], [21.555, 21.778], [21.792, 22.331], [22.344, 22.502], [22.515, 22.66], [22.673, 23.028], [23.042, 23.265], [23.278, 23.594], [23.607, 24.002]]}, {"kind": "s", "id": "s0_4_0", "md": "That's frustrating. Could I get the phone number on the account?", "zh": "那确实很烦。能告诉我账户上登记的电话号码吗？", "sp": "B", "gap": false, "start": 24.384, "end": 29.616, "words": [[24.487, 24.776], [24.816, 25.513], [26.581, 26.687], [26.7, 26.792], [26.845, 27.016], [27.029, 27.147], [27.16, 27.45], [27.45, 27.766], [27.792, 27.937], [27.937, 28.029], [28.095, 28.542]]}, {"kind": "s", "id": "s0_5_0", "md": "Sure, it's nine one two three, four five six seven.", "zh": "好的，是九一二三，四五六七。", "sp": "A", "gap": false, "start": 29.616, "end": 33.648, "words": [[29.721, 30.09], [30.353, 30.484], [30.498, 30.813], [30.827, 31.05], [31.063, 31.287], [31.3, 31.748], [32.037, 32.248], [32.261, 32.603], [32.616, 32.892], [32.905, 33.248]]}, {"kind": "s", "id": "s0_6_0", "md": "Thanks, Mr Lee. Have you tried restarting the ==router==?", "zh": "谢谢，李先生。您试过重启路由器吗？", "sp": "B", "gap": false, "start": 33.648, "end": 38.952, "words": [[33.751, 34.159], [34.369, 34.724], [34.737, 34.908], [36.03, 36.187], [36.214, 36.372], [36.372, 36.753], [36.793, 37.345], [37.372, 37.477], [37.49, 37.845]]}, {"kind": "s", "id": "s0_7_0", "md": "Yes, __several times__. The light keeps blinking red, and I've already checked all the cables.", "zh": "试了好几次。指示灯一直闪红灯，线我也都检查过了。", "sp": "A", "gap": false, "start": 38.952, "end": 44.832, "words": [[39.057, 39.426], [39.61, 39.926], [39.939, 40.452], [40.899, 40.965], [40.978, 41.241], [41.255, 41.544], [41.557, 42.005], [42.018, 42.334], [42.663, 42.755], [42.768, 42.886], [42.899, 43.163], [43.176, 43.557], [43.623, 43.768], [43.781, 43.86], [43.873, 44.439]]}, {"kind": "s", "id": "s0_8_0", "md": "Okay, I can see an ==outage== in your area. Service should be ==restored== by six tonight.", "zh": "好的，我这边看到您所在区域有网络故障，今晚六点前应该能恢复。", "sp": "B", "gap": false, "start": 44.832, "end": 52.104, "words": [[44.935, 45.29], [45.711, 45.803], [45.895, 46.027], [46.106, 46.264], [46.343, 46.382], [46.435, 46.79], [46.829, 46.961], [47.0, 47.106], [47.158, 47.619], [48.661, 49.121], [49.187, 49.358], [49.358, 49.477], [49.529, 49.99], [50.029, 50.161], [50.24, 50.477], [50.529, 50.964]]}, {"kind": "s", "id": "s0_9_0", "md": "**And if it's still not working by then, what's the next step?**", "zh": "那如果到时候还是不行，下一步怎么办？", "sp": "A", "gap": false, "start": 52.104, "end": 55.464, "words": [[52.222, 52.288], [52.301, 52.407], [52.42, 52.538], [52.551, 52.828], [52.841, 53.051], [53.065, 53.367], [53.38, 53.565], [53.578, 53.814], [54.209, 54.354], [54.367, 54.446], [54.459, 54.683], [54.696, 55.065]]}, {"kind": "s", "id": "s0_10_0", "md": "Just call us back, and we'll send a technician __free of charge__.", "zh": "您再打给我们，我们会免费派技术员上门。", "sp": "B", "gap": false, "start": 55.464, "end": 60.24, "words": [[55.567, 55.803], [55.882, 56.106], [56.146, 56.251], [56.303, 56.593], [56.817, 57.132], [57.172, 57.369], [57.409, 57.659], [57.698, 57.751], [57.751, 58.251], [58.303, 58.553], [58.619, 58.659], [58.698, 59.093]]}, {"kind": "h", "id": "h1", "md": "2. A Billing Problem", "zh": "2. 账单出了问题", "start": 60.24, "end": 62.16, "words": [[60.345, 60.622], [60.898, 60.99], [61.003, 61.332], [61.345, 61.779]]}, {"kind": "s", "id": "s1_0_0", "md": "One more thing. I think I __was charged twice__ for this month's bill.", "zh": "还有一件事。我这个月的账单好像被扣了两次款。", "sp": "A", "gap": false, "start": 62.16, "end": 65.952, "words": [[62.278, 62.371], [62.384, 62.555], [62.568, 62.91], [63.357, 63.423], [63.436, 63.621], [63.634, 63.686], [63.699, 63.87], [63.884, 64.305], [64.318, 64.699], [64.713, 64.831], [64.844, 64.989], [65.002, 65.252], [65.265, 65.555]]}, {"kind": "s", "id": "s1_1_0", "md": "Let me have a look. Yes, I can see two ==payments== of fifty-nine dollars on the fifth.", "zh": "我看一下。是的，五号有两笔五十九块的扣款。", "sp": "B", "gap": false, "start": 65.952, "end": 73.056, "words": [[66.055, 66.252], [66.318, 66.436], [66.476, 66.66], [66.699, 66.739], [66.752, 67.055], [68.097, 68.399], [68.768, 68.886], [68.978, 69.11], [69.189, 69.373], [69.452, 69.636], [69.689, 70.136], [70.163, 70.281], [70.294, 70.965], [70.978, 71.307], [71.32, 71.478], [71.478, 71.584], [71.597, 71.978]]}, {"kind": "s", "id": "s1_2_0", "md": "Could you refund one of them, please?", "zh": "能把其中一笔退给我吗？", "sp": "A", "gap": false, "start": 73.056, "end": 75.096, "words": [[73.161, 73.28], [73.293, 73.398], [73.411, 73.753], [73.767, 73.898], [73.911, 73.977], [73.99, 74.161], [74.201, 74.714]]}, {"kind": "s", "id": "s1_3_0", "md": "I can't process the ==refund== myself, but I can raise a ==ticket== with our billing team.", "zh": "我这边没法直接退款，不过可以给账务部门提一个工单。", "sp": "B", "gap": false, "start": 75.096, "end": 81.12, "words": [[75.199, 75.225], [75.33, 75.633], [75.699, 76.106], [76.133, 76.238], [76.251, 76.712], [76.751, 77.251], [77.541, 77.883], [77.883, 77.949], [78.014, 78.133], [78.185, 78.462], [78.462, 78.567], [78.567, 78.909], [78.962, 79.093], [79.133, 79.37], [79.37, 79.685], [79.738, 80.08]]}, {"kind": "s", "id": "s1_4_0", "md": "Okay. How long will that take?", "zh": "好的。大概要多久？", "sp": "A", "gap": false, "start": 81.12, "end": 83.448, "words": [[81.225, 81.567], [82.002, 82.12], [82.133, 82.37], [82.383, 82.502], [82.515, 82.699], [82.712, 83.067]]}, {"kind": "s", "id": "s1_5_0", "md": "Usually five to seven working days.", "zh": "一般五到七个工作日。", "sp": "B", "gap": false, "start": 83.448, "end": 87.0, "words": [[83.551, 84.011], [84.077, 84.459], [84.472, 84.616], [84.616, 84.919], [84.959, 85.38], [85.432, 85.801]]}, {"kind": "s", "id": "s1_6_0", "md": "**That's fine. Could I get a reference number, so I don't have to explain everything again?**", "zh": "可以。能给我一个工单号吗？这样我就不用从头再讲一遍了。", "sp": "A", "gap": false, "start": 87.0, "end": 91.896, "words": [[87.118, 87.289], [87.303, 87.697], [88.132, 88.224], [88.237, 88.289], [88.303, 88.408], [88.421, 88.46], [88.474, 88.895], [88.908, 89.237], [89.632, 89.763], [89.776, 89.816], [89.829, 89.987], [90.0, 90.184], [90.197, 90.303], [90.316, 90.776], [90.789, 91.171], [91.184, 91.513]]}, {"kind": "s", "id": "s1_7_0", "md": "Of course. It's C S, four eight two, seven one nine.", "zh": "当然。工单号是 C S，四八二，七一九。", "sp": "B", "gap": false, "start": 91.896, "end": 98.16, "words": [[91.999, 92.104], [92.196, 92.525], [93.699, 93.856], [93.87, 94.067], [94.159, 94.383], [94.659, 95.067], [95.107, 95.37], [95.396, 95.646], [95.909, 96.435], [96.475, 96.725], [96.751, 97.146]]}, {"kind": "s", "id": "s1_8_0", "md": "Let me __read that back__. C S, four eight two, seven one nine?", "zh": "我复述一下：C S，四八二，七一九，对吗？", "sp": "A", "gap": false, "start": 98.16, "end": 102.912, "words": [[98.252, 98.344], [98.357, 98.463], [98.476, 98.66], [98.673, 98.857], [98.871, 99.265], [99.699, 99.936], [99.949, 100.357], [100.581, 100.831], [100.844, 101.042], [101.055, 101.397], [101.621, 101.949], [101.963, 102.173], [102.186, 102.515]]}, {"kind": "s", "id": "s1_9_0", "md": "That's right. You'll also get an email confirmation within the hour.", "zh": "没错。一小时内您还会收到确认邮件。", "sp": "B", "gap": false, "start": 102.912, "end": 109.08, "words": [[103.015, 103.317], [103.383, 103.738], [104.833, 105.057], [105.109, 105.517], [105.557, 105.728], [105.728, 105.82], [105.859, 106.267], [106.32, 107.07], [107.149, 107.478], [107.478, 107.583], [107.662, 107.965]]}, {"kind": "s", "id": "s1_10_0", "md": "Thanks. Also, since we had no internet for three days, is there any ==compensation==?", "zh": "谢谢。另外，我们家断网三天了，有没有什么补偿？", "sp": "A", "gap": false, "start": 109.08, "end": 114.984, "words": [[109.212, 109.619], [110.054, 110.488], [110.751, 110.962], [110.975, 111.093], [111.106, 111.304], [111.317, 111.593], [111.606, 112.014], [112.027, 112.185], [112.198, 112.475], [112.488, 112.962], [113.369, 113.448], [113.462, 113.593], [113.606, 113.751], [113.764, 114.58]]}, {"kind": "s", "id": "s1_11_0", "md": "Fair question. I can apply a ten-dollar ==credit== to your next bill.", "zh": "这个问得合理。我可以在您下期账单里抵扣十块钱。", "sp": "B", "gap": false, "start": 114.984, "end": 120.744, "words": [[115.087, 115.271], [115.35, 115.902], [117.01, 117.037], [117.155, 117.287], [117.326, 117.642], [117.747, 117.773], [117.787, 118.326], [118.352, 118.708], [118.734, 118.866], [118.866, 119.023], [119.063, 119.339], [119.418, 119.642]]}, {"kind": "s", "id": "s1_12_0", "md": "I appreciate that. Thanks for your help, Natasha.", "zh": "谢谢，感谢你的帮助，Natasha。", "sp": "A", "gap": false, "start": 120.744, "end": 124.128, "words": [[120.849, 120.941], [120.955, 121.494], [121.507, 121.81], [122.27, 122.441], [122.455, 122.56], [122.573, 122.691], [122.705, 122.994], [123.191, 123.731]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

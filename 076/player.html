@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Making the Case for Technical Debt · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "076", "title": "Making the Case for Technical Debt", "meta": "B2 · 约 270 词 · 场景：资源争取", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Nobody Funds Clean Code", "heading_zh": "1. 没人为干净代码买单", "rows": [[{"id": "s0_0_0", "md": "Engineers often ask for time to fix technical debt and get turned down.", "text": "Engineers often ask for time to fix technical debt and get turned down.", "zh": "工程师经常申请时间还技术债，然后被驳回。", "sp": null}, {"id": "s0_0_1", "md": "The request usually sounds like this: \"The code is a mess, and we need a sprint to clean it up.\"", "text": "The request usually sounds like this: \"The code is a mess, and we need a sprint to clean it up.\"", "zh": "申请通常是这么说的：「代码太乱了，我们需要一个迭代来清理。」", "sp": null}, {"id": "s0_0_2", "md": "From the product side, that sounds like a ==detour== with nothing to show at the end.", "text": "From the product side, that sounds like a detour with nothing to show at the end.", "zh": "在产品侧听来，这就是绕了个弯路，最后什么也拿不出来。", "sp": null}], [{"id": "s0_1_0", "md": "The problem is not that leaders don't care about quality.", "text": "The problem is not that leaders don't care about quality.", "zh": "问题不在于领导不在乎质量。", "sp": null}, {"id": "s0_1_1", "md": "It is that \"messy code\" is an engineering feeling, not a business ==consequence==.", "text": "It is that \"messy code\" is an engineering feeling, not a business consequence.", "zh": "而在于「代码很乱」是工程师的感受，而不是业务上的后果。", "sp": null}, {"id": "s0_1_2", "md": "**Nobody funds clean code; people fund faster delivery and fewer outages.**", "text": "Nobody funds clean code; people fund faster delivery and fewer outages.", "zh": "没人为干净代码买单；大家买单的是更快的交付和更少的故障。", "sp": null}], [{"id": "s0_2_0", "md": "Debt is a useful ==metaphor== precisely because it has interest.", "text": "Debt is a useful metaphor precisely because it has interest.", "zh": "「债」之所以是个好比喻，恰恰因为它有利息。", "sp": null}, {"id": "s0_2_1", "md": "Every feature built on top of the messy module costs a little extra, and the extra keeps growing.", "text": "Every feature built on top of the messy module costs a little extra, and the extra keeps growing.", "zh": "每个建在那坨乱代码之上的功能都要多花一点成本，而且这笔额外成本还在不断增长。", "sp": null}, {"id": "s0_2_2", "md": "If you can show that interest in numbers, you are no longer asking for a favor; you are proposing a good deal.", "text": "If you can show that interest in numbers, you are no longer asking for a favor; you are proposing a good deal.", "zh": "如果你能用数字把这笔利息摆出来，你就不是在求人帮忙了；你是在提一笔划算的买卖。", "sp": null}]]}, {"heading": "2. Show the Interest Payments", "heading_zh": "2. 把利息亮出来", "rows": [[{"id": "s1_0_0", "md": "So make the interest visible.", "text": "So make the interest visible.", "zh": "所以，把利息亮出来。", "sp": null}, {"id": "s1_0_1", "md": "Count how many of last quarter's incidents started in the old billing module.", "text": "Count how many of last quarter's incidents started in the old billing module.", "zh": "数一数上个季度的故障里有多少是从老计费模块开始的。", "sp": null}, {"id": "s1_0_2", "md": "Show that changes there take three times longer to review and ship than anywhere else in the codebase.", "text": "Show that changes there take three times longer to review and ship than anywhere else in the codebase.", "zh": "说明那里的改动从 review 到上线，要比代码库其他地方多花三倍时间。", "sp": null}, {"id": "s1_0_3", "md": "Even a rough count from the incident tracker is far more convincing than a general complaint.", "text": "Even a rough count from the incident tracker is far more convincing than a general complaint.", "zh": "哪怕是从故障系统里粗略数一下，也比泛泛地抱怨有说服力得多。", "sp": null}], [{"id": "s1_1_0", "md": "Then propose a ==bounded== investment, not an open-ended cleanup.", "text": "Then propose a bounded investment, not an open-ended cleanup.", "zh": "然后提一个有边界的投入，而不是没完没了的大扫除。", "sp": null}, {"id": "s1_1_1", "md": "\"Give us four weeks to replace the billing state logic, and we expect billing changes to ship twice as fast.\"", "text": "\"Give us four weeks to replace the billing state logic, and we expect billing changes to ship twice as fast.\"", "zh": "「给我们四周时间重写计费状态逻辑，我们预计计费相关的改动上线速度能翻倍。」", "sp": null}, {"id": "s1_1_2", "md": "A clear ==payoff== makes the request comparable to a feature, which is exactly what you want.", "text": "A clear payoff makes the request comparable to a feature, which is exactly what you want.", "zh": "明确的回报让这个申请可以跟一个功能放在一起比较，这正是你想要的。", "sp": null}], [{"id": "s1_2_0", "md": "**When debt work competes on the same terms as features, it starts to win.**", "text": "When debt work competes on the same terms as features, it starts to win.", "zh": "当还债的活儿跟功能在同样的规则下竞争，它就开始能赢了。", "sp": null}, {"id": "s1_2_1", "md": "And if leaders still say no, you have ==documented== the risk, which matters when the next incident __comes around__.", "text": "And if leaders still say no, you have documented the risk, which matters when the next incident comes around.", "zh": "而且就算领导还是说不，你也已经把风险记录在案了，等下一次故障来的时候，这就很重要。", "sp": null}, {"id": "s1_2_2", "md": "Either way, you have __changed the conversation__ from taste to tradeoffs.", "text": "Either way, you have changed the conversation from taste to tradeoffs.", "zh": "不管怎样，你都已经把讨论从个人喜好变成了利弊权衡。", "sp": null}]]}], "gist": [{"q": "为什么“代码太乱需要一个迭代清理”这种请求常被拒？", "a": "在产品侧看来像是没有产出的绕路；“代码乱”是工程感受，不是业务后果。"}, {"q": "作者建议用什么证据说明技术债的“利息”？", "a": "统计上季度多少故障出自旧模块、该模块改动的评审和上线时间是其他地方的三倍等，粗略数字也比抱怨有说服力。"}, {"q": "提方案时要注意什么？被拒了怎么办？", "a": "提有边界的投入和明确回报，让它能和功能同台比较；即使被拒，也已把风险记录在案。"}], "dictation": [{"id": "s0_1_2", "text": "Nobody funds clean code; people fund faster delivery and fewer outages."}, {"id": "s0_2_1", "text": "Every feature built on top of the messy module costs a little extra, and the extra keeps growing."}, {"id": "s1_1_0", "text": "Then propose a bounded investment, not an open-ended cleanup."}, {"id": "s1_2_0", "text": "When debt work competes on the same terms as features, it starts to win."}], "shadow": {"text": "So make the interest visible. Count how many of last quarter's incidents started in the old billing module. Show that changes there take three times longer to review and ship than anywhere else in the codebase.", "marked": "So make the <b>interest</b> visible. //<br><b>Count</b> how many of last quarter's incidents / started in the <b>old</b> billing module. //<br>Show that changes there / take <b>three</b> times longer / to review and ship / than <b>anywhere</b> else in the codebase. //"}, "prompts": [{"q": "季度规划会上，你想为重构老旧的推送模块争取四周。用 30 秒向产品负责人说明利息和回报。", "ref": "I'd like to ask for four weeks on the notification module, and here's why. Five of our last eight incidents started there, and any change to it takes about three times longer to ship than elsewhere. If we replace the scheduling logic, we expect those changes to take days instead of weeks, and fewer late-night pages. It's a bounded piece of work with a clear payoff.", "ref_zh": "我想申请四周时间处理通知模块，理由是这样的。最近八次故障里有五次是从那里开始的，而且那边的任何改动，上线时间都比其他地方多三倍左右。如果我们重写调度逻辑，预计这类改动就能从几周缩到几天，半夜被叫起来的次数也会更少。这是一块有边界的工作，回报也很明确。", "id": "ref0"}, {"q": "产品负责人听完还是说“这季度功能更重要”。用 30 秒得体地接受，同时把风险记录下来。", "ref": "That's fair, and I understand the pressure on features this quarter. I'll accept that call. What I'd like to do is write a short note on the risk, including the incident numbers and what we expect if nothing changes, and add it to the planning doc. That way, if things get worse, we can come back to it quickly with the data already in front of us.", "ref_zh": "有道理，我也理解这个季度做功能的压力。这个决定我接受。我想做的是写一份简短的风险说明，包括故障数据，以及如果什么都不改我们预计会怎样，然后附到规划文档里。这样如果情况变糟，我们可以带着现成的数据很快再把它拿出来讨论。", "id": "ref1"}], "words": [{"w": "detour", "ipa": "/ˈdiːtʊr/", "zh": "绕路、弯路", "ex": "Rewriting the build system was a two-week detour from the roadmap.", "id": "w0"}, {"w": "consequence", "ipa": "/ˈkɑːnsəkwens/", "zh": "后果", "ex": "The consequence of skipping tests was three hotfixes in one week.", "id": "w1"}, {"w": "metaphor", "ipa": "/ˈmetəfɔːr/", "zh": "比喻、隐喻", "ex": "Technical debt is a metaphor that most business leaders understand.", "id": "w2"}, {"w": "bounded", "ipa": "/ˈbaʊndɪd/", "zh": "有边界的、有限度的", "ex": "Let's keep the refactor bounded to the payment service.", "id": "w3"}, {"w": "payoff", "ipa": "/ˈpeɪˌɔːf/", "zh": "回报、收益", "ex": "The payoff from the new cache was a forty percent drop in latency.", "id": "w4"}, {"w": "document (v.)", "ipa": "/ˈdɑːkjəˌment/", "zh": "记录在案、书面记录", "ex": "Please document the decision and the reasons in the design doc.", "tts_w": "document", "id": "w5"}, {"w": "interest", "ipa": "/ˈɪntrəst/", "zh": "利息（技术债的持续成本）", "ex": "We're paying interest on that shortcut every time we touch the module.", "id": "w6"}, {"w": "open-ended", "ipa": "/ˌoʊpən ˈendɪd/", "zh": "无限期的、没有边界的", "ex": "Leadership won't approve an open-ended cleanup project.", "id": "w7"}, {"w": "comparable", "ipa": "/ˈkɑːmpərəbəl/", "zh": "可比较的", "ex": "Put both options in a comparable format so we can choose.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Nobody Funds Clean Code", "zh": "1. 没人为干净代码买单", "start": 0.0, "end": 2.4, "words": [[0.118, 0.342], [0.671, 1.0], [1.013, 1.329], [1.342, 1.645], [1.658, 2.013]]}, {"kind": "s", "id": "s0_0_0", "md": "Engineers often ask for time to fix technical debt and get turned down.", "zh": "工程师经常申请时间还技术债，然后被驳回。", "sp": null, "gap": false, "start": 2.4, "end": 7.104, "words": [[2.505, 3.032], [3.045, 3.439], [3.453, 3.729], [3.742, 3.887], [3.9, 4.229], [4.242, 4.321], [4.334, 4.716], [4.729, 5.203], [5.216, 5.532], [5.821, 5.887], [5.9, 6.084], [6.097, 6.361], [6.374, 6.716]]}, {"kind": "s", "id": "s0_0_1", "md": "The request usually sounds like this: \"The code is a mess, and we need a sprint to clean it up.\"", "zh": "申请通常是这么说的：「代码太乱了，我们需要一个迭代来清理。」", "sp": null, "gap": false, "start": 7.104, "end": 13.176, "words": [[7.209, 7.288], [7.301, 7.801], [7.815, 8.196], [8.209, 8.565], [8.578, 8.749], [8.762, 9.157], [9.446, 9.565], [9.578, 10.012], [10.025, 10.13], [10.143, 10.183], [10.196, 10.722], [11.012, 11.104], [11.117, 11.222], [11.236, 11.407], [11.42, 11.459], [11.472, 11.92], [11.933, 12.025], [12.038, 12.341], [12.354, 12.433], [12.446, 12.709]]}, {"kind": "s", "id": "s0_0_2", "md": "From the product side, that sounds like a ==detour== with nothing to show at the end.", "zh": "在产品侧听来，这就是绕了个弯路，最后什么也拿不出来。", "sp": null, "gap": false, "start": 13.176, "end": 17.904, "words": [[13.308, 13.413], [13.426, 13.505], [13.518, 13.9], [13.913, 14.242], [14.637, 14.794], [14.808, 15.084], [15.097, 15.229], [15.242, 15.334], [15.347, 15.9], [15.913, 16.071], [16.084, 16.492], [16.505, 16.558], [16.571, 16.86], [16.873, 16.965], [16.979, 17.058], [17.071, 17.518]]}, {"kind": "s", "id": "s0_1_0", "md": "The problem is not that leaders don't care about quality.", "zh": "问题不在于领导不在乎质量。", "sp": null, "gap": true, "start": 17.904, "end": 21.336, "words": [[18.022, 18.075], [18.088, 18.496], [18.601, 18.707], [18.72, 18.957], [18.97, 19.193], [19.207, 19.614], [19.628, 19.917], [19.93, 20.154], [20.167, 20.417], [20.43, 20.957]]}, {"kind": "s", "id": "s0_1_1", "md": "It is that \"messy code\" is an engineering feeling, not a business ==consequence==.", "zh": "而在于「代码很乱」是工程师的感受，而不是业务上的后果。", "sp": null, "gap": false, "start": 21.336, "end": 26.736, "words": [[21.441, 21.52], [21.533, 21.652], [21.665, 21.941], [21.994, 22.481], [22.494, 22.915], [23.191, 23.31], [23.323, 23.454], [23.468, 24.086], [24.099, 24.639], [24.954, 25.086], [25.099, 25.152], [25.165, 25.533], [25.547, 26.349]]}, {"kind": "s", "id": "s0_1_2", "md": "**Nobody funds clean code; people fund faster delivery and fewer outages.**", "zh": "没人为干净代码买单；大家买单的是更快的交付和更少的故障。", "sp": null, "gap": false, "start": 26.736, "end": 32.184, "words": [[26.841, 27.249], [27.262, 27.644], [27.657, 27.986], [27.999, 28.368], [28.749, 29.078], [29.091, 29.447], [29.46, 29.946], [29.96, 30.525], [30.736, 30.815], [30.828, 31.197], [31.21, 31.802]]}, {"kind": "s", "id": "s0_2_0", "md": "Debt is a useful ==metaphor== precisely because it has interest.", "zh": "「债」之所以是个好比喻，恰恰因为它有利息。", "sp": null, "gap": true, "start": 32.184, "end": 36.0, "words": [[32.302, 32.513], [32.526, 32.658], [32.671, 32.71], [32.723, 33.223], [33.237, 33.671], [33.684, 34.355], [34.368, 34.684], [34.697, 34.763], [34.776, 35.0], [35.013, 35.605]]}, {"kind": "s", "id": "s0_2_1", "md": "Every feature built on top of the messy module costs a little extra, and the extra keeps growing.", "zh": "每个建在那坨乱代码之上的功能都要多花一点成本，而且这笔额外成本还在不断增长。", "sp": null, "gap": false, "start": 36.0, "end": 42.216, "words": [[36.105, 36.355], [36.368, 36.737], [36.75, 37.0], [37.013, 37.158], [37.171, 37.487], [37.5, 37.592], [37.605, 37.671], [37.684, 38.158], [38.171, 38.724], [38.737, 39.21], [39.263, 39.329], [39.342, 39.632], [39.645, 40.171], [40.5, 40.592], [40.605, 40.697], [40.711, 41.092], [41.105, 41.408], [41.421, 41.829]]}, {"kind": "s", "id": "s0_2_2", "md": "If you can show that interest in numbers, you are no longer asking for a favor; you are proposing a good deal.", "zh": "如果你能用数字把这笔利息摆出来，你就不是在求人帮忙了；你是在提一笔划算的买卖。", "sp": null, "gap": false, "start": 42.216, "end": 49.104, "words": [[42.321, 42.427], [42.44, 42.545], [42.558, 42.69], [42.703, 42.979], [42.992, 43.163], [43.177, 43.677], [43.69, 43.795], [43.808, 44.374], [44.598, 44.69], [44.703, 44.795], [44.808, 45.019], [45.032, 45.505], [45.519, 45.913], [45.927, 46.098], [46.111, 46.15], [46.163, 46.598], [47.084, 47.15], [47.163, 47.269], [47.282, 47.9], [47.966, 48.032], [48.045, 48.295], [48.308, 48.703]]}, {"kind": "h", "id": "h1", "md": "2. Show the Interest Payments", "zh": "2. 把利息亮出来", "start": 49.104, "end": 51.6, "words": [[49.222, 49.472], [49.815, 50.051], [50.065, 50.183], [50.196, 50.604], [50.617, 51.209]]}, {"kind": "s", "id": "s1_0_0", "md": "So make the interest visible.", "zh": "所以，把利息亮出来。", "sp": null, "gap": false, "start": 51.6, "end": 53.544, "words": [[51.718, 51.837], [51.85, 52.074], [52.087, 52.218], [52.232, 52.666], [52.679, 53.166]]}, {"kind": "s", "id": "s1_0_1", "md": "Count how many of last quarter's incidents started in the old billing module.", "zh": "数一数上个季度的故障里有多少是从老计费模块开始的。", "sp": null, "gap": false, "start": 53.544, "end": 58.176, "words": [[53.649, 53.899], [53.912, 54.097], [54.11, 54.426], [54.439, 54.544], [54.557, 54.899], [54.912, 55.281], [55.294, 55.781], [55.794, 56.228], [56.241, 56.36], [56.373, 56.478], [56.57, 56.886], [56.899, 57.215], [57.228, 57.781]]}, {"kind": "s", "id": "s1_0_2", "md": "Show that changes there take three times longer to review and ship than anywhere else in the codebase.", "zh": "说明那里的改动从 review 到上线，要比代码库其他地方多花三倍时间。", "sp": null, "gap": false, "start": 58.176, "end": 64.584, "words": [[58.281, 58.492], [58.505, 58.663], [58.676, 59.163], [59.176, 59.321], [59.334, 59.65], [59.729, 60.044], [60.058, 60.413], [60.426, 60.834], [60.847, 60.965], [60.979, 61.531], [61.637, 61.755], [61.768, 62.176], [62.255, 62.465], [62.61, 63.031], [63.044, 63.308], [63.321, 63.387], [63.4, 63.479], [63.492, 64.189]]}, {"kind": "s", "id": "s1_0_3", "md": "Even a rough count from the incident tracker is far more convincing than a general complaint.", "zh": "哪怕是从故障系统里粗略数一下，也比泛泛地抱怨有说服力得多。", "sp": null, "gap": false, "start": 64.584, "end": 69.984, "words": [[64.689, 64.887], [64.9, 64.966], [64.979, 65.347], [65.36, 65.676], [65.689, 65.821], [65.834, 65.9], [65.913, 66.347], [66.36, 66.873], [66.887, 67.018], [67.031, 67.374], [67.387, 67.61], [67.623, 68.308], [68.426, 68.545], [68.558, 68.61], [68.623, 69.005], [69.018, 69.584]]}, {"kind": "s", "id": "s1_1_0", "md": "Then propose a ==bounded== investment, not an open-ended cleanup.", "zh": "然后提一个有边界的投入，而不是没完没了的大扫除。", "sp": null, "gap": true, "start": 69.984, "end": 74.208, "words": [[70.089, 70.26], [70.273, 70.787], [70.8, 70.879], [70.892, 71.366], [71.379, 71.997], [72.326, 72.537], [72.55, 72.681], [72.813, 73.326], [73.339, 73.826]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Give us four weeks to replace the billing state logic, and we expect billing changes to ship twice as fast.\"", "zh": "「给我们四周时间重写计费状态逻辑，我们预计计费相关的改动上线速度能翻倍。」", "sp": null, "gap": false, "start": 74.208, "end": 81.144, "words": [[74.392, 74.432], [74.511, 74.655], [74.669, 74.892], [74.905, 75.169], [75.182, 75.287], [75.3, 75.813], [75.826, 75.945], [75.958, 76.261], [76.274, 76.576], [76.59, 77.024], [77.34, 77.419], [77.432, 77.537], [77.55, 78.011], [78.024, 78.353], [78.366, 78.853], [78.866, 78.971], [78.984, 79.432], [79.537, 79.945], [79.958, 80.063], [80.076, 80.642]]}, {"kind": "s", "id": "s1_1_2", "md": "A clear ==payoff== makes the request comparable to a feature, which is exactly what you want.", "zh": "明确的回报让这个申请可以跟一个功能放在一起比较，这正是你想要的。", "sp": null, "gap": false, "start": 81.144, "end": 86.664, "words": [[81.249, 81.328], [81.341, 81.644], [81.657, 82.183], [82.197, 82.486], [82.499, 82.591], [82.605, 83.105], [83.118, 83.697], [83.71, 83.855], [83.868, 83.933], [83.947, 84.512], [84.828, 84.973], [84.986, 85.078], [85.091, 85.644], [85.657, 85.802], [85.815, 85.92], [85.933, 86.276]]}, {"kind": "s", "id": "s1_2_0", "md": "**When debt work competes on the same terms as features, it starts to win.**", "zh": "当还债的活儿跟功能在同样的规则下竞争，它就开始能赢了。", "sp": null, "gap": true, "start": 86.664, "end": 91.152, "words": [[86.782, 86.914], [86.927, 87.177], [87.19, 87.414], [87.427, 87.98], [87.993, 88.072], [88.085, 88.164], [88.177, 88.532], [88.546, 88.914], [88.927, 89.046], [89.059, 89.677], [89.967, 90.032], [90.046, 90.348], [90.361, 90.44], [90.453, 90.769]]}, {"kind": "s", "id": "s1_2_1", "md": "And if leaders still say no, you have ==documented== the risk, which matters when the next incident __comes around__.", "zh": "而且就算领导还是说不，你也已经把风险记录在案了，等下一次故障来的时候，这就很重要。", "sp": null, "gap": false, "start": 91.152, "end": 97.656, "words": [[91.257, 91.362], [91.376, 91.534], [91.547, 91.968], [91.981, 92.257], [92.27, 92.534], [92.547, 92.849], [93.27, 93.336], [93.349, 93.494], [93.507, 94.112], [94.126, 94.205], [94.218, 94.652], [94.889, 95.086], [95.099, 95.507], [95.52, 95.639], [95.652, 95.731], [95.744, 96.113], [96.126, 96.534], [96.547, 96.784], [96.797, 97.27]]}, {"kind": "s", "id": "s1_2_2", "md": "Either way, you have __changed the conversation__ from taste to tradeoffs.", "zh": "不管怎样，你都已经把讨论从个人喜好变成了利弊权衡。", "sp": null, "gap": false, "start": 97.656, "end": 101.832, "words": [[97.748, 97.985], [97.998, 98.274], [98.695, 98.761], [98.774, 98.893], [98.906, 99.261], [99.274, 99.353], [99.367, 100.117], [100.13, 100.314], [100.327, 100.63], [100.643, 100.709], [100.722, 101.445]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+{
+  "id": "128",
+  "type": "dialogue",
+  "title": "Setting Up Internet and Utilities",
+  "meta": "B2 · 约 310 词 · 场景：开通宽带与安装爽约",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Customer Service", "name_zh": "客服", "voice": "en-GB-RyanNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Choosing a Plan",
+      "heading_zh": "1. 选套餐",
+      "lines": [
+        {"sp": "B", "en": "Thanks for calling. My name's Oliver. How can I help you today?", "zh": "感谢来电，我是奥利弗。今天有什么可以帮您？"},
+        {"sp": "A", "en": "Hi, I've just moved into a new flat, and I'd like to __sign up for__ home ==broadband==.", "zh": "你好，我刚搬进新房子，想办家庭宽带。"},
+        {"sp": "B", "en": "Sure. We have a one gig plan at forty-five dollars a month, or two gig at fifty-five.", "zh": "好的。我们有千兆套餐每月四十五块，两千兆每月五十五块。"},
+        {"sp": "A", "en": "**What's the difference in practice? We mostly stream videos, and I work from home sometimes.**", "zh": "实际用起来有什么区别？我们主要看视频，我偶尔在家办公。"},
+        {"sp": "B", "en": "Honestly, one gig is plenty for a family. Two gig only matters if lots of devices are downloading at once.", "zh": "说实话，一个家庭千兆完全够用。只有很多设备同时下载时，两千兆才有意义。"},
+        {"sp": "A", "en": "Okay, one gig then. How long is the ==contract==, and is there an ==installation fee==?", "zh": "好，那就千兆。合约多长？有安装费吗？"},
+        {"sp": "B", "en": "It's a twenty-four month contract. Installation is free, and the ==router== is included.", "zh": "合约二十四个月。安装免费，送路由器。"},
+        {"sp": "A", "en": "What happens if I need to ==cancel== early? We might move overseas next year.", "zh": "如果要提前解约怎么办？我们明年可能搬去国外。"},
+        {"sp": "B", "en": "There's an early termination charge, but it goes down every month. I'll email you the details.", "zh": "会有提前解约费，但每个月递减。我把详情发到您邮箱。"},
+        {"sp": "A", "en": "**That's fine. When's the earliest you can send someone to install it?**", "zh": "可以。最早什么时候能派人来安装？"},
+        {"sp": "B", "en": "This Saturday, between nine and one. Someone will need to be home.", "zh": "这周六，九点到一点之间。家里需要有人。"}
+      ]
+    },
+    {
+      "heading": "2. The Technician Doesn't Show Up",
+      "heading_zh": "2. 师傅没来",
+      "lines": [
+        {"sp": "A", "en": "Hi, I had an installation booked for this morning, nine to one. It's now half past one, and __nobody's turned up__.", "zh": "你好，我约了今天上午九点到一点安装。现在已经一点半了，一个人都没来。"},
+        {"sp": "B", "en": "I'm really sorry about that. Let me check. It says the technician couldn't get ==access== to the building.", "zh": "非常抱歉。我查一下。记录上说师傅进不了楼。"},
+        {"sp": "A", "en": "That's strange. I was home all morning, and nobody called me.", "zh": "奇怪了。我整个上午都在家，也没人给我打电话。"},
+        {"sp": "B", "en": "He may have been stopped by the ==security guard== downstairs. I do apologise.", "zh": "他可能被楼下保安拦住了。真的很抱歉。"},
+        {"sp": "A", "en": "**I took the morning off for this. What can you do to make it right?**", "zh": "我为这事请了一上午假。你们打算怎么补救？"},
+        {"sp": "B", "en": "I can rebook you for the first slot tomorrow morning and ==waive== your first month's fee.", "zh": "我可以帮您改约到明天上午第一个时段，并免掉第一个月的月费。"},
+        {"sp": "A", "en": "Tomorrow works. Could you make sure he calls me when he arrives, so I can __let him in__?", "zh": "明天可以。能确保他到了给我打电话吗？我好下去接他进来。"},
+        {"sp": "B", "en": "Absolutely. I'll add your mobile number to the job, and register him with security in advance.", "zh": "没问题。我会把您的手机号加到工单上，并提前帮他在保安处登记。"},
+        {"sp": "A", "en": "Thanks. And could you __put that in writing__? An email would be fine.", "zh": "谢谢。这些能给我书面确认吗？发邮件就行。"},
+        {"sp": "B", "en": "Of course. You'll get a ==confirmation== email within the hour.", "zh": "当然。一小时内您会收到确认邮件。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」最后选了什么套餐？合约条件是什么？", "a": "千兆宽带，每月四十五块，合约二十四个月，免安装费、送路由器；提前解约有逐月递减的违约费。"},
+    {"q": "安装那天出了什么问题？客服怎么解释？", "a": "师傅到一点半都没来；客服说记录显示师傅进不了楼，可能被楼下保安拦了。"},
+    {"q": "客服给出了哪些补救措施？", "a": "改约到明天上午第一个时段，免第一个月月费，把手机号加到工单并提前在保安处登记，再发一封确认邮件。"}
+  ],
+  "dictation": [
+    "What's the difference in practice? We mostly stream videos, and I work from home sometimes.",
+    "What happens if I need to cancel early? We might move overseas next year.",
+    "I took the morning off for this. What can you do to make it right?",
+    "Thanks. And could you put that in writing? An email would be fine."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Hi, I had an installation booked for this morning, nine to one. It's now half past one, and nobody's turned up.",
+    "marked": "Hi, / I had an <b>installation</b> booked / for this <b>morning</b>, / <b>nine</b> to <b>one</b>. //<br>It's now <b>half past one</b>, / and <b>nobody's</b> turned up. //"
+  },
+  "prompts": [
+    {
+      "q": "你打电话给电力公司开户。说明搬家日期、地址类型，问需要什么材料、押金多少、多久能开通。",
+      "ref": "Hi, I'm moving into a condo next Monday, and I'd like to open a new electricity and water account. What documents do I need? I have my passport, employment pass, and the tenancy agreement. Is there a deposit for foreigners, and roughly how much is it? And will the power be on by the time I move in?",
+      "ref_zh": "你好，我下周一搬进一个公寓，想开新的水电账户。需要什么材料？我有护照、工作准证和租房合同。外国人需要交押金吗，大概多少？我入住的时候电能通上吗？"
+    },
+    {
+      "q": "宽带装好后晚上经常断网。打电话投诉，说明情况，并要求上门检查或换路由器。",
+      "ref": "Hi, my broadband was installed last week, but it keeps dropping in the evenings, usually between eight and eleven. I've already restarted the router several times, and it doesn't help. I work from home, so this is a real problem. Could you send a technician to check the line, or replace the router?",
+      "ref_zh": "你好，我的宽带上周刚装好，但晚上老是断，一般在八点到十一点之间。我已经重启路由器好几次了，没用。我在家办公，这真的很影响。能派师傅来检查线路，或者换个路由器吗？"
+    }
+  ],
+  "words": [
+    {"w": "broadband", "ipa": "/ˈbrɔːdbænd/", "zh": "宽带", "ex": "Our broadband is much faster since we upgraded."},
+    {"w": "contract", "ipa": "/ˈkɑːntrækt/", "zh": "合约，合同", "ex": "My phone contract ends in June."},
+    {"w": "installation fee", "ipa": "/ˌɪnstəˈleɪʃən fiː/", "zh": "安装费", "ex": "They waived the installation fee for new customers."},
+    {"w": "router", "ipa": "/ˈraʊtər/", "zh": "路由器", "ex": "Try moving the router to the middle of the flat."},
+    {"w": "cancel", "ipa": "/ˈkænsəl/", "zh": "取消，解约", "ex": "I'd like to cancel my gym membership."},
+    {"w": "access", "ipa": "/ˈækses/", "zh": "进入（的权限）", "ex": "Visitors need a card to get access to the lift."},
+    {"w": "security guard", "ipa": "/sɪˈkjʊrəti ɡɑːrd/", "zh": "保安", "ex": "Leave the parcel with the security guard at the gate."},
+    {"w": "waive", "ipa": "/weɪv/", "zh": "免除（费用）", "ex": "The bank agreed to waive the late fee this time."},
+    {"w": "confirmation", "ipa": "/ˌkɑːnfərˈmeɪʃən/", "zh": "确认（函）", "ex": "I haven't received a confirmation email yet."},
+    {"w": "sign up for", "ipa": "/saɪn ʌp fɔːr/", "zh": "报名，办理开通", "ex": "We signed up for swimming classes for our son."}
+  ]
+}

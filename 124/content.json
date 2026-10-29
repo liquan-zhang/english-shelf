@@ -1,0 +1,86 @@
+{
+  "id": "124",
+  "type": "dialogue",
+  "title": "Taking Your Child to the Doctor",
+  "meta": "B2 · 约 300 词 · 场景：带孩子看发烧与用药",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Doctor", "name_zh": "医生", "voice": "en-IN-PrabhatNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Describing the Symptoms",
+      "heading_zh": "1. 描述症状",
+      "lines": [
+        {"sp": "B", "en": "Hello, come in, have a seat. So what seems to be the problem with this little one?", "zh": "你好，请进，坐吧。这个小家伙哪里不舒服？"},
+        {"sp": "A", "en": "**She's had a fever since last night, and she's barely eating anything.**", "zh": "她从昨晚开始发烧，几乎什么都不吃。"},
+        {"sp": "B", "en": "How high did her ==temperature== go? Did you give her anything for it?", "zh": "体温最高烧到多少？给她吃过什么药吗？"},
+        {"sp": "A", "en": "It __went up to__ thirty nine point two. We gave her children's paracetamol at around two in the morning.", "zh": "最高到三十九度二。凌晨两点左右给她吃了儿童退烧药。"},
+        {"sp": "B", "en": "Okay. Any cough, ==vomiting==, or ==diarrhoea==?", "zh": "好。有咳嗽、呕吐或者拉肚子吗？"},
+        {"sp": "A", "en": "A bit of a cough, and she threw up once this morning. She also keeps __pulling at__ her left ear.", "zh": "有点咳嗽，今天早上吐了一次。她还一直拽自己的左耳朵。"},
+        {"sp": "B", "en": "Let me have a look. Yes, her left ear is red and swollen. It's an ear ==infection==.", "zh": "我看一下。对，她左耳又红又肿，是耳朵感染。"},
+        {"sp": "A", "en": "Is it serious? She goes to childcare. Should I keep her at home?", "zh": "严重吗？她在上托儿所。要让她在家待着吗？"},
+        {"sp": "B", "en": "It's very common at this age. Keep her home until she's been fever free for a full day.", "zh": "这个年纪很常见。让她在家待着，等退烧满一整天再去。"}
+      ]
+    },
+    {
+      "heading": "2. Getting the Medicine Right",
+      "heading_zh": "2. 把用药弄清楚",
+      "lines": [
+        {"sp": "B", "en": "I'll prescribe an ==antibiotic== called amoxicillin, three times a day for a week.", "zh": "我给她开一种叫阿莫西林的抗生素，一天三次，吃一周。"},
+        {"sp": "A", "en": "Sorry, before you do that. She had a ==rash== all over her body the last time she took amoxicillin.", "zh": "不好意思，先等一下。她上次吃阿莫西林的时候全身起了疹子。"},
+        {"sp": "B", "en": "Ah, thank you for telling me. That could be an ==allergy==. I'll note it in her records and give her something different.", "zh": "啊，谢谢你告诉我。那可能是过敏。我记到她的病历里，给她换一种药。"},
+        {"sp": "A", "en": "**How much should I give her each time, and does it need to be taken with food?**", "zh": "每次给她吃多少？需要跟饭一起吃吗？"},
+        {"sp": "B", "en": "Five millilitres twice a day, after meals. Use the ==syringe== in the box, not a kitchen spoon.", "zh": "每次五毫升，一天两次，饭后吃。用盒子里的喂药器，别用厨房的勺子。"},
+        {"sp": "A", "en": "Got it. And what if she spits it out?", "zh": "明白。那她要是吐出来怎么办？"},
+        {"sp": "B", "en": "If she spits most of it out right away, give it again. Otherwise, just wait for the next dose.", "zh": "如果刚喂就吐掉了大半，就再喂一次。不然就等下一顿。"},
+        {"sp": "A", "en": "**Should we come back if the fever doesn't come down?**", "zh": "如果烧一直不退，需要再来吗？"},
+        {"sp": "B", "en": "Yes. If she's still feverish after three days, or she seems unusually ==lethargic==, bring her back straight away.", "zh": "要。如果三天后还在发烧，或者看起来特别没精神，马上带她回来。"},
+        {"sp": "A", "en": "Thanks, Doctor. Could I also __get a letter__ for her childcare?", "zh": "谢谢医生。能再给我开一张给托儿所的证明吗？"},
+        {"sp": "B", "en": "Of course. The nurse will __print it out__ with the medicine.", "zh": "当然。护士会连同药一起打印给你。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "孩子有哪些症状？医生诊断是什么？", "a": "从昨晚发烧，最高三十九度二，吃得很少，有点咳嗽，早上吐了一次，一直拽左耳；诊断是耳朵感染。"},
+    {"q": "「你」为什么打断医生开药？", "a": "孩子上次吃阿莫西林全身起疹子，可能过敏，医生于是换了别的药并记入病历。"},
+    {"q": "药怎么吃？什么情况要回来复诊？", "a": "每次五毫升，一天两次，饭后用喂药器喂；三天后还烧或特别没精神就马上回来。"}
+  ],
+  "dictation": [
+    "She's had a fever since last night, and she's barely eating anything.",
+    "A bit of a cough, and she threw up once this morning. She also keeps pulling at her left ear.",
+    "How much should I give her each time, and does it need to be taken with food?",
+    "Sorry, before you do that. She had a rash all over her body the last time she took amoxicillin."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Sorry, before you do that. She had a rash all over her body the last time she took amoxicillin.",
+    "marked": "<b>Sorry</b>, / before you <b>do</b> that. //<br>She had a <b>rash</b> / all over her <b>body</b> / the <b>last</b> time she took <b>amoxicillin</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "孩子摔了一跤，额头肿了个包，你打电话问诊所要不要马上带来。说清经过、现在的状态，并问该注意什么。",
+      "ref": "Hi, my son is two. About twenty minutes ago he fell off the sofa and hit his forehead on the floor. He cried straight away, and now there's a big bump, but he's playing normally. He hasn't vomited. Should I bring him in now, or just watch him at home? What signs should I look out for?",
+      "ref_zh": "你好，我儿子两岁。大概二十分钟前他从沙发上摔下来，额头撞到地上。他当时马上就哭了，现在起了个大包，但玩得挺正常，没有吐。我需要现在带他过来，还是在家观察就行？要注意哪些迹象？"
+    },
+    {
+      "q": "医生开了三种药，你记不住。请医生再确认一遍每种药的用法和顺序，并问能不能和退烧药一起吃。",
+      "ref": "Sorry, Doctor, that's a lot to remember. Could we go through them one more time? Which one is for the cough, and which one is for the runny nose? Do they all need to be taken after meals? And if she gets a fever tonight, is it okay to give her paracetamol together with these?",
+      "ref_zh": "不好意思医生，要记的太多了。能再过一遍吗？哪个是治咳嗽的，哪个是治流鼻涕的？都需要饭后吃吗？还有，如果她今晚发烧，可以跟这些药一起吃退烧药吗？"
+    }
+  ],
+  "words": [
+    {"w": "temperature", "ipa": "/ˈtemprətʃər/", "zh": "体温", "ex": "Let me take your temperature before you see the doctor."},
+    {"w": "vomiting", "ipa": "/ˈvɑːmɪtɪŋ/", "zh": "呕吐", "ex": "If the vomiting doesn't stop, take him to the hospital."},
+    {"w": "diarrhoea", "ipa": "/ˌdaɪəˈriːə/", "zh": "腹泻", "ex": "She's had diarrhoea since she ate that seafood."},
+    {"w": "infection", "ipa": "/ɪnˈfekʃən/", "zh": "感染", "ex": "Keep the cut clean so it doesn't get an infection."},
+    {"w": "antibiotic", "ipa": "/ˌæntibaɪˈɑːtɪk/", "zh": "抗生素", "ex": "Finish the whole course of antibiotics, even if you feel better."},
+    {"w": "rash", "ipa": "/ræʃ/", "zh": "皮疹", "ex": "He got a rash after trying the new soap."},
+    {"w": "allergy", "ipa": "/ˈælərdʒi/", "zh": "过敏", "ex": "Does your child have any food allergies?"},
+    {"w": "syringe", "ipa": "/səˈrɪndʒ/", "zh": "（喂药用）注射器，喂药器", "ex": "It's easier to give medicine to a baby with a syringe."},
+    {"w": "lethargic", "ipa": "/ləˈθɑːrdʒɪk/", "zh": "无精打采的，昏沉的", "ex": "The heat makes me feel lethargic in the afternoon."},
+    {"w": "pull at", "ipa": "/pʊl æt/", "zh": "拽，扯", "ex": "Babies often pull at their ears when they're teething."}
+  ]
+}

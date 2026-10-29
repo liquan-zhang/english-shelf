@@ -1,0 +1,233 @@
+{
+  "id": "150",
+  "type": "dialogue",
+  "title": "Asking for Directions",
+  "meta": "B2 · 约 280 词 · 场景：带孩子问路去科学馆",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Passer-by",
+      "name_zh": "路人",
+      "voice": "en-AU-WilliamMultilingualNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Which Way to the Science Centre?",
+      "heading_zh": "1. 科学馆怎么走",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "**Excuse me, sorry to bother you. Could you tell me how to get to the Science Centre from here?**",
+          "zh": "不好意思打扰一下。请问从这里去科学馆怎么走？"
+        },
+        {
+          "sp": "B",
+          "en": "Sure. Are you walking, or taking the bus?",
+          "zh": "好啊。您是走路，还是坐公交？"
+        },
+        {
+          "sp": "A",
+          "en": "Whichever is easier. I've got my son with me, and he's only three.",
+          "zh": "哪个方便就哪个。我带着儿子，他才三岁。"
+        },
+        {
+          "sp": "B",
+          "en": "It's about fifteen minutes on foot. Or you can take bus sixty-six from the stop across the road. It's just two stops.",
+          "zh": "走路大概十五分钟。或者在马路对面的车站坐六十六路，只有两站。"
+        },
+        {
+          "sp": "A",
+          "en": "__How often does__ the bus come?",
+          "zh": "公交多久来一班？"
+        },
+        {
+          "sp": "B",
+          "en": "Every ten minutes or so, but it gets packed around lunchtime.",
+          "zh": "大概十分钟一班，不过午饭时间会很挤。"
+        },
+        {
+          "sp": "A",
+          "en": "We'll walk, then. Which way do I go?",
+          "zh": "那我们走路吧。往哪边走？"
+        },
+        {
+          "sp": "B",
+          "en": "Go straight down this road until you hit the ==traffic lights==, then turn left. Cross the ==overhead bridge==, and you'll see it on your right.",
+          "zh": "沿这条路一直走到红绿灯，然后左转。过了天桥，就在您右手边。"
+        },
+        {
+          "sp": "A",
+          "en": "**So straight on, left at the lights, over the bridge, and it's on my right?**",
+          "zh": "所以是直走，红绿灯左转，过天桥，然后在我右边，对吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Exactly. You can't ==miss== it. There's a ==sheltered== walkway most of the way, so you won't get wet.",
+          "zh": "没错，一眼就能看到。大部分路段都有带顶棚的走廊，下雨也淋不着。"
+        }
+      ]
+    },
+    {
+      "heading": "2. A Detour",
+      "heading_zh": "2. 临时绕路",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Actually, I'm heading that way too. I'll walk with you as far as the bridge.",
+          "zh": "其实我也往那边走，我陪您走到天桥那里吧。"
+        },
+        {
+          "sp": "A",
+          "en": "That's really kind of you. Thank you.",
+          "zh": "你人真好，谢谢。"
+        },
+        {
+          "sp": "B",
+          "en": "Oh, hang on. Looks like the bridge is closed for ==repairs==.",
+          "zh": "哦，等一下。天桥好像在维修，封了。"
+        },
+        {
+          "sp": "A",
+          "en": "**Oh no. Is there another way across?**",
+          "zh": "啊，那还有别的路能过去吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Yes, there's a ==detour==. Use the ==pedestrian== crossing at the next junction, about a hundred metres down.",
+          "zh": "有，可以绕一下。往前走大概一百米，到下一个路口走人行横道。"
+        },
+        {
+          "sp": "A",
+          "en": "Got it. And afterwards, __where's the best place to__ get a taxi back?",
+          "zh": "明白了。那回去的时候，在哪里打车最方便？"
+        },
+        {
+          "sp": "B",
+          "en": "There's a taxi stand right at the main ==entrance==. Or if you're booking a Grab, the ==pick-up== point is by the car park.",
+          "zh": "正门口就有出租车站。如果您用 Grab 叫车，上车点在停车场旁边。"
+        },
+        {
+          "sp": "A",
+          "en": "**That's really helpful. Is it walking distance back to the MRT from there?**",
+          "zh": "这太有用了。从那里走回地铁站远吗？"
+        },
+        {
+          "sp": "B",
+          "en": "About ten minutes. Just follow the signs to Jurong East.",
+          "zh": "大概十分钟，跟着去裕廊东的指示牌走就行。"
+        },
+        {
+          "sp": "A",
+          "en": "Perfect. __Thanks a lot__ for your help.",
+          "zh": "太好了，非常感谢你的帮忙。"
+        },
+        {
+          "sp": "B",
+          "en": "No worries, mate. Enjoy the Science Centre, little guy!",
+          "zh": "不客气，伙计。小家伙，玩得开心！"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "去科学馆有哪两种方式？「你」为什么选了走路？",
+      "a": "走路大约十五分钟，或者坐六十六路公交两站；公交午饭时间很挤，所以选了走路。"
+    },
+    {
+      "q": "原本的路线怎么走？后来遇到了什么问题？",
+      "a": "直走到红绿灯左转，过天桥后在右手边；但天桥在维修封了，只能往前一百米走下一个路口的人行横道。"
+    },
+    {
+      "q": "回程打车和去地铁站有什么建议？",
+      "a": "正门口有出租车站，用 Grab 叫车的话上车点在停车场旁边；走回地铁站大约十分钟，跟着裕廊东的指示牌走。"
+    }
+  ],
+  "dictation": [
+    "Excuse me, sorry to bother you. Could you tell me how to get to the Science Centre from here?",
+    "So straight on, left at the lights, over the bridge, and it's on my right?",
+    "Oh no. Is there another way across?",
+    "That's really helpful. Is it walking distance back to the MRT from there?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "So straight on, left at the lights, over the bridge, and it's on my right?",
+    "marked": "So <b>straight</b> on, / <b>left</b> at the lights, / <b>over</b> the bridge, / and it's on my <b>right</b>? //"
+  },
+  "prompts": [
+    {
+      "q": "你在牛车水找不到预约好的诊所。拦住路人，说出诊所名字和街名，问怎么走、要多久。",
+      "ref": "Excuse me, sorry to trouble you. I'm looking for a clinic called Family Care Medical on Smith Street. My map says it's around here, but I can't seem to find it. Do you know which way Smith Street is? And roughly how long would it take to walk there? My appointment is in ten minutes.",
+      "ref_zh": "不好意思打扰一下。我在找一家叫 Family Care Medical 的诊所，在史密斯街。地图上显示就在这附近，但我怎么也找不到。您知道史密斯街往哪边走吗？走过去大概要多久？我的预约还有十分钟就到了。"
+    },
+    {
+      "q": "一位游客在你家附近的地铁站向你问路，要去植物园。用 30 秒给出清楚的指引，并提一个实用建议。",
+      "ref": "Sure, the Botanic Gardens is on the Circle Line, so you don't need to change trains. Just take this line towards HarbourFront and get off at Botanic Gardens station. It's about six stops. When you come out, use exit A, and the entrance is right there. Bring some water, though. It's a big place, and it gets hot.",
+      "ref_zh": "没问题，植物园就在环线上，不用换乘。坐这条线往港湾方向，在植物园站下车，大概六站。出站后走 A 出口，入口就在旁边。不过记得带水，园子很大，天也热。"
+    }
+  ],
+  "words": [
+    {
+      "w": "traffic lights",
+      "ipa": "/ˈtræfɪk laɪts/",
+      "zh": "红绿灯",
+      "ex": "Turn right at the second set of traffic lights."
+    },
+    {
+      "w": "overhead bridge",
+      "ipa": "/ˈoʊvərhed brɪdʒ/",
+      "zh": "过街天桥",
+      "ex": "Use the overhead bridge to get to the bus stop."
+    },
+    {
+      "w": "miss (v.)",
+      "ipa": "/mɪs/",
+      "zh": "错过，看漏",
+      "ex": "The restaurant is huge. You can't miss it.",
+      "tts_w": "miss"
+    },
+    {
+      "w": "sheltered",
+      "ipa": "/ˈʃeltərd/",
+      "zh": "有遮挡的，带顶棚的",
+      "ex": "There's a sheltered walkway from the MRT to the mall."
+    },
+    {
+      "w": "repair",
+      "ipa": "/rɪˈper/",
+      "zh": "维修",
+      "ex": "The lift is closed for repairs until Friday."
+    },
+    {
+      "w": "detour",
+      "ipa": "/ˈdiːtʊr/",
+      "zh": "绕行路线",
+      "ex": "We had to take a detour because of the roadworks."
+    },
+    {
+      "w": "pedestrian",
+      "ipa": "/pəˈdestriən/",
+      "zh": "行人；行人的",
+      "ex": "Always use the pedestrian crossing with your kids."
+    },
+    {
+      "w": "entrance",
+      "ipa": "/ˈentrəns/",
+      "zh": "入口",
+      "ex": "Let's meet at the main entrance at six."
+    },
+    {
+      "w": "pick-up point",
+      "ipa": "/ˈpɪk ʌp pɔɪnt/",
+      "zh": "上车点；取货点",
+      "ex": "The Grab pick-up point is at the side of the hotel."
+    }
+  ]
+}

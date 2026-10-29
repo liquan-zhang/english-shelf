@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Getting Your Phone Repaired · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "133", "type": "dialogue", "title": "Getting Your Phone Repaired", "meta": "B2 · 约 300 词 · 场景：手机维修报价与追加问题", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Technician", "name_zh": "维修师傅", "voice": "en-GB-SoniaNeural"}}, "gist": [{"q": "换屏有哪两种选择？「你」选了哪种？", "a": "原装屏两百六十块，副厂屏一百四十块；「你」选了更亮、能保住防水的原装屏。"}, {"q": "维修店打电话来说了什么新问题？", "a": "充电口附近有腐蚀，像是进过水，清理要再加八十块，不处理以后可能充不了电。"}, {"q": "「你」是怎么回应的？", "a": "先只换屏幕，其他之后再定；请对方拍照发过来，自己半小时内答复。"}], "dictation": [{"id": "s0_3_0", "text": "No, it's about two years old. Could you give me a rough quote before you start?"}, {"id": "s0_5_0", "text": "What's the difference, apart from the price?"}, {"id": "s1_5_0", "text": "Can you go ahead with the screen only for now? I'll decide on the rest later."}, {"id": "s1_7_0", "text": "Understood. Could you send me a photo of the damage? I'd like to take a look first."}], "shadow": {"speaker": "A", "text": "I dropped my phone this morning, and the screen cracked. The touch still works, but only in some places.", "marked": "I <b>dropped</b> my phone / this <b>morning</b>, / and the <b>screen</b> cracked. //<br>The touch <b>still</b> works, / but only in <b>some</b> places. //"}, "prompts": [{"q": "手机修好取回来两天，充电又不正常了。回到店里，要求按保修免费处理。", "ref": "Hi, I picked up my phone here on Monday after a screen repair. Since yesterday, it only charges if I hold the cable at a certain angle. It was fine before I brought it in. I believe the repair is under your ninety-day warranty, so could you check it again at no charge? Here's my receipt.", "ref_zh": "你好，我周一在这里修完屏幕把手机取走了。从昨天开始，充电线要卡在某个角度才能充上。送修之前是好的。我想这应该在你们九十天的保修范围内，能不能免费再帮我检查一下？这是我的收据。", "id": "ref0"}, {"q": "你把笔记本电脑送去修，想在开修前问清：费用上限、数据安全、需要多久。", "ref": "Hi, my laptop won't turn on since this morning. Before you open it, could you give me an estimate? If the repair is going to cost more than two hundred dollars, please call me first instead of going ahead. Also, there's work data on it, so please don't wipe the hard drive. Roughly how many days will it take?", "ref_zh": "你好，我的笔记本从今早开始就开不了机。开机检查之前，能先给我估个价吗？如果维修费会超过两百块，请先打电话问我，别直接修。另外里面有工作资料，请不要格式化硬盘。大概要几天？", "id": "ref1"}], "words": [{"w": "display", "ipa": "/dɪˈspleɪ/", "zh": "显示屏", "ex": "The display is too dim to read in the sun.", "id": "w0"}, {"w": "warranty", "ipa": "/ˈwɔːrənti/", "zh": "保修", "ex": "The fridge is still under warranty for another year.", "id": "w1"}, {"w": "original", "ipa": "/əˈrɪdʒənəl/", "zh": "原装的；原厂的", "ex": "Please keep the original box in case you need to return it.", "id": "w2"}, {"w": "quote", "ipa": "/kwoʊt/", "zh": "报价", "ex": "Can you give me a quote for painting the living room?", "id": "w3"}, {"w": "back up", "ipa": "/bæk ʌp/", "zh": "备份", "ex": "Back up your photos before you update the phone.", "id": "w4"}, {"w": "corrosion", "ipa": "/kəˈroʊʒən/", "zh": "腐蚀；锈蚀", "ex": "The sea air caused some corrosion on the bike.", "id": "w5"}, {"w": "charging port", "ipa": "/ˈtʃɑːrdʒɪŋ pɔːrt/", "zh": "充电口", "ex": "Clean the charging port with a dry toothbrush.", "id": "w6"}, {"w": "cover (v.)", "ipa": "/ˈkʌvər/", "zh": "（保险/保修）覆盖、负担", "ex": "Does my insurance cover dental treatment?", "tts_w": "cover", "id": "w7"}, {"w": "get back to", "ipa": "/ɡet bæk tuː/", "zh": "回复；再联系", "ex": "Let me check with my wife and get back to you tonight.", "id": "w8"}], "sections": [{"heading": "1. At the Repair Counter", "heading_zh": "1. 在维修柜台", "rows": [[{"id": "s0_0_0", "md": "Hi, what seems to be the problem?", "text": "Hi, what seems to be the problem?", "zh": "你好，手机怎么了？", "sp": "B"}], [{"id": "s0_1_0", "md": "I dropped my phone this morning, and __the screen cracked__. The touch still works, but only in some places.", "text": "I dropped my phone this morning, and the screen cracked. The touch still works, but only in some places.", "zh": "我今早把手机摔了，屏幕裂了。触摸还能用，但只有部分地方灵。", "sp": "A"}], [{"id": "s0_2_0", "md": "Let me have a look. Yes, the ==display== will need replacing. Is it still under ==warranty==?", "text": "Let me have a look. Yes, the display will need replacing. Is it still under warranty?", "zh": "我看看。嗯，屏幕得换。还在保修期内吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "**No, it's about two years old. Could you give me a rough quote before you start?**", "text": "No, it's about two years old. Could you give me a rough quote before you start?", "zh": "不在了，用了快两年了。开工之前能先给我报个大概的价吗？", "sp": "A"}], [{"id": "s0_4_0", "md": "An ==original== screen is two hundred and sixty dollars. A third-party one is one hundred and forty.", "text": "An original screen is two hundred and sixty dollars. A third-party one is one hundred and forty.", "zh": "原装屏两百六十块，副厂屏一百四十块。", "sp": "B"}], [{"id": "s0_5_0", "md": "What's the difference, apart from the price?", "text": "What's the difference, apart from the price?", "zh": "除了价格，还有什么区别？", "sp": "A"}], [{"id": "s0_6_0", "md": "The original is brighter and keeps the water resistance. The cheaper one is fine, but the colours are a bit off.", "text": "The original is brighter and keeps the water resistance. The cheaper one is fine, but the colours are a bit off.", "zh": "原装的更亮，防水性能也能保住。便宜的也能用，就是颜色有点偏。", "sp": "B"}], [{"id": "s0_7_0", "md": "I'll go with the original, then. Do your repairs come with any warranty?", "text": "I'll go with the original, then. Do your repairs come with any warranty?", "zh": "那我选原装的。你们的维修有保修吗？", "sp": "A"}], [{"id": "s0_8_0", "md": "Yes, ninety days on parts and labour. Have you __backed up__ your data?", "text": "Yes, ninety days on parts and labour. Have you backed up your data?", "zh": "有，零件和人工保修九十天。您的数据备份了吗？", "sp": "B"}], [{"id": "s0_9_0", "md": "Yes, last night. How long will it take? I need it for work tomorrow.", "text": "Yes, last night. How long will it take? I need it for work tomorrow.", "zh": "备份了，昨晚弄的。要修多久？我明天上班要用。", "sp": "A"}], [{"id": "s0_10_0", "md": "It should be done by five today. We'll text you when you can __pick it up__.", "text": "It should be done by five today. We'll text you when you can pick it up.", "zh": "今天五点前应该能好。可以取的时候我们发短信给您。", "sp": "B"}], [{"id": "s0_11_0", "md": "Perfect. I'll come by after five.", "text": "Perfect. I'll come by after five.", "zh": "太好了。那我五点以后过来。", "sp": "A"}]]}, {"heading": "2. An Unexpected Phone Call", "heading_zh": "2. 一通意外的电话", "rows": [[{"id": "s1_0_0", "md": "Hello, this is the repair shop calling about your phone. We opened it up and found another issue.", "text": "Hello, this is the repair shop calling about your phone. We opened it up and found another issue.", "zh": "您好，这里是维修店，打来说一下您手机的事。我们拆开后发现了另一个问题。", "sp": "B"}], [{"id": "s1_1_0", "md": "Oh no. What's wrong with it?", "text": "Oh no. What's wrong with it?", "zh": "啊，糟糕。出什么问题了？", "sp": "A"}], [{"id": "s1_2_0", "md": "There's some ==corrosion== near the ==charging port==. It looks like water got in at some point.", "text": "There's some corrosion near the charging port. It looks like water got in at some point.", "zh": "充电口附近有些腐蚀，看起来之前进过水。", "sp": "B"}], [{"id": "s1_3_0", "md": "That's strange. It's never been in water. Does that change the price?", "text": "That's strange. It's never been in water. Does that change the price?", "zh": "奇怪，它从来没泡过水。那价格会变吗？", "sp": "A"}], [{"id": "s1_4_0", "md": "Cleaning it would be another eighty dollars. If we leave it, the charging might stop working later.", "text": "Cleaning it would be another eighty dollars. If we leave it, the charging might stop working later.", "zh": "清理要再加八十块。如果不处理，以后充电可能会出问题。", "sp": "B"}], [{"id": "s1_5_0", "md": "**Can you go ahead with the screen only for now? I'll decide on the rest later.**", "text": "Can you go ahead with the screen only for now? I'll decide on the rest later.", "zh": "能不能先只换屏幕？其他的我之后再决定。", "sp": "A"}], [{"id": "s1_6_0", "md": "We can, but our warranty wouldn't ==cover== any charging problems in that case.", "text": "We can, but our warranty wouldn't cover any charging problems in that case.", "zh": "可以，但那样的话，充电方面的问题就不在我们的保修范围内了。", "sp": "B"}], [{"id": "s1_7_0", "md": "Understood. Could you __send me a photo__ of the damage? I'd like to __take a look__ first.", "text": "Understood. Could you send me a photo of the damage? I'd like to take a look first.", "zh": "明白。能把损坏的地方拍张照片发给我吗？我想先看一下。", "sp": "A"}], [{"id": "s1_8_0", "md": "Sure, I'll send it on WhatsApp in a minute.", "text": "Sure, I'll send it on WhatsApp in a minute.", "zh": "好的，我马上用 WhatsApp 发给您。", "sp": "B"}], [{"id": "s1_9_0", "md": "Thanks. I'll __get back to you__ within half an hour.", "text": "Thanks. I'll get back to you within half an hour.", "zh": "谢谢。我半小时内回复你。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. At the Repair Counter", "zh": "1. 在维修柜台", "start": 0.0, "end": 2.016, "words": [[0.105, 0.329], [0.671, 0.763], [0.776, 0.842], [0.855, 1.171], [1.184, 1.618]]}, {"kind": "s", "id": "s0_0_0", "md": "Hi, what seems to be the problem?", "zh": "你好，手机怎么了？", "sp": "B", "gap": false, "start": 2.016, "end": 4.872, "words": [[2.158, 2.513], [2.829, 3.053], [3.066, 3.434], [3.448, 3.553], [3.566, 3.724], [3.737, 3.855], [3.869, 4.474]]}, {"kind": "s", "id": "s0_1_0", "md": "I dropped my phone this morning, and __the screen cracked__. The touch still works, but only in some places.", "zh": "我今早把手机摔了，屏幕裂了。触摸还能用，但只有部分地方灵。", "sp": "A", "gap": false, "start": 4.872, "end": 11.04, "words": [[4.977, 5.03], [5.043, 5.332], [5.346, 5.464], [5.477, 5.74], [5.754, 5.911], [5.925, 6.306], [6.596, 6.648], [6.661, 6.727], [6.74, 7.069], [7.083, 7.596], [8.043, 8.109], [8.122, 8.359], [8.372, 8.622], [8.635, 9.135], [9.346, 9.504], [9.517, 9.793], [9.806, 9.911], [9.925, 10.069], [10.083, 10.648]]}, {"kind": "s", "id": "s0_2_0", "md": "Let me have a look. Yes, the ==display== will need replacing. Is it still under ==warranty==?", "zh": "我看看。嗯，屏幕得换。还在保修期内吗？", "sp": "B", "gap": false, "start": 11.04, "end": 17.808, "words": [[11.182, 11.445], [11.458, 11.564], [11.577, 11.787], [11.801, 11.853], [11.866, 12.366], [12.79, 13.264], [13.527, 13.632], [13.645, 14.172], [14.185, 14.356], [14.369, 14.579], [14.593, 15.369], [15.79, 15.922], [15.935, 16.093], [16.106, 16.422], [16.435, 16.685], [16.698, 17.422]]}, {"kind": "s", "id": "s0_3_0", "md": "**No, it's about two years old. Could you give me a rough quote before you start?**", "zh": "不在了，用了快两年了。开工之前能先给我报个大概的价吗？", "sp": "A", "gap": false, "start": 17.808, "end": 22.416, "words": [[17.913, 18.176], [18.4, 18.532], [18.545, 18.808], [18.821, 19.005], [19.019, 19.295], [19.308, 19.584], [20.019, 20.137], [20.15, 20.242], [20.255, 20.4], [20.413, 20.518], [20.532, 20.597], [20.611, 20.913], [20.926, 21.203], [21.216, 21.505], [21.519, 21.584], [21.597, 22.018]]}, {"kind": "s", "id": "s0_4_0", "md": "An ==original== screen is two hundred and sixty dollars. A third-party one is one hundred and forty.", "zh": "原装屏两百六十块，副厂屏一百四十块。", "sp": "B", "gap": false, "start": 22.416, "end": 29.4, "words": [[22.532, 22.663], [22.677, 23.229], [23.242, 23.729], [23.742, 23.979], [23.992, 24.242], [24.255, 24.598], [24.611, 24.729], [24.742, 25.15], [25.163, 25.769], [26.151, 26.309], [26.322, 27.019], [27.032, 27.427], [27.44, 27.664], [27.677, 27.901], [27.914, 28.269], [28.282, 28.401], [28.414, 29.006]]}, {"kind": "s", "id": "s0_5_0", "md": "What's the difference, apart from the price?", "zh": "除了价格，还有什么区别？", "sp": "A", "gap": false, "start": 29.4, "end": 31.992, "words": [[29.505, 29.663], [29.676, 29.782], [29.795, 30.347], [30.466, 30.768], [30.782, 30.926], [30.939, 31.005], [31.018, 31.597]]}, {"kind": "s", "id": "s0_6_0", "md": "The original is brighter and keeps the water resistance. The cheaper one is fine, but the colours are a bit off.", "zh": "原装的更亮，防水性能也能保住。便宜的也能用，就是颜色有点偏。", "sp": "B", "gap": false, "start": 31.992, "end": 39.672, "words": [[32.134, 32.266], [32.279, 32.845], [32.858, 32.989], [33.003, 33.568], [33.581, 33.792], [33.805, 34.134], [34.147, 34.239], [34.253, 34.634], [34.647, 35.529], [35.953, 36.071], [36.084, 36.453], [36.466, 36.702], [36.716, 36.874], [36.887, 37.347], [37.65, 37.808], [37.821, 37.926], [37.939, 38.387], [38.4, 38.505], [38.518, 38.597], [38.61, 38.834], [38.847, 39.281]]}, {"kind": "s", "id": "s0_7_0", "md": "I'll go with the original, then. Do your repairs come with any warranty?", "zh": "那我选原装的。你们的维修有保修吗？", "sp": "A", "gap": false, "start": 39.672, "end": 43.848, "words": [[39.777, 39.896], [39.909, 40.054], [40.067, 40.185], [40.198, 40.29], [40.304, 40.843], [41.08, 41.369], [41.804, 41.856], [41.869, 42.014], [42.027, 42.461], [42.475, 42.659], [42.672, 42.804], [42.817, 42.961], [42.975, 43.448]]}, {"kind": "s", "id": "s0_8_0", "md": "Yes, ninety days on parts and labour. Have you __backed up__ your data?", "zh": "有，零件和人工保修九十天。您的数据备份了吗？", "sp": "B", "gap": false, "start": 43.848, "end": 49.272, "words": [[43.99, 44.464], [44.727, 45.148], [45.161, 45.53], [45.543, 45.688], [45.701, 46.161], [46.174, 46.266], [46.28, 46.806], [47.216, 47.401], [47.414, 47.545], [47.559, 47.901], [47.914, 48.072], [48.085, 48.23], [48.243, 48.874]]}, {"kind": "s", "id": "s0_9_0", "md": "Yes, last night. How long will it take? I need it for work tomorrow.", "zh": "备份了，昨晚弄的。要修多久？我明天上班要用。", "sp": "A", "gap": false, "start": 49.272, "end": 53.736, "words": [[49.377, 49.706], [49.785, 50.075], [50.088, 50.364], [50.798, 50.93], [50.943, 51.18], [51.193, 51.311], [51.325, 51.404], [51.417, 51.785], [52.219, 52.272], [52.285, 52.43], [52.443, 52.509], [52.522, 52.654], [52.667, 52.851], [52.864, 53.351]]}, {"kind": "s", "id": "s0_10_0", "md": "It should be done by five today. We'll text you when you can __pick it up__.", "zh": "今天五点前应该能好。可以取的时候我们发短信给您。", "sp": "B", "gap": false, "start": 53.736, "end": 58.776, "words": [[53.878, 54.01], [54.023, 54.26], [54.273, 54.391], [54.404, 54.733], [54.747, 54.904], [54.918, 55.299], [55.312, 55.852], [56.275, 56.473], [56.486, 56.907], [56.92, 57.104], [57.118, 57.315], [57.328, 57.433], [57.447, 57.604], [57.618, 57.828], [57.841, 57.973], [57.986, 58.381]]}, {"kind": "s", "id": "s0_11_0", "md": "Perfect. I'll come by after five.", "zh": "太好了。那我五点以后过来。", "sp": "A", "gap": false, "start": 58.776, "end": 61.416, "words": [[58.894, 59.329], [59.776, 59.894], [59.908, 60.079], [60.092, 60.315], [60.329, 60.592], [60.605, 61.013]]}, {"kind": "h", "id": "h1", "md": "2. An Unexpected Phone Call", "zh": "2. 一通意外的电话", "start": 61.416, "end": 64.008, "words": [[61.534, 61.85], [62.179, 62.311], [62.324, 63.008], [63.021, 63.271], [63.284, 63.627]]}, {"kind": "s", "id": "s1_0_0", "md": "Hello, this is the repair shop calling about your phone. We opened it up and found another issue.", "zh": "您好，这里是维修店，打来说一下您手机的事。我们拆开后发现了另一个问题。", "sp": "B", "gap": false, "start": 64.008, "end": 70.824, "words": [[64.15, 64.637], [64.926, 65.124], [65.137, 65.242], [65.255, 65.361], [65.374, 65.782], [65.795, 66.163], [66.176, 66.558], [66.571, 66.887], [66.9, 67.019], [67.032, 67.545], [67.969, 68.166], [68.179, 68.508], [68.521, 68.666], [68.679, 68.982], [68.995, 69.126], [69.14, 69.521], [69.534, 69.916], [69.929, 70.442]]}, {"kind": "s", "id": "s1_1_0", "md": "Oh no. What's wrong with it?", "zh": "啊，糟糕。出什么问题了？", "sp": "A", "gap": false, "start": 70.824, "end": 72.912, "words": [[70.929, 70.995], [71.008, 71.324], [71.771, 71.916], [71.929, 72.153], [72.166, 72.337], [72.35, 72.508]]}, {"kind": "s", "id": "s1_2_0", "md": "There's some ==corrosion== near the ==charging port==. It looks like water got in at some point.", "zh": "充电口附近有些腐蚀，看起来之前进过水。", "sp": "B", "gap": false, "start": 72.912, "end": 78.816, "words": [[73.013, 73.302], [73.315, 73.552], [73.565, 74.263], [74.276, 74.473], [74.486, 74.592], [74.605, 75.078], [75.092, 75.618], [76.044, 76.175], [76.188, 76.425], [76.438, 76.662], [76.675, 77.07], [77.083, 77.307], [77.32, 77.465], [77.478, 77.609], [77.623, 77.833], [77.846, 78.425]]}, {"kind": "s", "id": "s1_3_0", "md": "That's strange. It's never been in water. Does that change the price?", "zh": "奇怪，它从来没泡过水。那价格会变吗？", "sp": "A", "gap": false, "start": 78.816, "end": 83.232, "words": [[78.934, 79.079], [79.092, 79.671], [80.105, 80.224], [80.237, 80.487], [80.5, 80.658], [80.671, 80.776], [80.79, 81.25], [81.684, 81.79], [81.803, 81.934], [81.948, 82.211], [82.224, 82.303], [82.316, 82.842]]}, {"kind": "s", "id": "s1_4_0", "md": "Cleaning it would be another eighty dollars. If we leave it, the charging might stop working later.", "zh": "清理要再加八十块。如果不处理，以后充电可能会出问题。", "sp": "B", "gap": false, "start": 83.232, "end": 89.88, "words": [[83.348, 83.861], [83.874, 84.006], [84.019, 84.19], [84.203, 84.361], [84.374, 84.808], [84.821, 85.137], [85.15, 85.756], [86.179, 86.337], [86.35, 86.443], [86.456, 86.758], [86.771, 87.035], [87.311, 87.429], [87.443, 87.956], [87.969, 88.192], [88.206, 88.548], [88.561, 88.943], [88.956, 89.495]]}, {"kind": "s", "id": "s1_5_0", "md": "**Can you go ahead with the screen only for now? I'll decide on the rest later.**", "zh": "能不能先只换屏幕？其他的我之后再决定。", "sp": "A", "gap": false, "start": 89.88, "end": 94.296, "words": [[89.985, 90.09], [90.104, 90.196], [90.209, 90.38], [90.393, 90.643], [90.656, 90.762], [90.775, 90.841], [90.854, 91.288], [91.419, 91.643], [91.656, 91.814], [91.827, 92.104], [92.538, 92.643], [92.656, 93.091], [93.104, 93.169], [93.183, 93.248], [93.262, 93.538], [93.551, 93.906]]}, {"kind": "s", "id": "s1_6_0", "md": "We can, but our warranty wouldn't ==cover== any charging problems in that case.", "zh": "可以，但那样的话，充电方面的问题就不在我们的保修范围内了。", "sp": "B", "gap": false, "start": 94.296, "end": 99.672, "words": [[94.438, 94.596], [94.609, 95.057], [95.372, 95.57], [95.583, 95.714], [95.728, 96.333], [96.346, 96.714], [96.728, 97.083], [97.096, 97.359], [97.372, 97.833], [97.846, 98.346], [98.359, 98.464], [98.478, 98.714], [98.728, 99.28]]}, {"kind": "s", "id": "s1_7_0", "md": "Understood. Could you __send me a photo__ of the damage? I'd like to __take a look__ first.", "zh": "明白。能把损坏的地方拍张照片发给我吗？我想先看一下。", "sp": "A", "gap": false, "start": 99.672, "end": 104.616, "words": [[99.777, 100.369], [100.804, 100.922], [100.935, 101.014], [101.027, 101.238], [101.251, 101.356], [101.369, 101.422], [101.435, 101.79], [101.804, 101.869], [101.883, 101.961], [101.975, 102.488], [102.922, 103.027], [103.04, 103.172], [103.185, 103.251], [103.264, 103.448], [103.461, 103.501], [103.514, 103.685], [103.698, 104.225]]}, {"kind": "s", "id": "s1_8_0", "md": "Sure, I'll send it on WhatsApp in a minute.", "zh": "好的，我马上用 WhatsApp 发给您。", "sp": "B", "gap": false, "start": 104.616, "end": 108.0, "words": [[104.758, 105.219], [105.534, 105.705], [105.719, 106.008], [106.021, 106.179], [106.192, 106.35], [106.363, 106.89], [106.903, 106.995], [107.008, 107.048], [107.061, 107.613]]}, {"kind": "s", "id": "s1_9_0", "md": "Thanks. I'll __get back to you__ within half an hour.", "zh": "谢谢。我半小时内回复你。", "sp": "A", "gap": false, "start": 108.0, "end": 111.24, "words": [[108.132, 108.539], [108.974, 109.066], [109.079, 109.237], [109.25, 109.513], [109.526, 109.632], [109.645, 109.763], [109.776, 110.079], [110.092, 110.355], [110.368, 110.461], [110.474, 110.842]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

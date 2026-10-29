@@ -1,0 +1,180 @@
+{
+  "id": "067",
+  "title": "When the Launch Date Meets a Critical Bug",
+  "meta": "B2 · 约 270 词 · 场景：上线决策",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The False Choice",
+      "paragraphs": [
+        [
+          "It is the day before launch, and QA finds a bug that corrupts saved drafts for some users.",
+          "Marketing has already announced the date, and the press release is scheduled.",
+          "The room quickly splits into two camps: ship anyway, or ==postpone== everything."
+        ],
+        [
+          "This is almost always a false choice.",
+          "Between shipping everything and shipping nothing, there is usually a middle path.",
+          "You can launch with the broken feature switched off, release to a small ==segment== of users, or ship on time with a known ==workaround==."
+        ],
+        [
+          "**When someone offers you two options under pressure, look for the third one.**",
+          "The best answer often keeps the date and removes the risk, rather than trading one for the other.",
+          "Finding it takes ten minutes of calm thinking, which is exactly what panic __crowds out__."
+        ]
+      ],
+      "heading_zh": "1. 假的二选一",
+      "paragraphs_zh": [
+        [
+          "上线前一天，QA 发现了一个 bug，会把部分用户保存的草稿搞坏。",
+          "市场那边已经官宣了日期，新闻稿也排好了。",
+          "屋里很快分成两派：硬着头皮上，还是全部延期。"
+        ],
+        [
+          "这几乎总是一个假的二选一。",
+          "在全上和全不上之间，通常还有一条中间路线。",
+          "你可以把有问题的功能关掉再上线，先放给一小部分用户，或者按时上线并给出一个已知的绕过办法。"
+        ],
+        [
+          "当有人在压力下只给你两个选项时，去找第三个。",
+          "最好的答案往往是既保住日期又消掉风险，而不是拿一个去换另一个。",
+          "找到它只需要十分钟冷静思考，而这恰恰是慌乱时最容易被挤掉的东西。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Bring Options, Not Just Bad News",
+      "paragraphs": [
+        [
+          "When you take the problem to your manager or the PM, don't just __drop the bug on the table__.",
+          "Bring two or three options, each with a clear ==tradeoff==.",
+          "Keep the message short enough to read on a phone between meetings."
+        ],
+        [
+          "Option one: ship tomorrow with drafts disabled, and lose that feature for a week.",
+          "Option two: ship tomorrow to five percent of users, and accept a small risk of data loss.",
+          "Option three: slip by three days and ship everything ==intact==."
+        ],
+        [
+          "**Then say which one you recommend, and why.**",
+          "Decision makers want your judgment, not just a menu.",
+          "A clear ==recommendation== also makes it easier for them to __push back__ if they see a factor you missed, like a contract that depends on the date.",
+          "Either way, the decision gets made in minutes instead of hours."
+        ]
+      ],
+      "heading_zh": "2. 带着方案来，而不只是坏消息",
+      "paragraphs_zh": [
+        [
+          "当你把问题拿给经理或 PM 的时候，别只是把 bug 往桌上一扔。",
+          "带上两三个方案，每个都讲清楚取舍。",
+          "消息要短，短到对方能在两个会之间用手机看完。"
+        ],
+        [
+          "方案一：明天上线，草稿功能关掉，这个功能缺一周。",
+          "方案二：明天放给百分之五的用户，接受一点数据丢失的风险。",
+          "方案三：推迟三天，所有功能完整上线。"
+        ],
+        [
+          "然后说清楚你推荐哪个，以及为什么。",
+          "做决定的人要的是你的判断，而不只是一张菜单。",
+          "一个明确的建议也让他们更容易提出反对，比如他们看到了你漏掉的因素，像是有份合同依赖这个日期。",
+          "不管怎样，决定都能在几分钟内做出来，而不是拖上几个小时。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "上线前一天发现严重 bug，团队通常分成哪两派？作者怎么看？",
+      "a": "一派照常上线、一派全部推迟；作者认为这是伪二选一，中间往往有第三条路。"
+    },
+    {
+      "q": "文中提到了哪些“中间路径”？",
+      "a": "关掉有问题的功能上线、只对一小部分用户发布、带着已知的绕过方案按时上线。"
+    },
+    {
+      "q": "向经理或 PM 汇报时应该怎么做？",
+      "a": "带两三个选项并说清各自代价，然后给出自己的推荐和理由，方便对方快速决定或反驳。"
+    }
+  ],
+  "dictation": [
+    "When someone offers you two options under pressure, look for the third one.",
+    "Between shipping everything and shipping nothing, there is usually a middle path.",
+    "Then say which one you recommend, and why.",
+    "Decision makers want your judgment, not just a menu."
+  ],
+  "shadow": {
+    "text": "This is almost always a false choice. Between shipping everything and shipping nothing, there is usually a middle path.",
+    "marked": "This is almost <b>always</b> / a <b>false</b> choice. //<br>Between shipping <b>everything</b> / and shipping <b>nothing</b>, / there is usually / a <b>middle</b> path. //"
+  },
+  "prompts": [
+    {
+      "q": "明天上线，今晚发现导出功能有严重 bug。用 30 秒向你的总监汇报：给出三个选项和你的推荐。",
+      "ref": "Quick heads-up on tomorrow's launch. QA found a bug that can corrupt exported reports. We have three options. One, launch on time with export turned off for about a week. Two, launch to ten percent of users with export on and watch closely. Three, slip by three days. I recommend option one: the date holds, and export is a minor part of the release. Does anything make the date less important than I think?",
+      "ref_zh": "同步一下明天上线的事。QA 发现了一个 bug，可能会把导出的报表搞坏。我们有三个方案。一，按时上线，导出功能关掉大概一周。二，放给百分之十的用户，导出打开，密切盯着。三，推迟三天。我建议方案一：日期保住了，而且导出只是这次发布里很小的一部分。有没有什么情况，让这个日期没我想的那么重要？"
+    },
+    {
+      "q": "会上大家在“硬上”还是“全推迟”之间吵起来了。用 30 秒打断，引导大家找第三条路。",
+      "ref": "Can I pause us for a second? We're arguing as if there are only two choices, ship everything or ship nothing. I don't think that's true. The bug only affects the sync feature. What if we launch tomorrow with sync behind a flag, and turn it on once the fix is verified? Let's spend five minutes listing middle options before we pick a side.",
+      "ref_zh": "我能让大家先停一下吗？我们现在吵得好像只有两个选择，要么全上，要么全不上。我觉得不是这样。这个 bug 只影响同步功能。要不明天上线，把同步藏在开关后面，等修复验证完再打开？我们先花五分钟把中间方案列一列，再来选边站。"
+    }
+  ],
+  "words": [
+    {
+      "w": "postpone",
+      "ipa": "/poʊstˈpoʊn/",
+      "zh": "推迟、延期",
+      "ex": "We had to postpone the launch because of the payment bug."
+    },
+    {
+      "w": "segment",
+      "ipa": "/ˈseɡmənt/",
+      "zh": "（用户）分群、部分",
+      "ex": "Let's release it to a small segment of users in one market first."
+    },
+    {
+      "w": "workaround",
+      "ipa": "/ˈwɜːrkəˌraʊnd/",
+      "zh": "临时绕过方案",
+      "ex": "Support can share the workaround until the fix is out."
+    },
+    {
+      "w": "tradeoff",
+      "ipa": "/ˈtreɪdˌɔːf/",
+      "zh": "取舍、权衡",
+      "ex": "The tradeoff is faster delivery but less test coverage."
+    },
+    {
+      "w": "intact",
+      "ipa": "/ɪnˈtækt/",
+      "zh": "完整无损的",
+      "ex": "After the migration, all user settings were intact."
+    },
+    {
+      "w": "recommendation",
+      "ipa": "/ˌrekəmenˈdeɪʃən/",
+      "zh": "建议、推荐方案",
+      "ex": "My recommendation is to delay the rollout by one week."
+    },
+    {
+      "w": "corrupt (v.)",
+      "ipa": "/kəˈrʌpt/",
+      "zh": "损坏（数据）",
+      "ex": "A race condition corrupted a few user profiles last night.",
+      "tts_w": "corrupt"
+    },
+    {
+      "w": "camp",
+      "ipa": "/kæmp/",
+      "zh": "阵营、派别",
+      "ex": "The team is split into two camps on the migration plan."
+    },
+    {
+      "w": "judgment",
+      "ipa": "/ˈdʒʌdʒmənt/",
+      "zh": "判断、判断力",
+      "ex": "I trust your judgment on which tests we can skip."
+    }
+  ]
+}

@@ -1,0 +1,183 @@
+{
+  "id": "093",
+  "title": "Writing for Readers Whose First Language Isn't English",
+  "meta": "B2 · 约 280 词 · 场景：写给非母语读者",
+  "voice": "en-GB-RyanNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Clever Writing Gets Lost",
+      "paragraphs": [
+        [
+          "Imagine you send a message saying the new feature is \"a bit of a __long shot__\" and that you would like to \"park it for now\".",
+          "To a reader in Seoul or Jakarta, reading in their second or third language late at night, that sentence can mean almost anything.",
+          "Some will paste it into a translation tool, and the result may be complete ==nonsense==."
+        ],
+        [
+          "Most of our readers are smart, but they read quickly, between meetings, and often on a phone.",
+          "Idioms, jokes and long sentences make them work harder, and ==ambiguous== words leave them guessing.",
+          "**If your reader has to guess what you mean, you have not finished writing.**"
+        ],
+        [
+          "This is not about writing simple ideas.",
+          "It is about writing complex ideas in plain, ==predictable== language."
+        ]
+      ],
+      "heading_zh": "1. 写得巧，读者就丢了",
+      "paragraphs_zh": [
+        [
+          "想象一下，你发了条消息，说新功能「有点悬」，想「先放一放」。",
+          "对一个在首尔或雅加达、深夜用第二甚至第三语言读消息的人来说，这句话几乎可以理解成任何意思。",
+          "有些人会把它贴进翻译工具，翻出来的可能完全是胡话。"
+        ],
+        [
+          "我们的读者大多很聪明，但他们读得很快，在会议间隙读，而且经常是在手机上。",
+          "习语、玩笑和长句会让他们读得更费劲，有歧义的词则让他们只能靠猜。",
+          "如果读者还得猜你什么意思，那你就还没写完。"
+        ],
+        [
+          "这不是说只能写简单的想法。",
+          "而是要用平实、好预测的语言，把复杂的想法写清楚。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Four Rules for Global Readers",
+      "paragraphs": [
+        [
+          "Put the request in the first line.",
+          "\"Please review the design by Thursday\" should come before the background, not at the end of the third paragraph."
+        ],
+        [
+          "Keep one idea per sentence, and prefer common verbs.",
+          "\"We will delay the launch\" is clearer than \"We are going to __push the launch back__ a bit.\"",
+          "==Phrasal verbs== feel natural to native speakers, but they are often the hardest part for everyone else."
+        ],
+        [
+          "Write dates and numbers so they cannot be misunderstood.",
+          "Spell out the month, because a date written only in numbers is ==interpreted== differently in London and New York.",
+          "Give the time zone too, even when it feels obvious to you."
+        ],
+        [
+          "Finally, __save the idioms for__ calls, where tone and facial expressions help.",
+          "**In writing, clear beats clever every time.**",
+          "Your readers will not remember your style, but they will remember that your messages were easy to ==act on==."
+        ]
+      ],
+      "heading_zh": "2. 写给全球读者的四条规矩",
+      "paragraphs_zh": [
+        [
+          "把请求放在第一行。",
+          "「请在周四前评审一下设计」应该放在背景之前，而不是藏在第三段末尾。"
+        ],
+        [
+          "一句话只讲一个意思，尽量用常见动词。",
+          "「我们会推迟上线」比「我们打算把上线往后挪一挪」更清楚。",
+          "短语动词对母语者来说很自然，但对其他人往往是最难的部分。"
+        ],
+        [
+          "日期和数字要写得不可能被误解。",
+          "月份要用单词写出来，因为纯数字写的日期，在伦敦和纽约会被读成不同的意思。",
+          "时区也要写上，哪怕你觉得再明显不过。"
+        ],
+        [
+          "最后，习语留到打电话的时候用，那时有语气和表情帮忙。",
+          "写东西的时候，清楚永远胜过巧妙。",
+          "读者不会记得你的文风，但会记得你的消息拿来就能执行。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么像 long shot、park it 这样的说法在全球团队的书面沟通里有问题？",
+      "a": "读者用第二、第三语言在深夜快速阅读，可能看不懂，或用翻译工具翻出一堆胡话。"
+    },
+    {
+      "q": "作者说这篇讲的是写简单的想法吗？",
+      "a": "不是；是用平实、可预测的语言写复杂的想法。读者要靠猜，说明还没写完。"
+    },
+    {
+      "q": "给全球读者写作的四条规则是什么？",
+      "a": "请求放第一行；一句一个意思，多用常见动词少用短语动词；日期写出月份并注明时区；习语留到通话里用。"
+    }
+  ],
+  "dictation": [
+    "If your reader has to guess what you mean, you have not finished writing.",
+    "Put the request in the first line.",
+    "Keep one idea per sentence, and prefer common verbs.",
+    "In writing, clear beats clever every time."
+  ],
+  "shadow": {
+    "text": "Most of our readers are smart, but they read quickly, between meetings, and often on a phone. Idioms, jokes and long sentences make them work harder, and ambiguous words leave them guessing. If your reader has to guess what you mean, you have not finished writing.",
+    "marked": "Most of our readers are <b>smart</b>, / but they read <b>quickly</b>, / between <b>meetings</b>, / and often on a <b>phone</b>. //<br><b>Idioms</b>, jokes and long sentences / make them work <b>harder</b>, / and <b>ambiguous</b> words / leave them <b>guessing</b>. //<br>If your reader has to <b>guess</b> what you mean, / you have <b>not finished</b> writing. //"
+  },
+  "prompts": [
+    {
+      "q": "你在会上口头向多国同事宣布上线推迟一周。按文中的写法说：先说结论和请求，一句一个意思，日期说清楚，30 秒。",
+      "ref": "Here is the main point. We will delay the launch by one week, to the twelfth of June. The reason is a bug in the payment flow. The fix is ready, but we need three more days to test it. Please update your plans. If this delay blocks your team, tell me by Friday.",
+      "ref_zh": "先说重点。我们会把上线推迟一周，改到六月十二日。原因是支付流程里有个 bug。修复已经好了，但我们还需要三天来测试。请大家相应调整计划。如果这次延期会卡住你们团队，请在周五前告诉我。"
+    },
+    {
+      "q": "下属给海外团队写的邮件里全是 touch base、circle back、low-hanging fruit。给他 30 秒反馈。",
+      "ref": "The content of this email is good, but I think some readers will struggle with it. Phrases like circle back and low-hanging fruit are hard for people reading in a second language, and translation tools often get them wrong. Could you replace them with plain verbs and put the request in the first line? Then it's ready to send.",
+      "ref_zh": "这封邮件内容挺好的，但我觉得有些读者会读得很吃力。像 circle back、low-hanging fruit 这种说法，用第二语言读的人很难看懂，翻译工具也经常翻错。能不能换成平实的动词，再把请求放到第一行？这样就可以发了。"
+    }
+  ],
+  "words": [
+    {
+      "w": "nonsense",
+      "ipa": "/ˈnɑːnsens/",
+      "zh": "胡话、毫无意义的东西",
+      "ex": "The machine translation of that idiom was complete nonsense."
+    },
+    {
+      "w": "ambiguous",
+      "ipa": "/æmˈbɪɡjuəs/",
+      "zh": "模棱两可的",
+      "ex": "\"Soon\" is ambiguous, please give an actual date."
+    },
+    {
+      "w": "predictable",
+      "ipa": "/prɪˈdɪktəbəl/",
+      "zh": "可预测的",
+      "ex": "Use a predictable structure: request, context, deadline."
+    },
+    {
+      "w": "phrasal verb",
+      "ipa": "/ˈfreɪzəl vɜːrb/",
+      "zh": "短语动词",
+      "ex": "\"Roll out\" is a phrasal verb that many readers look up."
+    },
+    {
+      "w": "interpret",
+      "ipa": "/ɪnˈtɜːrprɪt/",
+      "zh": "理解、解读",
+      "ex": "Different teams interpreted the requirement in different ways."
+    },
+    {
+      "w": "act on",
+      "ipa": "/ækt ɑːn/",
+      "zh": "根据……采取行动",
+      "ex": "Write feedback that people can act on, not just agree with."
+    },
+    {
+      "w": "long shot",
+      "ipa": "/lɔːŋ ʃɑːt/",
+      "zh": "希望渺茫的事",
+      "ex": "Getting this into the current release is a long shot."
+    },
+    {
+      "w": "plain",
+      "ipa": "/pleɪn/",
+      "zh": "平实的、简明的",
+      "ex": "Write the summary in plain English so the whole region can use it."
+    },
+    {
+      "w": "spell out",
+      "ipa": "/spel aʊt/",
+      "zh": "清楚说明、拼写出来",
+      "ex": "Spell out what you need from each team, don't assume they know."
+    }
+  ]
+}

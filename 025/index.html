@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Asking Why Five Times · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "025", "title": "Asking Why Five Times", "meta": "B2 · 约 260 词 · 场景：根因分析", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Following the Chain", "heading_zh": "1. 顺着链条往下问", "rows": [[{"id": "s0_0_0", "md": "Start with the ==symptom==: the checkout service returned errors for twenty minutes.", "text": "Start with the symptom: the checkout service returned errors for twenty minutes.", "zh": "先从现象说起：结账服务报错了二十分钟。", "sp": null}, {"id": "s0_0_1", "md": "Why did that happen?", "text": "Why did that happen?", "zh": "为什么会这样？", "sp": null}, {"id": "s0_0_2", "md": "Because the database ran out of connections.", "text": "Because the database ran out of connections.", "zh": "因为数据库连接被耗尽了。", "sp": null}], [{"id": "s0_1_0", "md": "Why did it run out?", "text": "Why did it run out?", "zh": "为什么会耗尽？", "sp": null}, {"id": "s0_1_1", "md": "Because a new batch job opened connections and never closed them.", "text": "Because a new batch job opened connections and never closed them.", "zh": "因为一个新的批处理任务打开连接后一直没关。", "sp": null}, {"id": "s0_1_2", "md": "Why did that reach production?", "text": "Why did that reach production?", "zh": "为什么这个问题会被带到生产环境？", "sp": null}, {"id": "s0_1_3", "md": "Because our tests run against a tiny database where the ==leak== never shows up.", "text": "Because our tests run against a tiny database where the leak never shows up.", "zh": "因为我们的测试跑在一个很小的数据库上，连接泄漏在那里根本暴露不出来。", "sp": null}], [{"id": "s0_2_0", "md": "One more why, and you reach something worth fixing: nobody owns the test data, so it has not been updated in a year.", "text": "One more why, and you reach something worth fixing: nobody owns the test data, so it has not been updated in a year.", "zh": "再问一个为什么，就能挖到真正值得修的东西：测试数据没人负责，所以一年都没更新过。", "sp": null}, {"id": "s0_2_1", "md": "**The first answer tells you what broke; the last one tells you why it will break again.**", "text": "The first answer tells you what broke; the last one tells you why it will break again.", "zh": "第一个答案告诉你什么坏了；最后一个答案告诉你它为什么还会再坏。", "sp": null}, {"id": "s0_2_2", "md": "Fixing the job is a ==patch==, while fixing the test setup __closes the door on__ a whole family of bugs.", "text": "Fixing the job is a patch, while fixing the test setup closes the door on a whole family of bugs.", "zh": "修好那个任务只是打个补丁，而修好测试环境，能把一整类 bug 都堵死。", "sp": null}]]}, {"heading": "2. Three Ways to Get It Wrong", "heading_zh": "2. 三种常见的误区", "rows": [[{"id": "s1_0_0", "md": "The most common mistake is stopping at a person.", "text": "The most common mistake is stopping at a person.", "zh": "最常见的错误是追到某个人就停下了。", "sp": null}, {"id": "s1_0_1", "md": "\"The job leaked because Ken forgot to close the connection\" is a __dead end__.", "text": "\"The job leaked because Ken forgot to close the connection\" is a dead end.", "zh": "「任务泄漏是因为 Ken 忘了关连接」，这就走进死胡同了。", "sp": null}, {"id": "s1_0_2", "md": "People forget things; the real question is why the system let the mistake __slip through__.", "text": "People forget things; the real question is why the system let the mistake slip through.", "zh": "人总会忘事；真正要问的是，系统为什么让这个错误溜了过去。", "sp": null}], [{"id": "s1_1_0", "md": "The second mistake is following only one chain.", "text": "The second mistake is following only one chain.", "zh": "第二个错误是只顺着一条链往下问。", "sp": null}, {"id": "s1_1_1", "md": "Real incidents usually have several ==contributing== causes, so __branch out__ when an answer has two parts.", "text": "Real incidents usually have several contributing causes, so branch out when an answer has two parts.", "zh": "真实的事故通常有好几个共同起作用的原因，所以一个答案包含两部分时，就要分叉往下追。", "sp": null}, {"id": "s1_1_2", "md": "A missing alert and a slow rollback can each deserve their own line of whys.", "text": "A missing alert and a slow rollback can each deserve their own line of whys.", "zh": "缺失的告警和缓慢的回滚，可能各自都值得单独追一串为什么。", "sp": null}], [{"id": "s1_2_0", "md": "The third mistake is taking the number five too literally.", "text": "The third mistake is taking the number five too literally.", "zh": "第三个错误是把「五」这个数字看得太死。", "sp": null}, {"id": "s1_2_1", "md": "**Stop when you reach a cause you can actually change, whether that takes three whys or seven.**", "text": "Stop when you reach a cause you can actually change, whether that takes three whys or seven.", "zh": "追到一个你真正能改变的原因就停下，不管那需要问三次还是七次。", "sp": null}, {"id": "s1_2_2", "md": "Going further usually ends in ==abstract== answers like \"we need better communication.\"", "text": "Going further usually ends in abstract answers like \"we need better communication.\"", "zh": "再往下追，通常只会得到「我们需要加强沟通」这种空泛的答案。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, write the chain down where everyone can see it.", "text": "Finally, write the chain down where everyone can see it.", "zh": "最后，把这条链写在大家都能看到的地方。", "sp": null}, {"id": "s1_3_1", "md": "A visible chain keeps the discussion ==grounded== and stops people from jumping to their favorite theory.", "text": "A visible chain keeps the discussion grounded and stops people from jumping to their favorite theory.", "zh": "链条摆在眼前，讨论就能落到实处，也能防止大家直接跳到自己偏爱的那套理论上。", "sp": null}]]}], "gist": [{"q": "文中的例子里，第一个答案和最后一个答案分别是什么？", "a": "第一个：数据库连接耗尽；最后一个：没人负责测试数据，一年没更新，所以泄漏在测试里发现不了。"}, {"q": "为什么修测试环境比修那个任务更有价值？", "a": "修任务只是打补丁，修测试环境能堵住一整类 bug。"}, {"q": "五个为什么常见的三种用错方式是什么？", "a": "停在某个人身上；只追一条链（不分叉）；死守「五」这个数字，应该在找到能改的原因时就停。"}], "dictation": [{"id": "s0_2_1", "text": "The first answer tells you what broke; the last one tells you why it will break again."}, {"id": "s1_2_1", "text": "Stop when you reach a cause you can actually change, whether that takes three whys or seven."}, {"id": "s1_0_2", "text": "People forget things; the real question is why the system let the mistake slip through."}, {"id": "s1_0_0", "text": "The most common mistake is stopping at a person."}], "shadow": {"text": "The most common mistake is stopping at a person. \"The job leaked because Ken forgot to close the connection\" is a dead end. People forget things; the real question is why the system let the mistake slip through.", "marked": "The most <b>common</b> mistake / is stopping at a <b>person</b>. //<br>\"The job leaked / because <b>Ken forgot</b> to close the connection\" / is a <b>dead end</b>. //<br>People <b>forget</b> things; / the <b>real</b> question is / why the <b>system</b> let the mistake / <b>slip through</b>. //"}, "prompts": [{"q": "复盘会上大家停在「是小王忘了加超时」。用 30 秒把讨论推进一层：不针对个人，追问系统为什么没拦住。", "ref": "I agree the timeout was missing, but let's not stop there, because anyone could forget a timeout. The more useful question is why nothing caught it. Our client library doesn't set a default, and the code review checklist doesn't mention it. If we add a default timeout to the library, this whole class of mistakes goes away, not just this one.", "ref_zh": "我同意是缺了超时设置，但别停在这儿，因为谁都可能忘了设超时。更有价值的问题是，为什么没有任何环节拦住它。我们的客户端库没有默认值，code review 检查清单里也没提这一点。如果我们在库里加一个默认超时，消失的就是这一整类错误，而不只是这一次。", "id": "ref0"}, {"q": "有人提议把复盘结论写成「加强沟通」。用 30 秒说明这个结论太抽象，并提议再问一层为什么。", "ref": "I'm not sure better communication is something we can act on. Let's ask one more why. Why didn't the payments team know about the schema change? Because the change was announced in a channel they don't follow. So a concrete fix could be that any schema change automatically notifies every service that reads that table. That's something we can build and check next month.", "ref_zh": "我不确定「加强沟通」是我们能落地的东西。我们再问一个为什么。支付团队为什么不知道这次表结构变更？因为变更是在一个他们没关注的频道里通知的。所以一个具体的改法可以是：任何表结构变更都自动通知所有读这张表的服务。这是我们下个月就能做出来、也能验证的事。", "id": "ref1"}], "words": [{"w": "symptom", "ipa": "/ˈsɪmptəm/", "zh": "症状、表面现象", "ex": "High latency is the symptom; the slow query is the cause.", "id": "w0"}, {"w": "leak (n.)", "ipa": "/liːk/", "zh": "泄漏", "ex": "A connection leak in the worker slowly drained the pool.", "tts_w": "leak", "id": "w1"}, {"w": "patch (n.)", "ipa": "/pætʃ/", "zh": "补丁、临时修补", "ex": "The restart is a patch; we still need a real fix.", "tts_w": "patch", "id": "w2"}, {"w": "contributing", "ipa": "/kənˈtrɪbjuːtɪŋ/", "zh": "促成的、起作用的", "ex": "The missing alert was a contributing factor, not the root cause.", "id": "w3"}, {"w": "abstract", "ipa": "/æbˈstrækt/", "zh": "抽象的", "ex": "\"Improve quality\" is too abstract to be an action item.", "id": "w4"}, {"w": "grounded", "ipa": "/ˈɡraʊndɪd/", "zh": "有依据的、脚踏实地的", "ex": "Let's keep the discussion grounded in the logs.", "id": "w5"}, {"w": "literally", "ipa": "/ˈlɪtərəli/", "zh": "字面上地", "ex": "Don't take the template too literally; skip sections that don't apply.", "id": "w6"}, {"w": "incident", "ipa": "/ˈɪnsɪdənt/", "zh": "事故", "ex": "We opened an incident as soon as error rates crossed the threshold.", "id": "w7"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Following the Chain", "zh": "1. 顺着链条往下问", "start": 0.0, "end": 2.04, "words": [[0.118, 0.395], [0.711, 1.171], [1.184, 1.25], [1.263, 1.645]]}, {"kind": "s", "id": "s0_0_0", "md": "Start with the ==symptom==: the checkout service returned errors for twenty minutes.", "zh": "先从现象说起：结账服务报错了二十分钟。", "sp": null, "gap": false, "start": 2.04, "end": 6.864, "words": [[2.158, 2.501], [2.514, 2.658], [2.672, 2.764], [2.777, 3.198], [3.514, 3.606], [3.619, 4.027], [4.04, 4.474], [4.487, 4.961], [5.093, 5.487], [5.501, 5.672], [5.685, 5.961], [5.974, 6.474]]}, {"kind": "s", "id": "s0_0_1", "md": "Why did that happen?", "zh": "为什么会这样？", "sp": null, "gap": false, "start": 6.864, "end": 8.736, "words": [[6.982, 7.075], [7.088, 7.193], [7.206, 7.325], [7.338, 7.706]]}, {"kind": "s", "id": "s0_0_2", "md": "Because the database ran out of connections.", "zh": "因为数据库连接被耗尽了。", "sp": null, "gap": false, "start": 8.736, "end": 11.544, "words": [[8.854, 9.131], [9.144, 9.262], [9.275, 9.894], [9.907, 10.196], [10.21, 10.315], [10.328, 10.407], [10.42, 11.144]]}, {"kind": "s", "id": "s0_1_0", "md": "Why did it run out?", "zh": "为什么会耗尽？", "sp": null, "gap": true, "start": 11.544, "end": 12.816, "words": [[11.649, 11.741], [11.755, 11.86], [11.873, 11.965], [11.978, 12.136], [12.149, 12.426]]}, {"kind": "s", "id": "s0_1_1", "md": "Because a new batch job opened connections and never closed them.", "zh": "因为一个新的批处理任务打开连接后一直没关。", "sp": null, "gap": false, "start": 12.816, "end": 16.896, "words": [[12.934, 13.184], [13.198, 13.237], [13.25, 13.487], [13.5, 13.882], [13.895, 14.25], [14.369, 14.645], [14.658, 15.382], [15.592, 15.737], [15.75, 15.961], [15.974, 16.316], [16.329, 16.5]]}, {"kind": "s", "id": "s0_1_2", "md": "Why did that reach production?", "zh": "为什么这个问题会被带到生产环境？", "sp": null, "gap": false, "start": 16.896, "end": 18.768, "words": [[17.001, 17.12], [17.133, 17.264], [17.278, 17.449], [17.462, 17.646], [17.659, 18.199]]}, {"kind": "s", "id": "s0_1_3", "md": "Because our tests run against a tiny database where the ==leak== never shows up.", "zh": "因为我们的测试跑在一个很小的数据库上，连接泄漏在那里根本暴露不出来。", "sp": null, "gap": false, "start": 18.768, "end": 23.52, "words": [[18.886, 19.136], [19.15, 19.268], [19.281, 19.702], [19.715, 20.031], [20.044, 20.386], [20.4, 20.452], [20.465, 20.926], [20.939, 21.61], [21.623, 21.755], [21.768, 21.873], [21.886, 22.215], [22.229, 22.492], [22.505, 22.847], [22.86, 23.123]]}, {"kind": "s", "id": "s0_2_0", "md": "One more why, and you reach something worth fixing: nobody owns the test data, so it has not been updated in a year.", "zh": "再问一个为什么，就能挖到真正值得修的东西：测试数据没人负责，所以一年都没更新过。", "sp": null, "gap": true, "start": 23.52, "end": 30.864, "words": [[23.638, 23.796], [23.809, 24.033], [24.046, 24.428], [24.757, 24.902], [24.915, 25.073], [25.086, 25.309], [25.323, 25.691], [25.704, 25.902], [25.915, 26.454], [26.902, 27.296], [27.309, 27.494], [27.507, 27.625], [27.638, 27.981], [27.994, 28.27], [28.665, 28.809], [28.823, 28.875], [28.888, 29.02], [29.033, 29.296], [29.309, 29.454], [29.467, 29.928], [29.941, 30.007], [30.02, 30.046], [30.059, 30.467]]}, {"kind": "s", "id": "s0_2_1", "md": "**The first answer tells you what broke; the last one tells you why it will break again.**", "zh": "第一个答案告诉你什么坏了；最后一个答案告诉你它为什么还会再坏。", "sp": null, "gap": false, "start": 30.864, "end": 35.616, "words": [[30.982, 31.048], [31.061, 31.404], [31.417, 31.719], [31.732, 32.009], [32.022, 32.114], [32.127, 32.311], [32.325, 32.719], [33.022, 33.127], [33.14, 33.482], [33.496, 33.732], [33.746, 34.035], [34.048, 34.153], [34.167, 34.417], [34.43, 34.509], [34.522, 34.627], [34.64, 34.877], [34.89, 35.219]]}, {"kind": "s", "id": "s0_2_2", "md": "Fixing the job is a ==patch==, while fixing the test setup __closes the door on__ a whole family of bugs.", "zh": "修好那个任务只是打个补丁，而修好测试环境，能把一整类 bug 都堵死。", "sp": null, "gap": false, "start": 35.616, "end": 42.552, "words": [[35.8, 36.129], [36.142, 36.234], [36.248, 36.669], [36.774, 36.879], [36.892, 36.958], [36.971, 37.524], [37.853, 38.024], [38.037, 38.458], [38.471, 38.563], [38.577, 38.892], [38.905, 39.287], [39.405, 39.919], [39.932, 40.05], [40.063, 40.471], [40.59, 40.682], [40.695, 40.748], [40.761, 41.077], [41.09, 41.511], [41.524, 41.616], [41.629, 42.155]]}, {"kind": "h", "id": "h1", "md": "2. Three Ways to Get It Wrong", "zh": "2. 三种常见的误区", "start": 42.552, "end": 44.904, "words": [[42.657, 42.894], [43.249, 43.513], [43.526, 43.815], [43.828, 43.907], [43.92, 44.052], [44.065, 44.184], [44.197, 44.513]]}, {"kind": "s", "id": "s1_0_0", "md": "The most common mistake is stopping at a person.", "zh": "最常见的错误是追到某个人就停下了。", "sp": null, "gap": false, "start": 44.904, "end": 47.832, "words": [[45.022, 45.075], [45.088, 45.351], [45.365, 45.707], [45.72, 46.207], [46.299, 46.391], [46.404, 46.812], [46.825, 46.904], [46.917, 46.957], [46.97, 47.443]]}, {"kind": "s", "id": "s1_0_1", "md": "\"The job leaked because Ken forgot to close the connection\" is a __dead end__.", "zh": "「任务泄漏是因为 Ken 忘了关连接」，这就走进死胡同了。", "sp": null, "gap": false, "start": 47.832, "end": 52.416, "words": [[48.043, 48.108], [48.108, 48.424], [48.437, 48.753], [48.766, 49.121], [49.135, 49.424], [49.437, 49.845], [49.858, 49.95], [49.964, 50.293], [50.306, 50.398], [50.411, 50.964], [51.2, 51.345], [51.358, 51.437], [51.45, 51.674], [51.687, 52.016]]}, {"kind": "s", "id": "s1_0_2", "md": "People forget things; the real question is why the system let the mistake __slip through__.", "zh": "人总会忘事；真正要问的是，系统为什么让这个错误溜了过去。", "sp": null, "gap": false, "start": 52.416, "end": 57.744, "words": [[52.534, 52.798], [52.811, 53.179], [53.192, 53.705], [53.929, 54.034], [54.048, 54.271], [54.284, 54.824], [54.955, 55.087], [55.1, 55.298], [55.311, 55.416], [55.429, 55.929], [55.942, 56.1], [56.113, 56.179], [56.192, 56.627], [56.64, 56.969], [56.982, 57.35]]}, {"kind": "s", "id": "s1_1_0", "md": "The second mistake is following only one chain.", "zh": "第二个错误是只顺着一条链往下问。", "sp": null, "gap": true, "start": 57.744, "end": 61.008, "words": [[57.862, 57.928], [57.941, 58.297], [58.31, 58.783], [58.876, 58.981], [58.994, 59.533], [59.691, 59.955], [59.968, 60.244], [60.257, 60.626]]}, {"kind": "s", "id": "s1_1_1", "md": "Real incidents usually have several ==contributing== causes, so __branch out__ when an answer has two parts.", "zh": "真实的事故通常有好几个共同起作用的原因，所以一个答案包含两部分时，就要分叉往下追。", "sp": null, "gap": false, "start": 61.008, "end": 67.488, "words": [[61.113, 61.363], [61.376, 61.876], [61.89, 62.376], [62.39, 62.626], [62.64, 63.113], [63.126, 63.732], [63.745, 64.258], [64.64, 64.797], [64.811, 65.192], [65.205, 65.469], [65.561, 65.666], [65.679, 65.771], [65.784, 66.166], [66.179, 66.337], [66.35, 66.534], [66.547, 67.1]]}, {"kind": "s", "id": "s1_1_2", "md": "A missing alert and a slow rollback can each deserve their own line of whys.", "zh": "缺失的告警和缓慢的回滚，可能各自都值得单独追一串为什么。", "sp": null, "gap": false, "start": 67.488, "end": 72.504, "words": [[67.58, 67.62], [67.633, 67.988], [68.001, 68.383], [68.659, 68.764], [68.777, 68.83], [68.843, 69.238], [69.251, 69.83], [69.909, 70.054], [70.146, 70.343], [70.356, 70.777], [70.791, 70.975], [70.988, 71.199], [71.212, 71.462], [71.475, 71.567], [71.58, 72.12]]}, {"kind": "s", "id": "s1_2_0", "md": "The third mistake is taking the number five too literally.", "zh": "第三个错误是把「五」这个数字看得太死。", "sp": null, "gap": true, "start": 72.504, "end": 76.128, "words": [[72.622, 72.701], [72.715, 73.004], [73.017, 73.557], [73.649, 73.767], [73.78, 74.109], [74.122, 74.188], [74.201, 74.517], [74.53, 74.991], [75.004, 75.215], [75.228, 75.741]]}, {"kind": "s", "id": "s1_2_1", "md": "**Stop when you reach a cause you can actually change, whether that takes three whys or seven.**", "zh": "追到一个你真正能改变的原因就停下，不管那需要问三次还是七次。", "sp": null, "gap": false, "start": 76.128, "end": 81.792, "words": [[76.246, 76.641], [76.654, 76.773], [76.786, 76.917], [76.931, 77.141], [77.154, 77.207], [77.22, 77.641], [77.654, 77.76], [77.773, 77.918], [77.931, 78.338], [78.352, 78.931], [79.233, 79.483], [79.496, 79.667], [79.681, 79.996], [80.01, 80.339], [80.352, 80.865], [80.878, 80.983], [80.996, 81.391]]}, {"kind": "s", "id": "s1_2_2", "md": "Going further usually ends in ==abstract== answers like \"we need better communication.\"", "zh": "再往下追，通常只会得到「我们需要加强沟通」这种空泛的答案。", "sp": null, "gap": false, "start": 81.792, "end": 87.24, "words": [[81.897, 82.213], [82.226, 82.647], [82.66, 83.226], [83.239, 83.503], [83.516, 83.634], [83.647, 84.279], [84.292, 84.726], [84.739, 84.976], [85.2, 85.371], [85.384, 85.726], [85.739, 86.042], [86.055, 86.845]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, write the chain down where everyone can see it.", "zh": "最后，把这条链写在大家都能看到的地方。", "sp": null, "gap": true, "start": 87.24, "end": 90.744, "words": [[87.398, 87.806], [88.122, 88.279], [88.293, 88.372], [88.385, 88.674], [88.687, 89.029], [89.043, 89.227], [89.332, 89.74], [89.753, 89.872], [89.885, 90.148], [90.161, 90.345]]}, {"kind": "s", "id": "s1_3_1", "md": "A visible chain keeps the discussion ==grounded== and stops people from jumping to their favorite theory.", "zh": "链条摆在眼前，讨论就能落到实处，也能防止大家直接跳到自己偏爱的那套理论上。", "sp": null, "gap": false, "start": 90.744, "end": 96.648, "words": [[90.836, 90.889], [90.902, 91.336], [91.349, 91.797], [91.81, 92.126], [92.139, 92.231], [92.244, 92.797], [92.81, 93.362], [93.586, 93.757], [93.77, 94.152], [94.165, 94.52], [94.533, 94.704], [94.718, 95.165], [95.178, 95.283], [95.297, 95.454], [95.468, 95.862], [95.876, 96.257]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

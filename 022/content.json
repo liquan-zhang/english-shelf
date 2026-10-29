@@ -1,0 +1,190 @@
+{
+  "id": "022",
+  "title": "Writing Code Review Comments That Help",
+  "meta": "B2 · 约 270 词 · 场景：代码评审",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. A Comment Without Context",
+      "paragraphs": [
+        [
+          "Imagine you open a pull request and find one comment: \"Why is this here?\"",
+          "It could be a real question, a polite complaint, or a sign that the reviewer wants the whole thing rewritten.",
+          "Most authors assume the worst."
+        ],
+        [
+          "Written comments __lose the tone of voice__ that softens a question in person.",
+          "That is why short review comments so often feel ==hostile==, even when the reviewer meant nothing bad.",
+          "**The fix is not to be nicer; it is to be clearer.**"
+        ],
+        [
+          "Clear comments also save time.",
+          "When the author has to guess your ==intent==, they either miss something important or spend an afternoon on a ==trivial== change.",
+          "Then the two of you __go back and forth__ for days, and the release waits."
+        ]
+      ],
+      "heading_zh": "1. 没有上下文的评论",
+      "paragraphs_zh": [
+        [
+          "想象一下，你打开一个 PR，只看到一条评论：「这个为什么在这儿？」",
+          "它可能是个真诚的问题，可能是委婉的抱怨，也可能说明评审人想让你整个重写。",
+          "大多数作者都会往最坏的方向想。"
+        ],
+        [
+          "书面评论少了当面说话时那种能让提问显得柔和的语气。",
+          "所以简短的 review 评论常常让人觉得带着敌意，哪怕评审人根本没那个意思。",
+          "解决办法不是更客气，而是更清楚。"
+        ],
+        [
+          "清楚的评论还能省时间。",
+          "作者要是得猜你的意图，要么漏掉重要的东西，要么在一个鸡毛蒜皮的改动上耗掉一下午。",
+          "然后你们俩来来回回拉扯好几天，发布就只能干等着。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Label, Reason, Option",
+      "paragraphs": [
+        [
+          "**Start every comment with a label: blocking, suggestion, or question.**",
+          "\"Blocking\" means the code should not ==merge== until it is fixed.",
+          "\"Suggestion\" means you would do it differently, but the author decides.",
+          "\"Question\" means you genuinely want to understand."
+        ],
+        [
+          "Then give the reason.",
+          "\"This loop calls the database once per user, which will hurt ==latency== on large accounts\" is far more useful than \"this is slow.\"",
+          "A reason also lets the author __push back__ if you are wrong."
+        ],
+        [
+          "Finally, offer an option when you can.",
+          "A short ==snippet== or a link to an example __saves a round trip__.",
+          "Keep ==nitpicks== about spacing and naming to a minimum, or __leave them to__ the linter."
+        ],
+        [
+          "Good reviewers also say what they like.",
+          "One line such as \"nice test coverage here\" tells the author which habits to keep.",
+          "Praise is cheap to write, and it makes the hard comments easier to accept."
+        ]
+      ],
+      "heading_zh": "2. 标签、理由、方案",
+      "paragraphs_zh": [
+        [
+          "每条评论开头都加个标签：blocking、建议，或者提问。",
+          "「Blocking」意思是这个问题不修，代码就不该合入。",
+          "「建议」意思是你会换种做法，但由作者来定。",
+          "「提问」意思是你确实想搞明白。"
+        ],
+        [
+          "然后给出理由。",
+          "「这个循环每个用户查一次数据库，大账号的延迟会很难看」，比一句「这里很慢」有用得多。",
+          "有了理由，你要是说错了，作者也能反驳你。"
+        ],
+        [
+          "最后，能给方案就给个方案。",
+          "一小段代码或者一个示例链接，就能省掉一轮来回。",
+          "空格、命名这类细枝末节的挑刺尽量少提，或者干脆交给 linter。"
+        ],
+        [
+          "好的评审人也会说自己喜欢哪里。",
+          "一句「这里测试覆盖做得不错」，就能让作者知道哪些习惯该保持。",
+          "夸人写起来不费事，还能让那些难听的评论更容易被接受。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么简短的 review 评论常常让人觉得有敌意？",
+      "a": "文字丢掉了当面说话时的语气，作者猜不到评论者的意图，往往最坏处想。"
+    },
+    {
+      "q": "作者建议每条评论开头加什么？分别是什么意思？",
+      "a": "加标签：blocking（不改不能合入）、suggestion（建议，作者决定）、question（真心想弄懂）。"
+    },
+    {
+      "q": "除了标签，一条好评论还应包含什么？",
+      "a": "说明理由（让作者能反驳），尽量给出可选方案（代码片段或示例链接）；格式类小问题交给 linter；也要说出做得好的地方。"
+    }
+  ],
+  "dictation": [
+    "The fix is not to be nicer; it is to be clearer.",
+    "Start every comment with a label: blocking, suggestion, or question.",
+    "Written comments lose the tone of voice that softens a question in person.",
+    "A reason also lets the author push back if you are wrong."
+  ],
+  "shadow": {
+    "text": "Start every comment with a label: blocking, suggestion, or question. \"Blocking\" means the code should not merge until it is fixed. \"Suggestion\" means you would do it differently, but the author decides.",
+    "marked": "Start <b>every</b> comment with a <b>label</b>: / <b>blocking</b>, / <b>suggestion</b>, / or <b>question</b>. //<br>\"Blocking\" means the code should <b>not merge</b> / until it is <b>fixed</b>. //<br>\"Suggestion\" means you would do it <b>differently</b>, / but the <b>author</b> decides. //"
+  },
+  "prompts": [
+    {
+      "q": "你在 review 一个同事的 PR，发现一个循环里每次都查数据库。口头跟他说这个问题：先说明是 blocking 还是 suggestion，再给理由和替代方案。",
+      "ref": "Hey, one thing on your pull request, and I'd call this one blocking. The loop in the sync job queries the database once per user. For small accounts it's fine, but our biggest customers have thousands of users, so latency will spike badly. Could you batch the lookups into a single query? I left a short snippet in the comment that shows one way to do it.",
+      "ref_zh": "嘿，你的 PR 有个问题，我觉得这个算 blocking。同步任务里那个循环每个用户查一次数据库。小账号没问题，但我们最大的客户有好几千个用户，延迟会飙得很厉害。能不能把这些查询合成一次批量查询？我在评论里贴了一小段代码，演示了一种写法。"
+    },
+    {
+      "q": "新人抱怨你的 review 评论太冷、太多小问题。用 30 秒向他解释你接下来会怎么改评论方式。",
+      "ref": "Thanks for telling me, that's fair feedback. From now on I'll label every comment, so you'll know right away whether it's blocking, just a suggestion, or a real question. I'll also explain why I'm asking for a change. And I'll stop commenting on spacing, since the linter can catch that. If something still feels unclear, just ping me and we can talk it through.",
+      "ref_zh": "谢谢你跟我说，这个反馈很中肯。以后我每条评论都会加标签，你一眼就能看出是 blocking、只是建议，还是真的在提问。我也会说明为什么要改。空格这类问题我就不评了，linter 能查出来。如果还有哪里不清楚，直接 ping 我，我们当面聊。"
+    }
+  ],
+  "words": [
+    {
+      "w": "hostile",
+      "ipa": "/ˈhɑːstl/",
+      "zh": "有敌意的",
+      "ex": "His review comments read as hostile, though he meant them as questions."
+    },
+    {
+      "w": "intent",
+      "ipa": "/ɪnˈtent/",
+      "zh": "意图",
+      "ex": "Add a line explaining the intent, not just the change."
+    },
+    {
+      "w": "trivial",
+      "ipa": "/ˈtrɪviəl/",
+      "zh": "琐碎的、微不足道的",
+      "ex": "It's a trivial rename, so I approved it right away."
+    },
+    {
+      "w": "merge (v.)",
+      "ipa": "/mɜːrdʒ/",
+      "zh": "合入（代码）",
+      "ex": "Please don't merge until the integration tests pass.",
+      "tts_w": "merge"
+    },
+    {
+      "w": "latency",
+      "ipa": "/ˈleɪtənsi/",
+      "zh": "延迟",
+      "ex": "This extra call adds about forty milliseconds of latency."
+    },
+    {
+      "w": "snippet",
+      "ipa": "/ˈsnɪpɪt/",
+      "zh": "代码片段",
+      "ex": "I pasted a snippet that shows how to batch the queries."
+    },
+    {
+      "w": "nitpick",
+      "ipa": "/ˈnɪtpɪk/",
+      "zh": "吹毛求疵的小意见",
+      "ex": "Just a nitpick, feel free to ignore: this variable name is a bit long."
+    },
+    {
+      "w": "genuinely",
+      "ipa": "/ˈdʒenjuɪnli/",
+      "zh": "真诚地、确实",
+      "ex": "I'm genuinely curious why we chose polling here."
+    },
+    {
+      "w": "coverage",
+      "ipa": "/ˈkʌvərɪdʒ/",
+      "zh": "（测试）覆盖率",
+      "ex": "Test coverage on the payment module is still too low."
+    }
+  ]
+}

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Pushing Back on an Unrealistic Deadline · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "034", "title": "Pushing Back on an Unrealistic Deadline", "meta": "B2 · 约 260 词 · 场景：排期谈判", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Why No Is the Wrong First Word", "heading_zh": "1. 为什么第一句话不该是「不行」", "rows": [[{"id": "s0_0_0", "md": "Your director wants the new onboarding flow live before the year-end campaign.", "text": "Your director wants the new onboarding flow live before the year-end campaign.", "zh": "你的总监希望新的注册引导流程在年底大促前上线。", "sp": null}, {"id": "s0_0_1", "md": "Your estimate says it needs ten weeks, and you have six.", "text": "Your estimate says it needs ten weeks, and you have six.", "zh": "你评估下来需要十周，而你只有六周。", "sp": null}, {"id": "s0_0_2", "md": "The worst thing you can say is \"That's impossible.\"", "text": "The worst thing you can say is \"That's impossible.\"", "zh": "你最不该说的一句话就是「这不可能」。", "sp": null}], [{"id": "s0_1_0", "md": "\"Impossible\" ends the conversation and makes you look ==inflexible==.", "text": "\"Impossible\" ends the conversation and makes you look inflexible.", "zh": "「不可能」会直接终结对话，还会让你显得很死板。", "sp": null}, {"id": "s0_1_1", "md": "Your director usually has a real reason for the date, maybe a promise to a partner or a marketing ==slot== that is already booked.", "text": "Your director usually has a real reason for the date, maybe a promise to a partner or a marketing slot that is already booked.", "zh": "总监定这个日期通常是有真实原因的，可能是答应了合作方，也可能是已经订好的营销档期。", "sp": null}, {"id": "s0_1_2", "md": "If you __brush off the date__, you also brush off their problem.", "text": "If you brush off the date, you also brush off their problem.", "zh": "你要是一口回绝这个日期，也就等于把他的难处一起推开了。", "sp": null}, {"id": "s0_1_3", "md": "From that moment, you are an obstacle, not a partner.", "text": "From that moment, you are an obstacle, not a partner.", "zh": "从那一刻起，你就成了障碍，而不是伙伴。", "sp": null}], [{"id": "s0_2_0", "md": "**Instead of arguing about the deadline, make the trade-offs visible.**", "text": "Instead of arguing about the deadline, make the trade-offs visible.", "zh": "与其争论 deadline，不如把取舍摆到台面上。", "sp": null}, {"id": "s0_2_1", "md": "Every project has three ==levers==: scope, time, and people.", "text": "Every project has three levers: scope, time, and people.", "zh": "每个项目都有三根杠杆：范围、时间和人力。", "sp": null}, {"id": "s0_2_2", "md": "If the date is fixed, at least one of the other two has to move.", "text": "If the date is fixed, at least one of the other two has to move.", "zh": "如果日期定死了，另外两个里至少有一个得动。", "sp": null}]]}, {"heading": "2. Offer What Fits", "heading_zh": "2. 给出能落地的方案", "rows": [[{"id": "s1_0_0", "md": "Start by agreeing on what the date protects.", "text": "Start by agreeing on what the date protects.", "zh": "先就这个日期要保住什么达成一致。", "sp": null}, {"id": "s1_0_1", "md": "\"So the key thing is being ready for the campaign traffic, right?\"", "text": "\"So the key thing is being ready for the campaign traffic, right?\"", "zh": "「所以最关键的是要在大促流量来之前准备好，对吧？」", "sp": null}, {"id": "s1_0_2", "md": "This shows you take the goal seriously before you talk about limits.", "text": "This shows you take the goal seriously before you talk about limits.", "zh": "这能表明你在谈限制之前，先认真对待了目标。", "sp": null}], [{"id": "s1_1_0", "md": "Then present options, not ==refusals==.", "text": "Then present options, not refusals.", "zh": "然后拿出方案，而不是拒绝。", "sp": null}, {"id": "s1_1_1", "md": "\"By that date, we can ship sign-up and email login, and add social login two weeks later.\"", "text": "\"By that date, we can ship sign-up and email login, and add social login two weeks later.\"", "zh": "「到那天，我们可以上线注册和邮箱登录，两周后再加上第三方登录。」", "sp": null}, {"id": "s1_1_2", "md": "Or: \"We can hit the full scope if we borrow two engineers from the growth team.\"", "text": "Or: \"We can hit the full scope if we borrow two engineers from the growth team.\"", "zh": "或者：「如果能从增长团队借两个工程师，我们就能做完全部范围。」", "sp": null}, {"id": "s1_1_3", "md": "Now your director is choosing between plans instead of __fighting with you__.", "text": "Now your director is choosing between plans instead of fighting with you.", "zh": "这样一来，总监是在几个方案之间做选择，而不是在跟你较劲。", "sp": null}], [{"id": "s1_2_0", "md": "Be honest about quality, too.", "text": "Be honest about quality, too.", "zh": "对质量也要坦诚。", "sp": null}, {"id": "s1_2_1", "md": "Squeezing ten weeks into six usually means skipping tests, and that ==debt== shows up as incidents in January.", "text": "Squeezing ten weeks into six usually means skipping tests, and that debt shows up as incidents in January.", "zh": "把十周的活压到六周，通常意味着要跳过测试，而这笔债会在一月份以线上事故的形式找上门来。", "sp": null}, {"id": "s1_2_2", "md": "**Let your director choose the risk, but make sure they choose it with open eyes.**", "text": "Let your director choose the risk, but make sure they choose it with open eyes.", "zh": "让总监来选择承担哪种风险，但要确保他是看清楚了再选的。", "sp": null}], [{"id": "s1_3_0", "md": "Put the agreed version __in writing__ the same day.", "text": "Put the agreed version in writing the same day.", "zh": "当天就把商定好的版本落成文字。", "sp": null}, {"id": "s1_3_1", "md": "A short summary of scope, date, and known risks protects everyone when memories ==fade==.", "text": "A short summary of scope, date, and known risks protects everyone when memories fade.", "zh": "一份关于范围、日期和已知风险的简短总结，能在大家记忆模糊的时候保护所有人。", "sp": null}]]}], "gist": [{"q": "为什么不该直接说「不可能」？", "a": "它会终结对话、显得不灵活；总监定这个日期通常有真实原因，否定日期等于否定他的问题。"}, {"q": "作者说每个项目有哪三个杠杆？", "a": "范围、时间、人力；如果日期固定，另外两个至少要动一个。"}, {"q": "具体应该怎么谈？", "a": "先确认日期要保护的目标；给出选项（砍范围分期上线或借人）而不是拒绝；坦白赶工带来的质量风险，让对方知情选择；当天书面确认。"}], "dictation": [{"id": "s0_2_0", "text": "Instead of arguing about the deadline, make the trade-offs visible."}, {"id": "s1_2_2", "text": "Let your director choose the risk, but make sure they choose it with open eyes."}, {"id": "s0_2_2", "text": "If the date is fixed, at least one of the other two has to move."}, {"id": "s1_0_0", "text": "Start by agreeing on what the date protects."}], "shadow": {"text": "Instead of arguing about the deadline, make the trade-offs visible. Every project has three levers: scope, time, and people. If the date is fixed, at least one of the other two has to move.", "marked": "Instead of <b>arguing</b> about the deadline, / make the <b>trade-offs</b> visible. //<br>Every project has <b>three</b> levers: / <b>scope</b>, / <b>time</b>, / and <b>people</b>. //<br>If the date is <b>fixed</b>, / at least <b>one</b> of the other two / has to <b>move</b>. //"}, "prompts": [{"q": "老板要求新功能月底上线，你估算需要再多三周。用 30 秒回应：先确认日期背后的目标，再给出两个选项。", "ref": "I understand the end of the month matters because of the partner demo. Let me be straight about where we are: the full feature needs about three more weeks. So here are two options. We can demo the core flow by the end of the month and ship the admin tools three weeks later. Or, if the full scope has to be there, we'd need two more engineers starting next week. Which matters more for the demo?", "ref_zh": "我理解月底很重要，因为有合作方的 demo。我直说现在的情况：完整功能还需要大概三周。所以有两个方案。我们可以月底先 demo 核心流程，三周后再上线管理工具。或者，如果必须是完整范围，我们需要从下周开始再加两个工程师。对这次 demo 来说，哪个更重要？", "id": "ref0"}, {"q": "PM 提议跳过测试来赶日期。用 30 秒说明质量风险，让对方明确选择，并提议书面确认。", "ref": "We can hit that date if we cut the test phase, but I want us to make that choice with open eyes. Without regression tests, the most likely result is a few bugs in checkout during the first week, right when traffic peaks. If you're comfortable with that risk, I'll go ahead. I'll just send a short note today with the scope, the date, and the risk we're accepting, so we're all aligned.", "ref_zh": "如果砍掉测试阶段，我们能赶上那个日期，但我希望大家是看清楚了再做这个选择。没有回归测试的话，最可能的结果是第一周结账流程会出几个 bug，正好赶上流量高峰。如果你能接受这个风险，我就推进。我今天会发一份简短的说明，写清楚范围、日期和我们接受的风险，确保大家对齐。", "id": "ref1"}], "words": [{"w": "inflexible", "ipa": "/ɪnˈfleksəbl/", "zh": "死板的、不灵活的", "ex": "Saying no to every date makes the team look inflexible.", "id": "w0"}, {"w": "slot", "ipa": "/slɑːt/", "zh": "（时间）档期", "ex": "Marketing already booked the launch slot for the first week of December.", "id": "w1"}, {"w": "lever", "ipa": "/ˈlevər/", "zh": "杠杆、可调节的手段", "ex": "Scope is the only lever we can pull this late in the project.", "id": "w2"}, {"w": "scope", "ipa": "/skoʊp/", "zh": "范围", "ex": "If we cut the scope, we can still make the date.", "id": "w3"}, {"w": "refusal", "ipa": "/rɪˈfjuːzl/", "zh": "拒绝", "ex": "A flat refusal won't help; give them an option.", "id": "w4"}, {"w": "debt", "ipa": "/det/", "zh": "（技术）债务", "ex": "Skipping tests now just adds technical debt for next quarter.", "id": "w5"}, {"w": "fade (v.)", "ipa": "/feɪd/", "zh": "（记忆）消退", "ex": "Write the decision down before memories fade.", "tts_w": "fade", "id": "w6"}, {"w": "squeeze (v.)", "ipa": "/skwiːz/", "zh": "挤压、硬塞", "ex": "We can't squeeze a full migration into one sprint.", "tts_w": "squeeze", "id": "w7"}, {"w": "obstacle", "ipa": "/ˈɑːbstəkl/", "zh": "障碍", "ex": "I don't want the platform team to be seen as an obstacle.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Why No Is the Wrong First Word", "zh": "1. 为什么第一句话不该是「不行」", "start": 0.0, "end": 2.88, "words": [[0.105, 0.329], [0.789, 0.934], [0.947, 1.276], [1.289, 1.382], [1.395, 1.487], [1.5, 1.829], [1.842, 2.171], [2.184, 2.5]]}, {"kind": "s", "id": "s0_0_0", "md": "Your director wants the new onboarding flow live before the year-end campaign.", "zh": "你的总监希望新的注册引导流程在年底大促前上线。", "sp": null, "gap": false, "start": 2.88, "end": 7.632, "words": [[2.985, 3.091], [3.104, 3.59], [3.604, 3.867], [3.88, 3.959], [3.972, 4.301], [4.314, 4.933], [4.946, 5.235], [5.248, 5.696], [5.709, 6.038], [6.051, 6.117], [6.13, 6.643], [6.656, 7.235]]}, {"kind": "s", "id": "s0_0_1", "md": "Your estimate says it needs ten weeks, and you have six.", "zh": "你评估下来需要十周，而你只有六周。", "sp": null, "gap": false, "start": 7.632, "end": 11.352, "words": [[7.737, 7.895], [7.908, 8.343], [8.356, 8.592], [8.606, 8.698], [8.711, 9.0], [9.014, 9.264], [9.277, 9.79], [10.014, 10.119], [10.132, 10.224], [10.237, 10.382], [10.395, 10.961]]}, {"kind": "s", "id": "s0_0_2", "md": "The worst thing you can say is \"That's impossible.\"", "zh": "你最不该说的一句话就是「这不可能」。", "sp": null, "gap": false, "start": 11.352, "end": 14.568, "words": [[11.47, 11.536], [11.549, 11.826], [11.839, 11.997], [12.01, 12.115], [12.128, 12.247], [12.26, 12.694], [12.707, 13.023], [13.155, 13.431], [13.444, 14.155]]}, {"kind": "s", "id": "s0_1_0", "md": "\"Impossible\" ends the conversation and makes you look ==inflexible==.", "zh": "「不可能」会直接终结对话，还会让你显得很死板。", "sp": null, "gap": true, "start": 14.568, "end": 19.032, "words": [[14.752, 15.331], [15.871, 16.002], [16.015, 16.107], [16.121, 17.002], [17.173, 17.265], [17.279, 17.529], [17.542, 17.66], [17.673, 17.871], [17.884, 18.647]]}, {"kind": "s", "id": "s0_1_1", "md": "Your director usually has a real reason for the date, maybe a promise to a partner or a marketing ==slot== that is already booked.", "zh": "总监定这个日期通常是有真实原因的，可能是答应了合作方，也可能是已经订好的营销档期。", "sp": null, "gap": false, "start": 19.032, "end": 26.496, "words": [[19.15, 19.256], [19.269, 19.716], [19.729, 20.15], [20.164, 20.4], [20.414, 20.466], [20.479, 20.914], [20.927, 21.269], [21.282, 21.414], [21.427, 21.519], [21.532, 21.874], [22.177, 22.427], [22.44, 22.492], [22.506, 22.9], [22.914, 23.045], [23.058, 23.124], [23.137, 23.664], [23.874, 23.966], [23.979, 24.019], [24.032, 24.532], [24.545, 24.94], [25.058, 25.19], [25.203, 25.348], [25.361, 25.703], [25.716, 26.111]]}, {"kind": "s", "id": "s0_1_2", "md": "If you __brush off the date__, you also brush off their problem.", "zh": "你要是一口回绝这个日期，也就等于把他的难处一起推开了。", "sp": null, "gap": false, "start": 26.496, "end": 30.072, "words": [[26.601, 26.706], [26.72, 26.825], [26.838, 27.167], [27.18, 27.351], [27.364, 27.47], [27.483, 27.799], [28.101, 28.22], [28.233, 28.562], [28.575, 28.904], [28.917, 29.075], [29.088, 29.22], [29.233, 29.68]]}, {"kind": "s", "id": "s0_1_3", "md": "From that moment, you are an obstacle, not a partner.", "zh": "从那一刻起，你就成了障碍，而不是伙伴。", "sp": null, "gap": false, "start": 30.072, "end": 33.72, "words": [[30.217, 30.348], [30.361, 30.546], [30.559, 30.94], [31.335, 31.414], [31.427, 31.532], [31.546, 31.625], [31.638, 32.217], [32.611, 32.743], [32.756, 32.796], [32.809, 33.322]]}, {"kind": "s", "id": "s0_2_0", "md": "**Instead of arguing about the deadline, make the trade-offs visible.**", "zh": "与其争论 deadline，不如把取舍摆到台面上。", "sp": null, "gap": true, "start": 33.72, "end": 37.896, "words": [[33.825, 34.154], [34.167, 34.259], [34.273, 34.773], [34.786, 35.023], [35.036, 35.128], [35.141, 35.68], [36.075, 36.22], [36.233, 36.325], [36.338, 36.957], [36.97, 37.509]]}, {"kind": "s", "id": "s0_2_1", "md": "Every project has three ==levers==: scope, time, and people.", "zh": "每个项目都有三根杠杆：范围、时间和人力。", "sp": null, "gap": false, "start": 37.896, "end": 42.624, "words": [[38.001, 38.238], [38.251, 38.751], [38.764, 38.975], [38.988, 39.264], [39.278, 39.817], [40.199, 40.633], [41.014, 41.449], [41.764, 41.817], [41.83, 42.238]]}, {"kind": "s", "id": "s0_2_2", "md": "If the date is fixed, at least one of the other two has to move.", "zh": "如果日期定死了，另外两个里至少有一个得动。", "sp": null, "gap": false, "start": 42.624, "end": 46.608, "words": [[42.729, 42.835], [42.848, 42.94], [42.953, 43.216], [43.229, 43.374], [43.387, 43.927], [44.15, 44.269], [44.282, 44.571], [44.585, 44.703], [44.716, 44.782], [44.795, 44.913], [44.927, 45.137], [45.15, 45.466], [45.479, 45.716], [45.729, 45.808], [45.821, 46.229]]}, {"kind": "h", "id": "h1", "md": "2. Offer What Fits", "zh": "2. 给出能落地的方案", "start": 46.608, "end": 48.672, "words": [[46.726, 46.976], [47.279, 47.568], [47.582, 47.713], [47.726, 48.279]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by agreeing on what the date protects.", "zh": "先就这个日期要保住什么达成一致。", "sp": null, "gap": false, "start": 48.672, "end": 51.648, "words": [[48.777, 49.067], [49.08, 49.238], [49.251, 49.751], [49.869, 50.027], [50.04, 50.172], [50.185, 50.29], [50.304, 50.54], [50.554, 51.264]]}, {"kind": "s", "id": "s1_0_1", "md": "\"So the key thing is being ready for the campaign traffic, right?\"", "zh": "「所以最关键的是要在大促流量来之前准备好，对吧？」", "sp": null, "gap": false, "start": 51.648, "end": 55.44, "words": [[51.832, 51.832], [51.911, 52.003], [52.016, 52.227], [52.24, 52.503], [52.516, 52.622], [52.635, 52.937], [52.951, 53.201], [53.214, 53.332], [53.345, 53.424], [53.437, 53.911], [53.924, 54.411], [54.595, 54.924]]}, {"kind": "s", "id": "s1_0_2", "md": "This shows you take the goal seriously before you talk about limits.", "zh": "这能表明你在谈限制之前，先认真对待了目标。", "sp": null, "gap": false, "start": 55.44, "end": 59.328, "words": [[55.558, 55.703], [55.716, 56.006], [56.019, 56.111], [56.124, 56.387], [56.401, 56.479], [56.493, 56.769], [56.782, 57.401], [57.414, 57.795], [57.808, 57.901], [57.914, 58.177], [58.19, 58.427], [58.44, 58.94]]}, {"kind": "s", "id": "s1_1_0", "md": "Then present options, not ==refusals==.", "zh": "然后拿出方案，而不是拒绝。", "sp": null, "gap": true, "start": 59.328, "end": 62.112, "words": [[59.446, 59.591], [59.604, 59.999], [60.012, 60.617], [60.841, 61.025], [61.039, 61.723]]}, {"kind": "s", "id": "s1_1_1", "md": "\"By that date, we can ship sign-up and email login, and add social login two weeks later.\"", "zh": "「到那天，我们可以上线注册和邮箱登录，两周后再加上第三方登录。」", "sp": null, "gap": false, "start": 62.112, "end": 67.992, "words": [[62.336, 62.401], [62.401, 62.612], [62.625, 62.901], [63.151, 63.27], [63.283, 63.415], [63.428, 63.691], [63.704, 64.23], [64.375, 64.494], [64.507, 64.836], [64.849, 65.283], [65.559, 65.665], [65.678, 65.875], [65.888, 66.323], [66.336, 66.665], [66.678, 66.849], [66.862, 67.138], [67.151, 67.507]]}, {"kind": "s", "id": "s1_1_2", "md": "Or: \"We can hit the full scope if we borrow two engineers from the growth team.\"", "zh": "或者：「如果能从增长团队借两个工程师，我们就能做完全部范围。」", "sp": null, "gap": false, "start": 67.992, "end": 72.984, "words": [[68.097, 68.321], [68.637, 68.755], [68.768, 68.9], [68.913, 69.084], [69.097, 69.176], [69.189, 69.453], [69.466, 69.874], [69.979, 70.097], [70.11, 70.242], [70.255, 70.65], [70.663, 70.952], [70.966, 71.531], [71.545, 71.689], [71.703, 71.768], [71.781, 72.097], [72.11, 72.453]]}, {"kind": "s", "id": "s1_1_3", "md": "Now your director is choosing between plans instead of __fighting with you__.", "zh": "这样一来，总监是在几个方案之间做选择，而不是在跟你较劲。", "sp": null, "gap": false, "start": 72.984, "end": 77.088, "words": [[73.089, 73.26], [73.273, 73.418], [73.431, 73.984], [73.997, 74.129], [74.142, 74.576], [74.589, 74.944], [74.958, 75.444], [75.458, 75.826], [75.839, 75.918], [75.931, 76.3], [76.313, 76.484], [76.497, 76.695]]}, {"kind": "s", "id": "s1_2_0", "md": "Be honest about quality, too.", "zh": "对质量也要坦诚。", "sp": null, "gap": true, "start": 77.088, "end": 79.152, "words": [[77.206, 77.312], [77.325, 77.614], [77.627, 77.851], [77.864, 78.364], [78.456, 78.759]]}, {"kind": "s", "id": "s1_2_1", "md": "Squeezing ten weeks into six usually means skipping tests, and that ==debt== shows up as incidents in January.", "zh": "把十周的活压到六周，通常意味着要跳过测试，而这笔债会在一月份以线上事故的形式找上门来。", "sp": null, "gap": false, "start": 79.152, "end": 86.232, "words": [[79.27, 79.849], [79.863, 80.165], [80.178, 80.481], [80.494, 80.639], [80.652, 81.139], [81.31, 81.823], [81.836, 82.113], [82.126, 82.52], [82.534, 83.06], [83.363, 83.455], [83.468, 83.678], [83.691, 83.876], [83.889, 84.257], [84.27, 84.441], [84.455, 84.573], [84.586, 85.099], [85.113, 85.191], [85.205, 85.836]]}, {"kind": "s", "id": "s1_2_2", "md": "**Let your director choose the risk, but make sure they choose it with open eyes.**", "zh": "让总监来选择承担哪种风险，但要确保他是看清楚了再选的。", "sp": null, "gap": false, "start": 86.232, "end": 90.864, "words": [[86.337, 86.456], [86.469, 86.6], [86.614, 87.074], [87.087, 87.403], [87.416, 87.508], [87.521, 87.956], [88.258, 88.39], [88.403, 88.561], [88.574, 88.785], [88.798, 88.929], [88.943, 89.324], [89.337, 89.429], [89.443, 89.6], [89.719, 89.982], [89.995, 90.482]]}, {"kind": "s", "id": "s1_3_0", "md": "Put the agreed version __in writing__ the same day.", "zh": "当天就把商定好的版本落成文字。", "sp": null, "gap": true, "start": 90.864, "end": 93.864, "words": [[90.982, 91.114], [91.127, 91.232], [91.246, 91.64], [91.653, 92.127], [92.246, 92.39], [92.403, 92.732], [92.746, 92.825], [92.838, 93.14], [93.153, 93.469]]}, {"kind": "s", "id": "s1_3_1", "md": "A short summary of scope, date, and known risks protects everyone when memories ==fade==.", "zh": "一份关于范围、日期和已知风险的简短总结，能在大家记忆模糊的时候保护所有人。", "sp": null, "gap": false, "start": 93.864, "end": 99.984, "words": [[93.969, 93.996], [94.009, 94.311], [94.325, 94.851], [94.864, 94.956], [94.969, 95.469], [95.785, 96.14], [96.43, 96.575], [96.588, 96.917], [96.93, 97.298], [97.311, 97.877], [98.035, 98.548], [98.561, 98.732], [98.746, 99.206], [99.219, 99.601]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

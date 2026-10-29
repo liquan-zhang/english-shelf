@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>How to Speak Up in the First Five Minutes · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "001", "title": "How to Speak Up in the First Five Minutes", "meta": "B2 · 约 280 词 · 场景：会议开场", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Cost of Waiting", "heading_zh": "1. 等待的代价", "rows": [[{"id": "s0_0_0", "md": "Most people wait for the right moment to speak in a meeting.", "text": "Most people wait for the right moment to speak in a meeting.", "zh": "大多数人开会时都在等一个合适的时机再发言。", "sp": null}, {"id": "s0_0_1", "md": "They ==hesitate==, polish a perfect point, and hold on to it.", "text": "They hesitate, polish a perfect point, and hold on to it.", "zh": "他们犹豫不决，把一个观点打磨得完美无缺，然后一直憋着。", "sp": null}, {"id": "s0_0_2", "md": "By the time they are ready, the discussion has already ==drifted== somewhere else.", "text": "By the time they are ready, the discussion has already drifted somewhere else.", "zh": "等他们准备好了，讨论早就跑到别的地方去了。", "sp": null}], [{"id": "s0_1_0", "md": "The first five minutes are different from the rest of the meeting.", "text": "The first five minutes are different from the rest of the meeting.", "zh": "会议的头五分钟和后面不一样。", "sp": null}, {"id": "s0_1_1", "md": "This is when the group ==settles== on what the problem actually is.", "text": "This is when the group settles on what the problem actually is.", "zh": "这几分钟里，大家会定下来问题到底是什么。", "sp": null}, {"id": "s0_1_2", "md": "If someone opens by saying the database is too slow, everyone spends the next hour __talking about__ databases.", "text": "If someone opens by saying the database is too slow, everyone spends the next hour talking about databases.", "zh": "如果有人一上来就说数据库太慢，那接下来一个小时大家都会围着数据库聊。", "sp": null}, {"id": "s0_1_3", "md": "**Whoever speaks first often decides what the meeting is about.**", "text": "Whoever speaks first often decides what the meeting is about.", "zh": "谁先开口，往往就决定了这个会聊什么。", "sp": null}], [{"id": "s0_2_0", "md": "Speaking early also takes pressure off you.", "text": "Speaking early also takes pressure off you.", "zh": "早点发言，对你自己也是减压。", "sp": null}, {"id": "s0_2_1", "md": "Once people have heard your voice, the second time __feels far less risky__.", "text": "Once people have heard your voice, the second time feels far less risky.", "zh": "大家听过你说话之后，第二次开口就没那么有压力了。", "sp": null}, {"id": "s0_2_2", "md": "Waiting does the opposite, because the longer you stay quiet, the higher the bar for your first sentence becomes.", "text": "Waiting does the opposite, because the longer you stay quiet, the higher the bar for your first sentence becomes.", "zh": "等待的效果正好相反，你沉默得越久，第一句话的门槛就越高。", "sp": null}]]}, {"heading": "2. What to Say When You Go First", "heading_zh": "2. 第一个开口时说什么", "rows": [[{"id": "s1_0_0", "md": "You do not need a brilliant insight to open.", "text": "You do not need a brilliant insight to open.", "zh": "开场不需要什么精辟的洞见。", "sp": null}, {"id": "s1_0_1", "md": "**You need a frame that helps everyone think.**", "text": "You need a frame that helps everyone think.", "zh": "你需要的是一个能帮大家理清思路的框架。", "sp": null}, {"id": "s1_0_2", "md": "Try __restating the goal__ in one sentence, such as \"So today we're deciding whether the migration ships this quarter.\"", "text": "Try restating the goal in one sentence, such as \"So today we're deciding whether the migration ships this quarter.\"", "zh": "可以试着用一句话重述目标，比如「所以今天我们要定的是，这个迁移这个季度能不能上线」。", "sp": null}], [{"id": "s1_1_0", "md": "Another option is to ==propose== the questions that matter.", "text": "Another option is to propose the questions that matter.", "zh": "另一个办法是把关键问题先摆出来。", "sp": null}, {"id": "s1_1_1", "md": "Say something like \"I think we need to settle two things, the cost and the timeline.\"", "text": "Say something like \"I think we need to settle two things, the cost and the timeline.\"", "zh": "比如说「我觉得我们得先定两件事：成本和时间线」。", "sp": null}, {"id": "s1_1_2", "md": "Now the discussion has a ==backbone==, and you are the one who built it.", "text": "Now the discussion has a backbone, and you are the one who built it.", "zh": "这样讨论就有了主心骨，而这个主心骨是你搭起来的。", "sp": null}], [{"id": "s1_2_0", "md": "If you already have a view, __put it on the table__ early, but keep it light.", "text": "If you already have a view, put it on the table early, but keep it light.", "zh": "如果你已经有自己的看法，可以早点抛出来，但语气要轻一点。", "sp": null}, {"id": "s1_2_1", "md": "\"My ==instinct== is to delay, but I'd like to hear the risks first\" invites pushback instead of ending the debate.", "text": "\"My instinct is to delay, but I'd like to hear the risks first\" invites pushback instead of ending the debate.", "zh": "「我的直觉是先缓一缓，但我想先听听大家看到的风险」，这样说是在邀请大家来挑战，而不是直接把讨论终结掉。", "sp": null}, {"id": "s1_2_2", "md": "It shows ==conviction== without closing the door.", "text": "It shows conviction without closing the door.", "zh": "既表明了态度，又没有把门关死。", "sp": null}], [{"id": "s1_3_0", "md": "Over time, people start to __look to you__ to set the direction.", "text": "Over time, people start to look to you to set the direction.", "zh": "时间长了，大家会开始指望你来定方向。", "sp": null}, {"id": "s1_3_1", "md": "That ==expectation== is a quiet form of influence, and it begins with one sentence in the first five minutes.", "text": "That expectation is a quiet form of influence, and it begins with one sentence in the first five minutes.", "zh": "这种期待本身就是一种不显山露水的影响力，而它就从头五分钟里的一句话开始。", "sp": null}]]}], "gist": [{"q": "作者认为会议的前五分钟为什么特别重要？", "a": "这是大家确定“问题到底是什么”的时候；谁先开口，往往就决定了会议讨论什么。"}, {"q": "一直等待完美时机再开口，会带来什么问题？", "a": "讨论早已跑到别处；而且越晚开口，第一句话的门槛越高、压力越大。"}, {"q": "抢先开口时可以说什么？", "a": "复述会议目标；提出需要解决的几个问题，给讨论搭骨架；轻描淡写地亮出自己的倾向，同时邀请反对意见。"}], "dictation": [{"id": "s0_1_3", "text": "Whoever speaks first often decides what the meeting is about."}, {"id": "s1_0_1", "text": "You need a frame that helps everyone think."}, {"id": "s0_2_2", "text": "Waiting does the opposite, because the longer you stay quiet, the higher the bar for your first sentence becomes."}, {"id": "s1_2_0", "text": "If you already have a view, put it on the table early, but keep it light."}], "shadow": {"text": "You do not need a brilliant insight to open. You need a frame that helps everyone think.", "marked": "You do <b>not</b> need a <b>brilliant</b> insight / to <b>open</b>. //<br>You need a <b>frame</b> / that helps <b>everyone</b> think. //"}, "prompts": [{"q": "周会刚开始，大家在闲聊。议题是“要不要推迟下个版本”。用 30 秒抢先开口：复述目标，并提出需要定的两个问题。", "ref": "Okay, maybe I can kick us off. As I understand it, today we're deciding whether the next release goes out on schedule or slips by a week. I think we need to settle two things. First, how serious are the open crash bugs? Second, what does a one-week delay cost the marketing team? If we answer those two, the decision should be easy.", "ref_zh": "好，要不我先起个头。我理解今天要定的是，下个版本是按时发，还是推迟一周。我觉得我们得先搞清楚两件事。第一，现在没修的那些崩溃 bug 到底有多严重？第二，推迟一周对市场团队有什么影响？这两个问题答清楚了，决定应该就很好做了。", "id": "ref0"}, {"q": "跨团队评审会上，对方准备讲方案。你倾向先做小范围试点。开场先亮出你的倾向，但留出讨论空间。", "ref": "Before we dive in, let me share where I'm starting from, so you know my bias. My instinct is to run a small pilot in one market before we commit to the full rollout. But I haven't seen all your data yet, so I'd really like to hear the risks you see. If the numbers say a pilot is a waste of time, I'm happy to change my mind.", "ref_zh": "在开始之前，我先说一下我的出发点，让大家知道我的倾向。我的直觉是先在一个市场小范围试点，再决定要不要全量铺开。不过你们的数据我还没全看过，所以很想听听你们看到的风险。如果数据说明试点纯属浪费时间，我很乐意改主意。", "id": "ref1"}], "words": [{"w": "hesitate", "ipa": "/ˈhezɪˌteɪt/", "zh": "犹豫", "ex": "Don't hesitate to ping me if the deploy gets stuck.", "id": "w0"}, {"w": "drift (v.)", "ipa": "/drɪft/", "zh": "（话题）偏离、漂移", "ex": "The review drifted into a debate about naming conventions.", "tts_w": "drift", "id": "w1"}, {"w": "settle on", "ipa": "/ˈsetl ɑːn/", "zh": "确定、选定", "ex": "We finally settled on a weekly release cadence.", "id": "w2"}, {"w": "propose", "ipa": "/prəˈpoʊz/", "zh": "提议", "ex": "I propose we freeze new features until the outage report is done.", "id": "w3"}, {"w": "backbone", "ipa": "/ˈbækboʊn/", "zh": "骨架、主干", "ex": "This checklist is the backbone of our launch process.", "id": "w4"}, {"w": "instinct", "ipa": "/ˈɪnstɪŋkt/", "zh": "直觉", "ex": "My instinct says the cache is the bottleneck, but let's measure it.", "id": "w5"}, {"w": "conviction", "ipa": "/kənˈvɪkʃən/", "zh": "坚定的信念、说服力", "ex": "She argued for the rewrite with real conviction.", "id": "w6"}, {"w": "expectation", "ipa": "/ˌekspekˈteɪʃən/", "zh": "预期、期待", "ex": "Let's set clear expectations with the PM about the beta.", "id": "w7"}, {"w": "frame (n.)", "ipa": "/freɪm/", "zh": "框架、思考角度", "ex": "Using cost as the frame made the trade-off easier to discuss.", "tts_w": "frame", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Cost of Waiting", "zh": "1. 等待的代价", "start": 0.0, "end": 1.92, "words": [[0.105, 0.342], [0.645, 0.737], [0.75, 1.066], [1.079, 1.158], [1.171, 1.526]]}, {"kind": "s", "id": "s0_0_0", "md": "Most people wait for the right moment to speak in a meeting.", "zh": "大多数人开会时都在等一个合适的时机再发言。", "sp": null, "gap": false, "start": 1.92, "end": 5.232, "words": [[2.025, 2.249], [2.262, 2.604], [2.617, 2.854], [2.867, 2.986], [2.999, 3.078], [3.091, 3.394], [3.407, 3.788], [3.802, 3.894], [3.907, 4.315], [4.328, 4.407], [4.42, 4.459], [4.473, 4.854]]}, {"kind": "s", "id": "s0_0_1", "md": "They ==hesitate==, polish a perfect point, and hold on to it.", "zh": "他们犹豫不决，把一个观点打磨得完美无缺，然后一直憋着。", "sp": null, "gap": false, "start": 5.232, "end": 9.336, "words": [[5.35, 5.429], [5.443, 6.035], [6.403, 6.798], [6.811, 6.877], [6.89, 7.35], [7.364, 7.732], [8.048, 8.114], [8.127, 8.39], [8.403, 8.561], [8.574, 8.758], [8.771, 8.942]]}, {"kind": "s", "id": "s0_0_2", "md": "By the time they are ready, the discussion has already ==drifted== somewhere else.", "zh": "等他们准备好了，讨论早就跑到别的地方去了。", "sp": null, "gap": false, "start": 9.336, "end": 13.824, "words": [[9.441, 9.507], [9.52, 9.599], [9.612, 9.902], [9.915, 10.02], [10.033, 10.165], [10.178, 10.481], [10.849, 10.941], [10.954, 11.507], [11.52, 11.691], [11.704, 12.086], [12.099, 12.533], [12.547, 12.968], [12.981, 13.441]]}, {"kind": "s", "id": "s0_1_0", "md": "The first five minutes are different from the rest of the meeting.", "zh": "会议的头五分钟和后面不一样。", "sp": null, "gap": true, "start": 13.824, "end": 16.968, "words": [[13.942, 14.008], [14.021, 14.35], [14.363, 14.6], [14.613, 14.903], [14.916, 15.087], [15.1, 15.495], [15.508, 15.653], [15.666, 15.745], [15.758, 16.074], [16.087, 16.14], [16.153, 16.219], [16.232, 16.587]]}, {"kind": "s", "id": "s0_1_1", "md": "This is when the group ==settles== on what the problem actually is.", "zh": "这几分钟里，大家会定下来问题到底是什么。", "sp": null, "gap": false, "start": 16.968, "end": 20.568, "words": [[17.086, 17.297], [17.31, 17.415], [17.429, 17.56], [17.573, 17.678], [17.692, 18.021], [18.034, 18.481], [18.494, 18.613], [18.626, 18.757], [18.771, 18.85], [18.863, 19.284], [19.297, 19.797], [19.81, 20.179]]}, {"kind": "s", "id": "s0_1_2", "md": "If someone opens by saying the database is too slow, everyone spends the next hour __talking about__ databases.", "zh": "如果有人一上来就说数据库太慢，那接下来一个小时大家都会围着数据库聊。", "sp": null, "gap": false, "start": 20.568, "end": 27.72, "words": [[20.686, 20.779], [20.792, 21.147], [21.16, 21.529], [21.542, 21.7], [21.713, 22.055], [22.068, 22.173], [22.186, 22.805], [22.884, 23.015], [23.029, 23.292], [23.305, 23.792], [24.186, 24.673], [24.686, 25.042], [25.055, 25.147], [25.16, 25.581], [25.594, 25.871], [25.884, 26.239], [26.252, 26.489], [26.502, 27.331]]}, {"kind": "s", "id": "s0_1_3", "md": "**Whoever speaks first often decides what the meeting is about.**", "zh": "谁先开口，往往就决定了这个会聊什么。", "sp": null, "gap": false, "start": 27.72, "end": 31.68, "words": [[27.838, 28.194], [28.207, 28.628], [28.641, 29.075], [29.167, 29.509], [29.523, 30.062], [30.075, 30.22], [30.233, 30.312], [30.325, 30.733], [30.746, 30.852], [30.865, 31.286]]}, {"kind": "s", "id": "s0_2_0", "md": "Speaking early also takes pressure off you.", "zh": "早点发言，对你自己也是减压。", "sp": null, "gap": true, "start": 31.68, "end": 34.44, "words": [[31.798, 32.246], [32.259, 32.588], [32.601, 32.93], [32.943, 33.246], [33.259, 33.627], [33.641, 33.838], [33.851, 34.048]]}, {"kind": "s", "id": "s0_2_1", "md": "Once people have heard your voice, the second time __feels far less risky__.", "zh": "大家听过你说话之后，第二次开口就没那么有压力了。", "sp": null, "gap": false, "start": 34.44, "end": 38.64, "words": [[34.545, 34.716], [34.729, 35.032], [35.045, 35.203], [35.216, 35.401], [35.414, 35.519], [35.532, 36.045], [36.308, 36.414], [36.427, 36.782], [36.795, 37.072], [37.085, 37.374], [37.387, 37.624], [37.637, 37.848], [37.861, 38.243]]}, {"kind": "s", "id": "s0_2_2", "md": "Waiting does the opposite, because the longer you stay quiet, the higher the bar for your first sentence becomes.", "zh": "等待的效果正好相反，你沉默得越久，第一句话的门槛就越高。", "sp": null, "gap": false, "start": 38.64, "end": 45.528, "words": [[38.745, 39.101], [39.114, 39.416], [39.429, 39.548], [39.561, 40.114], [40.377, 40.666], [40.679, 40.785], [40.798, 41.272], [41.285, 41.39], [41.403, 41.693], [41.706, 42.206], [42.522, 42.614], [42.627, 42.956], [42.969, 43.074], [43.087, 43.416], [43.429, 43.548], [43.561, 43.693], [43.706, 44.101], [44.114, 44.482], [44.495, 45.14]]}, {"kind": "h", "id": "h1", "md": "2. What to Say When You Go First", "zh": "2. 第一个开口时说什么", "start": 45.528, "end": 48.24, "words": [[45.646, 45.857], [46.344, 46.462], [46.475, 46.554], [46.567, 46.87], [46.883, 47.015], [47.028, 47.107], [47.12, 47.291], [47.304, 47.857]]}, {"kind": "s", "id": "s1_0_0", "md": "You do not need a brilliant insight to open.", "zh": "开场不需要什么精辟的洞见。", "sp": null, "gap": false, "start": 48.24, "end": 50.856, "words": [[48.358, 48.424], [48.437, 48.556], [48.569, 48.779], [48.793, 48.964], [48.977, 49.056], [49.069, 49.569], [49.582, 49.977], [49.99, 50.122], [50.135, 50.477]]}, {"kind": "s", "id": "s1_0_1", "md": "**You need a frame that helps everyone think.**", "zh": "你需要的是一个能帮大家理清思路的框架。", "sp": null, "gap": false, "start": 50.856, "end": 53.448, "words": [[50.961, 51.067], [51.08, 51.238], [51.251, 51.29], [51.303, 51.711], [51.724, 51.83], [51.843, 52.159], [52.172, 52.553], [52.567, 53.053]]}, {"kind": "s", "id": "s1_0_2", "md": "Try __restating the goal__ in one sentence, such as \"So today we're deciding whether the migration ships this quarter.\"", "zh": "可以试着用一句话重述目标，比如「所以今天我们要定的是，这个迁移这个季度能不能上线」。", "sp": null, "gap": false, "start": 53.448, "end": 61.056, "words": [[53.553, 53.803], [53.816, 54.435], [54.448, 54.54], [54.553, 54.961], [55.066, 55.211], [55.224, 55.474], [55.487, 56.066], [56.33, 56.553], [56.566, 56.737], [56.764, 57.014], [57.027, 57.395], [57.409, 57.566], [57.58, 58.237], [58.356, 58.593], [58.606, 58.698], [58.711, 59.382], [59.395, 59.843], [59.856, 60.027], [60.04, 60.54]]}, {"kind": "s", "id": "s1_1_0", "md": "Another option is to ==propose== the questions that matter.", "zh": "另一个办法是把关键问题先摆出来。", "sp": null, "gap": true, "start": 61.056, "end": 64.44, "words": [[61.161, 61.49], [61.503, 61.964], [62.056, 62.201], [62.214, 62.306], [62.319, 62.845], [62.859, 62.951], [62.964, 63.451], [63.464, 63.635], [63.648, 64.043]]}, {"kind": "s", "id": "s1_1_1", "md": "Say something like \"I think we need to settle two things, the cost and the timeline.\"", "zh": "比如说「我觉得我们得先定两件事：成本和时间线」。", "sp": null, "gap": false, "start": 64.44, "end": 70.128, "words": [[64.545, 64.703], [64.716, 65.098], [65.111, 65.361], [65.848, 65.9], [65.914, 66.164], [66.177, 66.269], [66.282, 66.44], [66.453, 66.519], [66.532, 66.887], [66.901, 67.111], [67.124, 67.743], [67.914, 68.019], [68.032, 68.572], [68.861, 68.953], [68.966, 69.045], [69.058, 69.624]]}, {"kind": "s", "id": "s1_1_2", "md": "Now the discussion has a ==backbone==, and you are the one who built it.", "zh": "这样讨论就有了主心骨，而这个主心骨是你搭起来的。", "sp": null, "gap": false, "start": 70.128, "end": 74.136, "words": [[70.233, 70.417], [70.431, 70.523], [70.536, 71.102], [71.115, 71.299], [71.312, 71.365], [71.378, 71.983], [72.325, 72.431], [72.444, 72.602], [72.615, 72.72], [72.733, 72.838], [72.852, 73.088], [73.102, 73.22], [73.233, 73.549], [73.562, 73.746]]}, {"kind": "s", "id": "s1_2_0", "md": "If you already have a view, __put it on the table__ early, but keep it light.", "zh": "如果你已经有自己的看法，可以早点抛出来，但语气要轻一点。", "sp": null, "gap": true, "start": 74.136, "end": 78.48, "words": [[74.254, 74.36], [74.373, 74.465], [74.478, 74.768], [74.781, 74.952], [74.965, 75.018], [75.031, 75.386], [75.807, 75.939], [75.952, 76.018], [76.031, 76.123], [76.136, 76.215], [76.228, 76.583], [76.597, 76.978], [77.268, 77.399], [77.412, 77.623], [77.636, 77.741], [77.754, 78.083]]}, {"kind": "s", "id": "s1_2_1", "md": "\"My ==instinct== is to delay, but I'd like to hear the risks first\" invites pushback instead of ending the debate.", "zh": "「我的直觉是先缓一缓，但我想先听听大家看到的风险」，这样说是在邀请大家来挑战，而不是直接把讨论终结掉。", "sp": null, "gap": false, "start": 78.48, "end": 85.32, "words": [[78.677, 78.677], [78.756, 79.204], [79.217, 79.348], [79.362, 79.454], [79.467, 79.94], [80.243, 80.375], [80.388, 80.48], [80.493, 80.677], [80.691, 80.756], [80.769, 81.033], [81.046, 81.138], [81.151, 81.519], [81.533, 82.098], [82.375, 82.796], [82.809, 83.427], [83.454, 83.862], [83.875, 83.967], [84.085, 84.322], [84.335, 84.427], [84.441, 84.927]]}, {"kind": "s", "id": "s1_2_2", "md": "It shows ==conviction== without closing the door.", "zh": "既表明了态度，又没有把门关死。", "sp": null, "gap": false, "start": 85.32, "end": 88.248, "words": [[85.425, 85.504], [85.517, 85.794], [85.807, 86.386], [86.531, 86.912], [86.925, 87.346], [87.359, 87.438], [87.452, 87.859]]}, {"kind": "s", "id": "s1_3_0", "md": "Over time, people start to __look to you__ to set the direction.", "zh": "时间长了，大家会开始指望你来定方向。", "sp": null, "gap": true, "start": 88.248, "end": 91.896, "words": [[88.353, 88.551], [88.564, 88.998], [89.406, 89.656], [89.669, 89.906], [89.919, 89.985], [89.998, 90.222], [90.235, 90.34], [90.353, 90.524], [90.537, 90.63], [90.643, 90.88], [90.893, 90.959], [90.972, 91.511]]}, {"kind": "s", "id": "s1_3_1", "md": "That ==expectation== is a quiet form of influence, and it begins with one sentence in the first five minutes.", "zh": "这种期待本身就是一种不显山露水的影响力，而它就从头五分钟里的一句话开始。", "sp": null, "gap": false, "start": 91.896, "end": 99.0, "words": [[92.001, 92.172], [92.185, 93.067], [93.08, 93.212], [93.225, 93.291], [93.304, 93.764], [93.778, 94.172], [94.185, 94.304], [94.317, 95.001], [95.33, 95.422], [95.435, 95.514], [95.528, 95.949], [95.962, 96.12], [96.133, 96.462], [96.475, 97.107], [97.172, 97.251], [97.264, 97.343], [97.357, 97.764], [97.778, 98.054], [98.067, 98.606]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

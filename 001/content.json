@@ -1,0 +1,189 @@
+{
+  "id": "001",
+  "title": "How to Speak Up in the First Five Minutes",
+  "meta": "B2 · 约 280 词 · 场景：会议开场",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Cost of Waiting",
+      "paragraphs": [
+        [
+          "Most people wait for the right moment to speak in a meeting.",
+          "They ==hesitate==, polish a perfect point, and hold on to it.",
+          "By the time they are ready, the discussion has already ==drifted== somewhere else."
+        ],
+        [
+          "The first five minutes are different from the rest of the meeting.",
+          "This is when the group ==settles== on what the problem actually is.",
+          "If someone opens by saying the database is too slow, everyone spends the next hour __talking about__ databases.",
+          "**Whoever speaks first often decides what the meeting is about.**"
+        ],
+        [
+          "Speaking early also takes pressure off you.",
+          "Once people have heard your voice, the second time __feels far less risky__.",
+          "Waiting does the opposite, because the longer you stay quiet, the higher the bar for your first sentence becomes."
+        ]
+      ],
+      "heading_zh": "1. 等待的代价",
+      "paragraphs_zh": [
+        [
+          "大多数人开会时都在等一个合适的时机再发言。",
+          "他们犹豫不决，把一个观点打磨得完美无缺，然后一直憋着。",
+          "等他们准备好了，讨论早就跑到别的地方去了。"
+        ],
+        [
+          "会议的头五分钟和后面不一样。",
+          "这几分钟里，大家会定下来问题到底是什么。",
+          "如果有人一上来就说数据库太慢，那接下来一个小时大家都会围着数据库聊。",
+          "谁先开口，往往就决定了这个会聊什么。"
+        ],
+        [
+          "早点发言，对你自己也是减压。",
+          "大家听过你说话之后，第二次开口就没那么有压力了。",
+          "等待的效果正好相反，你沉默得越久，第一句话的门槛就越高。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. What to Say When You Go First",
+      "paragraphs": [
+        [
+          "You do not need a brilliant insight to open.",
+          "**You need a frame that helps everyone think.**",
+          "Try __restating the goal__ in one sentence, such as \"So today we're deciding whether the migration ships this quarter.\""
+        ],
+        [
+          "Another option is to ==propose== the questions that matter.",
+          "Say something like \"I think we need to settle two things, the cost and the timeline.\"",
+          "Now the discussion has a ==backbone==, and you are the one who built it."
+        ],
+        [
+          "If you already have a view, __put it on the table__ early, but keep it light.",
+          "\"My ==instinct== is to delay, but I'd like to hear the risks first\" invites pushback instead of ending the debate.",
+          "It shows ==conviction== without closing the door."
+        ],
+        [
+          "Over time, people start to __look to you__ to set the direction.",
+          "That ==expectation== is a quiet form of influence, and it begins with one sentence in the first five minutes."
+        ]
+      ],
+      "heading_zh": "2. 第一个开口时说什么",
+      "paragraphs_zh": [
+        [
+          "开场不需要什么精辟的洞见。",
+          "你需要的是一个能帮大家理清思路的框架。",
+          "可以试着用一句话重述目标，比如「所以今天我们要定的是，这个迁移这个季度能不能上线」。"
+        ],
+        [
+          "另一个办法是把关键问题先摆出来。",
+          "比如说「我觉得我们得先定两件事：成本和时间线」。",
+          "这样讨论就有了主心骨，而这个主心骨是你搭起来的。"
+        ],
+        [
+          "如果你已经有自己的看法，可以早点抛出来，但语气要轻一点。",
+          "「我的直觉是先缓一缓，但我想先听听大家看到的风险」，这样说是在邀请大家来挑战，而不是直接把讨论终结掉。",
+          "既表明了态度，又没有把门关死。"
+        ],
+        [
+          "时间长了，大家会开始指望你来定方向。",
+          "这种期待本身就是一种不显山露水的影响力，而它就从头五分钟里的一句话开始。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为会议的前五分钟为什么特别重要？",
+      "a": "这是大家确定“问题到底是什么”的时候；谁先开口，往往就决定了会议讨论什么。"
+    },
+    {
+      "q": "一直等待完美时机再开口，会带来什么问题？",
+      "a": "讨论早已跑到别处；而且越晚开口，第一句话的门槛越高、压力越大。"
+    },
+    {
+      "q": "抢先开口时可以说什么？",
+      "a": "复述会议目标；提出需要解决的几个问题，给讨论搭骨架；轻描淡写地亮出自己的倾向，同时邀请反对意见。"
+    }
+  ],
+  "dictation": [
+    "Whoever speaks first often decides what the meeting is about.",
+    "You need a frame that helps everyone think.",
+    "Waiting does the opposite, because the longer you stay quiet, the higher the bar for your first sentence becomes.",
+    "If you already have a view, put it on the table early, but keep it light."
+  ],
+  "shadow": {
+    "text": "You do not need a brilliant insight to open. You need a frame that helps everyone think.",
+    "marked": "You do <b>not</b> need a <b>brilliant</b> insight / to <b>open</b>. //<br>You need a <b>frame</b> / that helps <b>everyone</b> think. //"
+  },
+  "prompts": [
+    {
+      "q": "周会刚开始，大家在闲聊。议题是“要不要推迟下个版本”。用 30 秒抢先开口：复述目标，并提出需要定的两个问题。",
+      "ref": "Okay, maybe I can kick us off. As I understand it, today we're deciding whether the next release goes out on schedule or slips by a week. I think we need to settle two things. First, how serious are the open crash bugs? Second, what does a one-week delay cost the marketing team? If we answer those two, the decision should be easy.",
+      "ref_zh": "好，要不我先起个头。我理解今天要定的是，下个版本是按时发，还是推迟一周。我觉得我们得先搞清楚两件事。第一，现在没修的那些崩溃 bug 到底有多严重？第二，推迟一周对市场团队有什么影响？这两个问题答清楚了，决定应该就很好做了。"
+    },
+    {
+      "q": "跨团队评审会上，对方准备讲方案。你倾向先做小范围试点。开场先亮出你的倾向，但留出讨论空间。",
+      "ref": "Before we dive in, let me share where I'm starting from, so you know my bias. My instinct is to run a small pilot in one market before we commit to the full rollout. But I haven't seen all your data yet, so I'd really like to hear the risks you see. If the numbers say a pilot is a waste of time, I'm happy to change my mind.",
+      "ref_zh": "在开始之前，我先说一下我的出发点，让大家知道我的倾向。我的直觉是先在一个市场小范围试点，再决定要不要全量铺开。不过你们的数据我还没全看过，所以很想听听你们看到的风险。如果数据说明试点纯属浪费时间，我很乐意改主意。"
+    }
+  ],
+  "words": [
+    {
+      "w": "hesitate",
+      "ipa": "/ˈhezɪˌteɪt/",
+      "zh": "犹豫",
+      "ex": "Don't hesitate to ping me if the deploy gets stuck."
+    },
+    {
+      "w": "drift (v.)",
+      "ipa": "/drɪft/",
+      "zh": "（话题）偏离、漂移",
+      "ex": "The review drifted into a debate about naming conventions.",
+      "tts_w": "drift"
+    },
+    {
+      "w": "settle on",
+      "ipa": "/ˈsetl ɑːn/",
+      "zh": "确定、选定",
+      "ex": "We finally settled on a weekly release cadence."
+    },
+    {
+      "w": "propose",
+      "ipa": "/prəˈpoʊz/",
+      "zh": "提议",
+      "ex": "I propose we freeze new features until the outage report is done."
+    },
+    {
+      "w": "backbone",
+      "ipa": "/ˈbækboʊn/",
+      "zh": "骨架、主干",
+      "ex": "This checklist is the backbone of our launch process."
+    },
+    {
+      "w": "instinct",
+      "ipa": "/ˈɪnstɪŋkt/",
+      "zh": "直觉",
+      "ex": "My instinct says the cache is the bottleneck, but let's measure it."
+    },
+    {
+      "w": "conviction",
+      "ipa": "/kənˈvɪkʃən/",
+      "zh": "坚定的信念、说服力",
+      "ex": "She argued for the rewrite with real conviction."
+    },
+    {
+      "w": "expectation",
+      "ipa": "/ˌekspekˈteɪʃən/",
+      "zh": "预期、期待",
+      "ex": "Let's set clear expectations with the PM about the beta."
+    },
+    {
+      "w": "frame (n.)",
+      "ipa": "/freɪm/",
+      "zh": "框架、思考角度",
+      "ex": "Using cost as the frame made the trade-off easier to discuss.",
+      "tts_w": "frame"
+    }
+  ]
+}

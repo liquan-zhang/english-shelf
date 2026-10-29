@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Shopping for a Gift with Help from Staff · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "135", "type": "dialogue", "title": "Shopping for a Gift with Help from Staff", "meta": "B2 · 约 240 词 · 场景：请店员挑礼物与调货包装", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Shop Assistant", "name_zh": "店员", "voice": "en-US-AvaNeural"}}, "gist": [{"q": "「你」给店员提供了哪些挑礼物的信息？", "a": "给岳母买生日礼物，预算两百块左右，她喜欢优雅、不花哨的东西，从北京来，那边冬天冷。"}, {"q": "想要的颜色没货，店员怎么处理的？", "a": "乌节路分店有两条藏青色的，帮「你」用名字预留到明天打烊，「你」下班去取。"}, {"q": "关于包装和换货，「你」提了哪些要求？", "a": "要礼品包装（免费）、礼品收据（三十天内可换）、拿掉价签，再配一张写祝福的卡片。"}], "dictation": [{"id": "s0_1_0", "text": "Yes, I need a birthday gift for my mother-in-law. Could you help me pick something?"}, {"id": "s0_3_0", "text": "Around two hundred dollars. She likes elegant things, nothing too flashy."}, {"id": "s1_1_0", "text": "Could they hold it until tomorrow evening? I can swing by after work."}, {"id": "s1_5_0", "text": "Perfect. And could you take the price tag off? I'd rather she didn't see it."}], "shadow": {"speaker": "A", "text": "Great. Do you offer gift wrapping? And could I get a gift receipt, in case she wants to change it?", "marked": "<b>Great</b>. //<br>Do you offer <b>gift wrapping</b>? //<br>And could I get a <b>gift receipt</b>, / in case she wants to <b>change</b> it? //"}, "prompts": [{"q": "同事要离职，你代表团队去买一份告别礼物。跟店员说清预算、对方的喜好，请对方推荐。", "ref": "Hi, I'm buying a farewell gift for a colleague who's leaving our team. We've collected about one hundred and fifty dollars. He loves coffee and travels a lot, so something useful for that would be great. Nothing too personal, since it's from the whole team. What would you suggest? And could you wrap it nicely?", "ref_zh": "你好，我要给一位离开团队的同事买告别礼物。大家凑了一百五十块左右。他很爱喝咖啡，经常出差，所以买点这方面实用的东西就很好。别太私人化，因为是整个团队送的。你有什么推荐？另外能帮忙包装得好看一点吗？", "id": "ref0"}, {"q": "你送的礼物尺码不合适，对方拿着礼品收据让你去换。到店里说明情况。", "ref": "Hi, I bought this sweater here as a gift last week, but it's a bit too small for my friend. Here's the gift receipt. Could I exchange it for a size up in the same colour? If you don't have that size, would it be possible to get store credit instead? She'd like to choose something herself.", "ref_zh": "你好，我上周在这儿买了这件毛衣当礼物，但朋友穿着有点小。这是礼品收据。能换同颜色大一码的吗？如果没有那个尺码，能不能换成店内额度？她想自己挑。", "id": "ref1"}], "words": [{"w": "budget", "ipa": "/ˈbʌdʒɪt/", "zh": "预算", "ex": "Our budget for the birthday party is about three hundred dollars.", "id": "w0"}, {"w": "classic", "ipa": "/ˈklæsɪk/", "zh": "经典的", "ex": "A white shirt is a classic that never goes out of style.", "id": "w1"}, {"w": "practical", "ipa": "/ˈpræktɪkəl/", "zh": "实用的", "ex": "A stroller with big wheels is more practical on uneven paths.", "id": "w2"}, {"w": "out of stock", "ipa": "/aʊt əv stɑːk/", "zh": "缺货", "ex": "The size I want is out of stock online.", "id": "w3"}, {"w": "reserve (v.)", "ipa": "/rɪˈzɜːrv/", "zh": "预留", "ex": "Could you reserve a table by the window for us?", "tts_w": "reserve", "id": "w4"}, {"w": "swing by", "ipa": "/swɪŋ baɪ/", "zh": "顺路过去", "ex": "I'll swing by the pharmacy on my way home.", "id": "w5"}, {"w": "complimentary", "ipa": "/ˌkɑːmpləˈmentəri/", "zh": "免费赠送的", "ex": "The bakery offers complimentary gift boxes this month.", "id": "w6"}, {"w": "exchange (v.)", "ipa": "/ɪksˈtʃeɪndʒ/", "zh": "换货", "ex": "Can I exchange these shoes for a bigger size?", "tts_w": "exchange", "id": "w7"}, {"w": "gift receipt", "ipa": "/ɡɪft rɪˈsiːt/", "zh": "礼品收据（不显示价格）", "ex": "Ask for a gift receipt so they can return it if needed.", "id": "w8"}], "sections": [{"heading": "1. Asking for Ideas", "heading_zh": "1. 请店员出主意", "rows": [[{"id": "s0_0_0", "md": "Hi, are you looking for anything in particular?", "text": "Hi, are you looking for anything in particular?", "zh": "您好，有什么特别想找的吗？", "sp": "B"}], [{"id": "s0_1_0", "md": "**Yes, I need a birthday gift for my mother-in-law. Could you help me pick something?**", "text": "Yes, I need a birthday gift for my mother-in-law. Could you help me pick something?", "zh": "有，我要给岳母买生日礼物。你能帮我挑一挑吗？", "sp": "A"}], [{"id": "s0_2_0", "md": "Of course. What's your ==budget==, and what kind of things does she like?", "text": "Of course. What's your budget, and what kind of things does she like?", "zh": "当然。您的预算是多少？她平时喜欢什么样的东西？", "sp": "B"}], [{"id": "s0_3_0", "md": "Around two hundred dollars. She likes elegant things, __nothing too flashy__.", "text": "Around two hundred dollars. She likes elegant things, nothing too flashy.", "zh": "两百块左右。她喜欢优雅一点的，别太花哨。", "sp": "A"}], [{"id": "s0_4_0", "md": "Our silk scarves are very popular for that. This one is a ==classic== pattern, one hundred and eighty.", "text": "Our silk scarves are very popular for that. This one is a classic pattern, one hundred and eighty.", "zh": "我们的真丝围巾很受欢迎。这条是经典款，一百八十块。", "sp": "B"}], [{"id": "s0_5_0", "md": "It's lovely. Is it ==practical==, though? She's visiting from Beijing, and it's cold there in winter.", "text": "It's lovely. Is it practical, though? She's visiting from Beijing, and it's cold there in winter.", "zh": "很好看。不过实用吗？她是从北京来玩的，那边冬天很冷。", "sp": "A"}], [{"id": "s0_6_0", "md": "Silk is light but surprisingly warm. She can wear it under a coat, too.", "text": "Silk is light but surprisingly warm. She can wear it under a coat, too.", "zh": "真丝很轻，但出乎意料地保暖，也可以搭在大衣里面。", "sp": "B"}], [{"id": "s0_7_0", "md": "That works. Do you have it in a darker colour, maybe navy?", "text": "That works. Do you have it in a darker colour, maybe navy?", "zh": "那挺好。有深一点的颜色吗？比如藏青色？", "sp": "A"}], [{"id": "s0_8_0", "md": "Let me check. Hmm, navy is __out of stock__ here, I'm afraid.", "text": "Let me check. Hmm, navy is out of stock here, I'm afraid.", "zh": "我查一下。嗯，恐怕藏青色这家店卖完了。", "sp": "B"}]]}, {"heading": "2. Wrapping and a Back-up Plan", "heading_zh": "2. 包装和调货", "rows": [[{"id": "s1_0_0", "md": "Good news, though. Our Orchard branch has two in navy. I can ==reserve== one for you.", "text": "Good news, though. Our Orchard branch has two in navy. I can reserve one for you.", "zh": "不过有好消息，我们乌节路分店还有两条藏青色的，我可以帮您预留一条。", "sp": "B"}], [{"id": "s1_1_0", "md": "Could they hold it until tomorrow evening? I can __swing by__ after work.", "text": "Could they hold it until tomorrow evening? I can swing by after work.", "zh": "能留到明天晚上吗？我下班顺路过去拿。", "sp": "A"}], [{"id": "s1_2_0", "md": "Sure, I'll put it under your name until closing tomorrow.", "text": "Sure, I'll put it under your name until closing tomorrow.", "zh": "可以，我用您的名字留到明天打烊。", "sp": "B"}], [{"id": "s1_3_0", "md": "Great. Do you offer gift wrapping? And could I get a gift receipt, in case she wants to change it?", "text": "Great. Do you offer gift wrapping? And could I get a gift receipt, in case she wants to change it?", "zh": "太好了。你们提供礼品包装吗？另外能开一张礼品收据吗，万一她想换？", "sp": "A"}], [{"id": "s1_4_0", "md": "Yes to both. Wrapping is ==complimentary==, and she can ==exchange== it within thirty days.", "text": "Yes to both. Wrapping is complimentary, and she can exchange it within thirty days.", "zh": "都可以。包装免费，三十天内可以换货。", "sp": "B"}], [{"id": "s1_5_0", "md": "**Perfect. And could you take the price tag off? I'd rather she didn't see it.**", "text": "Perfect. And could you take the price tag off? I'd rather she didn't see it.", "zh": "太好了。还有，能把价签拿掉吗？我不想让她看到价格。", "sp": "A"}], [{"id": "s1_6_0", "md": "Of course. Would you like a card as well? You can write a message, and they'll put it in the box.", "text": "Of course. Would you like a card as well? You can write a message, and they'll put it in the box.", "zh": "当然。要不要再配张卡片？您写好祝福，那边会放进盒子里。", "sp": "B"}], [{"id": "s1_7_0", "md": "**Yes, please. Thanks, you've been a huge help.**", "text": "Yes, please. Thanks, you've been a huge help.", "zh": "好的，麻烦了。谢谢，你帮了大忙。", "sp": "A"}], [{"id": "s1_8_0", "md": "My pleasure. I hope she loves it!", "text": "My pleasure. I hope she loves it!", "zh": "不客气。希望她喜欢！", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Asking for Ideas", "zh": "1. 请店员出主意", "start": 0.0, "end": 2.256, "words": [[0.105, 0.342], [0.763, 1.105], [1.118, 1.276], [1.289, 1.855]]}, {"kind": "s", "id": "s0_0_0", "md": "Hi, are you looking for anything in particular?", "zh": "您好，有什么特别想找的吗？", "sp": "B", "gap": false, "start": 2.256, "end": 5.184, "words": [[2.356, 2.79], [2.909, 3.066], [3.08, 3.159], [3.172, 3.435], [3.448, 3.567], [3.58, 3.988], [4.001, 4.08], [4.093, 4.777]]}, {"kind": "s", "id": "s0_1_0", "md": "**Yes, I need a birthday gift for my mother-in-law. Could you help me pick something?**", "zh": "有，我要给岳母买生日礼物。你能帮我挑一挑吗？", "sp": "A", "gap": false, "start": 5.184, "end": 9.816, "words": [[5.289, 5.71], [5.973, 6.026], [6.039, 6.197], [6.21, 6.263], [6.276, 6.684], [6.697, 7.0], [7.013, 7.145], [7.158, 7.263], [7.276, 7.908], [8.342, 8.447], [8.46, 8.526], [8.539, 8.697], [8.71, 8.802], [8.816, 8.987], [9.0, 9.421]]}, {"kind": "s", "id": "s0_2_0", "md": "Of course. What's your ==budget==, and what kind of things does she like?", "zh": "当然。您的预算是多少？她平时喜欢什么样的东西？", "sp": "B", "gap": false, "start": 9.816, "end": 14.328, "words": [[9.916, 10.14], [10.153, 10.719], [11.103, 11.379], [11.392, 11.524], [11.537, 11.998], [12.116, 12.353], [12.524, 12.682], [12.695, 12.879], [12.892, 12.971], [12.984, 13.208], [13.221, 13.353], [13.366, 13.484], [13.498, 13.932]]}, {"kind": "s", "id": "s0_3_0", "md": "Around two hundred dollars. She likes elegant things, __nothing too flashy__.", "zh": "两百块左右。她喜欢优雅一点的，别太花哨。", "sp": "A", "gap": false, "start": 14.328, "end": 19.104, "words": [[14.433, 14.749], [14.762, 14.973], [14.986, 15.223], [15.236, 15.788], [16.223, 16.367], [16.381, 16.617], [16.631, 16.999], [17.012, 17.46], [17.67, 17.96], [17.973, 18.183], [18.196, 18.71]]}, {"kind": "s", "id": "s0_4_0", "md": "Our silk scarves are very popular for that. This one is a ==classic== pattern, one hundred and eighty.", "zh": "我们的真丝围巾很受欢迎。这条是经典款，一百八十块。", "sp": "B", "gap": false, "start": 19.104, "end": 25.848, "words": [[19.204, 19.467], [19.48, 19.743], [19.757, 20.217], [20.23, 20.454], [20.467, 20.809], [20.822, 21.296], [21.309, 21.415], [21.428, 21.743], [22.128, 22.404], [22.417, 22.654], [22.667, 22.799], [22.812, 22.878], [22.891, 23.457], [23.47, 23.93], [24.193, 24.391], [24.404, 24.878], [24.891, 25.049], [25.062, 25.457]]}, {"kind": "s", "id": "s0_5_0", "md": "It's lovely. Is it ==practical==, though? She's visiting from Beijing, and it's cold there in winter.", "zh": "很好看。不过实用吗？她是从北京来玩的，那边冬天很冷。", "sp": "A", "gap": false, "start": 25.848, "end": 31.872, "words": [[25.953, 26.085], [26.098, 26.493], [26.927, 27.032], [27.045, 27.124], [27.137, 27.716], [27.743, 28.019], [28.453, 28.677], [28.69, 29.124], [29.137, 29.308], [29.322, 29.927], [30.243, 30.295], [30.309, 30.427], [30.44, 30.716], [30.73, 30.887], [30.901, 31.006], [31.019, 31.466]]}, {"kind": "s", "id": "s0_6_0", "md": "Silk is light but surprisingly warm. She can wear it under a coat, too.", "zh": "真丝很轻，但出乎意料地保暖，也可以搭在大衣里面。", "sp": "B", "gap": false, "start": 31.872, "end": 36.936, "words": [[31.972, 32.354], [32.367, 32.498], [32.511, 32.814], [32.88, 33.117], [33.13, 33.88], [33.893, 34.38], [34.764, 35.04], [35.054, 35.211], [35.225, 35.409], [35.422, 35.488], [35.501, 35.711], [35.725, 35.777], [35.79, 36.106], [36.133, 36.54]]}, {"kind": "s", "id": "s0_7_0", "md": "That works. Do you have it in a darker colour, maybe navy?", "zh": "那挺好。有深一点的颜色吗？比如藏青色？", "sp": "A", "gap": false, "start": 36.936, "end": 40.704, "words": [[37.054, 37.173], [37.186, 37.647], [38.081, 38.133], [38.147, 38.239], [38.252, 38.462], [38.475, 38.541], [38.554, 38.633], [38.647, 38.712], [38.725, 39.107], [39.12, 39.489], [39.699, 39.91], [39.923, 40.304]]}, {"kind": "s", "id": "s0_8_0", "md": "Let me check. Hmm, navy is __out of stock__ here, I'm afraid.", "zh": "我查一下。嗯，恐怕藏青色这家店卖完了。", "sp": "B", "gap": false, "start": 40.704, "end": 45.6, "words": [[40.804, 41.041], [41.054, 41.159], [41.172, 41.633], [42.017, 42.596], [42.991, 43.254], [43.267, 43.451], [43.465, 43.583], [43.596, 43.688], [43.701, 44.044], [44.057, 44.412], [44.491, 44.609], [44.622, 45.215]]}, {"kind": "h", "id": "h1", "md": "2. Wrapping and a Back-up Plan", "zh": "2. 包装和调货", "start": 45.6, "end": 48.288, "words": [[45.718, 45.916], [46.363, 46.837], [46.955, 47.021], [47.034, 47.087], [47.1, 47.508], [47.521, 47.903]]}, {"kind": "s", "id": "s1_0_0", "md": "Good news, though. Our Orchard branch has two in navy. I can ==reserve== one for you.", "zh": "不过有好消息，我们乌节路分店还有两条藏青色的，我可以帮您预留一条。", "sp": "B", "gap": false, "start": 48.288, "end": 53.832, "words": [[48.388, 48.599], [48.612, 48.862], [48.888, 49.23], [49.614, 49.93], [49.943, 50.285], [50.299, 50.627], [50.641, 50.877], [50.891, 51.088], [51.101, 51.206], [51.22, 51.68], [52.062, 52.338], [52.351, 52.509], [52.522, 52.851], [52.864, 53.009], [53.022, 53.141], [53.154, 53.43]]}, {"kind": "s", "id": "s1_1_0", "md": "Could they hold it until tomorrow evening? I can __swing by__ after work.", "zh": "能留到明天晚上吗？我下班顺路过去拿。", "sp": "A", "gap": false, "start": 53.832, "end": 57.984, "words": [[53.937, 54.043], [54.056, 54.148], [54.161, 54.45], [54.464, 54.556], [54.661, 54.911], [54.924, 55.371], [55.385, 55.779], [56.214, 56.306], [56.319, 56.437], [56.45, 56.74], [56.753, 56.95], [56.964, 57.227], [57.24, 57.582]]}, {"kind": "s", "id": "s1_2_0", "md": "Sure, I'll put it under your name until closing tomorrow.", "zh": "可以，我用您的名字留到明天打烊。", "sp": "B", "gap": false, "start": 57.984, "end": 61.68, "words": [[58.084, 58.65], [58.939, 59.071], [59.084, 59.229], [59.242, 59.321], [59.334, 59.531], [59.545, 59.663], [59.676, 59.992], [60.005, 60.308], [60.321, 60.702], [60.716, 61.295]]}, {"kind": "s", "id": "s1_3_0", "md": "Great. Do you offer gift wrapping? And could I get a gift receipt, in case she wants to change it?", "zh": "太好了。你们提供礼品包装吗？另外能开一张礼品收据吗，万一她想换？", "sp": "A", "gap": false, "start": 61.68, "end": 67.488, "words": [[61.785, 62.127], [62.562, 62.614], [62.627, 62.733], [62.746, 62.996], [63.009, 63.233], [63.246, 63.627], [64.062, 64.127], [64.141, 64.272], [64.285, 64.351], [64.364, 64.496], [64.509, 64.588], [64.601, 64.89], [64.904, 65.377], [65.759, 65.851], [65.864, 66.154], [66.167, 66.298], [66.312, 66.535], [66.548, 66.614], [66.627, 66.93], [66.943, 67.088]]}, {"kind": "s", "id": "s1_4_0", "md": "Yes to both. Wrapping is ==complimentary==, and she can ==exchange== it within thirty days.", "zh": "都可以。包装免费，三十天内可以换货。", "sp": "B", "gap": false, "start": 67.488, "end": 73.464, "words": [[67.588, 67.983], [67.996, 68.114], [68.127, 68.614], [68.999, 69.446], [69.459, 69.577], [69.591, 70.42], [70.656, 70.854], [70.88, 71.064], [71.077, 71.222], [71.235, 71.762], [71.775, 71.893], [71.906, 72.235], [72.249, 72.538], [72.551, 73.077]]}, {"kind": "s", "id": "s1_5_0", "md": "**Perfect. And could you take the price tag off? I'd rather she didn't see it.**", "zh": "太好了。还有，能把价签拿掉吗？我不想让她看到价格。", "sp": "A", "gap": false, "start": 73.464, "end": 78.0, "words": [[73.582, 74.017], [74.451, 74.503], [74.517, 74.648], [74.661, 74.727], [74.74, 74.938], [74.951, 75.017], [75.03, 75.306], [75.319, 75.556], [75.569, 75.938], [76.385, 76.503], [76.517, 76.767], [76.78, 76.925], [76.938, 77.148], [77.161, 77.398], [77.411, 77.596]]}, {"kind": "s", "id": "s1_6_0", "md": "Of course. Would you like a card as well? You can write a message, and they'll put it in the box.", "zh": "当然。要不要再配张卡片？您写好祝福，那边会放进盒子里。", "sp": "B", "gap": false, "start": 78.0, "end": 83.976, "words": [[78.1, 78.324], [78.337, 78.903], [79.287, 79.497], [79.511, 79.589], [79.603, 79.76], [79.774, 79.826], [79.839, 80.116], [80.129, 80.234], [80.247, 80.55], [80.932, 81.116], [81.129, 81.274], [81.287, 81.471], [81.484, 81.524], [81.537, 82.103], [82.182, 82.353], [82.379, 82.537], [82.55, 82.721], [82.734, 82.813], [82.826, 82.892], [82.905, 82.984], [82.997, 83.576]]}, {"kind": "s", "id": "s1_7_0", "md": "**Yes, please. Thanks, you've been a huge help.**", "zh": "好的，麻烦了。谢谢，你帮了大忙。", "sp": "A", "gap": false, "start": 83.976, "end": 87.408, "words": [[84.081, 84.371], [84.423, 84.91], [85.358, 85.752], [85.989, 86.134], [86.147, 86.265], [86.279, 86.318], [86.331, 86.686], [86.7, 87.029]]}, {"kind": "s", "id": "s1_8_0", "md": "My pleasure. I hope she loves it!", "zh": "不客气。希望她喜欢！", "sp": "B", "gap": false, "start": 87.408, "end": 90.384, "words": [[87.508, 87.732], [87.745, 88.337], [88.721, 88.984], [88.997, 89.195], [89.208, 89.366], [89.379, 89.695], [89.708, 89.984]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

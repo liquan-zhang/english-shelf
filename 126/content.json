@@ -1,0 +1,88 @@
+{
+  "id": "126",
+  "type": "dialogue",
+  "title": "Viewing an Apartment",
+  "meta": "B2 · 约 320 词 · 场景：看房问条件与谈租金",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Property Agent", "name_zh": "房产中介", "voice": "en-AU-NatashaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Looking Around the Unit",
+      "heading_zh": "1. 看房",
+      "lines": [
+        {"sp": "B", "en": "So this is the living room. It gets the morning sun, and the unit is ==fully furnished==.", "zh": "这是客厅。早上有阳光，房子是全家具的。"},
+        {"sp": "A", "en": "It's nice and bright. How much is the rent __per month__?", "zh": "挺亮堂的。月租多少？"},
+        {"sp": "B", "en": "The landlord is asking four thousand two hundred. That doesn't include ==utilities==.", "zh": "房东开价四千二。不包括水电煤。"},
+        {"sp": "A", "en": "**Roughly how much are the utilities for a family of three?**", "zh": "一家三口，水电煤大概每月多少？"},
+        {"sp": "B", "en": "Most tenants pay around two hundred a month, a bit more if you run the air con all night.", "zh": "大部分租客每月两百左右，要是空调整晚开会多一点。"},
+        {"sp": "A", "en": "And what's the minimum ==lease== period?", "zh": "最短租期是多久？"},
+        {"sp": "B", "en": "Two years ideally, but the landlord might consider one year at a slightly higher rent.", "zh": "最好两年，不过一年的话房东可能也会考虑，只是租金稍高。"},
+        {"sp": "A", "en": "We have a toddler. Is there a playground in the condo, and any preschools __within walking distance__?", "zh": "我们有个小娃。公寓里有游乐场吗？走路能到的幼儿园有吗？"},
+        {"sp": "B", "en": "There's a playground next to the pool, and two preschools about five minutes away.", "zh": "泳池旁边有个游乐场，五分钟路程有两家幼儿园。"},
+        {"sp": "A", "en": "Good. I noticed some ==mould== on the bathroom ceiling. Would that be fixed before we move in?", "zh": "好的。我看到浴室天花板有点发霉。入住前能处理好吗？"},
+        {"sp": "B", "en": "I'll raise it with the landlord. I'm sure he'd be happy to __sort it out__.", "zh": "我跟房东提一下。他应该很乐意处理。"}
+      ]
+    },
+    {
+      "heading": "2. Making an Offer",
+      "heading_zh": "2. 出价",
+      "lines": [
+        {"sp": "A", "en": "We really like the place, and we'd like to make an offer.", "zh": "我们很喜欢这套房，想出个价。"},
+        {"sp": "A", "en": "**Would the landlord consider four thousand if we sign for two years?**", "zh": "如果签两年，房东能接受四千吗？"},
+        {"sp": "B", "en": "That's a fair bit lower. I can __put it to him__, but he's had a few other viewings this week.", "zh": "这低了不少。我可以帮你转达，不过这周还有别人来看过。"},
+        {"sp": "A", "en": "I understand. We can move in on the first of next month, and we don't have any pets.", "zh": "理解。我们下个月一号就能入住，而且没养宠物。"},
+        {"sp": "B", "en": "That helps. Is there anything else you'd want in the ==tenancy agreement==?", "zh": "这是加分项。租约里你们还想加什么条款吗？"},
+        {"sp": "A", "en": "Yes, I'd like a ==diplomatic clause==, in case my company ==relocates== me.", "zh": "有，我想加一个外交条款，以防公司把我调走。"},
+        {"sp": "B", "en": "That's pretty standard. It usually lets you __break the lease__ after twelve months with two months' notice.", "zh": "这挺常见的。一般是满十二个月后，提前两个月通知就能提前解约。"},
+        {"sp": "A", "en": "Perfect. And could the old sofa be removed? We're bringing our own.", "zh": "太好了。另外能把那个旧沙发搬走吗？我们自己有。"},
+        {"sp": "B", "en": "Let me give him a call. Okay, he'll do four thousand one hundred, with the sofa removed and the mould fixed.", "zh": "我给他打个电话。好，他同意四千一，搬走沙发，把霉处理掉。"},
+        {"sp": "A", "en": "**That works for us. What's the next step?**", "zh": "我们可以接受。下一步怎么走？"},
+        {"sp": "B", "en": "I'll send you a ==letter of intent==. You'd pay a ==good faith deposit== of one month's rent to secure it.", "zh": "我把意向书发给你。你付一个月租金作为诚意金，把房子定下来。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "房子开价多少？包括什么、不包括什么？", "a": "月租四千二，全家具，不包括水电煤；水电煤大概每月两百。"},
+    {"q": "「你」在看房时问了哪些和孩子有关、和房况有关的问题？", "a": "问了小区有没有游乐场、附近有没有走路能到的幼儿园；还指出浴室天花板发霉，要求入住前处理。"},
+    {"q": "最后谈成了什么条件？", "a": "签两年，月租四千一，搬走旧沙发、处理霉斑，租约里加外交条款；下一步签意向书、付一个月诚意金。"}
+  ],
+  "dictation": [
+    "Roughly how much are the utilities for a family of three?",
+    "We have a toddler. Is there a playground in the condo, and any preschools within walking distance?",
+    "Would the landlord consider four thousand if we sign for two years?",
+    "Yes, I'd like a diplomatic clause, in case my company relocates me."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "I understand. We can move in on the first of next month, and we don't have any pets.",
+    "marked": "I <b>understand</b>. //<br>We can move in / on the <b>first</b> of next month, / and we <b>don't</b> have any <b>pets</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "看房时你发现厨房没有洗衣机、主卧空调很旧。跟中介提出，希望房东在入住前解决，并问谁负责空调保养。",
+      "ref": "I like the layout, but there are a couple of things. There's no washing machine in the kitchen, and the air con in the master bedroom looks quite old. Could the landlord put in a washing machine and service the air con before we move in? Also, who's responsible for the regular air con servicing during the lease?",
+      "ref_zh": "我喜欢这个格局，但有几点。厨房没有洗衣机，主卧的空调看起来很旧了。房东能在我们入住前装一台洗衣机、把空调保养一下吗？另外，租期内空调定期保养由谁负责？"
+    },
+    {
+      "q": "中介说房东不肯降价。你换个角度谈：不降价的话，能不能多给点别的条件。",
+      "ref": "Okay, I understand he won't go lower on the rent. In that case, could we ask for something else instead? For example, could he include the internet, or give us two weeks rent free while we move in? We're a quiet family and happy to sign for two years, so we'd be reliable tenants.",
+      "ref_zh": "好，我理解他租金不肯再降。那我们能不能换点别的？比如包网费，或者入住时给两周免租期？我们是很安静的家庭，也愿意签两年，会是很靠谱的租客。"
+    }
+  ],
+  "words": [
+    {"w": "fully furnished", "ipa": "/ˈfʊli ˈfɜːrnɪʃt/", "zh": "全家具的", "ex": "We're looking for a fully furnished flat near the MRT."},
+    {"w": "utilities", "ipa": "/juːˈtɪlətiz/", "zh": "水电煤等公用事业费", "ex": "Our utilities went up a lot during the hot months."},
+    {"w": "lease", "ipa": "/liːs/", "zh": "租约，租期", "ex": "Our lease ends in March, so we need to decide soon."},
+    {"w": "mould", "ipa": "/moʊld/", "zh": "霉，霉斑", "ex": "Open the windows, or mould will grow in the bathroom."},
+    {"w": "tenancy agreement", "ipa": "/ˈtenənsi əˌɡriːmənt/", "zh": "租赁合同", "ex": "Read the tenancy agreement carefully before you sign."},
+    {"w": "diplomatic clause", "ipa": "/ˌdɪpləˈmætɪk klɔːz/", "zh": "外交条款（工作调动可提前解约）", "ex": "Most expats ask for a diplomatic clause in their lease."},
+    {"w": "relocate", "ipa": "/ˌriːˈloʊkeɪt/", "zh": "调动，搬迁", "ex": "Her company relocated her to Tokyo last year."},
+    {"w": "letter of intent", "ipa": "/ˈletər əv ɪnˈtent/", "zh": "意向书", "ex": "We signed the letter of intent the same day."},
+    {"w": "good faith deposit", "ipa": "/ɡʊd feɪθ dɪˈpɑːzɪt/", "zh": "诚意金", "ex": "The good faith deposit becomes part of the security deposit."},
+    {"w": "break the lease", "ipa": "/breɪk ðə liːs/", "zh": "提前解约", "ex": "If you break the lease early, you may lose your deposit."}
+  ]
+}

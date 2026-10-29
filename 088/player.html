@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Welcoming a New Teammate · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "088", "title": "Welcoming a New Teammate", "meta": "B2 · 约 280 词 · 场景：欢迎新同事", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The First Week Sticks", "heading_zh": "1. 第一周会一直记得", "rows": [[{"id": "s0_0_0", "md": "New people remember their first week for a long time.", "text": "New people remember their first week for a long time.", "zh": "新人会把入职第一周记很久。", "sp": null}, {"id": "s0_0_1", "md": "They remember who said hello, who invited them to lunch, and who left them alone at a desk with a new laptop.", "text": "They remember who said hello, who invited them to lunch, and who left them alone at a desk with a new laptop.", "zh": "他们记得谁打了招呼，谁约他们吃午饭，又是谁把他们和一台新电脑丢在工位上不管。", "sp": null}, {"id": "s0_0_2", "md": "That week shapes a sense of ==belonging== that is hard to change later.", "text": "That week shapes a sense of belonging that is hard to change later.", "zh": "那一周塑造的归属感，之后很难再改变。", "sp": null}], [{"id": "s0_1_0", "md": "Most new teammates feel ==overwhelmed== in their first few days, even if they look calm.", "text": "Most new teammates feel overwhelmed in their first few days, even if they look calm.", "zh": "大多数新同事头几天都会有点招架不住，哪怕表面看着很淡定。", "sp": null}, {"id": "s0_1_1", "md": "As a lead, you cannot remove that feeling, but you can make it smaller.", "text": "As a lead, you cannot remove that feeling, but you can make it smaller.", "zh": "作为 lead，你没法消除这种感觉，但可以让它小一点。", "sp": null}, {"id": "s0_1_2", "md": "**A new teammate does not need a perfect onboarding plan; they need one person who clearly wants them there.**", "text": "A new teammate does not need a perfect onboarding plan; they need one person who clearly wants them there.", "zh": "新同事不需要一份完美的入职计划；他们需要一个明显希望他们来的人。", "sp": null}], [{"id": "s0_2_0", "md": "The welcome is also a message to the rest of the team.", "text": "The welcome is also a message to the rest of the team.", "zh": "欢迎新人，也是在给团队其他人传递信号。", "sp": null}, {"id": "s0_2_1", "md": "People watch how you treat the newest person, and they draw ==conclusions== about what kind of team this really is.", "text": "People watch how you treat the newest person, and they draw conclusions about what kind of team this really is.", "zh": "大家会看你怎么对待最新来的人，并由此判断这到底是个什么样的团队。", "sp": null}]]}, {"heading": "2. Four Small Gestures", "heading_zh": "2. 四个小举动", "rows": [[{"id": "s1_0_0", "md": "Send a short message before day one.", "text": "Send a short message before day one.", "zh": "入职前发一条简短的消息。", "sp": null}, {"id": "s1_0_1", "md": "\"Hi Priya, looking forward to having you on the team on Monday. I'll meet you in the lobby at ten.\"", "text": "\"Hi Priya, looking forward to having you on the team on Monday. I'll meet you in the lobby at ten.\"", "zh": "「Hi Priya，期待你周一加入团队。我十点在大堂接你。」", "sp": null}, {"id": "s1_0_2", "md": "It removes the ==uncertainty== of the first morning.", "text": "It removes the uncertainty of the first morning.", "zh": "这样就省掉了第一天早上的忐忑。", "sp": null}], [{"id": "s1_1_0", "md": "On the first day, introduce them with one ==strength==, not just a job title.", "text": "On the first day, introduce them with one strength, not just a job title.", "zh": "第一天介绍他们的时候，带上一个长处，而不只是一个职位。", "sp": null}, {"id": "s1_1_1", "md": "\"This is Priya, she built a payments dashboard in her last role, so she's the person to ask about charts.\"", "text": "\"This is Priya, she built a payments dashboard in her last role, so she's the person to ask about charts.\"", "zh": "「这是 Priya，她上一份工作搭过一个支付看板，图表相关的事问她就对了。」", "sp": null}, {"id": "s1_1_2", "md": "Then make sure someone __takes them to lunch__, so they are not eating alone at their desk.", "text": "Then make sure someone takes them to lunch, so they are not eating alone at their desk.", "zh": "然后确保有人带他们去吃午饭，别让他们一个人在工位上吃。", "sp": null}], [{"id": "s1_2_0", "md": "Give them a simple map of people: who to ask about code, who to ask about process, and who knows the best lunch spots.", "text": "Give them a simple map of people: who to ask about code, who to ask about process, and who knows the best lunch spots.", "zh": "给他们一张简单的人员地图：代码问谁，流程问谁，谁知道附近最好吃的午饭。", "sp": null}, {"id": "s1_2_1", "md": "**Knowing who to ask matters more in the first month than knowing the answers.**", "text": "Knowing who to ask matters more in the first month than knowing the answers.", "zh": "第一个月里，知道该问谁比知道答案更重要。", "sp": null}], [{"id": "s1_3_0", "md": "At the end of the first week, __check in__ with an open question.", "text": "At the end of the first week, check in with an open question.", "zh": "第一周快结束时，用一个开放式问题 check-in 一下。", "sp": null}, {"id": "s1_3_1", "md": "\"What's been ==confusing== so far?\" works better than \"Is everything okay?\", because it gives them ==permission== to be honest.", "text": "\"What's been confusing so far?\" works better than \"Is everything okay?\", because it gives them permission to be honest.", "zh": "「到目前为止有什么让你摸不着头脑的？」比「一切都还好吧？」好用，因为它让对方可以放心说实话。", "sp": null}]]}], "gist": [{"q": "作者为什么说新人的第一周很重要？", "a": "新人会记很久，它决定归属感；新人往往不知所措，同时团队其他人也在看你怎么对待最新的人。"}, {"q": "新人最需要的是什么？", "a": "不是完美的入职计划，而是一个明确欢迎他们的人。"}, {"q": "文中的四个小动作是什么？", "a": "入职前发短消息约好见面；第一天介绍时带上一个长处并安排人陪吃午饭；给一张“该问谁”的人员地图；第一周末用开放问题 check in。"}], "dictation": [{"id": "s0_1_2", "text": "A new teammate does not need a perfect onboarding plan; they need one person who clearly wants them there."}, {"id": "s1_0_2", "text": "It removes the uncertainty of the first morning."}, {"id": "s1_2_1", "text": "Knowing who to ask matters more in the first month than knowing the answers."}, {"id": "s1_3_0", "text": "At the end of the first week, check in with an open question."}], "shadow": {"text": "Most new teammates feel overwhelmed in their first few days, even if they look calm. As a lead, you cannot remove that feeling, but you can make it smaller. A new teammate does not need a perfect onboarding plan; they need one person who clearly wants them there.", "marked": "Most new teammates / feel <b>overwhelmed</b> in their first few days, / even if they look <b>calm</b>. //<br>As a lead, / you cannot <b>remove</b> that feeling, / but you can make it <b>smaller</b>. //<br>A new teammate does not need a <b>perfect</b> onboarding plan; / they need <b>one person</b> / who clearly <b>wants</b> them there. //"}, "prompts": [{"q": "新同事 Tom 从伦敦调来新加坡，第一天你带他认识团队。用“名字加一个长处”的方式介绍他，并约他吃午饭。", "ref": "Hey everyone, quick one. This is Tom, he just moved over from our London office. Tom spent the last two years making our upload service twice as fast, so if you have performance questions, he's your guy. Tom, a few of us usually grab lunch at the food court downstairs around noon. Want to join us today?", "ref_zh": "大家好，占用一分钟。这是 Tom，刚从伦敦办公室调过来。Tom 过去两年把我们的上传服务提速了一倍，所以有性能方面的问题，找他就对了。Tom，我们几个中午一般十二点左右去楼下美食广场吃饭。今天一起去？", "id": "ref0"}, {"q": "新同事入职第一周的周五，你做一个 30 秒的 check-in。", "ref": "So, you've survived your first week! How are you finding it? Good. What's been the most confusing part so far? Honestly, anything counts, the tools, the acronyms, the people. That makes sense, our release process confuses everyone at first. Let's spend twenty minutes on it Monday morning. And have a proper rest this weekend.", "ref_zh": "怎么样，第一周熬过来了！感觉如何？那就好。到目前为止最让你摸不着头脑的是什么？说真的，什么都算，工具、缩写、人。能理解，我们的发布流程一开始谁都搞不懂。周一早上我们花二十分钟过一遍。这周末好好休息。", "id": "ref1"}], "words": [{"w": "belonging", "ipa": "/bɪˈlɔːŋɪŋ/", "zh": "归属感", "ex": "Small rituals like team lunches build a sense of belonging.", "id": "w0"}, {"w": "overwhelmed", "ipa": "/ˌoʊvərˈwelmd/", "zh": "不知所措的、被压垮的", "ex": "I felt overwhelmed by the number of internal tools in my first week.", "id": "w1"}, {"w": "conclusion", "ipa": "/kənˈkluːʒən/", "zh": "结论", "ex": "Don't draw conclusions from one week of data.", "id": "w2"}, {"w": "uncertainty", "ipa": "/ʌnˈsɜːrtənti/", "zh": "不确定性", "ex": "The reorg created a lot of uncertainty, so we need to communicate early.", "id": "w3"}, {"w": "strength", "ipa": "/streŋθ/", "zh": "长处、优势", "ex": "Her biggest strength is turning messy requirements into a clear plan.", "id": "w4"}, {"w": "confusing", "ipa": "/kənˈfjuːzɪŋ/", "zh": "令人困惑的", "ex": "The error message is confusing, users don't know what to do next.", "id": "w5"}, {"w": "permission", "ipa": "/pərˈmɪʃən/", "zh": "允许、许可", "ex": "Saying 'I don't know either' gives the team permission to ask questions.", "id": "w6"}, {"w": "onboarding", "ipa": "/ˈɑːnˌbɔːrdɪŋ/", "zh": "入职引导", "ex": "We cut onboarding time in half with a better setup guide.", "id": "w7"}, {"w": "settle in", "ipa": "/ˈsetəl ɪn/", "zh": "安顿下来、适应", "ex": "Take the first two weeks to settle in before you pick up on-call.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The First Week Sticks", "zh": "1. 第一周会一直记得", "start": 0.0, "end": 2.208, "words": [[0.105, 0.355], [0.684, 0.776], [0.789, 1.092], [1.105, 1.25], [1.263, 1.803]]}, {"kind": "s", "id": "s0_0_0", "md": "New people remember their first week for a long time.", "zh": "新人会把入职第一周记很久。", "sp": null, "gap": false, "start": 2.208, "end": 5.304, "words": [[2.313, 2.445], [2.458, 2.774], [2.787, 3.129], [3.142, 3.313], [3.326, 3.734], [3.747, 3.997], [4.024, 4.169], [4.182, 4.234], [4.247, 4.511], [4.524, 4.905]]}, {"kind": "s", "id": "s0_0_1", "md": "They remember who said hello, who invited them to lunch, and who left them alone at a desk with a new laptop.", "zh": "他们记得谁打了招呼，谁约他们吃午饭，又是谁把他们和一台新电脑丢在工位上不管。", "sp": null, "gap": false, "start": 5.304, "end": 12.0, "words": [[5.422, 5.515], [5.528, 5.962], [5.975, 6.08], [6.093, 6.357], [6.37, 6.817], [7.186, 7.278], [7.291, 7.778], [7.791, 7.922], [7.936, 8.028], [8.041, 8.541], [8.843, 8.909], [8.922, 9.067], [9.08, 9.33], [9.343, 9.475], [9.488, 9.922], [9.936, 10.028], [10.041, 10.107], [10.12, 10.515], [10.528, 10.672], [10.686, 10.699], [10.712, 10.962], [10.975, 11.607]]}, {"kind": "s", "id": "s0_0_2", "md": "That week shapes a sense of ==belonging== that is hard to change later.", "zh": "那一周塑造的归属感，之后很难再改变。", "sp": null, "gap": false, "start": 12.0, "end": 15.816, "words": [[12.118, 12.263], [12.276, 12.461], [12.474, 12.855], [12.868, 12.921], [12.934, 13.276], [13.289, 13.368], [13.382, 13.961], [13.974, 14.105], [14.118, 14.211], [14.224, 14.539], [14.553, 14.605], [14.618, 14.987], [15.0, 15.421]]}, {"kind": "s", "id": "s0_1_0", "md": "Most new teammates feel ==overwhelmed== in their first few days, even if they look calm.", "zh": "大多数新同事头几天都会有点招架不住，哪怕表面看着很淡定。", "sp": null, "gap": true, "start": 15.816, "end": 21.12, "words": [[15.921, 16.198], [16.211, 16.434], [16.448, 17.0], [17.013, 17.355], [17.474, 18.092], [18.105, 18.171], [18.184, 18.316], [18.329, 18.698], [18.711, 18.869], [18.882, 19.29], [19.684, 19.869], [19.882, 19.987], [20.0, 20.105], [20.119, 20.329], [20.342, 20.724]]}, {"kind": "s", "id": "s0_1_1", "md": "As a lead, you cannot remove that feeling, but you can make it smaller.", "zh": "作为 lead，你没法消除这种感觉，但可以让它小一点。", "sp": null, "gap": false, "start": 21.12, "end": 25.728, "words": [[21.225, 21.331], [21.344, 21.396], [21.409, 21.857], [22.252, 22.317], [22.331, 22.725], [22.738, 23.159], [23.173, 23.357], [23.37, 23.804], [24.107, 24.238], [24.252, 24.344], [24.357, 24.488], [24.502, 24.686], [24.699, 24.778], [24.791, 25.33]]}, {"kind": "s", "id": "s0_1_2", "md": "**A new teammate does not need a perfect onboarding plan; they need one person who clearly wants them there.**", "zh": "新同事不需要一份完美的入职计划；他们需要一个明显希望他们来的人。", "sp": null, "gap": false, "start": 25.728, "end": 32.304, "words": [[25.82, 25.86], [25.873, 26.123], [26.136, 26.702], [26.715, 26.899], [26.912, 27.215], [27.228, 27.399], [27.412, 27.465], [27.478, 28.017], [28.031, 28.491], [28.504, 28.846], [29.281, 29.373], [29.386, 29.61], [29.623, 29.886], [29.899, 30.399], [30.583, 30.715], [30.728, 31.123], [31.136, 31.425], [31.439, 31.61], [31.623, 31.925]]}, {"kind": "s", "id": "s0_2_0", "md": "The welcome is also a message to the rest of the team.", "zh": "欢迎新人，也是在给团队其他人传递信号。", "sp": null, "gap": true, "start": 32.304, "end": 35.616, "words": [[32.422, 32.488], [32.501, 32.949], [33.12, 33.225], [33.238, 33.633], [33.646, 33.686], [33.699, 34.225], [34.238, 34.33], [34.343, 34.449], [34.462, 34.738], [34.751, 34.804], [34.817, 34.883], [34.896, 35.225]]}, {"kind": "s", "id": "s0_2_1", "md": "People watch how you treat the newest person, and they draw ==conclusions== about what kind of team this really is.", "zh": "大家会看你怎么对待最新来的人，并由此判断这到底是个什么样的团队。", "sp": null, "gap": false, "start": 35.616, "end": 42.048, "words": [[35.734, 36.024], [36.037, 36.326], [36.34, 36.458], [36.471, 36.616], [36.629, 36.971], [36.984, 37.063], [37.077, 37.537], [37.55, 38.05], [38.366, 38.419], [38.432, 38.537], [38.55, 38.813], [38.827, 39.484], [39.498, 39.8], [39.813, 39.984], [39.998, 40.208], [40.221, 40.326], [40.34, 40.682], [40.695, 40.879], [40.892, 41.234], [41.248, 41.669]]}, {"kind": "h", "id": "h1", "md": "2. Four Small Gestures", "zh": "2. 四个小举动", "start": 42.048, "end": 44.232, "words": [[42.166, 42.403], [42.719, 42.877], [42.89, 43.18], [43.193, 43.851]]}, {"kind": "s", "id": "s1_0_0", "md": "Send a short message before day one.", "zh": "入职前发一条简短的消息。", "sp": null, "gap": false, "start": 44.232, "end": 46.56, "words": [[44.337, 44.508], [44.521, 44.561], [44.574, 44.916], [44.929, 45.324], [45.337, 45.666], [45.679, 45.864], [45.877, 46.179]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Hi Priya, looking forward to having you on the team on Monday. I'll meet you in the lobby at ten.\"", "zh": "「Hi Priya，期待你周一加入团队。我十点在大堂接你。」", "sp": null, "gap": false, "start": 46.56, "end": 52.056, "words": [[46.757, 46.81], [46.81, 47.165], [47.573, 47.823], [47.836, 48.139], [48.152, 48.192], [48.205, 48.494], [48.507, 48.613], [48.626, 48.705], [48.718, 48.784], [48.797, 49.06], [49.073, 49.178], [49.192, 49.652], [50.086, 50.192], [50.205, 50.415], [50.428, 50.56], [50.573, 50.639], [50.652, 50.744], [50.757, 51.165], [51.178, 51.271], [51.284, 51.665]]}, {"kind": "s", "id": "s1_0_2", "md": "It removes the ==uncertainty== of the first morning.", "zh": "这样就省掉了第一天早上的忐忑。", "sp": null, "gap": false, "start": 52.056, "end": 55.44, "words": [[52.161, 52.28], [52.293, 52.793], [52.806, 52.951], [52.964, 53.951], [54.095, 54.214], [54.227, 54.306], [54.319, 54.674], [54.688, 55.043]]}, {"kind": "s", "id": "s1_1_0", "md": "On the first day, introduce them with one ==strength==, not just a job title.", "zh": "第一天介绍他们的时候，带上一个长处，而不只是一个职位。", "sp": null, "gap": true, "start": 55.44, "end": 60.456, "words": [[55.545, 55.624], [55.637, 55.716], [55.729, 56.072], [56.085, 56.401], [56.795, 57.348], [57.361, 57.519], [57.532, 57.69], [57.703, 57.953], [57.966, 58.479], [58.782, 59.032], [59.045, 59.269], [59.282, 59.322], [59.335, 59.651], [59.664, 60.072]]}, {"kind": "s", "id": "s1_1_1", "md": "\"This is Priya, she built a payments dashboard in her last role, so she's the person to ask about charts.\"", "zh": "「这是 Priya，她上一份工作搭过一个支付看板，图表相关的事问她就对了。」", "sp": null, "gap": false, "start": 60.456, "end": 67.248, "words": [[60.64, 60.745], [60.824, 60.956], [60.969, 61.417], [61.824, 61.982], [61.995, 62.219], [62.232, 62.285], [62.298, 62.706], [62.719, 63.298], [63.311, 63.377], [63.39, 63.509], [63.522, 63.864], [63.877, 64.14], [64.535, 64.64], [64.653, 64.877], [64.89, 65.009], [65.022, 65.417], [65.43, 65.548], [65.561, 65.864], [65.877, 66.153], [66.167, 66.732]]}, {"kind": "s", "id": "s1_1_2", "md": "Then make sure someone __takes them to lunch__, so they are not eating alone at their desk.", "zh": "然后确保有人带他们去吃午饭，别让他们一个人在工位上吃。", "sp": null, "gap": false, "start": 67.248, "end": 71.88, "words": [[67.366, 67.472], [67.485, 67.643], [67.656, 67.853], [67.866, 68.169], [68.182, 68.459], [68.472, 68.603], [68.616, 68.695], [68.709, 69.182], [69.472, 69.603], [69.616, 69.722], [69.735, 69.827], [69.84, 70.116], [70.13, 70.38], [70.393, 70.722], [70.735, 70.827], [70.84, 70.972], [70.985, 71.485]]}, {"kind": "s", "id": "s1_2_0", "md": "Give them a simple map of people: who to ask about code, who to ask about process, and who knows the best lunch spots.", "zh": "给他们一张简单的人员地图：代码问谁，流程问谁，谁知道附近最好吃的午饭。", "sp": null, "gap": true, "start": 71.88, "end": 79.872, "words": [[71.985, 72.156], [72.169, 72.314], [72.327, 72.38], [72.393, 72.893], [72.906, 73.262], [73.275, 73.38], [73.393, 73.814], [74.275, 74.354], [74.367, 74.485], [74.498, 74.801], [74.814, 75.104], [75.117, 75.551], [75.946, 76.012], [76.025, 76.117], [76.13, 76.406], [76.419, 76.656], [76.669, 77.327], [77.564, 77.669], [77.683, 77.827], [77.841, 78.169], [78.183, 78.301], [78.314, 78.656], [78.669, 78.867], [78.88, 79.472]]}, {"kind": "s", "id": "s1_2_1", "md": "**Knowing who to ask matters more in the first month than knowing the answers.**", "zh": "第一个月里，知道该问谁比知道答案更重要。", "sp": null, "gap": false, "start": 79.872, "end": 84.384, "words": [[79.977, 80.28], [80.293, 80.438], [80.451, 80.569], [80.583, 80.951], [80.964, 81.359], [81.372, 81.701], [81.714, 81.806], [81.819, 81.912], [81.925, 82.319], [82.333, 82.688], [82.767, 82.938], [82.951, 83.28], [83.293, 83.372], [83.385, 84.004]]}, {"kind": "s", "id": "s1_3_0", "md": "At the end of the first week, __check in__ with an open question.", "zh": "第一周快结束时，用一个开放式问题 check-in 一下。", "sp": null, "gap": true, "start": 84.384, "end": 87.912, "words": [[84.489, 84.581], [84.595, 84.673], [84.687, 84.844], [84.858, 84.923], [84.937, 85.016], [85.029, 85.424], [85.437, 85.792], [86.081, 86.345], [86.358, 86.476], [86.489, 86.634], [86.647, 86.752], [86.766, 87.016], [87.029, 87.529]]}, {"kind": "s", "id": "s1_3_1", "md": "\"What's been ==confusing== so far?\" works better than \"Is everything okay?\", because it gives them ==permission== to be honest.", "zh": "「到目前为止有什么让你摸不着头脑的？」比「一切都还好吧？」好用，因为它让对方可以放心说实话。", "sp": null, "gap": false, "start": 87.912, "end": 95.496, "words": [[88.109, 88.149], [88.228, 88.399], [88.412, 89.07], [89.083, 89.346], [89.359, 89.728], [90.215, 90.465], [90.478, 90.833], [90.846, 91.07], [91.162, 91.425], [91.583, 92.083], [92.096, 92.623], [93.03, 93.32], [93.333, 93.425], [93.438, 93.688], [93.701, 93.859], [93.873, 94.346], [94.359, 94.438], [94.451, 94.596], [94.609, 95.109]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+{
+  "id": "040",
+  "title": "Bringing Solutions, Not Just Problems",
+  "meta": "B2 · 约 280 词 · 场景：向上汇报问题",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Rule Has a Catch",
+      "paragraphs": [
+        [
+          "Many managers like to say, \"Don't bring me problems, bring me solutions.\"",
+          "The idea is good: people who arrive with a plan save everyone time.",
+          "But taken too far, the rule has a dangerous ==side effect==."
+        ],
+        [
+          "Engineers start hiding problems until they have a fix.",
+          "A storage issue that could have been handled in a week __stays quiet__ for a month, until it becomes an ==outage==.",
+          "By then, the cheap options are gone.",
+          "**Raise problems early, and bring your best thinking, even if it is not a finished solution.**"
+        ],
+        [
+          "Your manager doesn't need a perfect answer from you.",
+          "They need to know you have __thought it through__ and that you are not just handing them a ==burden== without context.",
+          "Half a plan delivered on Monday is worth more than a full plan delivered after the damage."
+        ]
+      ],
+      "heading_zh": "1. 这条规则有个坑",
+      "paragraphs_zh": [
+        [
+          "很多经理喜欢说：「别光给我带问题来，要带解决方案来。」",
+          "出发点是好的：带着方案来的人能给大家省时间。",
+          "但如果执行过了头，这条规则会有一个危险的副作用。"
+        ],
+        [
+          "工程师会开始把问题捂着，直到想出办法为止。",
+          "一个本来一周就能处理掉的存储问题，被闷了一个月，直到变成一次线上故障。",
+          "到那时，低成本的选项都已经没了。",
+          "问题要早点提，带上你最好的思考，哪怕还不是一个完整的方案。"
+        ],
+        [
+          "你的经理不需要你给出完美的答案。",
+          "他需要知道你已经认真想过了，而不是没头没尾地把一个包袱甩给他。",
+          "周一交上来的半个方案，比损失造成之后才交的完整方案更有价值。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. A Simple Four-Part Message",
+      "paragraphs": [
+        [
+          "Start with the problem and its ==severity== in one sentence.",
+          "\"Our storage will be full in about three weeks, and writes will start failing.\"",
+          "Your manager now knows how urgent this is before you say anything else."
+        ],
+        [
+          "Next, offer two or three options with their costs.",
+          "\"We can clean up old logs, which __buys us__ a month, or add capacity, which costs budget but solves it for a year.\"",
+          "Options show your manager the ==landscape==, not just one path."
+        ],
+        [
+          "Then give your ==recommendation== and the reason behind it.",
+          "\"I suggest cleaning up now and requesting capacity for next quarter.\"",
+          "**Having a recommendation is what turns you from a messenger into an owner.**"
+        ],
+        [
+          "Finally, say what you need from them: approval, budget, or simply ==awareness==.",
+          "If you truly have no solution yet, __say so plainly__ and bring the exact question you are stuck on instead."
+        ]
+      ],
+      "heading_zh": "2. 简单的四段式消息",
+      "paragraphs_zh": [
+        [
+          "先用一句话讲清楚问题和它的严重程度。",
+          "「我们的存储大概三周后就会满，到时候写入会开始失败。」",
+          "这样你还没往下说，经理就已经知道这事有多急了。"
+        ],
+        [
+          "接下来，给出两三个选项，以及各自的代价。",
+          "「我们可以清理旧日志，这能多撑一个月；或者扩容，要花预算，但能管一年。」",
+          "选项能让经理看到全局，而不只是一条路。"
+        ],
+        [
+          "然后给出你的建议，以及背后的理由。",
+          "「我建议现在先清理，同时为下个季度申请扩容。」",
+          "有了自己的建议，你就从一个传话的人变成了一个负责的人。"
+        ],
+        [
+          "最后，说明你需要他做什么：批准、预算，或者只是知会一声。",
+          "如果你确实还没有方案，就直说，然后把你卡住的那个具体问题带过来。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "「别带问题来，带方案来」这条规则有什么副作用？",
+      "a": "工程师会在想出解决办法之前一直藏着问题，小问题拖成事故，便宜的选项也没了。"
+    },
+    {
+      "q": "作者认为经理真正需要的是什么？",
+      "a": "不是完美答案，而是早点知道问题，并且看到你认真想过、带着背景和思路来，而不是把包袱直接甩给他。"
+    },
+    {
+      "q": "推荐的四段式汇报是什么？",
+      "a": "一句话讲清问题和严重程度；给两三个带成本的选项；给出你的推荐和理由；说明需要经理做什么（批准、预算或只是知情）。"
+    }
+  ],
+  "dictation": [
+    "Raise problems early, and bring your best thinking, even if it is not a finished solution.",
+    "Having a recommendation is what turns you from a messenger into an owner.",
+    "Engineers start hiding problems until they have a fix.",
+    "Options show your manager the landscape, not just one path."
+  ],
+  "shadow": {
+    "text": "Then give your recommendation and the reason behind it. \"I suggest cleaning up now and requesting capacity for next quarter.\" Having a recommendation is what turns you from a messenger into an owner.",
+    "marked": "Then give your <b>recommendation</b> / and the <b>reason</b> behind it. //<br>\"I suggest <b>cleaning up</b> now / and requesting <b>capacity</b> / for <b>next</b> quarter.\" //<br>Having a recommendation / is what turns you / from a <b>messenger</b> / into an <b>owner</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你发现一个第三方 SDK 下个月停止支持，影响你们的推送功能。用 30 秒按「问题和严重程度、选项、推荐、需要什么」向经理汇报。",
+      "ref": "Quick heads-up on a risk. The push notification library we use stops being supported next month, and after that, new phones may not receive our notifications. I see two options: upgrade to the vendor's new version, which takes about a week, or switch to a different provider, which takes a month but cuts cost. I recommend the upgrade now. I just need your approval to pause one small feature this sprint.",
+      "ref_zh": "提前跟你同步一个风险。我们用的推送通知库下个月就停止维护了，之后新手机可能收不到我们的通知。我看有两个选项：升级到厂商的新版本，大概要一周；或者换一家服务商，要一个月，但能降成本。我建议现在就升级。我只需要你批准这个 sprint 先暂停一个小功能。"
+    },
+    {
+      "q": "你发现了一个性能问题但还没想到解决方案。用 30 秒向经理提出，说明你目前的判断和卡在哪里。",
+      "ref": "I want to flag something early, even though I don't have a fix yet. Checkout latency has been creeping up about ten percent a week for the past month. It's not urgent today, but at this rate we'll feel it during the holiday sale. My best guess is the new recommendation call, but I can't confirm it. What I'm stuck on is getting tracing access to that service. Could you help me get it?",
+      "ref_zh": "有件事我想早点提出来，虽然我还没有解决办法。过去一个月，结账延迟每周大约上涨百分之十。今天还不算紧急，但照这个速度，到假期大促的时候就会有明显感觉。我最大的怀疑是新加的推荐接口调用，但还没法确认。我卡在拿不到那个服务的 tracing 权限上。你能帮我申请一下吗？"
+    }
+  ],
+  "words": [
+    {
+      "w": "side effect",
+      "ipa": "/ˈsaɪd ɪˌfekt/",
+      "zh": "副作用",
+      "ex": "One side effect of the new cache is slightly stale prices."
+    },
+    {
+      "w": "outage",
+      "ipa": "/ˈaʊtɪdʒ/",
+      "zh": "（服务）中断、故障",
+      "ex": "The outage lasted forty minutes and affected two regions."
+    },
+    {
+      "w": "burden",
+      "ipa": "/ˈbɜːrdn/",
+      "zh": "负担、包袱",
+      "ex": "I don't want to put the burden of the migration on the new hires."
+    },
+    {
+      "w": "severity",
+      "ipa": "/səˈverəti/",
+      "zh": "严重程度",
+      "ex": "We classified the bug as high severity because payments were affected."
+    },
+    {
+      "w": "landscape",
+      "ipa": "/ˈlændskeɪp/",
+      "zh": "全貌、整体局面",
+      "ex": "Before we choose a vendor, let's map out the landscape."
+    },
+    {
+      "w": "recommendation",
+      "ipa": "/ˌrekəmenˈdeɪʃən/",
+      "zh": "建议、推荐方案",
+      "ex": "My recommendation is to delay the launch by one week."
+    },
+    {
+      "w": "awareness",
+      "ipa": "/əˈwernəs/",
+      "zh": "知情、意识",
+      "ex": "No action needed, this is just for awareness."
+    },
+    {
+      "w": "messenger",
+      "ipa": "/ˈmesɪndʒər/",
+      "zh": "传话的人",
+      "ex": "I don't want to be just the messenger; here's what I suggest."
+    },
+    {
+      "w": "capacity",
+      "ipa": "/kəˈpæsəti/",
+      "zh": "容量、产能",
+      "ex": "We need more storage capacity before the holiday peak."
+    }
+  ]
+}

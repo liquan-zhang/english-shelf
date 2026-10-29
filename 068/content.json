@@ -1,0 +1,191 @@
+{
+  "id": "068",
+  "title": "Calm Is Contagious",
+  "meta": "B2 · 约 280 词 · 场景：危机沟通",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Room Copies You",
+      "paragraphs": [
+        [
+          "Join any outage call and you can tell within a minute how it is going.",
+          "Not from the graphs, but from the voices.",
+          "Fast, overlapping speech, sharp questions, and long silences all ==signal== panic."
+        ],
+        [
+          "People in a crisis watch the person in charge and copy them.",
+          "If the lead talks quickly and sounds ==irritated==, everyone speeds up and starts making small mistakes.",
+          "If the lead sounds steady, the room __settles down__ and people start thinking again."
+        ],
+        [
+          "This matters even more on global teams.",
+          "When half the call is joining from another time zone, often in a second language, a rushed voice is much harder to follow.",
+          "Speaking calmly is also speaking clearly, and clarity saves minutes."
+        ],
+        [
+          "**Your tone during an incident is part of the fix, not a side detail.**",
+          "Calm does not mean slow or ==indifferent==.",
+          "It means your voice stays level while your actions stay fast."
+        ]
+      ],
+      "heading_zh": "1. 整个房间都在模仿你",
+      "paragraphs_zh": [
+        [
+          "随便进一个故障会议，一分钟之内你就能感觉到进展如何。",
+          "不是看曲线，而是听声音。",
+          "语速快、抢着说话、问话很冲、长时间冷场，这些都是慌了的信号。"
+        ],
+        [
+          "危机中的人会盯着负责的那个人，跟着他学。",
+          "如果指挥说话很快、听着很烦躁，所有人都会跟着提速，开始犯小错。",
+          "如果指挥听起来很稳，整个会就会安定下来，大家又能开始思考了。"
+        ],
+        [
+          "在跨国团队里，这一点更重要。",
+          "当会上一半人是从另一个时区接进来的，而且常常用的是第二语言，急促的语速会让人更难跟上。",
+          "说话冷静，也就是说话清楚，而清楚能省下好几分钟。"
+        ],
+        [
+          "故障期间你的语气本身就是修复的一部分，而不是细枝末节。",
+          "冷静不等于慢，也不等于无所谓。",
+          "它的意思是，声音保持平稳，动作保持迅速。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. What a Calm Voice Sounds Like",
+      "paragraphs": [
+        [
+          "First, slow your speech down a little and lower your volume.",
+          "It feels strange, but on a call it ==projects== control.",
+          "Second, use short factual sentences, like \"Rollback is at fifty percent, and errors are flat.\""
+        ],
+        [
+          "Third, replace blame with questions about the system.",
+          "\"Who pushed this?\" makes people ==defensive== and quiet, exactly when you need them talking.",
+          "\"What changed in the last hour?\" gets you the same information without the fear."
+        ],
+        [
+          "Finally, __name the next step__ even when you are not sure it will work.",
+          "\"We'll try restarting the cache nodes; if that doesn't help in five minutes, we fail over to the backup region.\"",
+          "**People can handle bad news; what they cannot handle is not knowing what happens next.**",
+          "A ==composed== lead gives them that, one step at a time."
+        ]
+      ],
+      "heading_zh": "2. 冷静的声音听起来是什么样",
+      "paragraphs_zh": [
+        [
+          "第一，语速稍微放慢一点，音量压低一点。",
+          "这感觉有点怪，但在会上它会传递出掌控感。",
+          "第二，用简短的事实句，比如「回滚到百分之五十了，报错持平。」"
+        ],
+        [
+          "第三，用针对系统的提问来代替追责。",
+          "「谁推的这个？」会让人防御心起来、不吭声，偏偏这时候你最需要大家开口。",
+          "「过去一小时改了什么？」能拿到同样的信息，又不会让人害怕。"
+        ],
+        [
+          "最后，哪怕你不确定管不管用，也要说出下一步。",
+          "「我们先重启缓存节点；五分钟内不见效，就切到备用机房。」",
+          "人们扛得住坏消息；扛不住的是不知道接下来会发生什么。",
+          "一个镇定的指挥，就是一步一步地把这个交给大家。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者说在故障电话里，怎么判断事情进展如何？",
+      "a": "听声音而不是看图表：语速快、抢话、尖锐提问和长时间沉默都说明大家在慌。"
+    },
+    {
+      "q": "为什么说语气是修复的一部分？",
+      "a": "人们会模仿负责人：负责人急躁大家就加速出错，负责人稳住大家才能重新思考。冷静不等于慢或冷漠。"
+    },
+    {
+      "q": "让声音显得冷静的具体做法有哪些？",
+      "a": "放慢语速、降低音量；用简短的事实句；用关于系统的提问代替追责；即使不确定也说出下一步。"
+    }
+  ],
+  "dictation": [
+    "Your tone during an incident is part of the fix, not a side detail.",
+    "It means your voice stays level while your actions stay fast.",
+    "\"What changed in the last hour?\" gets you the same information without the fear.",
+    "People can handle bad news; what they cannot handle is not knowing what happens next."
+  ],
+  "shadow": {
+    "text": "Calm does not mean slow or indifferent. It means your voice stays level while your actions stay fast.",
+    "marked": "<b>Calm</b> does not mean / <b>slow</b> / or <b>indifferent</b>. //<br>It means your <b>voice</b> stays level / while your <b>actions</b> / stay <b>fast</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "故障电话里大家抢着说话、互相质问“谁改的”。你接过话头，用 30 秒让大家冷静下来并给出下一步。",
+      "ref": "Okay, let's take a breath. Here's where we are: errors are still high, but they're not getting worse. We don't need to know who changed what right now. The useful question is, what changed in the last hour? Arjun, can you pull the deploy log? Meanwhile, we'll restart the cache nodes. If that doesn't help in five minutes, we fail over. Next check-in at ten past.",
+      "ref_zh": "好，大家先缓口气。现在的情况是：报错还是很高，但没有继续恶化。现在不需要搞清楚谁改了什么。有用的问题是，过去一小时改了什么？Arjun，你能把部署记录拉一下吗？同时我们先重启缓存节点。五分钟内不见效，我们就切机房。十分的时候再碰一次。"
+    },
+    {
+      "q": "你的经理在故障中不停在群里追问、语气很急。私下用 30 秒跟他沟通，请他配合保持冷静的节奏。",
+      "ref": "Hey, I know this outage is stressful, and you're getting pressure from above. One thing that would really help: the team is reading every message you send, and the fast questions are making people rush. Could we agree that I'll send you a short update every fifteen minutes, and you route your questions through me? That keeps the engineers focused, and you still get what you need.",
+      "ref_zh": "嘿，我知道这次故障压力很大，上面也在给你压力。有件事会很有帮助：团队会看你发的每一条消息，连珠炮式的追问会让大家手忙脚乱。我们能不能这样约定：我每十五分钟给你发一条简短同步，你的问题都通过我来转？这样工程师能专心干活，你也能拿到你需要的信息。"
+    }
+  ],
+  "words": [
+    {
+      "w": "signal (v.)",
+      "ipa": "/ˈsɪɡnəl/",
+      "zh": "表明、预示",
+      "ex": "A sudden drop in traffic usually signals a client-side bug.",
+      "tts_w": "signal"
+    },
+    {
+      "w": "irritated",
+      "ipa": "/ˈɪrɪˌteɪtɪd/",
+      "zh": "恼火的、烦躁的",
+      "ex": "He sounded irritated when the vendor missed the deadline again."
+    },
+    {
+      "w": "indifferent",
+      "ipa": "/ɪnˈdɪfərənt/",
+      "zh": "冷漠的、漠不关心的",
+      "ex": "Users aren't indifferent to latency; they just leave quietly."
+    },
+    {
+      "w": "project (v.)",
+      "ipa": "/prəˈdʒekt/",
+      "zh": "展现、传达（某种形象）",
+      "ex": "Try to project confidence when you present the new timeline.",
+      "tts_w": "project"
+    },
+    {
+      "w": "defensive",
+      "ipa": "/dɪˈfensɪv/",
+      "zh": "防御性的、戒备的",
+      "ex": "The author got defensive when the review focused on naming."
+    },
+    {
+      "w": "composed",
+      "ipa": "/kəmˈpoʊzd/",
+      "zh": "镇定的、沉着的",
+      "ex": "She stayed composed even when the client joined the incident call."
+    },
+    {
+      "w": "contagious",
+      "ipa": "/kənˈteɪdʒəs/",
+      "zh": "有感染力的、会传染的",
+      "ex": "Her energy in the kickoff was contagious."
+    },
+    {
+      "w": "overlapping",
+      "ipa": "/ˌoʊvərˈlæpɪŋ/",
+      "zh": "重叠的、相互打断的",
+      "ex": "We have three overlapping projects all touching the same service."
+    },
+    {
+      "w": "steady",
+      "ipa": "/ˈstedi/",
+      "zh": "稳定的、沉稳的",
+      "ex": "Latency has been steady since the cache fix."
+    }
+  ]
+}

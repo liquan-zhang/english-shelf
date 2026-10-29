@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Demoing Work That Is Not Finished · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "019", "title": "Demoing Work That Is Not Finished", "meta": "B2 · 约 290 词 · 场景：半成品演示", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Two Ways an Early Demo Goes Wrong", "heading_zh": "1. 早期 demo 翻车的两种方式", "rows": [[{"id": "s0_0_0", "md": "Showing unfinished work is one of the best habits a team can have.", "text": "Showing unfinished work is one of the best habits a team can have.", "zh": "展示没做完的东西，是一个团队能有的最好的习惯之一。", "sp": null}, {"id": "s0_0_1", "md": "You get feedback while changes are still cheap, instead of after three months of building the wrong thing.", "text": "You get feedback while changes are still cheap, instead of after three months of building the wrong thing.", "zh": "你能在改动成本还低的时候拿到反馈，而不是闷头做了三个月才发现方向错了。", "sp": null}, {"id": "s0_0_2", "md": "But early demos tend to fail in one of two opposite ways.", "text": "But early demos tend to fail in one of two opposite ways.", "zh": "但早期 demo 往往会以两种截然相反的方式翻车。", "sp": null}], [{"id": "s0_1_0", "md": "In the first, the audience focuses on the ==rough== parts.", "text": "In the first, the audience focuses on the rough parts.", "zh": "第一种，听众盯着粗糙的地方不放。", "sp": null}, {"id": "s0_1_1", "md": "Someone spends ten minutes on a button color, and nobody comments on the workflow you actually wanted to test.", "text": "Someone spends ten minutes on a button color, and nobody comments on the workflow you actually wanted to test.", "zh": "有人花十分钟纠结一个按钮的颜色，你真正想验证的流程却没人评论。", "sp": null}], [{"id": "s0_2_0", "md": "In the second, the demo looks too good.", "text": "In the second, the demo looks too good.", "zh": "第二种，demo 看起来太完美了。", "sp": null}, {"id": "s0_2_1", "md": "The screens are ==polished==, the data is fake but realistic, and a senior stakeholder says, \"Great, so we can launch next month?\"", "text": "The screens are polished, the data is fake but realistic, and a senior stakeholder says, \"Great, so we can launch next month?\"", "zh": "页面很精致，数据是假的但很逼真，然后一位高层干系人说：「太好了，那下个月就能上线了？」", "sp": null}, {"id": "s0_2_2", "md": "Now you have a ==deadline== based on a prototype held together with tape.", "text": "Now you have a deadline based on a prototype held together with tape.", "zh": "现在你手上有了一个 deadline，依据却是一个用胶带勉强粘起来的原型。", "sp": null}, {"id": "s0_2_3", "md": "**The more finished a demo looks, the more finished people assume it is.**", "text": "The more finished a demo looks, the more finished people assume it is.", "zh": "demo 看起来越完整，大家就越以为它真的快做完了。", "sp": null}]]}, {"heading": "2. Frame It Before You Show It", "heading_zh": "2. 先定调，再展示", "rows": [[{"id": "s1_0_0", "md": "Both problems have the same cure, which is to set the frame before anyone sees a screen.", "text": "Both problems have the same cure, which is to set the frame before anyone sees a screen.", "zh": "这两个问题的解法是一样的：在任何人看到画面之前，先把基调定好。", "sp": null}, {"id": "s1_0_1", "md": "Spend the first thirty seconds saying what is real, what is ==mocked==, and what kind of feedback you want.", "text": "Spend the first thirty seconds saying what is real, what is mocked, and what kind of feedback you want.", "zh": "用开头三十秒讲清楚哪些是真的、哪些是 mock 的，以及你想要什么样的反馈。", "sp": null}], [{"id": "s1_1_0", "md": "\"The search results are real, but the payment step is just a static page.\"", "text": "\"The search results are real, but the payment step is just a static page.\"", "zh": "「搜索结果是真实的，但支付这一步只是个静态页面。」", "sp": null}, {"id": "s1_1_1", "md": "\"Please ignore the styling today; I'd love your view on whether these three steps make sense.\"", "text": "\"Please ignore the styling today; I'd love your view on whether these three steps make sense.\"", "zh": "「今天的样式请先忽略；我很想听听你们觉得这三个步骤是否合理。」", "sp": null}, {"id": "s1_1_2", "md": "This ==steers== their attention to where you need it.", "text": "This steers their attention to where you need it.", "zh": "这样就把大家的注意力引到了你需要的地方。", "sp": null}], [{"id": "s1_2_0", "md": "During the demo, name rough edges before anyone else does.", "text": "During the demo, name rough edges before anyone else does.", "zh": "demo 过程中，在别人指出之前先点明粗糙的地方。", "sp": null}, {"id": "s1_2_1", "md": "\"You'll see this loads slowly; that's a known issue we're fixing next sprint.\"", "text": "\"You'll see this loads slowly; that's a known issue we're fixing next sprint.\"", "zh": "「你们会看到这里加载得很慢，这是已知问题，下个迭代修。」", "sp": null}, {"id": "s1_2_2", "md": "When you __call it out__ first, it sounds like control, not a mistake.", "text": "When you call it out first, it sounds like control, not a mistake.", "zh": "你自己先说出来，听起来就是一切尽在掌握，而不是出了错。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, close with a clear ==status== line.", "text": "Finally, close with a clear status line.", "zh": "最后，用一句清晰的进度说明收尾。", "sp": null}, {"id": "s1_3_1", "md": "\"We're about forty percent done, and the earliest realistic launch is the end of next quarter.\"", "text": "\"We're about forty percent done, and the earliest realistic launch is the end of next quarter.\"", "zh": "「我们大概完成了百分之四十，最早比较现实的上线时间是下季度末。」", "sp": null}, {"id": "s1_3_2", "md": "**Say the date yourself, or someone in the room will say a worse one for you.**", "text": "Say the date yourself, or someone in the room will say a worse one for you.", "zh": "日期要你自己说出来，不然屋里就会有人替你说一个更糟的。", "sp": null}, {"id": "s1_3_3", "md": "That way, the meeting __ends with__ useful feedback and a shared, honest timeline.", "text": "That way, the meeting ends with useful feedback and a shared, honest timeline.", "zh": "这样，会议结束时大家既拿到了有用的反馈，又有了一个共同认可的、实事求是的时间线。", "sp": null}]]}], "gist": [{"q": "演示半成品通常会以哪两种相反的方式出问题？", "a": "要么观众盯着粗糙的细节，没反馈真正想测的流程；要么演示看起来太完善，被误认为快做完了，被定下不现实的上线时间。"}, {"q": "作者给出的统一解法是什么？", "a": "在展示任何画面之前先定框架：说明哪些是真的、哪些是模拟的，以及想要什么样的反馈。"}, {"q": "为什么结尾要由自己说出时间？", "a": "如果自己不说，会有人替你说一个更糟、更不现实的日期。"}], "dictation": [{"id": "s0_2_3", "text": "The more finished a demo looks, the more finished people assume it is."}, {"id": "s1_3_2", "text": "Say the date yourself, or someone in the room will say a worse one for you."}, {"id": "s1_2_0", "text": "During the demo, name rough edges before anyone else does."}, {"id": "s1_2_2", "text": "When you call it out first, it sounds like control, not a mistake."}], "shadow": {"text": "During the demo, name rough edges before anyone else does. \"You'll see this loads slowly; that's a known issue we're fixing next sprint.\" When you call it out first, it sounds like control, not a mistake.", "marked": "During the demo, / name <b>rough</b> edges / <b>before</b> anyone else does. //<br>\"You'll see this loads <b>slowly</b>; / that's a <b>known</b> issue / we're fixing <b>next</b> sprint.\" //<br>When you call it out <b>first</b>, / it sounds like <b>control</b>, / <b>not</b> a mistake. //"}, "prompts": [{"q": "你要给业务方演示一个只做了一半的新客服后台原型。用 30 秒开场设定框架：哪些是真的、哪些是假的、你想要什么反馈。", "ref": "Before I share my screen, a quick note on what you're about to see. This is an early prototype. The ticket list and search are working with real data, but the reply templates and reporting pages are just mock-ups. Please don't worry about colors or spacing yet. What I really want to know is whether this flow matches how your agents work day to day.", "ref_zh": "共享屏幕之前，先简单说一下大家马上要看到的东西。这是一个早期原型。工单列表和搜索用的是真实数据，但回复模板和报表页面只是 mock 稿。颜色和间距先不用在意。我最想知道的是，这个流程跟你们客服同学的日常工作方式对不对得上。", "id": "ref0"}, {"q": "演示结束后，一位高层兴奋地说：“看起来差不多了，下个月上线吧？”用 30 秒管理预期，给出真实进度和时间。", "ref": "I'm really glad it looks promising. I should be clear, though, that what you saw is mostly the front end. The integration with billing and all the error handling still need to be built, so we're about a third of the way there. Realistically, we could start a small beta in two months and launch fully at the end of next quarter. I'll share a written plan this week.", "ref_zh": "很高兴大家觉得有前景。不过我得说清楚，刚才看到的主要是前端。和计费系统的对接以及所有的异常处理都还没做，所以我们大概只完成了三分之一。实事求是地说，两个月后可以开始小范围 beta，下季度末全量上线。这周我会发一份书面计划。", "id": "ref1"}], "words": [{"w": "rough", "ipa": "/rʌf/", "zh": "粗糙的、未打磨的", "ex": "This is a rough draft of the design doc, so feedback is welcome.", "id": "w0"}, {"w": "polished", "ipa": "/ˈpɑːlɪʃt/", "zh": "精致的、打磨过的", "ex": "The demo looked polished, but the backend was still hard-coded.", "id": "w1"}, {"w": "deadline", "ipa": "/ˈdedlaɪn/", "zh": "截止日期", "ex": "We can't move the deadline because of the partner contract.", "id": "w2"}, {"w": "mock (v.)", "ipa": "/mɑːk/", "zh": "模拟、做假数据", "ex": "We mocked the payment service so the frontend team isn't blocked.", "tts_w": "mock", "id": "w3"}, {"w": "status", "ipa": "/ˈsteɪtəs/", "zh": "状态、进度", "ex": "Can you post a status update in the channel by end of day?", "id": "w4"}, {"w": "prototype", "ipa": "/ˈproʊtəˌtaɪp/", "zh": "原型", "ex": "We built a quick prototype to test the idea with five users.", "id": "w5"}, {"w": "stakeholder", "ipa": "/ˈsteɪkˌhoʊldər/", "zh": "利益相关方", "ex": "Let's get all the stakeholders aligned before the kickoff.", "id": "w6"}, {"w": "call out", "ipa": "/kɔːl aʊt/", "zh": "指出、点明", "ex": "I want to call out a risk with the third-party SDK.", "id": "w7"}, {"w": "realistic", "ipa": "/ˌriːəˈlɪstɪk/", "zh": "现实可行的", "ex": "Is a two-week timeline realistic with only one backend engineer?", "id": "w8"}, {"w": "steer", "ipa": "/stɪr/", "zh": "引导、带向", "ex": "Try to steer the discussion back to the launch criteria.", "id": "w9"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Two Ways an Early Demo Goes Wrong", "zh": "1. 早期 demo 翻车的两种方式", "start": 0.0, "end": 3.264, "words": [[0.105, 0.342], [0.697, 0.803], [0.816, 1.053], [1.066, 1.382], [1.395, 1.5], [1.566, 1.908], [1.921, 2.237], [2.25, 2.513], [2.526, 2.882]]}, {"kind": "s", "id": "s0_0_0", "md": "Showing unfinished work is one of the best habits a team can have.", "zh": "展示没做完的东西，是一个团队能有的最好的习惯之一。", "sp": null, "gap": false, "start": 3.264, "end": 7.512, "words": [[3.369, 3.803], [3.856, 4.448], [4.461, 4.777], [4.922, 5.04], [5.053, 5.159], [5.172, 5.224], [5.238, 5.343], [5.356, 5.738], [5.751, 6.172], [6.185, 6.238], [6.251, 6.553], [6.567, 6.711], [6.725, 7.119]]}, {"kind": "s", "id": "s0_0_1", "md": "You get feedback while changes are still cheap, instead of after three months of building the wrong thing.", "zh": "你能在改动成本还低的时候拿到反馈，而不是闷头做了三个月才发现方向错了。", "sp": null, "gap": false, "start": 7.512, "end": 13.512, "words": [[7.617, 7.696], [7.709, 7.88], [7.894, 8.565], [8.617, 8.775], [8.788, 9.275], [9.288, 9.38], [9.394, 9.709], [9.723, 10.104], [10.433, 10.762], [10.775, 10.867], [10.88, 11.183], [11.196, 11.551], [11.565, 11.973], [11.986, 12.091], [12.104, 12.42], [12.433, 12.525], [12.538, 12.775], [12.788, 13.117]]}, {"kind": "s", "id": "s0_0_2", "md": "But early demos tend to fail in one of two opposite ways.", "zh": "但早期 demo 往往会以两种截然相反的方式翻车。", "sp": null, "gap": false, "start": 13.512, "end": 17.4, "words": [[13.63, 13.736], [13.749, 14.051], [14.065, 14.578], [14.591, 14.801], [14.815, 14.867], [14.88, 15.315], [15.446, 15.551], [15.565, 15.696], [15.709, 15.802], [15.815, 16.104], [16.117, 16.525], [16.538, 16.999]]}, {"kind": "s", "id": "s0_1_0", "md": "In the first, the audience focuses on the ==rough== parts.", "zh": "第一种，听众盯着粗糙的地方不放。", "sp": null, "gap": true, "start": 17.4, "end": 20.976, "words": [[17.505, 17.571], [17.584, 17.663], [17.676, 18.229], [18.453, 18.571], [18.584, 19.005], [19.018, 19.518], [19.532, 19.637], [19.65, 19.729], [19.742, 20.005], [20.018, 20.584]]}, {"kind": "s", "id": "s0_1_1", "md": "Someone spends ten minutes on a button color, and nobody comments on the workflow you actually wanted to test.", "zh": "有人花十分钟纠结一个按钮的颜色，你真正想验证的流程却没人评论。", "sp": null, "gap": false, "start": 20.976, "end": 27.216, "words": [[21.094, 21.423], [21.437, 21.792], [21.805, 22.094], [22.108, 22.437], [22.45, 22.529], [22.542, 22.608], [22.621, 22.95], [22.963, 23.371], [23.673, 23.752], [23.765, 24.121], [24.134, 24.594], [24.608, 24.687], [24.7, 24.792], [24.805, 25.305], [25.318, 25.489], [25.581, 25.989], [26.002, 26.265], [26.279, 26.318], [26.331, 26.831]]}, {"kind": "s", "id": "s0_2_0", "md": "In the second, the demo looks too good.", "zh": "第二种，demo 看起来太完美了。", "sp": null, "gap": true, "start": 27.216, "end": 29.808, "words": [[27.321, 27.387], [27.4, 27.479], [27.492, 27.953], [28.242, 28.334], [28.348, 28.611], [28.624, 28.913], [28.927, 29.098], [29.111, 29.427]]}, {"kind": "s", "id": "s0_2_1", "md": "The screens are ==polished==, the data is fake but realistic, and a senior stakeholder says, \"Great, so we can launch next month?\"", "zh": "页面很精致，数据是假的但很逼真，然后一位高层干系人说：「太好了，那下个月就能上线了？」", "sp": null, "gap": false, "start": 29.808, "end": 38.4, "words": [[29.913, 29.979], [29.992, 30.426], [30.44, 30.532], [30.545, 31.124], [31.361, 31.466], [31.479, 31.821], [31.834, 31.992], [32.005, 32.426], [32.532, 32.729], [32.742, 33.426], [33.729, 33.795], [33.808, 33.861], [33.874, 34.282], [34.295, 34.861], [34.874, 35.282], [35.755, 36.15], [36.571, 36.69], [36.703, 36.821], [36.834, 36.979], [36.992, 37.269], [37.282, 37.532], [37.545, 37.861]]}, {"kind": "s", "id": "s0_2_2", "md": "Now you have a ==deadline== based on a prototype held together with tape.", "zh": "现在你手上有了一个 deadline，依据却是一个用胶带勉强粘起来的原型。", "sp": null, "gap": false, "start": 38.4, "end": 40.92, "words": [[38.505, 38.65], [38.663, 38.768], [38.782, 38.9], [38.913, 38.992], [39.005, 39.492], [39.505, 39.887], [39.9, 39.979], [39.992, 40.045], [40.058, 40.729], [40.742, 40.939], [40.953, 41.347], [41.361, 41.518], [41.532, 41.926]]}, {"kind": "s", "id": "s0_2_3", "md": "**The more finished a demo looks, the more finished people assume it is.**", "zh": "demo 看起来越完整，大家就越以为它真的快做完了。", "sp": null, "gap": false, "start": 40.92, "end": 44.976, "words": [[41.038, 41.091], [41.104, 41.302], [41.315, 41.67], [41.683, 41.749], [41.762, 42.091], [42.104, 42.604], [42.828, 42.907], [42.92, 43.131], [43.144, 43.512], [43.525, 43.841], [43.854, 44.17], [44.183, 44.262], [44.275, 44.591]]}, {"kind": "h", "id": "h1", "md": "2. Frame It Before You Show It", "zh": "2. 先定调，再展示", "start": 44.976, "end": 47.376, "words": [[45.081, 45.292], [45.752, 46.015], [46.029, 46.108], [46.121, 46.45], [46.463, 46.529], [46.542, 46.818], [46.831, 46.989]]}, {"kind": "s", "id": "s1_0_0", "md": "Both problems have the same cure, which is to set the frame before anyone sees a screen.", "zh": "这两个问题的解法是一样的：在任何人看到画面之前，先把基调定好。", "sp": null, "gap": false, "start": 47.376, "end": 53.088, "words": [[47.494, 47.718], [47.731, 48.258], [48.271, 48.468], [48.481, 48.56], [48.573, 48.902], [48.915, 49.323], [49.705, 49.85], [49.863, 49.955], [49.968, 50.06], [50.073, 50.323], [50.337, 50.415], [50.429, 50.823], [50.837, 51.337], [51.481, 51.889], [51.902, 52.192], [52.205, 52.258], [52.271, 52.705]]}, {"kind": "s", "id": "s1_0_1", "md": "Spend the first thirty seconds saying what is real, what is ==mocked==, and what kind of feedback you want.", "zh": "用开头三十秒讲清楚哪些是真的、哪些是 mock 的，以及你想要什么样的反馈。", "sp": null, "gap": false, "start": 53.088, "end": 59.184, "words": [[53.206, 53.483], [53.496, 53.575], [53.588, 53.956], [53.97, 54.272], [54.285, 54.759], [54.772, 55.154], [55.167, 55.325], [55.338, 55.47], [55.483, 55.943], [56.22, 56.351], [56.364, 56.47], [56.483, 56.983], [57.299, 57.364], [57.377, 57.496], [57.509, 57.72], [57.733, 57.812], [57.825, 58.351], [58.364, 58.456], [58.47, 58.799]]}, {"kind": "s", "id": "s1_1_0", "md": "\"The search results are real, but the payment step is just a static page.\"", "zh": "「搜索结果是真实的，但支付这一步只是个静态页面。」", "sp": null, "gap": true, "start": 59.184, "end": 63.984, "words": [[59.421, 59.447], [59.447, 59.737], [59.75, 60.171], [60.184, 60.329], [60.342, 60.723], [60.973, 61.092], [61.105, 61.184], [61.197, 61.539], [61.552, 61.908], [62.013, 62.158], [62.171, 62.46], [62.473, 62.526], [62.539, 63.0], [63.013, 63.579]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Please ignore the styling today; I'd love your view on whether these three steps make sense.\"", "zh": "「今天的样式请先忽略；我很想听听你们觉得这三个步骤是否合理。」", "sp": null, "gap": false, "start": 63.984, "end": 69.768, "words": [[64.181, 64.326], [64.405, 64.76], [64.773, 64.852], [64.866, 65.326], [65.339, 65.708], [66.102, 66.273], [66.287, 66.471], [66.484, 66.629], [66.642, 66.971], [66.984, 67.142], [67.155, 67.444], [67.458, 67.708], [67.721, 68.089], [68.102, 68.51], [68.523, 68.747], [68.76, 69.352]]}, {"kind": "s", "id": "s1_1_2", "md": "This ==steers== their attention to where you need it.", "zh": "这样就把大家的注意力引到了你需要的地方。", "sp": null, "gap": false, "start": 69.768, "end": 72.36, "words": [[69.886, 70.071], [70.084, 70.426], [70.439, 70.584], [70.597, 71.057], [71.071, 71.189], [71.202, 71.386], [71.4, 71.505], [71.518, 71.768], [71.781, 71.965]]}, {"kind": "s", "id": "s1_2_0", "md": "During the demo, name rough edges before anyone else does.", "zh": "demo 过程中，在别人指出之前先点明粗糙的地方。", "sp": null, "gap": true, "start": 72.36, "end": 76.368, "words": [[72.465, 72.676], [72.689, 72.794], [72.807, 73.202], [73.531, 73.781], [73.794, 74.057], [74.163, 74.465], [74.478, 74.978], [74.992, 75.307], [75.321, 75.518], [75.531, 75.978]]}, {"kind": "s", "id": "s1_2_1", "md": "\"You'll see this loads slowly; that's a known issue we're fixing next sprint.\"", "zh": "「你们会看到这里加载得很慢，这是已知问题，下个迭代修。」", "sp": null, "gap": false, "start": 76.368, "end": 81.192, "words": [[76.552, 76.565], [76.644, 76.868], [76.881, 77.092], [77.105, 77.486], [77.5, 77.986], [78.434, 78.618], [78.631, 78.671], [78.684, 78.947], [78.96, 79.302], [79.315, 79.486], [79.5, 80.026], [80.039, 80.302], [80.315, 80.776]]}, {"kind": "s", "id": "s1_2_2", "md": "When you __call it out__ first, it sounds like control, not a mistake.", "zh": "你自己先说出来，听起来就是一切尽在掌握，而不是出了错。", "sp": null, "gap": false, "start": 81.192, "end": 85.44, "words": [[81.297, 81.389], [81.403, 81.481], [81.495, 81.718], [81.731, 81.797], [81.81, 81.968], [81.981, 82.534], [82.797, 82.863], [82.876, 83.166], [83.179, 83.324], [83.337, 83.903], [84.284, 84.416], [84.429, 84.455], [84.468, 85.047]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, close with a clear ==status== line.", "zh": "最后，用一句清晰的进度说明收尾。", "sp": null, "gap": true, "start": 85.44, "end": 88.44, "words": [[85.611, 86.072], [86.374, 86.69], [86.703, 86.835], [86.848, 86.914], [86.927, 87.269], [87.282, 87.716], [87.729, 88.045]]}, {"kind": "s", "id": "s1_3_1", "md": "\"We're about forty percent done, and the earliest realistic launch is the end of next quarter.\"", "zh": "「我们大概完成了百分之四十，最早比较现实的上线时间是下季度末。」", "sp": null, "gap": false, "start": 88.44, "end": 94.44, "words": [[88.624, 88.69], [88.69, 88.953], [88.966, 89.335], [89.348, 89.795], [89.808, 90.151], [90.479, 90.545], [90.558, 90.677], [90.729, 91.282], [91.295, 91.861], [91.874, 92.282], [92.387, 92.48], [92.493, 92.572], [92.664, 93.006], [93.019, 93.111], [93.124, 93.427], [93.44, 93.927]]}, {"kind": "s", "id": "s1_3_2", "md": "**Say the date yourself, or someone in the room will say a worse one for you.**", "zh": "日期要你自己说出来，不然屋里就会有人替你说一个更糟的。", "sp": null, "gap": false, "start": 94.44, "end": 98.712, "words": [[94.545, 94.703], [94.716, 94.822], [94.835, 95.032], [95.045, 95.545], [95.94, 96.006], [96.019, 96.322], [96.335, 96.401], [96.414, 96.493], [96.506, 96.848], [97.058, 97.151], [97.164, 97.374], [97.387, 97.466], [97.479, 97.729], [97.743, 97.927], [97.94, 98.151], [98.164, 98.335]]}, {"kind": "s", "id": "s1_3_3", "md": "That way, the meeting __ends with__ useful feedback and a shared, honest timeline.", "zh": "这样，会议结束时大家既拿到了有用的反馈，又有了一个共同认可的、实事求是的时间线。", "sp": null, "gap": false, "start": 98.712, "end": 103.92, "words": [[98.817, 98.975], [98.988, 99.265], [99.659, 99.752], [99.765, 100.159], [100.173, 100.37], [100.383, 100.541], [100.554, 100.975], [100.988, 101.607], [101.699, 101.778], [101.791, 101.817], [101.83, 102.317], [102.699, 102.975], [102.988, 103.528]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

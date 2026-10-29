@@ -1,0 +1,179 @@
+{
+  "id": "072",
+  "title": "Writing Goals That Can Be Measured",
+  "meta": "B2 · 约 270 词 · 场景：目标设定",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. A Goal That Cannot Fail",
+      "paragraphs": [
+        [
+          "\"Improve app performance\" appears in a lot of quarterly plans.",
+          "It sounds ==ambitious==, and nobody can argue with it.",
+          "That is exactly the problem."
+        ],
+        [
+          "At the end of the quarter, the team will have done some performance work, so the goal will look met.",
+          "But nobody can say whether the work mattered, or whether a different project would have mattered more.",
+          "**A goal that cannot fail also cannot tell you anything.**"
+        ],
+        [
+          "Measurable goals feel risky because they make it obvious when you miss.",
+          "That ==visibility== is the whole point.",
+          "A clear miss teaches the team far more than a ==fuzzy== success, because it forces an honest conversation about why."
+        ]
+      ],
+      "heading_zh": "1. 一个不可能失败的目标",
+      "paragraphs_zh": [
+        [
+          "「提升 App 性能」出现在很多季度规划里。",
+          "听起来很有野心，谁也挑不出毛病。",
+          "问题恰恰就在这里。"
+        ],
+        [
+          "到季度末，团队总会做了些性能相关的活儿，所以目标看起来是完成了。",
+          "但没人说得清这些活儿到底有没有用，或者换个项目会不会更有价值。",
+          "一个不可能失败的目标，也不可能告诉你任何东西。"
+        ],
+        [
+          "可衡量的目标让人觉得有风险，因为没达成的时候一眼就能看出来。",
+          "这种透明恰恰是关键所在。",
+          "一次清清楚楚的没达成，比一次模模糊糊的成功能教给团队多得多，因为它逼着大家坦诚地讨论原因。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Baseline, Target, Guardrail",
+      "paragraphs": [
+        [
+          "A measurable goal starts with three parts.",
+          "The ==baseline== is where you are today, like a cold start time of two point four seconds.",
+          "The target is where you want to be, like one point five seconds, and the date is when you will check."
+        ],
+        [
+          "Then add a ==guardrail==, a metric that must not get worse.",
+          "Teams under pressure will find shortcuts, like loading less content so the first screen appears faster.",
+          "A guardrail such as \"crash rate and session length stay flat\" keeps everyone __playing fair__."
+        ],
+        [
+          "Some goals are hard to measure directly, especially in the first quarter of a new project.",
+          "**If you can't measure the outcome yet, measure the step that leads to it, and say so.**",
+          "\"Ship the new image pipeline to all regions\" is not perfect, but at least it is ==verifiable==.",
+          "Just don't pretend that an ==output== is the same as a result, and __come back to__ the real metric once you can track it."
+        ]
+      ],
+      "heading_zh": "2. 基线、目标值、护栏",
+      "paragraphs_zh": [
+        [
+          "一个可衡量的目标从三部分开始。",
+          "基线是你现在的位置，比如冷启动时间二点四秒。",
+          "目标值是你想达到的位置，比如一点五秒，再加上你什么时候来检查。"
+        ],
+        [
+          "然后加一条护栏，也就是一个不能变差的指标。",
+          "压力之下，团队会找捷径，比如少加载点内容，让首屏出得更快。",
+          "像「崩溃率和使用时长保持持平」这样的护栏，能让大家都规规矩矩地玩。"
+        ],
+        [
+          "有些目标很难直接衡量，尤其是新项目的第一个季度。",
+          "如果结果暂时还量不了，就去量通往结果的那一步，并且把这一点讲明白。",
+          "「新的图片链路全量覆盖所有地区」不算完美，但至少是可验证的。",
+          "只是别假装产出就等于结果，等能追踪真正的指标了，再回到那个指标上来。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "“提升 App 性能”这类目标有什么问题？",
+      "a": "听起来宏大没人反对，但不可能失败，因此也无法告诉你做的事是否有价值。"
+    },
+    {
+      "q": "一个可衡量的目标包括哪几部分？为什么要加护栏指标？",
+      "a": "基线、目标值、检查日期；再加一个不能变差的护栏指标，防止团队在压力下走捷径（比如少加载内容来刷快首屏）。"
+    },
+    {
+      "q": "暂时无法直接衡量结果时怎么办？",
+      "a": "衡量通往结果的那一步并明说，比如“新图片管线上线到所有区域”；但不要把产出当成结果，能追踪时回到真正的指标。"
+    }
+  ],
+  "dictation": [
+    "A goal that cannot fail also cannot tell you anything.",
+    "Measurable goals feel risky because they make it obvious when you miss.",
+    "Then add a guardrail, a metric that must not get worse.",
+    "If you can't measure the outcome yet, measure the step that leads to it, and say so."
+  ],
+  "shadow": {
+    "text": "Then add a guardrail, a metric that must not get worse. Teams under pressure will find shortcuts, like loading less content so the first screen appears faster.",
+    "marked": "Then add a <b>guardrail</b>, / a metric that must <b>not</b> get worse. //<br>Teams under <b>pressure</b> / will find <b>shortcuts</b>, / like loading <b>less</b> content / so the first screen appears <b>faster</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你下属交来的季度目标写着“提升搜索体验”。用 30 秒帮他改成可衡量的目标，包括基线、目标和护栏。",
+      "ref": "I like the focus on search, but as written, we can't tell at the end of the quarter if we succeeded. Let's make it measurable. Right now, about forty percent of searches end with a click. Could we aim for fifty percent by the end of the quarter? And let's add a guardrail: search latency shouldn't go up. That way nobody can hit the target by just showing fewer results.",
+      "ref_zh": "我认同把重点放在搜索上，但按现在的写法，到季度末我们没法判断有没有成功。我们把它改成可衡量的。现在大约百分之四十的搜索最后有点击。我们能不能把季度末的目标定在百分之五十？再加一条护栏：搜索延迟不能涨。这样就没人能靠少展示结果来凑数了。"
+    },
+    {
+      "q": "一个新项目第一季度很难直接衡量业务结果。用 30 秒向你的总监解释为什么本季度用里程碑代替结果指标。",
+      "ref": "For this quarter, I'd suggest a milestone goal rather than a business metric. The new recommendation service won't have real traffic until late in the quarter, so any retention number would be noise. Instead, we'll commit to having it live in all three regions by week ten. That's verifiable. Next quarter, once traffic is real, we switch to measuring retention directly.",
+      "ref_zh": "这个季度我建议定一个里程碑目标，而不是业务指标。新的推荐服务要到季度末才会有真实流量，所以任何留存数字都只是噪音。我们改为承诺第十周之前在三个地区全部上线。这是可验证的。下个季度等有了真实流量，我们再改成直接看留存。"
+    }
+  ],
+  "words": [
+    {
+      "w": "ambitious",
+      "ipa": "/æmˈbɪʃəs/",
+      "zh": "雄心勃勃的、宏大的",
+      "ex": "Halving latency in one quarter is ambitious but possible."
+    },
+    {
+      "w": "visibility",
+      "ipa": "/ˌvɪzəˈbɪləti/",
+      "zh": "可见度、透明度",
+      "ex": "A weekly dashboard gives leadership visibility into our progress."
+    },
+    {
+      "w": "fuzzy",
+      "ipa": "/ˈfʌzi/",
+      "zh": "模糊不清的",
+      "ex": "The requirements are still fuzzy, so let's not estimate yet."
+    },
+    {
+      "w": "baseline",
+      "ipa": "/ˈbeɪsˌlaɪn/",
+      "zh": "基线、基准值",
+      "ex": "We need a baseline before we can say the change helped."
+    },
+    {
+      "w": "guardrail",
+      "ipa": "/ˈɡɑːrdˌreɪl/",
+      "zh": "护栏指标、防护底线",
+      "ex": "Crash rate is our guardrail for this experiment."
+    },
+    {
+      "w": "verifiable",
+      "ipa": "/ˈverəˌfaɪəbəl/",
+      "zh": "可验证的",
+      "ex": "Every goal on this list should be verifiable by someone outside the team."
+    },
+    {
+      "w": "output",
+      "ipa": "/ˈaʊtˌpʊt/",
+      "zh": "产出（相对于结果）",
+      "ex": "Shipping ten features is output; more paying users is the outcome."
+    },
+    {
+      "w": "shortcut",
+      "ipa": "/ˈʃɔːrtˌkʌt/",
+      "zh": "捷径",
+      "ex": "Skipping the integration tests is a shortcut we'll regret."
+    },
+    {
+      "w": "measurable",
+      "ipa": "/ˈmeʒərəbəl/",
+      "zh": "可衡量的",
+      "ex": "Let's rewrite this objective so it's measurable."
+    }
+  ]
+}

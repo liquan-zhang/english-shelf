@@ -1,0 +1,180 @@
+{
+  "id": "063",
+  "title": "Rolling Back Is Not Failure",
+  "meta": "B2 · 约 270 词 · 场景：发布回滚",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Forty Minutes Nobody Needed",
+      "paragraphs": [
+        [
+          "Picture a release that goes out at noon.",
+          "Fifteen minutes later, error rates start to climb, and the engineer who wrote the change says, \"Give me ten minutes, I think I see it.\"",
+          "Ten minutes becomes forty, and users keep hitting errors the whole time."
+        ],
+        [
+          "Nobody in that room was ==careless==.",
+          "They delayed the rollback because it felt like admitting the work was bad.",
+          "In fact, the change itself was fine; it had one wrong default value.",
+          "**A rollback is not a verdict on your code; it is a way to buy time.**"
+        ],
+        [
+          "Fixing forward under pressure is ==tempting==, but it is one of the riskiest things a team can do.",
+          "You are writing new code, with less review, while users are watching.",
+          "Rolling back returns you to a ==proven== version, and then you can debug __at your own pace__."
+        ]
+      ],
+      "heading_zh": "1. 没必要的四十分钟",
+      "paragraphs_zh": [
+        [
+          "设想一个中午十二点上线的版本。",
+          "十五分钟后，错误率开始往上爬，写这个改动的工程师说：「给我十分钟，我好像看到问题了。」",
+          "十分钟变成了四十分钟，用户全程都在报错。"
+        ],
+        [
+          "那个屋子里没有谁是马虎的。",
+          "他们拖着不回滚，是因为回滚感觉像是承认活儿干砸了。",
+          "其实改动本身没问题；只是有一个默认值写错了。",
+          "回滚不是对你代码的判决；它是一种争取时间的手段。"
+        ],
+        [
+          "顶着压力往前修很诱人，但这是一个团队能干的最冒险的事之一。",
+          "你在用户眼皮底下写新代码，review 还更少。",
+          "回滚能让你回到一个验证过的版本，然后你可以按自己的节奏慢慢查。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Decide Before You Ship",
+      "paragraphs": [
+        [
+          "The fix is to make the rollback decision before the release, when nobody's pride is __on the line__.",
+          "Write down one or two ==thresholds== in the launch plan.",
+          "For example, if the crash rate doubles or checkout errors pass one percent, we roll back first and talk later."
+        ],
+        [
+          "**When the rule is agreed in advance, rolling back becomes a procedure, not a confession.**",
+          "The on-call engineer does not need permission, and the author does not need to ==justify== anything.",
+          "It also makes the post-launch review calmer, because the decision was never personal."
+        ],
+        [
+          "Managers __set the tone__ here.",
+          "If you thank the person who ==triggered== a fast rollback, the team learns that speed matters more than pride.",
+          "If your first question is \"Who broke it?\", people will __hold on to__ bad releases far too long."
+        ]
+      ],
+      "heading_zh": "2. 发版前就做好决定",
+      "paragraphs_zh": [
+        [
+          "解决办法是在发版之前就把回滚的决定做好，那时候还没人的面子挂在上面。",
+          "在上线方案里写下一两条阈值。",
+          "比如，崩溃率翻倍，或者下单报错超过百分之一，我们就先回滚，回头再讨论。"
+        ],
+        [
+          "规则事先定好了，回滚就是走流程，而不是认错。",
+          "on-call 工程师不需要请示，代码作者也不需要解释什么。",
+          "这也让上线后的复盘更心平气和，因为这个决定从来就不针对个人。"
+        ],
+        [
+          "在这件事上，管理者决定了基调。",
+          "如果你感谢那个果断触发回滚的人，团队就会明白速度比面子重要。",
+          "如果你第一句问的是「谁搞坏的？」，大家就会死扛着有问题的版本，拖太久都不回滚。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "开头的例子里，团队为什么拖了四十分钟才回滚？",
+      "a": "不是因为粗心，而是回滚感觉像承认自己的代码不好，于是想先在线修。"
+    },
+    {
+      "q": "作者为什么认为在压力下“往前修”很危险？",
+      "a": "在用户受影响时写新代码，评审更少；回滚能回到已验证的版本，再从容排查。"
+    },
+    {
+      "q": "怎样让回滚变成例行操作而不是认错？",
+      "a": "发布前在上线方案里写好回滚阈值；管理者感谢快速回滚的人，而不是先问谁搞坏的。"
+    }
+  ],
+  "dictation": [
+    "A rollback is not a verdict on your code; it is a way to buy time.",
+    "You are writing new code, with less review, while users are watching.",
+    "When the rule is agreed in advance, rolling back becomes a procedure, not a confession.",
+    "If you thank the person who triggered a fast rollback, the team learns that speed matters more than pride."
+  ],
+  "shadow": {
+    "text": "Fixing forward under pressure is tempting, but it is one of the riskiest things a team can do. You are writing new code, with less review, while users are watching. Rolling back returns you to a proven version, and then you can debug at your own pace.",
+    "marked": "Fixing <b>forward</b> under pressure / is <b>tempting</b>, / but it is one of the <b>riskiest</b> things / a team can do. //<br>You are writing <b>new</b> code, / with <b>less</b> review, / while users are <b>watching</b>. //<br>Rolling <b>back</b> / returns you to a <b>proven</b> version, / and <b>then</b> you can debug / at your <b>own</b> pace. //"
+  },
+  "prompts": [
+    {
+      "q": "新版本上线后崩溃率翻倍，写代码的同事说“再给我十分钟”。你是 on-call 负责人，用 30 秒说服他先回滚。",
+      "ref": "I hear you, and you might be right about the cause. But crash rate has doubled, and that's the threshold we agreed on in the launch plan. Let's roll back now, get users back to a stable version, and then you can debug without the clock running. This isn't about your code being bad. It's just the cheapest way to buy time.",
+      "ref_zh": "我明白，你对原因的判断可能是对的。但崩溃率已经翻倍了，这正是我们在上线方案里定好的阈值。我们现在就回滚，先让用户回到稳定版本，然后你可以不赶时间地慢慢查。这跟你代码好不好没关系。这只是争取时间最便宜的办法。"
+    },
+    {
+      "q": "下周有个大版本要发。在发布评审会上，用 30 秒提议事先写好回滚标准。",
+      "ref": "Before we sign off, I'd like to add one thing to the launch plan: clear rollback thresholds. Something like, if checkout errors go above one percent, or crash rate doubles for ten minutes, the on-call engineer rolls back without asking anyone. Deciding now, while we're calm, means nobody has to make that call under pressure, and nobody has to defend their code at midnight.",
+      "ref_zh": "在大家签字之前，我想在上线方案里加一条：明确的回滚阈值。比如下单报错超过百分之一，或者崩溃率翻倍持续十分钟，on-call 工程师就直接回滚，不用请示任何人。趁现在大家都冷静把这个定下来，就没人需要在压力下拍板，也没人需要半夜为自己的代码辩护。"
+    }
+  ],
+  "words": [
+    {
+      "w": "careless",
+      "ipa": "/ˈkerləs/",
+      "zh": "粗心的",
+      "ex": "It wasn't a careless mistake; the test environment just didn't match production."
+    },
+    {
+      "w": "tempting",
+      "ipa": "/ˈtemptɪŋ/",
+      "zh": "诱人的、让人想去做的",
+      "ex": "It's tempting to add one more feature, but let's ship what we have."
+    },
+    {
+      "w": "proven",
+      "ipa": "/ˈpruːvən/",
+      "zh": "经过验证的",
+      "ex": "Let's stick with the proven setup for the holiday traffic."
+    },
+    {
+      "w": "threshold",
+      "ipa": "/ˈθreʃhoʊld/",
+      "zh": "阈值、临界点",
+      "ex": "We page the on-call engineer when latency crosses this threshold."
+    },
+    {
+      "w": "justify",
+      "ipa": "/ˈdʒʌstɪˌfaɪ/",
+      "zh": "为……辩解、证明合理",
+      "ex": "Can we justify two extra engineers for this project?"
+    },
+    {
+      "w": "trigger (v.)",
+      "ipa": "/ˈtrɪɡər/",
+      "zh": "触发、发起",
+      "ex": "Any change to the payment config triggers a manual review.",
+      "tts_w": "trigger"
+    },
+    {
+      "w": "verdict",
+      "ipa": "/ˈvɜːrdɪkt/",
+      "zh": "裁决、定论",
+      "ex": "One bad sprint is not a verdict on the whole team."
+    },
+    {
+      "w": "procedure",
+      "ipa": "/prəˈsiːdʒər/",
+      "zh": "流程、规程",
+      "ex": "Follow the standard procedure before you touch the production database."
+    },
+    {
+      "w": "confession",
+      "ipa": "/kənˈfeʃən/",
+      "zh": "认错、坦白",
+      "ex": "The postmortem should be a learning tool, not a confession."
+    }
+  ]
+}

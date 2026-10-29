@@ -1,0 +1,86 @@
+{
+  "id": "130",
+  "type": "dialogue",
+  "title": "Getting the Deposit Back",
+  "meta": "B2 · 约 280 词 · 场景：退租验房与谈押金扣款",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Landlord", "name_zh": "房东", "voice": "en-AU-WilliamMultilingualNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. The Handover Inspection",
+      "heading_zh": "1. 退房验房",
+      "lines": [
+        {"sp": "B", "en": "Right, let's go through the flat. The living room looks pretty good.", "zh": "好，我们把房子过一遍。客厅看着挺好的。"},
+        {"sp": "A", "en": "Thanks. We had it professionally cleaned yesterday, and here's the ==receipt== for the air con servicing.", "zh": "谢谢。我们昨天请了专业保洁，这是空调保养的收据。"},
+        {"sp": "B", "en": "Great. Hang on, what are these marks on the wall here?", "zh": "很好。等一下，墙上这些印子是什么？"},
+        {"sp": "A", "en": "That's where our son's bed was. They should __wipe off__ with a damp cloth.", "zh": "那是我儿子床靠墙的地方。用湿布应该能擦掉。"},
+        {"sp": "B", "en": "Maybe. And there's a ==scratch== on the kitchen countertop.", "zh": "也许吧。厨房台面上还有一道划痕。"},
+        {"sp": "A", "en": "**That was already there when we moved in. I have the photos to prove it.**", "zh": "那个是我们搬进来时就有的。我有照片可以证明。"},
+        {"sp": "B", "en": "Fair enough. Have you got all the keys and ==access cards==?", "zh": "好吧。钥匙和门禁卡都在吗？"},
+        {"sp": "A", "en": "Here are two sets of keys and three access cards. One of the mailbox keys is missing, unfortunately.", "zh": "这是两套钥匙和三张门禁卡。不过有一把信箱钥匙丢了。"},
+        {"sp": "B", "en": "No worries. A replacement is about thirty dollars, so we'll ==deduct== that.", "zh": "没关系。配一把大概三十块，从押金里扣。"},
+        {"sp": "A", "en": "**That's fair. When can we expect the deposit back?**", "zh": "合理。押金什么时候能退给我们？"}
+      ]
+    },
+    {
+      "heading": "2. Disputing the Deductions",
+      "heading_zh": "2. 对扣款有异议",
+      "lines": [
+        {"sp": "B", "en": "Hi, I've had a look at the costs. I'm planning to keep eight hundred dollars from your deposit.", "zh": "你好，我算了一下费用。打算从押金里扣八百块。"},
+        {"sp": "A", "en": "Eight hundred? That seems like a lot. __What exactly is that for__?", "zh": "八百？这有点多了。具体是什么费用？"},
+        {"sp": "B", "en": "Repainting the whole flat, plus the mailbox key.", "zh": "整套房子重新刷漆，加上信箱钥匙。"},
+        {"sp": "A", "en": "I understand the key. But we lived there for three years, and some marks are just ==normal wear and tear==.", "zh": "钥匙我理解。但我们住了三年，有些印子只是正常损耗。"},
+        {"sp": "B", "en": "Maybe, but the walls in your son's room are pretty bad.", "zh": "也许吧，但你儿子房间的墙挺糟糕的。"},
+        {"sp": "A", "en": "**I'm happy to pay for repainting that one room, but not the whole flat.**", "zh": "那一间房重新刷漆我愿意出，但整套不行。"},
+        {"sp": "B", "en": "Okay. What figure did you have in mind?", "zh": "好吧。你觉得多少合适？"},
+        {"sp": "A", "en": "A painter quoted me two hundred for one room. So two hundred plus thirty for the key, __as long as__ the rest is ==refunded== this week.", "zh": "有个油漆师傅给我报价一间房两百。所以两百加钥匙三十，前提是剩下的这周退回来。"},
+        {"sp": "B", "en": "Alright, that's reasonable. Two hundred and thirty it is.", "zh": "好吧，挺合理的。就扣两百三。"},
+        {"sp": "A", "en": "Thanks. Could you send me a written breakdown, and ==transfer== the rest to the same account?", "zh": "谢谢。能给我一份书面明细吗？剩下的转到原来的账户就行。"},
+        {"sp": "B", "en": "Will do. You'll have it within seven days, as the ==tenancy agreement== says.", "zh": "好的。按租约规定，七天之内到账。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "验房时房东发现了哪些问题？「你」怎么回应？", "a": "墙上有印子，「你」说用湿布能擦掉；台面有划痕，「你」说入住时就有，有照片为证；丢了一把信箱钥匙，同意扣三十块。"},
+    {"q": "房东后来想扣多少？理由是什么？", "a": "想扣八百，用于整套房子重新刷漆加信箱钥匙。"},
+    {"q": "双方最后怎么谈妥的？", "a": "只出儿子那一间房的刷漆费两百加钥匙三十，共两百三；房东出书面明细，剩余押金七天内转回原账户。"}
+  ],
+  "dictation": [
+    "That was already there when we moved in. I have the photos to prove it.",
+    "That's fair. When can we expect the deposit back?",
+    "I'm happy to pay for repainting that one room, but not the whole flat.",
+    "Thanks. Could you send me a written breakdown, and transfer the rest to the same account?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "I understand the key. But we lived there for three years, and some marks are just normal wear and tear.",
+    "marked": "I understand the <b>key</b>. //<br>But we lived there / for <b>three years</b>, / and some marks are just <b>normal wear and tear</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "退租已经一个月了，押金还没退。给房东打电话礼貌地催，提到租约里的期限。",
+      "ref": "Hi Mr. Brown, it's Zhang. Sorry to bother you, but it's been a month since we handed back the keys, and I haven't received the deposit yet. The tenancy agreement says it should be returned within fourteen days. Could you let me know when you'll be able to transfer it? If there's an issue, I'm happy to talk it through.",
+      "ref_zh": "布朗先生您好，我是小张。不好意思打扰您，我们交钥匙已经一个月了，押金还没收到。租约上写的是十四天内退还。能告诉我大概什么时候能转吗？如果有什么问题，我很乐意一起谈。"
+    },
+    {
+      "q": "退房前你想先跟房东约验房，并问清楚需要做到什么标准，免得之后被扣钱。",
+      "ref": "Hi, our lease ends on the thirtieth, and I'd like to arrange the handover inspection. Would the twenty-ninth in the afternoon work for you? Also, just so we're on the same page, is there anything you'd like us to do before then? For example, do we need a professional cleaning and air con servicing, or is a normal clean enough?",
+      "ref_zh": "你好，我们的租约三十号到期，我想约个时间验房交接。二十九号下午您方便吗？另外，为了达成一致，在那之前您希望我们做些什么？比如需要请专业保洁、做空调保养吗，还是普通打扫就够了？"
+    }
+  ],
+  "words": [
+    {"w": "receipt", "ipa": "/rɪˈsiːt/", "zh": "收据", "ex": "Keep the receipt in case you need to return it."},
+    {"w": "scratch", "ipa": "/skrætʃ/", "zh": "划痕", "ex": "There's a small scratch on my phone screen."},
+    {"w": "access card", "ipa": "/ˈækses kɑːrd/", "zh": "门禁卡", "ex": "I left my access card at home and couldn't get into the lift."},
+    {"w": "deduct", "ipa": "/dɪˈdʌkt/", "zh": "扣除", "ex": "They deducted the cleaning fee from our deposit."},
+    {"w": "normal wear and tear", "ipa": "/ˈnɔːrməl ˌwer ən ˈter/", "zh": "正常损耗", "ex": "Faded curtains count as normal wear and tear."},
+    {"w": "refund (v.)", "ipa": "/rɪˈfʌnd/", "zh": "退款", "ex": "The airline refunded the ticket within a week.", "tts_w": "refund"},
+    {"w": "transfer", "ipa": "/trænsˈfɜːr/", "zh": "转账", "ex": "I'll transfer the money to you after lunch."},
+    {"w": "tenancy agreement", "ipa": "/ˈtenənsi əˌɡriːmənt/", "zh": "租赁合同", "ex": "The tenancy agreement says pets are not allowed."},
+    {"w": "wipe off", "ipa": "/waɪp ɔːf/", "zh": "擦掉", "ex": "Wipe off the crayon before it dries."}
+  ]
+}

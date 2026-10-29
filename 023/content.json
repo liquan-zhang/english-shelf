@@ -1,0 +1,190 @@
+{
+  "id": "023",
+  "title": "Receiving Harsh Feedback on Your Design",
+  "meta": "B2 · 约 270 词 · 场景：设计被当众批评",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The First Ten Seconds",
+      "paragraphs": [
+        [
+          "A senior engineer looks at your design and says, \"This will never survive production.\"",
+          "The room goes quiet, and everyone turns to you.",
+          "What you say in the next ten seconds matters more than the design itself."
+        ],
+        [
+          "The natural ==reflex== is to defend.",
+          "You start explaining every choice, faster and louder, and the discussion becomes a ==debate== about who is right.",
+          "Even if you win, people remember that you got ==defensive==."
+        ],
+        [
+          "**Your first job is not to answer the criticism; it is to understand it.**",
+          "A calm \"Can you say more about that?\" __buys you time__ and shows you can __take a hit__.",
+          "Harsh words often hide a useful point behind a bad delivery.",
+          "You do not have to agree yet; you only have to listen."
+        ]
+      ],
+      "heading_zh": "1. 最初的十秒钟",
+      "paragraphs_zh": [
+        [
+          "一位资深工程师看了你的设计，说：「这东西到了生产环境根本活不下来。」",
+          "会议室一下安静了，所有人都看向你。",
+          "你接下来十秒钟说什么，比设计本身更重要。"
+        ],
+        [
+          "人的本能反应是辩护。",
+          "你开始解释每一个选择，越说越快、越说越大声，讨论就变成了一场谁对谁错的辩论。",
+          "就算你赢了，大家记住的也是你当时急了。"
+        ],
+        [
+          "你的第一要务不是回应批评，而是弄懂批评。",
+          "一句平静的「能具体说说吗？」能帮你争取时间，也能显示你扛得住。",
+          "难听的话背后，往往藏着一个有用的点，只是表达方式很糟。",
+          "你不必马上同意，只需要先听。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Turning Heat into Detail",
+      "paragraphs": [
+        [
+          "Ask which failure the person is actually worried about.",
+          "\"Which part breaks first, the write path or the cache?\" turns a ==verdict== into a technical conversation.",
+          "Now you are both looking at the system, not at each other."
+        ],
+        [
+          "Then __separate the content from the tone__.",
+          "The delivery may be rude, but the point about connection limits may still be right.",
+          "If it is, say so plainly: \"Good catch, I missed that.\"",
+          "Admitting one gap quickly makes the rest of your choices more ==credible==."
+        ],
+        [
+          "If you still disagree, ==park== it instead of fighting in the room.",
+          "Say, \"Let me run a load test and come back to you on Thursday.\"",
+          "**Data settles arguments that opinions only make louder.**"
+        ],
+        [
+          "Afterwards, thank the critic in private.",
+          "The person who __tore your design apart__ today is often the one who backs it in the next review."
+        ]
+      ],
+      "heading_zh": "2. 把火气变成细节",
+      "paragraphs_zh": [
+        [
+          "问问对方到底担心的是哪种故障。",
+          "「最先出问题的是写链路还是缓存？」这一问，就把一句定性的判词变成了技术讨论。",
+          "这样你们俩都在看系统，而不是盯着对方。"
+        ],
+        [
+          "然后把内容和语气分开。",
+          "对方说话也许很冲，但关于连接数上限的那个点可能是对的。",
+          "如果是对的，就直接说：「好问题，这个我漏了。」",
+          "痛快地承认一个漏洞，反而会让你其他的选择更有说服力。"
+        ],
+        [
+          "如果你还是不同意，就先把它放一放，别在会上硬杠。",
+          "可以说：「我跑个压测，周四给你结果。」",
+          "观点只会让争论越吵越凶，数据才能让它尘埃落定。"
+        ],
+        [
+          "事后，私下谢谢那位批评你的人。",
+          "今天把你的设计批得体无完肤的人，往往就是下次评审时力挺它的那个人。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "设计被当众严厉批评时，第一反应通常是什么？为什么不好？",
+      "a": "本能地辩护，越说越快越大声，变成争谁对；就算赢了，大家也只记得你很防御。"
+    },
+    {
+      "q": "作者说第一件事应该做什么？",
+      "a": "先理解批评而不是回答它，比如平静地问一句「能多说一点吗」，既争取时间也显得扛得住。"
+    },
+    {
+      "q": "如果你仍然不同意对方，文章建议怎么办？",
+      "a": "先搁置，不在会上争；回去跑压测，约定时间带数据回来；会后私下感谢批评者。"
+    }
+  ],
+  "dictation": [
+    "Your first job is not to answer the criticism; it is to understand it.",
+    "Data settles arguments that opinions only make louder.",
+    "Harsh words often hide a useful point behind a bad delivery.",
+    "Now you are both looking at the system, not at each other."
+  ],
+  "shadow": {
+    "text": "Your first job is not to answer the criticism; it is to understand it. A calm \"Can you say more about that?\" buys you time and shows you can take a hit. Harsh words often hide a useful point behind a bad delivery.",
+    "marked": "Your <b>first</b> job / is <b>not</b> to answer the criticism; / it is to <b>understand</b> it. //<br>A <b>calm</b> \"Can you say <b>more</b> about that?\" / <b>buys</b> you time / and shows you can <b>take a hit</b>. //<br><b>Harsh</b> words often hide a <b>useful</b> point / behind a <b>bad delivery</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "评审会上一位资深架构师说：「这个设计根本扛不住大促流量。」用 30 秒接住：先追问具体担心哪里，再提出会后用数据回复。",
+      "ref": "That's a fair concern, and I want to make sure I understand it. Which part are you most worried about, the order write path or the inventory cache? If it's the cache, I agree we haven't tested a cold start under peak load. Let me run a load test at three times last year's peak and share the results with you by Friday. If it fails, we'll change the design.",
+      "ref_zh": "这个担心很合理，我想确认一下我理解对了。你最担心的是哪部分，订单写链路还是库存缓存？如果是缓存，我同意我们还没测过峰值流量下的冷启动。我按去年峰值的三倍跑一次压测，周五前把结果发给你。如果扛不住，我们就改设计。"
+    },
+    {
+      "q": "同事在群里公开说你的方案「过度设计」。你认可其中一点但不认可整体。用 30 秒回应：先承认对的部分，再搁置分歧。",
+      "ref": "Thanks for the direct feedback. You're right that the plugin layer is more than we need right now, and I'm happy to remove it. On the event bus, I still think we need it, because two other teams plan to subscribe next quarter. Rather than argue it here, can we spend fifteen minutes tomorrow looking at their requirements together? If the need isn't real, I'll simplify.",
+      "ref_zh": "谢谢你直接给反馈。你说得对，插件层目前确实超出我们的需要了，我很乐意把它去掉。至于事件总线，我还是觉得需要，因为另外两个团队下个季度打算订阅。与其在这儿争，我们明天花十五分钟一起看看他们的需求怎么样？如果需求不成立，我就简化掉。"
+    }
+  ],
+  "words": [
+    {
+      "w": "harsh",
+      "ipa": "/hɑːrʃ/",
+      "zh": "严厉的、刺耳的",
+      "ex": "The feedback was harsh, but the point about retries was right."
+    },
+    {
+      "w": "reflex",
+      "ipa": "/ˈriːfleks/",
+      "zh": "本能反应",
+      "ex": "My first reflex was to roll back, but the logs said otherwise."
+    },
+    {
+      "w": "debate",
+      "ipa": "/dɪˈbeɪt/",
+      "zh": "争论、辩论",
+      "ex": "Let's not turn this into a debate about frameworks."
+    },
+    {
+      "w": "defensive",
+      "ipa": "/dɪˈfensɪv/",
+      "zh": "防御性的、戒备的",
+      "ex": "I got defensive when they questioned the schema."
+    },
+    {
+      "w": "verdict",
+      "ipa": "/ˈvɜːrdɪkt/",
+      "zh": "结论、裁决",
+      "ex": "\"It won't scale\" is a verdict, not an analysis."
+    },
+    {
+      "w": "credible",
+      "ipa": "/ˈkredəbl/",
+      "zh": "可信的",
+      "ex": "Benchmarks make the proposal much more credible."
+    },
+    {
+      "w": "park (v.)",
+      "ipa": "/pɑːrk/",
+      "zh": "暂时搁置（议题）",
+      "ex": "Let's park the naming question and come back to it later.",
+      "tts_w": "park"
+    },
+    {
+      "w": "criticism",
+      "ipa": "/ˈkrɪtɪsɪzəm/",
+      "zh": "批评",
+      "ex": "Most of the criticism was about the migration plan."
+    },
+    {
+      "w": "delivery",
+      "ipa": "/dɪˈlɪvəri/",
+      "zh": "表达方式",
+      "ex": "Her point was good, but the delivery put people off."
+    }
+  ]
+}

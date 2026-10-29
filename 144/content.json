@@ -1,0 +1,242 @@
+{
+  "id": "144",
+  "type": "dialogue",
+  "title": "Small Talk at a Friend's Party",
+  "meta": "B2 · 约 290 词 · 场景：朋友派对上的闲聊",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Party Guest",
+      "name_zh": "派对上的客人",
+      "voice": "en-IN-PrabhatNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. By the Food Table",
+      "heading_zh": "1. 在餐台边",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "These satay are amazing, aren't they? Have you tried them yet?",
+          "zh": "这沙爹太好吃了，对吧？你尝过了吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Not yet, but they smell great. I'm Lee, by the way.",
+          "zh": "还没呢，不过闻着很香。对了，我叫李。"
+        },
+        {
+          "sp": "B",
+          "en": "Rahul. Nice to meet you. So __how do you know__ Mei?",
+          "zh": "我叫 Rahul，很高兴认识你。你是怎么认识 Mei 的？"
+        },
+        {
+          "sp": "A",
+          "en": "We used to work together at my last company. What about you?",
+          "zh": "我们以前在我上一家公司共事过。你呢？"
+        },
+        {
+          "sp": "B",
+          "en": "Our daughters are in the same class. We bonded over the school WhatsApp group.",
+          "zh": "我们的女儿在同一个班。我们是在学校的家长群里熟起来的。"
+        },
+        {
+          "sp": "A",
+          "en": "Ha, nice. Ours is three, so we're just starting to look at ==preschools==.",
+          "zh": "哈，挺好。我家的才三岁，我们刚开始看幼儿园。"
+        },
+        {
+          "sp": "B",
+          "en": "Ah, that's a big decision. We spent months on it. What do you do, Lee?",
+          "zh": "啊，那可是大事。我们当时纠结了好几个月。你是做什么的？"
+        },
+        {
+          "sp": "A",
+          "en": "**I manage an engineering team at a tech company. It's mostly meetings these days, to be honest.**",
+          "zh": "我在一家科技公司带一个工程团队。说实话，现在基本都在开会。"
+        },
+        {
+          "sp": "B",
+          "en": "I know the feeling. I'm in ==logistics==, so my day is basically shipping delays.",
+          "zh": "我懂那种感觉。我做物流的，每天基本就是处理货运延误。"
+        },
+        {
+          "sp": "A",
+          "en": "That sounds ==intense==. __How long have you been__ in Singapore?",
+          "zh": "听起来压力挺大的。你来新加坡多久了？"
+        },
+        {
+          "sp": "B",
+          "en": "Almost ten years now. My wife's from here. What about you?",
+          "zh": "快十年了，我太太是本地人。你呢？"
+        },
+        {
+          "sp": "A",
+          "en": "About two years. We're still ==figuring== out the best places to eat, so any tips are welcome.",
+          "zh": "两年左右。我们还在摸索哪里好吃，有推荐的话欢迎告诉我。"
+        }
+      ]
+    },
+    {
+      "heading": "2. A Name Slips Away",
+      "heading_zh": "2. 一时想不起名字",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Hey, there you are! I wrote down the name of that preschool I mentioned.",
+          "zh": "嘿，原来你在这儿！我把刚才说的那家幼儿园的名字写下来了。"
+        },
+        {
+          "sp": "A",
+          "en": "**Oh, thank you. I'm so sorry, I'm terrible with names. Could you remind me of yours?**",
+          "zh": "哦，谢谢你。真不好意思，我特别记不住名字，你能再告诉我一下吗？"
+        },
+        {
+          "sp": "B",
+          "en": "No worries at all, it's Rahul. It happens to me all the time.",
+          "zh": "完全没关系，我叫 Rahul。我也经常这样。"
+        },
+        {
+          "sp": "A",
+          "en": "Rahul, right. Thanks. So what's the preschool called?",
+          "zh": "对，Rahul，谢谢。那家幼儿园叫什么？"
+        },
+        {
+          "sp": "B",
+          "en": "It's called Little Oaks, in Bukit Timah. They have a ==bilingual== programme in English and Mandarin.",
+          "zh": "叫 Little Oaks，在武吉知马。他们有英文和中文的双语课程。"
+        },
+        {
+          "sp": "A",
+          "en": "That's exactly what we're looking for. Do they have a long ==waitlist==?",
+          "zh": "这正是我们想要的。排队的人多吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Pretty long, so I'd ==register== early. I can introduce you to the principal if you like.",
+          "zh": "挺多的，所以我建议早点报名。你愿意的话，我可以介绍你认识园长。"
+        },
+        {
+          "sp": "A",
+          "en": "That would be really helpful. __Shall we swap numbers__?",
+          "zh": "那就太有帮助了。我们交换一下电话吧？"
+        },
+        {
+          "sp": "B",
+          "en": "Sure, here's my phone. Just type yours in.",
+          "zh": "好啊，这是我的手机，你直接输进去。"
+        },
+        {
+          "sp": "A",
+          "en": "**Done. Well, I'd better go find my wife. It was really nice chatting with you.**",
+          "zh": "好了。我得去找我太太了。跟你聊天很开心。"
+        },
+        {
+          "sp": "B",
+          "en": "Likewise. Let's __catch up__ properly sometime, maybe with the kids.",
+          "zh": "我也是。改天好好聚聚，可以带上孩子。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "Rahul 是怎么认识主人 Mei 的？他做什么工作？",
+      "a": "他们的女儿同班，是在家长群里熟起来的；他做物流，每天处理货运延误。"
+    },
+    {
+      "q": "第二次见面时「你」遇到了什么尴尬？怎么处理的？",
+      "a": "忘了对方的名字；直接道歉说自己记不住名字，请他再说一遍。"
+    },
+    {
+      "q": "Rahul 推荐的幼儿园有什么特点？他还提出帮什么忙？",
+      "a": "Little Oaks，在武吉知马，有英文和中文双语课程，排队的人多；他可以介绍「你」认识园长。"
+    }
+  ],
+  "dictation": [
+    "I manage an engineering team at a tech company. It's mostly meetings these days, to be honest.",
+    "About two years. We're still figuring out the best places to eat, so any tips are welcome.",
+    "Oh, thank you. I'm so sorry, I'm terrible with names. Could you remind me of yours?",
+    "Done. Well, I'd better go find my wife. It was really nice chatting with you."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "About two years. We're still figuring out the best places to eat, so any tips are welcome.",
+    "marked": "About <b>two</b> years. //<br>We're still <b>figuring out</b> / the best places to <b>eat</b>, / so any <b>tips</b> are welcome. //"
+  },
+  "prompts": [
+    {
+      "q": "同事婚礼上你被安排和一桌陌生人坐。用 30 秒自我介绍，并抛出一个能让大家接话的问题。",
+      "ref": "Hi everyone, I'm Lee. I work with Jason on the platform team, so I'm on the groom's side. I don't think I know anyone else at this table yet. How do you all know the couple? I'm guessing some of you go way back with them, maybe from school or university?",
+      "ref_zh": "大家好，我叫李，是和 Jason 一起在平台组的同事，所以算新郎这边的。这桌我好像谁都还不认识。大家都是怎么认识新人的？我猜有人跟他们认识很久了吧，可能是中学或者大学同学？"
+    },
+    {
+      "q": "派对上一个人一直拉着你聊，你想礼貌地脱身去找别人。说一段自然的收尾。",
+      "ref": "It's been great hearing about your trip to Japan. I'm definitely adding Hokkaido to our list. I should go and say hi to Mei before it gets too late, though. I haven't even talked to the host yet. Let's grab a drink later if you're still around. Enjoy the rest of the party.",
+      "ref_zh": "听你讲日本之旅真有意思，我一定把北海道加进我们的清单。不过我得趁还不太晚去跟 Mei 打个招呼，我到现在都还没跟主人说上话。待会儿你还在的话我们再喝一杯。玩得开心。"
+    }
+  ],
+  "words": [
+    {
+      "w": "preschool",
+      "ipa": "/ˈpriːskuːl/",
+      "zh": "幼儿园",
+      "ex": "Our son starts preschool in January."
+    },
+    {
+      "w": "logistics",
+      "ipa": "/ləˈdʒɪstɪks/",
+      "zh": "物流",
+      "ex": "She works in logistics for a shipping company."
+    },
+    {
+      "w": "intense",
+      "ipa": "/ɪnˈtens/",
+      "zh": "紧张的；强度大的",
+      "ex": "The last week before the move was pretty intense."
+    },
+    {
+      "w": "figure out",
+      "ipa": "/ˈfɪɡjər aʊt/",
+      "zh": "弄清楚，摸索出",
+      "ex": "We're still figuring out which bus goes to the zoo."
+    },
+    {
+      "w": "bilingual",
+      "ipa": "/baɪˈlɪŋɡwəl/",
+      "zh": "双语的",
+      "ex": "We want a bilingual school for our daughter."
+    },
+    {
+      "w": "waitlist",
+      "ipa": "/ˈweɪtlɪst/",
+      "zh": "候补名单",
+      "ex": "We've been on the waitlist for three months."
+    },
+    {
+      "w": "register",
+      "ipa": "/ˈredʒɪstər/",
+      "zh": "登记，报名",
+      "ex": "You need to register online before the class starts."
+    },
+    {
+      "w": "swap",
+      "ipa": "/swɑːp/",
+      "zh": "交换",
+      "ex": "We swapped numbers so we could arrange a playdate."
+    },
+    {
+      "w": "catch up",
+      "ipa": "/kætʃ ʌp/",
+      "zh": "叙旧，聚一聚",
+      "ex": "Let's catch up over lunch next week."
+    }
+  ]
+}

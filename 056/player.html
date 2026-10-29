@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Coaching with Questions · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "056", "title": "Coaching with Questions", "meta": "B2 · 约 290 词 · 场景：辅导下属", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Answer Trap", "heading_zh": "1. 直接给答案的陷阱", "rows": [[{"id": "s0_0_0", "md": "A junior engineer comes to your desk with a slow query.", "text": "A junior engineer comes to your desk with a slow query.", "zh": "一位初级工程师拿着一条慢查询来找你。", "sp": null}, {"id": "s0_0_1", "md": "You can see the missing index in about ten seconds, so you tell her, and she fixes it.", "text": "You can see the missing index in about ten seconds, so you tell her, and she fixes it.", "zh": "你大概十秒钟就看出缺了个索引，于是告诉她，她修好了。", "sp": null}, {"id": "s0_0_2", "md": "It feels efficient, and for today, it is.", "text": "It feels efficient, and for today, it is.", "zh": "感觉很高效，就今天来说，也确实是。", "sp": null}], [{"id": "s0_1_0", "md": "But notice what she learned.", "text": "But notice what she learned.", "zh": "但留意一下她学到了什么。", "sp": null}, {"id": "s0_1_1", "md": "She learned that when something is hard, the fastest path is to ask you.", "text": "She learned that when something is hard, the fastest path is to ask you.", "zh": "她学到的是：遇到难题，最快的路就是来问你。", "sp": null}, {"id": "s0_1_2", "md": "Next week she will come back with a ==similar== problem, and the week after that too.", "text": "Next week she will come back with a similar problem, and the week after that too.", "zh": "下周她会带着类似的问题回来，再下周也一样。", "sp": null}, {"id": "s0_1_3", "md": "**Every answer you give for free is a problem you will be asked to solve again.**", "text": "Every answer you give for free is a problem you will be asked to solve again.", "zh": "你白给出去的每一个答案，都是一个你以后还会被要求再解决一遍的问题。", "sp": null}], [{"id": "s0_2_0", "md": "Coaching with questions feels slower at first.", "text": "Coaching with questions feels slower at first.", "zh": "用提问来辅导，一开始会感觉更慢。", "sp": null}, {"id": "s0_2_1", "md": "It __takes patience__ to watch someone struggle with a problem you could solve instantly.", "text": "It takes patience to watch someone struggle with a problem you could solve instantly.", "zh": "看着一个人在你瞬间就能解决的问题上挣扎，是需要耐心的。", "sp": null}, {"id": "s0_2_2", "md": "Yet it builds the one thing an answer cannot: the ==ability== to find the next answer without you, which is the whole ==purpose== of coaching.", "text": "Yet it builds the one thing an answer cannot: the ability to find the next answer without you, which is the whole purpose of coaching.", "zh": "但它能培养出一样答案给不了的东西：不靠你也能找到下一个答案的能力，而这正是辅导的全部意义。", "sp": null}]]}, {"heading": "2. Questions That Do the Teaching", "heading_zh": "2. 用问题来教", "rows": [[{"id": "s1_0_0", "md": "Start with \"What have you tried so far?\"", "text": "Start with \"What have you tried so far?\"", "zh": "从「你目前都试过什么了？」开始。", "sp": null}, {"id": "s1_0_1", "md": "It shows respect for her effort and tells you where her thinking stopped.", "text": "It shows respect for her effort and tells you where her thinking stopped.", "zh": "这表示你尊重她的努力，也能让你知道她的思路卡在哪儿。", "sp": null}, {"id": "s1_0_2", "md": "Often, simply explaining the problem out loud helps her __spot the issue__ herself.", "text": "Often, simply explaining the problem out loud helps her spot the issue herself.", "zh": "很多时候，光是把问题大声讲出来，她自己就能发现问题所在。", "sp": null}], [{"id": "s1_1_0", "md": "Then ask questions that point the way without ==spoiling== the answer.", "text": "Then ask questions that point the way without spoiling the answer.", "zh": "然后，问一些能指方向、但不剧透答案的问题。", "sp": null}, {"id": "s1_1_1", "md": "\"What does the query plan say?\" or \"Which part of the request takes the longest?\"", "text": "\"What does the query plan say?\" or \"Which part of the request takes the longest?\"", "zh": "「执行计划怎么说？」或者「请求里哪一部分耗时最长？」", "sp": null}, {"id": "s1_1_2", "md": "Each question narrows the search, but she still makes the ==discovery==.", "text": "Each question narrows the search, but she still makes the discovery.", "zh": "每个问题都在缩小排查范围，但发现还是由她自己来完成。", "sp": null}], [{"id": "s1_2_0", "md": "A powerful one for stuck moments is \"If I weren't here, what would you try next?\"", "text": "A powerful one for stuck moments is \"If I weren't here, what would you try next?\"", "zh": "卡住的时候，有个特别管用的问题：「如果我不在，你下一步会试什么？」", "sp": null}, {"id": "s1_2_1", "md": "People usually have an idea; they just want permission to try it.", "text": "People usually have an idea; they just want permission to try it.", "zh": "人们通常是有想法的；他们只是想得到允许去试。", "sp": null}, {"id": "s1_2_2", "md": "**Your job is to make thinking out loud feel safe, not to grade the answer.**", "text": "Your job is to make thinking out loud feel safe, not to grade the answer.", "zh": "你的工作是让大声思考变得安全，而不是给答案打分。", "sp": null}], [{"id": "s1_3_0", "md": "Know when to stop, though.", "text": "Know when to stop, though.", "zh": "不过，要知道什么时候该停。", "sp": null}, {"id": "s1_3_1", "md": "During an outage, or when she is clearly ==exhausted==, just give the answer and __debrief later__.", "text": "During an outage, or when she is clearly exhausted, just give the answer and debrief later.", "zh": "线上故障的时候，或者她明显已经累坏了，就直接给答案，事后再复盘。", "sp": null}, {"id": "s1_3_2", "md": "Coaching is an ==investment==, and you make investments when there is time, not in the middle of a fire.", "text": "Coaching is an investment, and you make investments when there is time, not in the middle of a fire.", "zh": "辅导是一种投资，投资要在有时间的时候做，而不是在救火的时候。", "sp": null}]]}], "gist": [{"q": "直接给答案有什么隐藏的问题？", "a": "对方学到的是遇到难题最快的办法就是问你，下周还会带着类似问题回来；每个白给的答案都是你要再解决一次的问题。"}, {"q": "作者推荐了哪些辅导问题？", "a": "你已经试过什么；引导而不揭晓答案的问题（查询计划怎么说、哪部分最慢）；如果我不在，你下一步会试什么。"}, {"q": "什么时候不该用提问式辅导？", "a": "线上事故时或对方明显精疲力竭时，直接给答案，事后再复盘；辅导是投资，要在有时间时做。"}], "dictation": [{"id": "s0_1_3", "text": "Every answer you give for free is a problem you will be asked to solve again."}, {"id": "s1_0_1", "text": "It shows respect for her effort and tells you where her thinking stopped."}, {"id": "s1_2_1", "text": "People usually have an idea; they just want permission to try it."}, {"id": "s1_2_2", "text": "Your job is to make thinking out loud feel safe, not to grade the answer."}], "shadow": {"text": "A powerful one for stuck moments is \"If I weren't here, what would you try next?\" People usually have an idea; they just want permission to try it.", "marked": "A <b>powerful</b> one for <b>stuck</b> moments is / \"If I <b>weren't</b> here, / what would <b>you</b> try next?\" //<br>People <b>usually</b> have an idea; / they just want <b>permission</b> / to <b>try</b> it. //"}, "prompts": [{"q": "一位新人来问你：服务的 P99 延迟突然升高，该怎么查？你知道大概原因，但想让他自己找到。用 30 秒用提问引导他。", "ref": "Good catch noticing that. Before I jump in, what have you looked at so far? Okay, so the average looks normal and only the tail is high. What does that usually tell you? Which requests are in that slow tail, and do they have anything in common? Take a look at the traces for ten of them and tell me what you see.", "ref_zh": "发现得好。在我插手之前，你目前都看了些什么？好，所以平均值看着正常，只有长尾高。这通常说明什么？慢的长尾里都是哪些请求，它们有什么共同点吗？挑十个看看它们的 trace，然后告诉我你看到了什么。", "id": "ref0"}, {"q": "下属卡住了，问你该选方案 A 还是方案 B。你想让他自己做决定。用 30 秒回应。", "ref": "I have an opinion, but I'd rather hear yours first. If I weren't around this week, which one would you pick, and why? Tell me what you'd be giving up with that choice. If your reasoning holds up, go with it, and I'll back you in the review. If we see a gap, we'll talk it through together.", "ref_zh": "我有我的看法，但我更想先听听你的。如果这周我不在，你会选哪一个，为什么？说说选了它你会放弃什么。如果你的理由站得住，就按你的来，评审的时候我会支持你。如果我们发现有漏洞，就一起讨论。", "id": "ref1"}], "words": [{"w": "similar", "ipa": "/ˈsɪmələr/", "zh": "类似的", "ex": "We had a similar timeout issue on the order service last month.", "id": "w0"}, {"w": "ability", "ipa": "/əˈbɪləti/", "zh": "能力", "ex": "The goal is the ability to debug production issues alone.", "id": "w1"}, {"w": "purpose", "ipa": "/ˈpɜːrpəs/", "zh": "目的", "ex": "The purpose of this review is learning, not blame.", "id": "w2"}, {"w": "spoil", "ipa": "/spɔɪl/", "zh": "剧透、破坏", "ex": "I don't want to spoil it; check the slow query log first.", "id": "w3"}, {"w": "discovery", "ipa": "/dɪˈskʌvəri/", "zh": "发现", "ex": "His discovery of the memory leak saved the release.", "id": "w4"}, {"w": "exhausted", "ipa": "/ɪɡˈzɔːstɪd/", "zh": "精疲力竭的", "ex": "After a twelve-hour incident, the whole team was exhausted.", "tts": "After a twelve hour incident, the whole team was exhausted.", "id": "w5"}, {"w": "investment", "ipa": "/ɪnˈvestmənt/", "zh": "投资", "ex": "Writing good tests is an investment that pays off every release.", "id": "w6"}, {"w": "permission", "ipa": "/pərˈmɪʃən/", "zh": "许可", "ex": "You don't need my permission to roll back a bad deploy.", "id": "w7"}, {"w": "debrief", "ipa": "/ˌdiːˈbriːf/", "zh": "事后复盘", "ex": "Let's debrief tomorrow once the incident is closed.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Answer Trap", "zh": "1. 直接给答案的陷阱", "start": 0.0, "end": 1.848, "words": [[0.105, 0.355], [0.684, 0.776], [0.789, 1.066], [1.079, 1.461]]}, {"kind": "s", "id": "s0_0_0", "md": "A junior engineer comes to your desk with a slow query.", "zh": "一位初级工程师拿着一条慢查询来找你。", "sp": null, "gap": false, "start": 1.848, "end": 5.208, "words": [[1.953, 2.032], [2.045, 2.44], [2.453, 2.927], [2.94, 3.203], [3.216, 3.309], [3.322, 3.453], [3.466, 3.874], [3.887, 4.006], [4.019, 4.058], [4.072, 4.348], [4.361, 4.809]]}, {"kind": "s", "id": "s0_0_1", "md": "You can see the missing index in about ten seconds, so you tell her, and she fixes it.", "zh": "你大概十秒钟就看出缺了个索引，于是告诉她，她修好了。", "sp": null, "gap": false, "start": 5.208, "end": 10.608, "words": [[5.313, 5.405], [5.419, 5.55], [5.563, 5.8], [5.813, 5.905], [5.919, 6.353], [6.366, 6.787], [6.8, 6.866], [6.879, 7.155], [7.169, 7.405], [7.419, 8.024], [8.313, 8.432], [8.445, 8.55], [8.563, 8.787], [8.8, 9.011], [9.326, 9.379], [9.392, 9.55], [9.563, 9.984], [9.997, 10.208]]}, {"kind": "s", "id": "s0_0_2", "md": "It feels efficient, and for today, it is.", "zh": "感觉很高效，就今天来说，也确实是。", "sp": null, "gap": false, "start": 10.608, "end": 13.488, "words": [[10.713, 10.805], [10.819, 11.121], [11.134, 11.661], [11.99, 12.042], [12.055, 12.213], [12.226, 12.608], [12.634, 12.74], [12.753, 13.095]]}, {"kind": "s", "id": "s0_1_0", "md": "But notice what she learned.", "zh": "但留意一下她学到了什么。", "sp": null, "gap": true, "start": 13.488, "end": 15.36, "words": [[13.606, 13.699], [13.712, 13.988], [14.001, 14.093], [14.106, 14.251], [14.264, 14.699]]}, {"kind": "s", "id": "s0_1_1", "md": "She learned that when something is hard, the fastest path is to ask you.", "zh": "她学到的是：遇到难题，最快的路就是来问你。", "sp": null, "gap": false, "start": 15.36, "end": 20.088, "words": [[15.478, 15.649], [15.663, 16.005], [16.018, 16.136], [16.149, 16.294], [16.307, 16.702], [16.715, 16.82], [16.834, 17.255], [17.571, 17.663], [17.676, 18.281], [18.294, 18.781], [18.886, 19.005], [19.018, 19.123], [19.136, 19.492], [19.505, 19.702]]}, {"kind": "s", "id": "s0_1_2", "md": "Next week she will come back with a ==similar== problem, and the week after that too.", "zh": "下周她会带着类似的问题回来，再下周也一样。", "sp": null, "gap": false, "start": 20.088, "end": 24.624, "words": [[20.193, 20.47], [20.483, 20.68], [20.693, 20.838], [20.851, 20.983], [20.996, 21.193], [21.206, 21.535], [21.549, 21.68], [21.693, 21.733], [21.746, 22.18], [22.193, 22.667], [22.983, 23.035], [23.049, 23.141], [23.154, 23.377], [23.391, 23.667], [23.68, 23.891], [23.904, 24.233]]}, {"kind": "s", "id": "s0_1_3", "md": "**Every answer you give for free is a problem you will be asked to solve again.**", "zh": "你白给出去的每一个答案，都是一个你以后还会被要求再解决一遍的问题。", "sp": null, "gap": false, "start": 24.624, "end": 29.184, "words": [[24.729, 24.992], [25.006, 25.321], [25.335, 25.44], [25.453, 25.677], [25.69, 25.848], [25.861, 26.334], [26.44, 26.558], [26.571, 26.637], [26.65, 27.177], [27.335, 27.413], [27.427, 27.532], [27.545, 27.703], [27.716, 28.032], [28.045, 28.111], [28.124, 28.427], [28.44, 28.782]]}, {"kind": "s", "id": "s0_2_0", "md": "Coaching with questions feels slower at first.", "zh": "用提问来辅导，一开始会感觉更慢。", "sp": null, "gap": true, "start": 29.184, "end": 32.016, "words": [[29.289, 29.592], [29.605, 29.737], [29.75, 30.302], [30.316, 30.618], [30.631, 30.987], [31.0, 31.079], [31.092, 31.618]]}, {"kind": "s", "id": "s0_2_1", "md": "It __takes patience__ to watch someone struggle with a problem you could solve instantly.", "zh": "看着一个人在你瞬间就能解决的问题上挣扎，是需要耐心的。", "sp": null, "gap": false, "start": 32.016, "end": 36.84, "words": [[32.134, 32.227], [32.24, 32.529], [32.542, 33.069], [33.082, 33.187], [33.2, 33.542], [33.555, 33.911], [33.924, 34.332], [34.345, 34.49], [34.503, 34.555], [34.569, 35.069], [35.292, 35.384], [35.398, 35.529], [35.542, 35.898], [35.911, 36.45]]}, {"kind": "s", "id": "s0_2_2", "md": "Yet it builds the one thing an answer cannot: the ==ability== to find the next answer without you, which is the whole ==purpose== of coaching.", "zh": "但它能培养出一样答案给不了的东西：不靠你也能找到下一个答案的能力，而这正是辅导的全部意义。", "sp": null, "gap": false, "start": 36.84, "end": 45.192, "words": [[36.945, 37.103], [37.116, 37.248], [37.261, 37.59], [37.603, 37.722], [37.735, 38.064], [38.077, 38.458], [38.472, 38.59], [38.603, 39.011], [39.024, 39.511], [39.972, 40.064], [40.077, 40.629], [40.643, 40.722], [40.735, 41.143], [41.156, 41.208], [41.222, 41.669], [41.682, 42.051], [42.064, 42.485], [42.498, 42.695], [43.09, 43.248], [43.261, 43.353], [43.366, 43.458], [43.472, 43.774], [43.787, 44.222], [44.235, 44.34], [44.353, 44.814]]}, {"kind": "h", "id": "h1", "md": "2. Questions That Do the Teaching", "zh": "2. 用问题来教", "start": 45.192, "end": 47.712, "words": [[45.31, 45.521], [46.008, 46.481], [46.495, 46.653], [46.666, 46.784], [46.797, 46.876], [46.889, 47.324]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with \"What have you tried so far?\"", "zh": "从「你目前都试过什么了？」开始。", "sp": null, "gap": false, "start": 47.712, "end": 50.016, "words": [[47.817, 48.094], [48.107, 48.278], [48.344, 48.475], [48.488, 48.607], [48.62, 48.712], [48.725, 49.028], [49.041, 49.238], [49.251, 49.62]]}, {"kind": "s", "id": "s1_0_1", "md": "It shows respect for her effort and tells you where her thinking stopped.", "zh": "这表示你尊重她的努力，也能让你知道她的思路卡在哪儿。", "sp": null, "gap": false, "start": 50.016, "end": 54.192, "words": [[50.134, 50.2], [50.213, 50.529], [50.542, 50.977], [50.99, 51.121], [51.134, 51.345], [51.358, 51.727], [52.055, 52.148], [52.161, 52.45], [52.463, 52.555], [52.569, 52.727], [52.74, 52.858], [52.871, 53.266], [53.279, 53.792]]}, {"kind": "s", "id": "s1_0_2", "md": "Often, simply explaining the problem out loud helps her __spot the issue__ herself.", "zh": "很多时候，光是把问题大声讲出来，她自己就能发现问题所在。", "sp": null, "gap": false, "start": 54.192, "end": 59.376, "words": [[54.297, 54.679], [54.981, 55.324], [55.337, 55.85], [55.863, 55.942], [55.955, 56.35], [56.363, 56.547], [56.56, 56.929], [57.034, 57.337], [57.35, 57.468], [57.481, 57.902], [57.916, 58.021], [58.034, 58.363], [58.376, 58.995]]}, {"kind": "s", "id": "s1_1_0", "md": "Then ask questions that point the way without ==spoiling== the answer.", "zh": "然后，问一些能指方向、但不剧透答案的问题。", "sp": null, "gap": true, "start": 59.376, "end": 63.312, "words": [[59.494, 59.692], [59.705, 59.955], [59.968, 60.455], [60.468, 60.626], [60.639, 60.981], [60.994, 61.073], [61.087, 61.389], [61.402, 61.784], [61.797, 62.31], [62.323, 62.415], [62.429, 62.929]]}, {"kind": "s", "id": "s1_1_1", "md": "\"What does the query plan say?\" or \"Which part of the request takes the longest?\"", "zh": "「执行计划怎么说？」或者「请求里哪一部分耗时最长？」", "sp": null, "gap": false, "start": 63.312, "end": 68.448, "words": [[63.496, 63.562], [63.562, 63.707], [63.72, 63.825], [63.838, 64.233], [64.246, 64.575], [64.588, 64.93], [65.509, 65.72], [65.759, 65.97], [65.983, 66.207], [66.22, 66.272], [66.286, 66.351], [66.365, 66.97], [66.983, 67.246], [67.259, 67.352], [67.365, 68.036]]}, {"kind": "s", "id": "s1_1_2", "md": "Each question narrows the search, but she still makes the ==discovery==.", "zh": "每个问题都在缩小排查范围，但发现还是由她自己来完成。", "sp": null, "gap": false, "start": 68.448, "end": 72.864, "words": [[68.553, 68.751], [68.764, 69.316], [69.33, 69.764], [69.777, 69.869], [69.882, 70.435], [70.737, 70.869], [70.882, 71.066], [71.08, 71.435], [71.448, 71.724], [71.737, 71.83], [71.843, 72.474]]}, {"kind": "s", "id": "s1_2_0", "md": "A powerful one for stuck moments is \"If I weren't here, what would you try next?\"", "zh": "卡住的时候，有个特别管用的问题：「如果我不在，你下一步会试什么？」", "sp": null, "gap": true, "start": 72.864, "end": 77.88, "words": [[72.969, 73.022], [73.035, 73.574], [73.588, 73.798], [73.811, 73.969], [73.982, 74.272], [74.285, 74.706], [74.719, 75.009], [75.167, 75.325], [75.338, 75.43], [75.443, 75.732], [75.746, 76.088], [76.377, 76.482], [76.496, 76.614], [76.627, 76.693], [76.706, 76.917], [76.93, 77.469]]}, {"kind": "s", "id": "s1_2_1", "md": "People usually have an idea; they just want permission to try it.", "zh": "人们通常是有想法的；他们只是想得到允许去试。", "sp": null, "gap": false, "start": 77.88, "end": 81.816, "words": [[77.998, 78.262], [78.275, 78.709], [78.722, 78.919], [78.933, 79.025], [79.038, 79.472], [79.906, 79.998], [80.012, 80.235], [80.248, 80.419], [80.433, 80.84], [80.854, 80.893], [80.906, 81.248], [81.262, 81.433]]}, {"kind": "s", "id": "s1_2_2", "md": "**Your job is to make thinking out loud feel safe, not to grade the answer.**", "zh": "你的工作是让大声思考变得安全，而不是给答案打分。", "sp": null, "gap": false, "start": 81.816, "end": 86.568, "words": [[81.921, 82.04], [82.053, 82.448], [82.527, 82.619], [82.632, 82.724], [82.737, 82.974], [82.987, 83.382], [83.395, 83.579], [83.592, 83.895], [83.908, 84.184], [84.198, 84.698], [85.092, 85.25], [85.263, 85.329], [85.342, 85.592], [85.605, 85.698], [85.711, 86.184]]}, {"kind": "s", "id": "s1_3_0", "md": "Know when to stop, though.", "zh": "不过，要知道什么时候该停。", "sp": null, "gap": true, "start": 86.568, "end": 88.44, "words": [[86.673, 86.778], [86.792, 86.884], [86.897, 86.95], [86.963, 87.397], [87.568, 87.818]]}, {"kind": "s", "id": "s1_3_1", "md": "During an outage, or when she is clearly ==exhausted==, just give the answer and __debrief later__.", "zh": "线上故障的时候，或者她明显已经累坏了，就直接给答案，事后再复盘。", "sp": null, "gap": false, "start": 88.44, "end": 94.368, "words": [[88.545, 88.795], [88.808, 88.901], [88.914, 89.453], [89.729, 89.808], [89.822, 89.94], [89.953, 90.111], [90.124, 90.256], [90.269, 90.743], [90.756, 91.361], [91.756, 91.979], [91.993, 92.19], [92.203, 92.308], [92.322, 92.835], [92.953, 93.032], [93.045, 93.598], [93.611, 93.979]]}, {"kind": "s", "id": "s1_3_2", "md": "Coaching is an ==investment==, and you make investments when there is time, not in the middle of a fire.", "zh": "辅导是一种投资，投资要在有时间的时候做，而不是在救火的时候。", "sp": null, "gap": false, "start": 94.368, "end": 100.416, "words": [[94.473, 94.973], [94.986, 95.105], [95.118, 95.197], [95.21, 95.881], [96.21, 96.289], [96.302, 96.407], [96.421, 96.644], [96.657, 97.289], [97.302, 97.434], [97.447, 97.592], [97.605, 97.736], [97.75, 98.223], [98.644, 98.842], [98.855, 98.907], [98.921, 99.0], [99.013, 99.355], [99.368, 99.434], [99.447, 99.513], [99.526, 100.026]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

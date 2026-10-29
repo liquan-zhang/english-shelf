@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Booking a Repair Technician · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "149", "type": "dialogue", "title": "Booking a Repair Technician", "meta": "B2 · 约 310 词 · 场景：预约空调维修与报价", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Service Coordinator", "name_zh": "维修客服", "voice": "en-IN-NeerjaNeural"}}, "gist": [{"q": "空调出了什么问题？客服初步判断是什么原因？", "a": "卧室空调漏水、制冷不好，持续一周了；可能是排水管堵了，或者需要化学清洗。"}, {"q": "上门费怎么收？「你」提了什么要求？", "a": "检查费四十块，决定维修就免；「你」要求动工前先报价，没同意不能开工。"}, {"q": "对三百八十块的报价，「你」最后怎么砍的？", "a": "请对方拆开费用，问清补冷媒不着急就先不做；签年度保养合约让化学清洗打八折，最后只做排水管和化学清洗，享受九十天保修。"}], "dictation": [{"id": "s0_1_0", "text": "Hi. The aircon in our bedroom is leaking water, and it's not cooling properly."}, {"id": "s0_9_0", "text": "Could the technician give me a quote before starting any work?"}, {"id": "s1_2_0", "text": "That's a lot more than I expected. Could you break it down for me?"}, {"id": "s1_4_0", "text": "The unit's only three years old. Is the gas top-up really necessary right now?"}], "shadow": {"speaker": "A", "text": "The unit's only three years old. Is the gas top-up really necessary right now?", "marked": "The unit's only <b>three</b> years old. //<br>Is the <b>gas top-up</b> / <b>really</b> necessary / right <b>now</b>? //"}, "prompts": [{"q": "家里的洗衣机坏了，打电话约维修。用 30 秒说清：什么问题、希望的时间、问上门费和是否先报价。", "ref": "Hi, our washing machine stopped working this morning. It fills with water, but the drum won't spin, and it's showing an error code. Could someone come and take a look this week, ideally on a weekday evening or Saturday morning? How much is the call-out fee? And could the technician give me a quote before doing any repairs?", "ref_zh": "你好，我家洗衣机今天早上坏了。能进水，但滚筒不转，还显示一个错误代码。这周能派人来看看吗？最好是工作日晚上或者周六上午。上门费多少？技术员修之前能先给我报价吗？", "id": "ref0"}, {"q": "维修师傅说热水器要整个换掉，报价很高。你想先拿第二个意见，礼貌地暂缓。", "ref": "Thanks for checking it so carefully. That's a bigger job than I expected, so I'd like to think it over before I decide. Could you write down the quote and what exactly needs replacing? I'll talk to my landlord first, since it might be covered. I'm happy to pay today's inspection fee, of course.", "ref_zh": "谢谢你检查得这么仔细。这比我预想的工程大，我想先考虑一下再决定。能把报价和具体要换什么写下来给我吗？我先跟房东商量一下，可能由他承担。今天的检查费我当然照付。", "id": "ref1"}], "words": [{"w": "blocked", "ipa": "/blɑːkt/", "zh": "堵塞的", "ex": "The kitchen sink is blocked again.", "id": "w0"}, {"w": "chemical wash", "ipa": "/ˈkemɪkəl wɑːʃ/", "zh": "（空调）化学清洗", "ex": "Our aircon needs a chemical wash once a year.", "id": "w1"}, {"w": "call-out fee", "ipa": "/ˈkɔːl aʊt fiː/", "zh": "上门费", "ex": "The plumber charges a call-out fee even if he can't fix it.", "id": "w2"}, {"w": "inspection", "ipa": "/ɪnˈspekʃən/", "zh": "检查", "ex": "The landlord wants to do an inspection before we move out.", "id": "w3"}, {"w": "top-up", "ipa": "/ˈtɑːp ʌp/", "zh": "补充；充值", "ex": "I need to top up my EZ-Link card.", "id": "w4"}, {"w": "pressure", "ipa": "/ˈpreʃər/", "zh": "压力，气压", "ex": "The water pressure in the shower is really weak.", "id": "w5"}, {"w": "servicing", "ipa": "/ˈsɜːrvɪsɪŋ/", "zh": "定期保养", "ex": "The car is due for servicing next month.", "id": "w6"}, {"w": "contract", "ipa": "/ˈkɑːntrækt/", "zh": "合约", "ex": "We signed a one-year cleaning contract.", "tts": "We signed a one-year cleaning contract.", "id": "w7"}, {"w": "warranty", "ipa": "/ˈwɔːrənti/", "zh": "保修", "ex": "Is the fridge still under warranty?", "id": "w8"}, {"w": "quote (n.)", "ipa": "/kwoʊt/", "zh": "报价", "ex": "We got three quotes before choosing a mover.", "tts_w": "quote", "id": "w9"}], "sections": [{"heading": "1. Booking the Visit", "heading_zh": "1. 预约上门", "rows": [[{"id": "s0_0_0", "md": "Good morning, CoolAir Services. How can I help you?", "text": "Good morning, CoolAir Services. How can I help you?", "zh": "早上好，CoolAir 空调服务。请问有什么可以帮您？", "sp": "B"}], [{"id": "s0_1_0", "md": "**Hi. The aircon in our bedroom is leaking water, and it's not cooling properly.**", "text": "Hi. The aircon in our bedroom is leaking water, and it's not cooling properly.", "zh": "你好。我们卧室的空调在漏水，制冷也不太好。", "sp": "A"}], [{"id": "s0_2_0", "md": "I'm sorry to hear that. How long has it been like this?", "text": "I'm sorry to hear that. How long has it been like this?", "zh": "很抱歉。这种情况多久了？", "sp": "B"}], [{"id": "s0_3_0", "md": "About a week. Water keeps dripping onto the floor, especially at night.", "text": "About a week. Water keeps dripping onto the floor, especially at night.", "zh": "大概一个星期了。水一直往地板上滴，晚上尤其严重。", "sp": "A"}], [{"id": "s0_4_0", "md": "It sounds like a ==blocked== drain pipe, or it may need a ==chemical== wash. When would you like the technician to come?", "text": "It sounds like a blocked drain pipe, or it may need a chemical wash. When would you like the technician to come?", "zh": "听起来像是排水管堵了，也可能需要做化学清洗。您希望技术员什么时候上门？", "sp": "B"}], [{"id": "s0_5_0", "md": "__As soon as possible__, really. Do you have anything this Saturday?", "text": "As soon as possible, really. Do you have anything this Saturday?", "zh": "越快越好。这周六有空档吗？", "sp": "A"}], [{"id": "s0_6_0", "md": "Saturday we have a slot between two and four in the afternoon.", "text": "Saturday we have a slot between two and four in the afternoon.", "zh": "周六下午两点到四点有一个时段。", "sp": "B"}], [{"id": "s0_7_0", "md": "That works. How much is the ==call-out== fee?", "text": "That works. How much is the call-out fee?", "zh": "可以。上门费是多少？", "sp": "A"}], [{"id": "s0_8_0", "md": "It's forty dollars for the ==inspection==, but it's waived if you go ahead with the repair.", "text": "It's forty dollars for the inspection, but it's waived if you go ahead with the repair.", "zh": "检查费四十块，如果您决定维修就免掉。", "sp": "B"}], [{"id": "s0_9_0", "md": "**Could the technician give me a quote before starting any work?**", "text": "Could the technician give me a quote before starting any work?", "zh": "技术员能在动工前先给我报个价吗？", "sp": "A"}], [{"id": "s0_10_0", "md": "Yes, of course. Nothing will be done without your approval.", "text": "Yes, of course. Nothing will be done without your approval.", "zh": "当然可以。没有您的同意，什么都不会动。", "sp": "B"}]]}, {"heading": "2. The Quote Seems High", "heading_zh": "2. 报价有点高", "rows": [[{"id": "s1_0_0", "md": "Hi, I'm calling about the quote your technician gave me this afternoon. It's three hundred and eighty dollars.", "text": "Hi, I'm calling about the quote your technician gave me this afternoon. It's three hundred and eighty dollars.", "zh": "你好，我打电话是想问一下你们技术员今天下午给的报价，三百八十块。", "sp": "A"}], [{"id": "s1_1_0", "md": "Let me pull it up. It includes a chemical wash, a gas ==top-up==, and a new drain pipe.", "text": "Let me pull it up. It includes a chemical wash, a gas top-up, and a new drain pipe.", "zh": "我调出来看看。里面包括化学清洗、补充冷媒，还有换一根新的排水管。", "sp": "B"}], [{"id": "s1_2_0", "md": "That's a lot more than I expected. __Could you break it down__ for me?", "text": "That's a lot more than I expected. Could you break it down for me?", "zh": "这比我预想的高不少。能帮我拆开讲讲各项费用吗？", "sp": "A"}], [{"id": "s1_3_0", "md": "Sure. The chemical wash is one hundred and fifty, the gas is one hundred and twenty, and the pipe is one hundred and ten.", "text": "Sure. The chemical wash is one hundred and fifty, the gas is one hundred and twenty, and the pipe is one hundred and ten.", "zh": "好的。化学清洗一百五，冷媒一百二，排水管一百一。", "sp": "B"}], [{"id": "s1_4_0", "md": "**The unit's only three years old. Is the gas top-up really necessary right now?**", "text": "The unit's only three years old. Is the gas top-up really necessary right now?", "zh": "这台空调才用了三年。补冷媒现在真的有必要吗？", "sp": "A"}], [{"id": "s1_5_0", "md": "The technician noted the ==pressure== was a bit low, but it's not urgent. You could leave it for now.", "text": "The technician noted the pressure was a bit low, but it's not urgent. You could leave it for now.", "zh": "技术员记录说压力有点低，但不着急，可以先不做。", "sp": "B"}], [{"id": "s1_6_0", "md": "Then let's skip the gas for now. And if I sign up for your yearly ==servicing== package, __is there a discount__?", "text": "Then let's skip the gas for now. And if I sign up for your yearly servicing package, is there a discount?", "zh": "那冷媒就先不做了。如果我办你们的年度保养套餐，有折扣吗？", "sp": "A"}], [{"id": "s1_7_0", "md": "Yes. With an annual ==contract==, today's chemical wash is twenty percent off.", "text": "Yes. With an annual contract, today's chemical wash is twenty percent off.", "zh": "有的。签年度合约的话，今天的化学清洗打八折。", "sp": "B"}], [{"id": "s1_8_0", "md": "That sounds reasonable. Does the repair come with a ==warranty==?", "text": "That sounds reasonable. Does the repair come with a warranty?", "zh": "听起来挺合理的。维修有保修吗？", "sp": "A"}], [{"id": "s1_9_0", "md": "Yes, ninety days on parts and labour.", "text": "Yes, ninety days on parts and labour.", "zh": "有，零件和人工都保九十天。", "sp": "B"}], [{"id": "s1_10_0", "md": "Great. __Let's go ahead__ with the pipe and the chemical wash, then.", "text": "Great. Let's go ahead with the pipe and the chemical wash, then.", "zh": "好的。那就做排水管和化学清洗吧。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Booking the Visit", "zh": "1. 预约上门", "start": 0.0, "end": 1.872, "words": [[0.105, 0.382], [0.697, 0.987], [1.0, 1.066], [1.079, 1.487]]}, {"kind": "s", "id": "s0_0_0", "md": "Good morning, CoolAir Services. How can I help you?", "zh": "早上好，CoolAir 空调服务。请问有什么可以帮您？", "sp": "B", "gap": false, "start": 1.872, "end": 7.272, "words": [[1.972, 2.327], [2.34, 2.906], [3.025, 3.419], [3.433, 4.169], [5.08, 5.383], [5.396, 5.567], [5.58, 5.685], [5.698, 6.027], [6.04, 6.343]]}, {"kind": "s", "id": "s0_1_0", "md": "**Hi. The aircon in our bedroom is leaking water, and it's not cooling properly.**", "zh": "你好。我们卧室的空调在漏水，制冷也不太好。", "sp": "A", "gap": false, "start": 7.272, "end": 12.504, "words": [[7.404, 7.654], [8.088, 8.167], [8.18, 8.601], [8.614, 8.706], [8.719, 8.838], [8.851, 9.298], [9.417, 9.548], [9.561, 9.956], [9.969, 10.417], [10.733, 10.798], [10.811, 10.943], [10.956, 11.193], [11.206, 11.535], [11.548, 12.114]]}, {"kind": "s", "id": "s0_2_0", "md": "I'm sorry to hear that. How long has it been like this?", "zh": "很抱歉。这种情况多久了？", "sp": "B", "gap": false, "start": 12.504, "end": 18.192, "words": [[12.604, 12.893], [12.907, 13.367], [13.38, 13.525], [13.538, 13.828], [13.841, 14.262], [15.186, 15.515], [15.528, 15.883], [15.896, 16.12], [16.133, 16.251], [16.265, 16.528], [16.541, 16.817], [16.83, 17.278]]}, {"kind": "s", "id": "s0_3_0", "md": "About a week. Water keeps dripping onto the floor, especially at night.", "zh": "大概一个星期了。水一直往地板上滴，晚上尤其严重。", "sp": "A", "gap": false, "start": 18.192, "end": 22.848, "words": [[18.297, 18.508], [18.521, 18.56], [18.574, 18.916], [19.35, 19.613], [19.626, 19.916], [19.929, 20.337], [20.35, 20.547], [20.56, 20.653], [20.666, 21.166], [21.416, 21.995], [22.008, 22.087], [22.1, 22.455]]}, {"kind": "s", "id": "s0_4_0", "md": "It sounds like a ==blocked== drain pipe, or it may need a ==chemical== wash. When would you like the technician to come?", "zh": "听起来像是排水管堵了，也可能需要做化学清洗。您希望技术员什么时候上门？", "sp": "B", "gap": false, "start": 22.848, "end": 31.584, "words": [[22.948, 23.185], [23.198, 23.632], [23.645, 23.922], [23.935, 24.001], [24.014, 24.461], [24.474, 24.856], [24.869, 25.33], [25.474, 25.685], [25.698, 25.843], [25.856, 26.027], [26.04, 26.382], [26.395, 26.487], [26.501, 27.001], [27.014, 27.514], [28.424, 28.806], [28.819, 29.003], [29.016, 29.122], [29.135, 29.411], [29.424, 29.543], [29.556, 30.122], [30.135, 30.253], [30.266, 30.661]]}, {"kind": "s", "id": "s0_5_0", "md": "__As soon as possible__, really. Do you have anything this Saturday?", "zh": "越快越好。这周六有空档吗？", "sp": "A", "gap": false, "start": 31.584, "end": 35.28, "words": [[31.689, 31.808], [31.821, 32.018], [32.031, 32.137], [32.15, 32.702], [32.729, 33.058], [33.492, 33.544], [33.558, 33.663], [33.676, 33.86], [33.873, 34.216], [34.229, 34.36], [34.373, 34.887]]}, {"kind": "s", "id": "s0_6_0", "md": "Saturday we have a slot between two and four in the afternoon.", "zh": "周六下午两点到四点有一个时段。", "sp": "B", "gap": false, "start": 35.28, "end": 40.416, "words": [[35.38, 36.104], [36.117, 36.354], [36.367, 36.59], [36.604, 36.656], [36.669, 37.13], [37.143, 37.617], [37.63, 37.893], [37.906, 38.13], [38.143, 38.472], [38.485, 38.59], [38.604, 38.735], [38.748, 39.485]]}, {"kind": "s", "id": "s0_7_0", "md": "That works. How much is the ==call-out== fee?", "zh": "可以。上门费是多少？", "sp": "A", "gap": false, "start": 40.416, "end": 43.176, "words": [[40.534, 40.653], [40.666, 41.127], [41.561, 41.653], [41.666, 41.824], [41.837, 41.916], [41.929, 42.021], [42.034, 42.429], [42.442, 42.784]]}, {"kind": "s", "id": "s0_8_0", "md": "It's forty dollars for the ==inspection==, but it's waived if you go ahead with the repair.", "zh": "检查费四十块，如果您决定维修就免掉。", "sp": "B", "gap": false, "start": 43.176, "end": 49.512, "words": [[43.276, 43.565], [43.579, 43.973], [43.987, 44.526], [44.539, 44.671], [44.684, 44.802], [44.815, 45.605], [45.894, 46.079], [46.092, 46.276], [46.289, 46.658], [46.671, 46.842], [46.855, 46.987], [47.0, 47.25], [47.263, 47.631], [47.644, 47.815], [47.829, 47.921], [47.934, 48.552]]}, {"kind": "s", "id": "s0_9_0", "md": "**Could the technician give me a quote before starting any work?**", "zh": "技术员能在动工前先给我报个价吗？", "sp": "A", "gap": false, "start": 49.512, "end": 52.968, "words": [[49.617, 49.709], [49.723, 49.801], [49.815, 50.446], [50.565, 50.736], [50.749, 50.88], [50.894, 50.946], [50.959, 51.341], [51.354, 51.696], [51.709, 52.038], [52.051, 52.183], [52.196, 52.578]]}, {"kind": "s", "id": "s0_10_0", "md": "Yes, of course. Nothing will be done without your approval.", "zh": "当然可以。没有您的同意，什么都不会动。", "sp": "B", "gap": false, "start": 52.968, "end": 58.992, "words": [[53.068, 53.686], [53.831, 54.015], [54.029, 54.621], [55.531, 56.057], [56.071, 56.202], [56.215, 56.36], [56.373, 56.768], [56.781, 57.281], [57.294, 57.479], [57.492, 58.084]]}, {"kind": "h", "id": "h1", "md": "2. The Quote Seems High", "zh": "2. 报价有点高", "start": 58.992, "end": 61.128, "words": [[59.11, 59.334], [59.65, 59.742], [59.755, 60.071], [60.084, 60.374], [60.387, 60.742]]}, {"kind": "s", "id": "s1_0_0", "md": "Hi, I'm calling about the quote your technician gave me this afternoon. It's three hundred and eighty dollars.", "zh": "你好，我打电话是想问一下你们技术员今天下午给的报价，三百八十块。", "sp": "A", "gap": false, "start": 61.128, "end": 67.224, "words": [[61.246, 61.483], [61.891, 62.036], [62.049, 62.325], [62.339, 62.536], [62.549, 62.628], [62.641, 62.891], [62.904, 63.01], [63.023, 63.589], [63.602, 63.825], [63.839, 63.944], [63.957, 64.141], [64.154, 64.733], [65.167, 65.391], [65.404, 65.681], [65.694, 65.983], [65.996, 66.089], [66.102, 66.26], [66.273, 66.825]]}, {"kind": "s", "id": "s1_1_0", "md": "Let me pull it up. It includes a chemical wash, a gas ==top-up==, and a new drain pipe.", "zh": "我调出来看看。里面包括化学清洗、补充冷媒，还有换一根新的排水管。", "sp": "B", "gap": false, "start": 67.224, "end": 75.072, "words": [[67.324, 67.719], [67.732, 67.863], [67.877, 68.087], [68.1, 68.232], [68.245, 68.534], [69.432, 69.656], [69.669, 70.182], [70.195, 70.274], [70.287, 70.787], [70.8, 71.261], [71.458, 71.603], [71.616, 72.024], [72.037, 72.563], [72.708, 72.932], [72.945, 72.984], [72.998, 73.261], [73.274, 73.669], [73.682, 74.142]]}, {"kind": "s", "id": "s1_2_0", "md": "That's a lot more than I expected. __Could you break it down__ for me?", "zh": "这比我预想的高不少。能帮我拆开讲讲各项费用吗？", "sp": "A", "gap": false, "start": 75.072, "end": 78.768, "words": [[75.19, 75.335], [75.348, 75.401], [75.414, 75.73], [75.743, 75.94], [75.954, 76.085], [76.098, 76.19], [76.204, 76.809], [77.243, 77.361], [77.375, 77.454], [77.467, 77.704], [77.717, 77.796], [77.809, 78.032], [78.046, 78.204], [78.217, 78.375]]}, {"kind": "s", "id": "s1_3_0", "md": "Sure. The chemical wash is one hundred and fifty, the gas is one hundred and twenty, and the pipe is one hundred and ten.", "zh": "好的。化学清洗一百五，冷媒一百二，排水管一百一。", "sp": "B", "gap": false, "start": 78.768, "end": 88.128, "words": [[78.868, 79.473], [80.371, 80.555], [80.568, 81.081], [81.094, 81.357], [81.371, 81.528], [81.542, 81.778], [81.792, 82.107], [82.121, 82.239], [82.252, 82.792], [82.963, 83.108], [83.121, 83.489], [83.502, 83.647], [83.66, 83.91], [83.923, 84.252], [84.265, 84.384], [84.397, 84.95], [85.16, 85.371], [85.384, 85.463], [85.476, 85.831], [85.844, 86.002], [86.015, 86.279], [86.292, 86.647], [86.66, 86.805], [86.818, 87.2]]}, {"kind": "s", "id": "s1_4_0", "md": "**The unit's only three years old. Is the gas top-up really necessary right now?**", "zh": "这台空调才用了三年。补冷媒现在真的有必要吗？", "sp": "A", "gap": false, "start": 88.128, "end": 93.432, "words": [[88.246, 88.286], [88.299, 88.707], [88.852, 89.154], [89.167, 89.523], [89.536, 89.852], [89.865, 90.167], [90.602, 90.694], [90.707, 90.786], [90.799, 91.115], [91.128, 91.589], [91.707, 91.917], [91.931, 92.496], [92.51, 92.707], [92.72, 93.049]]}, {"kind": "s", "id": "s1_5_0", "md": "The technician noted the ==pressure== was a bit low, but it's not urgent. You could leave it for now.", "zh": "技术员记录说压力有点低，但不着急，可以先不做。", "sp": "B", "gap": false, "start": 93.432, "end": 101.352, "words": [[93.532, 93.716], [93.729, 94.374], [94.387, 94.782], [94.795, 94.9], [94.914, 95.493], [95.506, 95.69], [95.703, 95.756], [95.769, 96.058], [96.071, 96.414], [96.624, 96.835], [96.848, 97.045], [97.058, 97.4], [97.414, 98.019], [98.929, 99.179], [99.193, 99.39], [99.403, 99.706], [99.719, 99.85], [99.864, 100.035], [100.048, 100.429]]}, {"kind": "s", "id": "s1_6_0", "md": "Then let's skip the gas for now. And if I sign up for your yearly ==servicing== package, __is there a discount__?", "zh": "那冷媒就先不做了。如果我办你们的年度保养套餐，有折扣吗？", "sp": "A", "gap": false, "start": 101.352, "end": 107.352, "words": [[101.47, 101.576], [101.589, 101.747], [101.76, 102.023], [102.036, 102.115], [102.128, 102.418], [102.431, 102.549], [102.563, 102.839], [103.273, 103.352], [103.365, 103.47], [103.484, 103.576], [103.589, 103.905], [103.918, 104.036], [104.049, 104.168], [104.181, 104.313], [104.326, 104.707], [104.72, 105.207], [105.22, 105.734], [106.115, 106.194], [106.207, 106.352], [106.365, 106.418], [106.431, 106.97]]}, {"kind": "s", "id": "s1_7_0", "md": "Yes. With an annual ==contract==, today's chemical wash is twenty percent off.", "zh": "有的。签年度合约的话，今天的化学清洗打八折。", "sp": "B", "gap": false, "start": 107.352, "end": 114.432, "words": [[107.452, 108.123], [109.047, 109.297], [109.31, 109.428], [109.441, 109.876], [109.889, 110.612], [110.836, 111.284], [111.297, 111.797], [111.81, 112.086], [112.099, 112.257], [112.27, 112.652], [112.665, 113.139], [113.152, 113.52]]}, {"kind": "s", "id": "s1_8_0", "md": "That sounds reasonable. Does the repair come with a ==warranty==?", "zh": "听起来挺合理的。维修有保修吗？", "sp": "A", "gap": false, "start": 114.432, "end": 117.888, "words": [[114.55, 114.643], [114.656, 114.932], [114.945, 115.564], [115.998, 116.129], [116.143, 116.221], [116.235, 116.616], [116.629, 116.8], [116.814, 116.945], [116.958, 117.011], [117.024, 117.498]]}, {"kind": "s", "id": "s1_9_0", "md": "Yes, ninety days on parts and labour.", "zh": "有，零件和人工都保九十天。", "sp": "B", "gap": false, "start": 117.888, "end": 121.8, "words": [[117.988, 118.62], [118.777, 119.277], [119.291, 119.606], [119.62, 119.791], [119.804, 120.185], [120.199, 120.37], [120.383, 120.856]]}, {"kind": "s", "id": "s1_10_0", "md": "Great. __Let's go ahead__ with the pipe and the chemical wash, then.", "zh": "好的。那就做排水管和化学清洗吧。", "sp": "A", "gap": false, "start": 121.8, "end": 125.976, "words": [[121.905, 122.247], [122.682, 122.813], [122.826, 122.958], [122.971, 123.195], [123.208, 123.339], [123.353, 123.445], [123.458, 123.866], [124.024, 124.089], [124.103, 124.182], [124.195, 124.642], [124.655, 125.142], [125.313, 125.589]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

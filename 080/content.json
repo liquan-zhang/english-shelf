@@ -1,0 +1,179 @@
+{
+  "id": "080",
+  "title": "The Pre-Read That Wins the Meeting",
+  "meta": "B2 · 约 260 词 · 场景：会前材料",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Decided Before It Starts",
+      "paragraphs": [
+        [
+          "If you walk into a decision meeting with only slides, you are starting from behind.",
+          "People see your idea for the first time, react to it in real time, and the loudest first reaction often __sets the direction__.",
+          "You spend the hour defending basics instead of discussing the real question."
+        ],
+        [
+          "A good pre-read changes that.",
+          "Attendees arrive having already ==digested== your proposal, with considered questions instead of ==improvised== ones.",
+          "The meeting becomes a discussion of the hard parts rather than a ==tour== of the basics."
+        ],
+        [
+          "**The meeting is where the decision is announced; the pre-read is where it is won.**",
+          "Senior people especially value it, because it respects their time and lets them __weigh in__ ahead of time.",
+          "It also helps colleagues who work in a second language and prefer to read before they speak."
+        ]
+      ],
+      "heading_zh": "1. 开会之前就已定局",
+      "paragraphs_zh": [
+        [
+          "如果你只带着 PPT 走进一个决策会，你一开始就落后了。",
+          "大家第一次看到你的想法，当场做出反应，而第一个、嗓门最大的反应往往就定了方向。",
+          "你一个小时都在为基础问题辩护，而不是讨论真正的问题。"
+        ],
+        [
+          "一份好的会前材料能改变这一切。",
+          "参会的人来之前就已经消化了你的方案，带着想清楚的问题来，而不是临场想出来的问题。",
+          "会议就变成了讨论难点，而不是把基础信息逛一遍。"
+        ],
+        [
+          "会议是宣布决定的地方；会前材料才是赢下决定的地方。",
+          "高层尤其看重这一点，因为这尊重他们的时间，也让他们能提前发表意见。",
+          "它也照顾到了用第二语言工作、喜欢先读再说的同事。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. One Page, Ask at the Top",
+      "paragraphs": [
+        [
+          "Put the ask in the first two lines.",
+          "\"We'd like approval to move the image service to the new storage layer next quarter, at an extra cost of about eight percent.\"",
+          "Readers who stop there should still ==grasp== exactly what you want."
+        ],
+        [
+          "Then give the context, the ==alternatives== you rejected, and the main risk with its ==safeguard==.",
+          "Keep it to one page, and send it at least a day before.",
+          "A pre-read that arrives an hour early is just homework nobody did."
+        ],
+        [
+          "For important decisions, __give key people a heads-up__ before the doc goes out.",
+          "Ask them, \"Is there anything here that would stop you from agreeing?\"",
+          "**Objections you hear in private the day before are easy to fix; objections you hear in the room are not.**"
+        ]
+      ],
+      "heading_zh": "2. 一页纸，诉求放最前",
+      "paragraphs_zh": [
+        [
+          "把诉求放在头两行。",
+          "「我们希望批准下个季度把图片服务迁到新的存储层，额外成本大约百分之八。」",
+          "读到这里就停下的人，也应该能准确明白你要什么。"
+        ],
+        [
+          "然后交代背景、你否掉的备选方案，以及主要风险和对应的保障措施。",
+          "控制在一页以内，至少提前一天发出去。",
+          "提前一小时才到的会前材料，只是一份没人做的作业。"
+        ],
+        [
+          "对于重要的决定，在文档发出之前先跟关键人物打个招呼。",
+          "问他们：「这里面有没有什么会让你没法同意的？」",
+          "前一天私下听到的反对意见很好解决；在会上才听到的反对意见就不好办了。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "只带幻灯片进决策会有什么问题？",
+      "a": "大家第一次看到方案、当场反应，最响的第一反应往往定方向，你整场都在解释基础内容。"
+    },
+    {
+      "q": "一份好的会前材料怎么写？",
+      "a": "开头两行写清诉求；再写背景、否掉的备选方案、主要风险和保障措施；控制在一页，至少提前一天发。"
+    },
+    {
+      "q": "重要决策还要额外做什么？为什么？",
+      "a": "发文档前先私下给关键人打招呼，问有没有会让他们不同意的点；前一天私下听到的反对好解决，会上听到的就难了。"
+    }
+  ],
+  "dictation": [
+    "The meeting is where the decision is announced; the pre-read is where it is won.",
+    "Readers who stop there should still grasp exactly what you want.",
+    "A pre-read that arrives an hour early is just homework nobody did.",
+    "Objections you hear in private the day before are easy to fix; objections you hear in the room are not."
+  ],
+  "shadow": {
+    "text": "A good pre-read changes that. Attendees arrive having already digested your proposal, with considered questions instead of improvised ones. The meeting becomes a discussion of the hard parts rather than a tour of the basics.",
+    "marked": "A <b>good</b> pre-read / <b>changes</b> that. //<br>Attendees arrive / having <b>already</b> digested your proposal, / with <b>considered</b> questions / instead of <b>improvised</b> ones. //<br>The meeting becomes a discussion / of the <b>hard</b> parts / rather than a <b>tour</b> / of the <b>basics</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "明天要在评审会上申请扩容预算。用 30 秒口头说出你会前材料开头的“诉求两行”和关键内容。",
+      "ref": "The first two lines will say: we're asking for approval to add twenty percent more GPU capacity next quarter, at a cost of about fifteen thousand dollars a month. Below that, I'll explain why: training jobs are waiting an average of six hours. I'll list the two alternatives we rejected, and the main risk, which is low usage over holidays, with our plan to release capacity if that happens.",
+      "ref_zh": "头两行会这么写：我们申请下个季度增加百分之二十的 GPU 算力，成本大约每月一万五千美元。下面我会解释原因：训练任务平均要排队六个小时。我会列出我们否掉的两个备选方案，以及主要风险，也就是节假日期间利用率低，还有万一出现这种情况我们释放算力的方案。"
+    },
+    {
+      "q": "评审会前一天，你想先和最可能反对的财务同事沟通。用 30 秒打这个招呼。",
+      "ref": "Hi Grace, do you have five minutes? Tomorrow I'm presenting the storage migration proposal, and I'm sending the one-page pre-read this afternoon. Since the cost section matters most to you, I wanted to walk you through it first. Is there anything in the numbers that would stop you from supporting it? I'd much rather fix it today than discover it in the room.",
+      "ref_zh": "Grace 你好，有五分钟吗？明天我要讲存储迁移的方案，今天下午会把一页纸的会前材料发出来。成本部分对你最重要，所以我想先带你过一遍。这些数字里有没有什么会让你没法支持的？我宁愿今天就改好，也不想在会上才发现。"
+    }
+  ],
+  "words": [
+    {
+      "w": "digest (v.)",
+      "ipa": "/daɪˈdʒest/",
+      "zh": "消化、理解吸收",
+      "ex": "Give people a day to digest the proposal before we vote.",
+      "tts_w": "digest"
+    },
+    {
+      "w": "improvise",
+      "ipa": "/ˈɪmprəˌvaɪz/",
+      "zh": "即兴发挥、临时应付",
+      "ex": "The demo crashed, so I had to improvise with screenshots."
+    },
+    {
+      "w": "tour",
+      "ipa": "/tʊr/",
+      "zh": "（逐一的）介绍、巡览",
+      "ex": "She gave the new hires a quick tour of the codebase."
+    },
+    {
+      "w": "grasp (v.)",
+      "ipa": "/ɡræsp/",
+      "zh": "理解、领会",
+      "ex": "It took me a while to grasp how the billing system works.",
+      "tts_w": "grasp"
+    },
+    {
+      "w": "alternative",
+      "ipa": "/ɔːlˈtɜːrnətɪv/",
+      "zh": "备选方案",
+      "ex": "We looked at two alternatives, but both cost more to run."
+    },
+    {
+      "w": "safeguard",
+      "ipa": "/ˈseɪfˌɡɑːrd/",
+      "zh": "保障措施",
+      "ex": "As a safeguard, the old system will stay online for a month."
+    },
+    {
+      "w": "pre-read",
+      "ipa": "/ˈpriː ˌriːd/",
+      "zh": "会前阅读材料",
+      "ex": "Please review the pre-read before Thursday's architecture review."
+    },
+    {
+      "w": "heads-up",
+      "ipa": "/ˈhedz ˌʌp/",
+      "zh": "提前打招呼、预先提醒",
+      "ex": "Just a heads-up: the release might slip by a day."
+    },
+    {
+      "w": "attendee",
+      "ipa": "/əˌtenˈdiː/",
+      "zh": "与会者",
+      "ex": "All attendees should have edit access to the doc."
+    }
+  ]
+}

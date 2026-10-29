@@ -1,0 +1,188 @@
+{
+  "id": "092",
+  "title": "Asking Someone to Repeat Without Embarrassment",
+  "meta": "B2 · 约 290 词 · 场景：请人重复",
+  "voice": "en-SG-WayneNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Cost of Nodding Along",
+      "paragraphs": [
+        [
+          "Almost everyone in a global team has done it.",
+          "A colleague speaks quickly, with an accent you are not used to, and you miss a key word.",
+          "Instead of asking, you __nod along__ and hope it becomes clear later."
+        ],
+        [
+          "Sometimes it does.",
+          "Often it does not, and the ==misunderstanding== shows up weeks later as the wrong feature or a missed deadline.",
+          "**Pretending to understand feels polite in the moment, but it is the least polite choice in the long run.**"
+        ],
+        [
+          "Asking someone to repeat is not a sign of weak English.",
+          "Native speakers do it all the time, and they rarely ==apologize== for it.",
+          "The difference is that they ask in a ==targeted== way that makes repeating easy."
+        ]
+      ],
+      "heading_zh": "1. 跟着点头的代价",
+      "paragraphs_zh": [
+        [
+          "在全球化团队里，几乎每个人都干过这种事。",
+          "同事语速很快，带着你不熟的口音，你漏听了一个关键词。",
+          "你没开口问，而是跟着点头，指望之后自然就明白了。"
+        ],
+        [
+          "有时候确实会明白。",
+          "但更多时候不会，几周后这个误解就冒出来了，变成做错的功能或者错过的 deadline。",
+          "假装听懂，当下显得很礼貌，但长远看是最不礼貌的选择。"
+        ],
+        [
+          "请别人重复一遍，并不说明你英语差。",
+          "母语者天天这么干，而且很少为此道歉。",
+          "区别在于，他们问得很有针对性，让对方很容易重复。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Ask for the Missing Piece",
+      "paragraphs": [
+        [
+          "Instead of a general \"Sorry?\", repeat the part you did catch and ask for the rest.",
+          "\"You said the release moves to Thursday, and then what was the second part?\"",
+          "This shows you were listening and tells the speaker exactly what to ==clarify==."
+        ],
+        [
+          "If a single word is the problem, ask about that word.",
+          "\"Sorry, did you say fifty or fifteen?\" or \"Could you spell the name of that service?\"",
+          "Numbers and names are the most common ==trouble spots==, so it is worth checking them every time."
+        ],
+        [
+          "**Blame the line, not the person.**",
+          "\"The audio __cut out__ for a second\" or \"I think I missed that because of the noise here\" __takes the pressure off__ both of you.",
+          "Nobody has to feel that their accent is the problem, even if it partly is."
+        ],
+        [
+          "Finally, if you are still not sure, __play it back__ in your own words.",
+          "\"Just to confirm, you need the report by Friday, not Monday, right?\"",
+          "It takes five seconds and saves a week of ==rework==."
+        ]
+      ],
+      "heading_zh": "2. 只问漏掉的那一块",
+      "paragraphs_zh": [
+        [
+          "别笼统地来一句「Sorry？」，而是把你听到的那部分复述出来，再问剩下的。",
+          "「你说发布挪到周四，然后第二点是什么来着？」",
+          "这说明你在认真听，也让对方清楚该澄清哪一块。"
+        ],
+        [
+          "如果只是某一个词没听清，就只问那个词。",
+          "「不好意思，你说的是五十还是十五？」或者「那个服务的名字能拼一下吗？」",
+          "数字和名字是最容易出岔子的地方，所以每次都值得确认一下。"
+        ],
+        [
+          "怪线路，别怪人。",
+          "「刚才声音断了一下」或者「我这边太吵，好像没听到」，能给你们俩都减点压力。",
+          "谁都不用觉得是自己的口音有问题，哪怕确实有一部分原因在这儿。"
+        ],
+        [
+          "最后，如果还是不确定，就用自己的话复述一遍。",
+          "「我确认一下，报告是周五要，不是周一，对吧？」",
+          "花五秒钟，能省下一周的返工。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么假装听懂是最不礼貌的选择？",
+      "a": "当下看似礼貌，但误解几周后会变成做错的功能或错过的截止日期。"
+    },
+    {
+      "q": "比起笼统的 \"Sorry?\"，作者建议怎么请人重复？",
+      "a": "复述你听到的部分，只问没听清的那部分；单个词就问那个词，数字和名字一定要核对。"
+    },
+    {
+      "q": "“怪线路不怪人”和最后一步分别指什么？",
+      "a": "把没听清归因于音频或噪音，减轻双方压力；最后用自己的话复述确认，五秒钟省掉一周返工。"
+    }
+  ],
+  "dictation": [
+    "Pretending to understand feels polite in the moment, but it is the least polite choice in the long run.",
+    "Asking someone to repeat is not a sign of weak English.",
+    "Blame the line, not the person.",
+    "It takes five seconds and saves a week of rework."
+  ],
+  "shadow": {
+    "text": "Instead of a general \"Sorry?\", repeat the part you did catch and ask for the rest. \"You said the release moves to Thursday, and then what was the second part?\" This shows you were listening and tells the speaker exactly what to clarify.",
+    "marked": "Instead of a general \"<b>Sorry</b>?\", / repeat the part you <b>did</b> catch / and ask for the <b>rest</b>. //<br>\"You said the release moves to <b>Thursday</b>, / and then what was the <b>second</b> part?\" //<br>This shows you were <b>listening</b> / and tells the speaker <b>exactly</b> / what to <b>clarify</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "印度同事在会上语速很快地说了一大段，你只听到 migrate the database 和 next sprint，中间没听清。精准地请他重复，30 秒。",
+      "ref": "Sorry, Rahul, I want to make sure I got that right. You said we need to migrate the database in the next sprint, but I missed the part in the middle. Was it the user database or the logging one? And who's doing the migration? The audio dropped a little on my side.",
+      "ref_zh": "不好意思 Rahul，我想确认一下我理解得对不对。你说我们下个 sprint 要迁移数据库，但中间那部分我没听到。是用户库还是日志库？迁移由谁来做？我这边刚才声音有点断。"
+    },
+    {
+      "q": "电话里合作方说了一个数字，你不确定是 fifteen 还是 fifty，截止时间也没听清。用复述来确认。",
+      "ref": "Sorry, the line's a bit unclear on my end. Did you say fifteen thousand requests or fifty thousand? Fifty, got it, thanks. And just to confirm the timing, you need the first version by the end of this month, not the end of next month, right? Great, I'll send a short summary after the call.",
+      "ref_zh": "不好意思，我这边信号不太清楚。你说的是一万五千次请求还是五万次？五万，好的，谢谢。时间上我也确认一下，第一版是这个月底要，不是下个月底，对吧？好，挂了电话我发个简短的纪要。"
+    }
+  ],
+  "words": [
+    {
+      "w": "misunderstanding",
+      "ipa": "/ˌmɪsʌndərˈstændɪŋ/",
+      "zh": "误解",
+      "ex": "The delay came from a misunderstanding about who owned the API."
+    },
+    {
+      "w": "apologize",
+      "ipa": "/əˈpɑːləˌdʒaɪz/",
+      "zh": "道歉",
+      "ex": "No need to apologize, just send the numbers when you have them."
+    },
+    {
+      "w": "targeted",
+      "ipa": "/ˈtɑːrɡɪtɪd/",
+      "zh": "有针对性的",
+      "ex": "Instead of a general reminder, send a targeted message to the two owners."
+    },
+    {
+      "w": "clarify",
+      "ipa": "/ˈklerəˌfaɪ/",
+      "zh": "澄清、说明",
+      "ex": "Could you clarify whether this applies to all regions?"
+    },
+    {
+      "w": "trouble spot",
+      "ipa": "/ˈtrʌbəl spɑːt/",
+      "zh": "容易出问题的地方",
+      "ex": "Time zone conversion is a classic trouble spot in our scheduler."
+    },
+    {
+      "w": "rework",
+      "ipa": "/ˈriːˌwɜːrk/",
+      "zh": "返工",
+      "ex": "Unclear specs lead to weeks of rework."
+    },
+    {
+      "w": "nod along",
+      "ipa": "/nɑːd əˈlɔːŋ/",
+      "zh": "跟着点头（假装听懂）",
+      "ex": "I nodded along, but honestly I lost him after the second slide."
+    },
+    {
+      "w": "cut out",
+      "ipa": "/kʌt aʊt/",
+      "zh": "（声音）断掉",
+      "ex": "Your audio keeps cutting out, could you turn off your video?"
+    },
+    {
+      "w": "catch (v.)",
+      "ipa": "/kætʃ/",
+      "zh": "听清、听到",
+      "ex": "Sorry, I didn't catch the last part, could you say it again?",
+      "tts_w": "catch"
+    }
+  ]
+}

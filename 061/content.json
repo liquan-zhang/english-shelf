@@ -1,0 +1,182 @@
+{
+  "id": "061",
+  "title": "The First Ten Minutes of an Incident",
+  "meta": "B2 · 约 260 词 · 场景：故障响应",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Instinct to Debug",
+      "paragraphs": [
+        [
+          "When an alert fires at two in the morning, every engineer wants to open the logs.",
+          "That instinct is healthy, but in the first ten minutes it is often the wrong job.",
+          "Five people debugging in five different directions is not a response; it is ==noise==."
+        ],
+        [
+          "The real danger early on is confusion about who is doing what.",
+          "Two people restart the same service, a third ==escalates== to the wrong team, and nobody tells the PM.",
+          "**Most incidents get worse because of coordination, not because of code.**"
+        ],
+        [
+          "So before anyone touches production, somebody needs to __take charge__.",
+          "That person does not have to be the most senior engineer on the call.",
+          "They just need to ==claim== the role out loud and __stick with it__."
+        ]
+      ],
+      "heading_zh": "1. 想立刻排查的本能",
+      "paragraphs_zh": [
+        [
+          "凌晨两点告警一响，每个工程师的第一反应都是去翻日志。",
+          "这个本能没毛病，但在头十分钟里，这往往不是该干的事。",
+          "五个人朝五个方向各查各的，那不叫响应，那叫添乱。"
+        ],
+        [
+          "初期真正的风险，是谁在干什么没人说得清。",
+          "两个人重启了同一个服务，第三个人升级给了错的团队，还没人通知 PM。",
+          "大多数故障越搞越大，问题出在协同上，而不是代码上。"
+        ],
+        [
+          "所以在任何人动线上之前，得有一个人站出来扛指挥。",
+          "这个人不一定是会上资历最深的工程师。",
+          "他只需要大声把这个角色认下来，并且一直担到底。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. What the Lead Says First",
+      "paragraphs": [
+        [
+          "**The incident lead's first job is to make the situation visible, not to fix it.**",
+          "Open one channel, and ask everyone to __post updates there__ instead of in private messages.",
+          "Then assign two roles: one person investigates, and one person communicates."
+        ],
+        [
+          "Next, state what you know and what you don't.",
+          "\"Checkout errors are up since the ten o'clock release; we don't know yet if the release caused it.\"",
+          "That single sentence stops people from ==speculating== and gives them a shared starting point.",
+          "If a rollback is a safe ==mitigation==, try it before you understand the root cause."
+        ],
+        [
+          "Finally, __set a rhythm__.",
+          "Promise the next update in fifteen minutes, even if there is nothing new to report.",
+          "A ==predictable== update tells managers they can stop pinging the engineers.",
+          "Silence during an outage feels like chaos, even when the team is making progress."
+        ]
+      ],
+      "heading_zh": "2. 指挥第一句说什么",
+      "paragraphs_zh": [
+        [
+          "故障指挥的第一件事是让局面透明，而不是去修。",
+          "开一个群，让所有人都在里面同步进展，别私聊。",
+          "然后定两个角色：一个人负责排查，一个人负责对外沟通。"
+        ],
+        [
+          "接下来，说清楚哪些是已知的，哪些还不知道。",
+          "「十点那次发版之后下单报错上涨了；还不确定是不是发版导致的。」",
+          "就这一句话，能让大家不再瞎猜，有一个共同的起点。",
+          "如果回滚是安全的止血手段，那就在搞清根因之前先回滚。"
+        ],
+        [
+          "最后，定好节奏。",
+          "承诺十五分钟后同步下一次进展，哪怕到时候没有新消息。",
+          "有规律的同步能让领导们知道，不用再去追着工程师问了。",
+          "故障期间一沉默，大家就觉得一团乱，哪怕团队其实在推进。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为故障前十分钟最大的危险是什么？",
+      "a": "不是代码本身，而是协调混乱：没人知道谁在做什么，重复操作、升级错人、没人通知 PM。"
+    },
+    {
+      "q": "故障负责人的第一件事是什么？",
+      "a": "让局面可见而不是亲自修：开一个统一频道，分出排查和沟通两个角色。"
+    },
+    {
+      "q": "为什么要固定节奏发更新，哪怕没有新进展？",
+      "a": "可预期的更新让管理者不再去追问工程师；沉默会让人觉得一片混乱。"
+    }
+  ],
+  "dictation": [
+    "Most incidents get worse because of coordination, not because of code.",
+    "The incident lead's first job is to make the situation visible, not to fix it.",
+    "If a rollback is a safe mitigation, try it before you understand the root cause.",
+    "Silence during an outage feels like chaos, even when the team is making progress."
+  ],
+  "shadow": {
+    "text": "Next, state what you know and what you don't. \"Checkout errors are up since the ten o'clock release; we don't know yet if the release caused it.\" That single sentence stops people from speculating and gives them a shared starting point.",
+    "marked": "Next, / state what you <b>know</b> / and what you <b>don't</b>. //<br>\"Checkout <b>errors</b> are up / since the <b>ten</b> o'clock release; / we <b>don't</b> know yet / if the release <b>caused</b> it.\" //<br>That <b>single</b> sentence / stops people from <b>speculating</b> / and gives them a <b>shared</b> starting point. //"
+  },
+  "prompts": [
+    {
+      "q": "凌晨告警，群里五个人各自在查、各说各的。你决定站出来当指挥。用 30 秒接管：宣布角色、说清已知和未知、定下一次更新时间。",
+      "ref": "Okay, everyone, I'll run this incident. Let's keep all updates in this channel, please, not in private messages. Mei, you investigate; Tom, you handle communication with support and the PM. Here's what we know: login errors started around one forty, right after the config push. We don't know yet if the push caused it. Let's roll back the config first, and I'll post the next update in fifteen minutes.",
+      "ref_zh": "好，大家听一下，这次故障我来指挥。所有进展都同步在这个群里，别私聊。Mei 你负责排查；Tom 你负责跟客服和 PM 沟通。目前已知的是：登录报错大概从一点四十开始，正好在配置推送之后。还不确定是不是这次推送导致的。我们先把配置回滚，我十五分钟后同步下一次进展。"
+    },
+    {
+      "q": "故障复盘会上，有人说“下次大家都赶紧查日志就行了”。用 30 秒说明为什么前十分钟应该先定角色而不是先查。",
+      "ref": "I understand the instinct, and fast debugging matters. But last night, three of us restarted the same service and nobody told the PM for twenty minutes. The code wasn't the slow part; the coordination was. So I'd suggest a simple rule: in the first few minutes, someone claims the lead role, opens one channel and assigns an investigator and a communicator. Then everyone else debugs.",
+      "ref_zh": "我理解这种本能，快速排查确实重要。但昨晚我们三个人重启了同一个服务，二十分钟都没人通知 PM。慢的不是代码，是协同。所以我建议定个简单的规矩：前几分钟先有人认领指挥角色，开一个群，指定一个排查的、一个沟通的。然后其他人再去查。"
+    }
+  ],
+  "words": [
+    {
+      "w": "noise",
+      "ipa": "/nɔɪz/",
+      "zh": "噪音；无用的干扰信息",
+      "ex": "Half of these alerts are noise, so the real one got missed."
+    },
+    {
+      "w": "escalate",
+      "ipa": "/ˈeskəˌleɪt/",
+      "zh": "升级（问题上报）",
+      "ex": "If the database team doesn't respond in ten minutes, escalate to their manager."
+    },
+    {
+      "w": "claim (v.)",
+      "ipa": "/kleɪm/",
+      "zh": "认领、主动承担",
+      "ex": "Can someone claim this ticket before the end of the day?",
+      "tts_w": "claim"
+    },
+    {
+      "w": "speculate",
+      "ipa": "/ˈspekjəˌleɪt/",
+      "zh": "猜测、推测",
+      "ex": "Let's not speculate about the cause until we see the logs."
+    },
+    {
+      "w": "mitigation",
+      "ipa": "/ˌmɪtɪˈɡeɪʃən/",
+      "zh": "缓解措施、止损手段",
+      "ex": "Turning off the new feature flag is our fastest mitigation."
+    },
+    {
+      "w": "predictable",
+      "ipa": "/prɪˈdɪktəbəl/",
+      "zh": "可预期的",
+      "ex": "Stakeholders care more about predictable updates than perfect ones."
+    },
+    {
+      "w": "coordination",
+      "ipa": "/koʊˌɔːrdɪˈneɪʃən/",
+      "zh": "协调",
+      "ex": "The outage lasted longer because of poor coordination between teams."
+    },
+    {
+      "w": "assign",
+      "ipa": "/əˈsaɪn/",
+      "zh": "分配、指派",
+      "ex": "I'll assign the follow-up items after the call."
+    },
+    {
+      "w": "instinct",
+      "ipa": "/ˈɪnstɪŋkt/",
+      "zh": "本能、直觉",
+      "ex": "My first instinct was to restart the pod, but I checked the metrics first."
+    }
+  ]
+}

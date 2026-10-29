@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Disagreeing with Your Manager in a One-on-One · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "036", "title": "Disagreeing with Your Manager in a One-on-One", "meta": "B2 · 约 260 词 · 场景：一对一", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Right Room for It", "heading_zh": "1. 选对场合", "rows": [[{"id": "s0_0_0", "md": "Your manager has decided to merge two teams, and you think it is a mistake.", "text": "Your manager has decided to merge two teams, and you think it is a mistake.", "zh": "你的经理决定把两个团队合并，而你觉得这是个错误。", "sp": null}, {"id": "s0_0_1", "md": "You could say nothing, complain to your peers, or raise it at the next ==all-hands==.", "text": "You could say nothing, complain to your peers, or raise it at the next all-hands.", "zh": "你可以什么都不说，可以跟同事吐槽，也可以在下一次全员大会上提出来。", "sp": null}, {"id": "s0_0_2", "md": "All three options are worse than a quiet conversation in your one-on-one.", "text": "All three options are worse than a quiet conversation in your one-on-one.", "zh": "这三种做法，都不如在 1:1 里私下好好聊一聊。", "sp": null}], [{"id": "s0_1_0", "md": "In private, your manager can change their mind without __losing face__.", "text": "In private, your manager can change their mind without losing face.", "zh": "私下里，经理改主意不会丢面子。", "sp": null}, {"id": "s0_1_1", "md": "In public, even a good point can feel like a challenge to their ==authority==.", "text": "In public, even a good point can feel like a challenge to their authority.", "zh": "当着大家的面，哪怕是一个好意见，也可能让人觉得是在挑战他的权威。", "sp": null}, {"id": "s0_1_2", "md": "**Disagree in private, early, and with specifics; support in public once it is decided.**", "text": "Disagree in private, early, and with specifics; support in public once it is decided.", "zh": "反对要私下提、早点提、具体地提；一旦定了，就在公开场合支持。", "sp": null}], [{"id": "s0_2_0", "md": "Timing matters too.", "text": "Timing matters too.", "zh": "时机也很重要。", "sp": null}, {"id": "s0_2_1", "md": "A concern raised before an announcement can still shape the plan.", "text": "A concern raised before an announcement can still shape the plan.", "zh": "在宣布之前提出顾虑，还有机会影响方案。", "sp": null}, {"id": "s0_2_2", "md": "After the announcement, the same concern sounds like ==resistance==, and your manager now has to __walk back__ something they said to the whole group.", "text": "After the announcement, the same concern sounds like resistance, and your manager now has to walk back something they said to the whole group.", "zh": "宣布之后再提同样的顾虑，听起来就像是在抵触，而经理也得把已经对全组说出口的话收回来。", "sp": null}]]}, {"heading": "2. Ask, Show, Listen", "heading_zh": "2. 先问、再摆事实、再听", "rows": [[{"id": "s1_0_0", "md": "Begin by asking for permission: \"Can I push back on something?\"", "text": "Begin by asking for permission: \"Can I push back on something?\"", "zh": "开头先征得同意：「我能对一件事提点不同意见吗？」", "sp": null}, {"id": "s1_0_1", "md": "It sounds small, but it __signals respect__ and gets your manager ready to listen.", "text": "It sounds small, but it signals respect and gets your manager ready to listen.", "zh": "这听起来是件小事，但它传递了尊重，也让经理做好了倾听的准备。", "sp": null}, {"id": "s1_0_2", "md": "Most managers will say yes, and now the disagreement is something they invited.", "text": "Most managers will say yes, and now the disagreement is something they invited.", "zh": "大多数经理都会说可以，这样一来，这次反对就成了他自己邀请来的。", "sp": null}], [{"id": "s1_1_0", "md": "Then describe what you see, not what you feel.", "text": "Then describe what you see, not what you feel.", "zh": "然后描述你看到的事实，而不是你的感受。", "sp": null}, {"id": "s1_1_1", "md": "\"If we merge the teams in March, both ==roadmaps== slip, and the on-call ==rotation== doubles for half the engineers.\"", "text": "\"If we merge the teams in March, both roadmaps slip, and the on-call rotation doubles for half the engineers.\"", "zh": "「如果三月份合并团队，两边的 roadmap 都会延期，一半工程师的 on-call 轮值会翻倍。」", "sp": null}, {"id": "s1_1_2", "md": "Facts about impact are much harder to __brush aside__ than \"I don't think this is a good idea.\"", "text": "Facts about impact are much harder to brush aside than \"I don't think this is a good idea.\"", "zh": "关于影响的事实，比一句「我觉得这不是个好主意」难糊弄过去得多。", "sp": null}], [{"id": "s1_2_0", "md": "Finish with a real question: \"What am I missing?\"", "text": "Finish with a real question: \"What am I missing?\"", "zh": "最后真诚地问一句：「我是不是漏了什么？」", "sp": null}, {"id": "s1_2_1", "md": "Your manager may know about budget cuts or a reorganization you cannot see yet.", "text": "Your manager may know about budget cuts or a reorganization you cannot see yet.", "zh": "你的经理可能知道一些你还看不到的预算削减或者组织调整。", "sp": null}, {"id": "s1_2_2", "md": "**Sometimes the best result of disagreeing is learning why you were wrong.**", "text": "Sometimes the best result of disagreeing is learning why you were wrong.", "zh": "有时候，提反对意见最好的结果，是搞明白自己为什么错了。", "sp": null}], [{"id": "s1_3_0", "md": "If the decision stands, say so out loud: \"Okay, I'll make it work.\"", "text": "If the decision stands, say so out loud: \"Okay, I'll make it work.\"", "zh": "如果决定不变，就明确说出来：「好，我来把它落地。」", "sp": null}, {"id": "s1_3_1", "md": "Then actually do it, without ==hinting== to your team that you were against it.", "text": "Then actually do it, without hinting to your team that you were against it.", "zh": "然后真的去做，别在团队面前暗示你当初是反对的。", "sp": null}]]}], "gist": [{"q": "为什么一对一是表达不同意的合适场合？", "a": "私下里经理可以改主意而不丢面子；公开场合再好的意见也像在挑战他的权威。"}, {"q": "为什么时机很重要？", "a": "宣布之前提的顾虑还能影响计划；宣布之后同样的话听起来像抵触，经理还得当众收回说过的话。"}, {"q": "在一对一里不同意经理的三步是什么？最后要做到什么？", "a": "先征求许可（「我能提个不同意见吗」）；讲具体影响而不是感受；问「我漏掉了什么」。如果决定不变，明确表态支持并真的执行，不向团队暗示自己反对。"}], "dictation": [{"id": "s0_1_2", "text": "Disagree in private, early, and with specifics; support in public once it is decided."}, {"id": "s1_2_2", "text": "Sometimes the best result of disagreeing is learning why you were wrong."}, {"id": "s0_2_1", "text": "A concern raised before an announcement can still shape the plan."}, {"id": "s1_1_0", "text": "Then describe what you see, not what you feel."}], "shadow": {"text": "Finish with a real question: \"What am I missing?\" Your manager may know about budget cuts or a reorganization you cannot see yet. Sometimes the best result of disagreeing is learning why you were wrong.", "marked": "Finish with a <b>real</b> question: / \"What am <b>I</b> missing?\" //<br>Your manager may know about <b>budget cuts</b> / or a <b>reorganization</b> / you cannot see <b>yet</b>. //<br>Sometimes the <b>best</b> result of disagreeing / is learning <b>why</b> you were <b>wrong</b>. //"}, "prompts": [{"q": "经理计划把你团队最资深的工程师调去支援另一个项目。在一对一里用 30 秒表达不同意：先征求许可，讲具体影响，再问你漏掉了什么。", "ref": "Can I push back on something? I'm worried about moving Wei to the search project next month. He's the only person who knows the billing service well, and we have the tax migration in April. Without him, I think that slips by at least three weeks, and on-call gets thinner. But I may not have the full picture. What am I missing about why search needs him now?", "ref_zh": "我能对一件事提点不同意见吗？我有点担心下个月把 Wei 调去搜索项目。他是唯一一个对计费服务很熟的人，而我们四月份还有税务迁移。没有他，我觉得那个项目至少要延期三周，on-call 的人手也会更紧。不过我可能了解得不全面。搜索项目为什么现在就需要他，我是不是漏了什么？", "id": "ref0"}, {"q": "你在一对一里反对过，但经理还是维持了原决定。用 30 秒表态支持，并说明你接下来会怎么做。", "ref": "Okay, thanks for explaining the budget side, that helps. I still have some concerns about the timeline, but I understand why we're doing it, and I'll make it work. I'll talk to the team this week and present it as our plan, not yours. I'll also flag early if the April date starts to look risky, so we can adjust before it becomes a problem.", "ref_zh": "好的，谢谢你把预算那边的情况讲清楚，这很有帮助。我对时间线还是有些顾虑，但我理解我们为什么要这么做，我会把它落地。这周我会跟团队沟通，把它当作我们的计划来讲，而不是你的。如果四月份的时间点开始有风险，我也会提前预警，这样我们能在问题出现之前调整。", "id": "ref1"}], "words": [{"w": "all-hands", "ipa": "/ˈɔːl hændz/", "zh": "全员大会", "ex": "The reorg will be announced at Friday's all-hands.", "tts_w": "all hands", "tts": "The reorganization will be announced at Friday's all hands.", "id": "w0"}, {"w": "authority", "ipa": "/əˈθɔːrəti/", "zh": "权威、职权", "ex": "She has the authority to approve the extra headcount.", "id": "w1"}, {"w": "resistance", "ipa": "/rɪˈzɪstəns/", "zh": "抵触、阻力", "ex": "We met some resistance when we proposed a code freeze.", "id": "w2"}, {"w": "roadmap", "ipa": "/ˈroʊdmæp/", "zh": "路线图", "ex": "This request isn't on our roadmap until next quarter.", "id": "w3"}, {"w": "rotation", "ipa": "/roʊˈteɪʃən/", "zh": "轮值", "ex": "With two people out, the on-call rotation is every other week.", "id": "w4"}, {"w": "hint (v.)", "ipa": "/hɪnt/", "zh": "暗示", "ex": "He hinted that the launch might move, but nothing is confirmed.", "tts_w": "hint", "id": "w5"}, {"w": "lose face", "ipa": "/luːz ˈfeɪs/", "zh": "丢面子", "ex": "Give him a way to change the plan without losing face.", "id": "w6"}, {"w": "reorganization", "ipa": "/riˌɔːrɡənəˈzeɪʃən/", "zh": "组织调整", "ex": "After the reorganization, our team reports to a new director.", "id": "w7"}, {"w": "brush aside", "ipa": "/ˌbrʌʃ əˈsaɪd/", "zh": "无视、不理会", "ex": "Don't brush aside the security team's concerns.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Right Room for It", "zh": "1. 选对场合", "start": 0.0, "end": 1.92, "words": [[0.105, 0.316], [0.618, 0.697], [0.711, 0.947], [0.961, 1.132], [1.145, 1.368], [1.382, 1.526]]}, {"kind": "s", "id": "s0_0_0", "md": "Your manager has decided to merge two teams, and you think it is a mistake.", "zh": "你的经理决定把两个团队合并，而你觉得这是个错误。", "sp": null, "gap": false, "start": 1.92, "end": 6.696, "words": [[2.025, 2.117], [2.131, 2.578], [2.591, 2.775], [2.788, 3.302], [3.315, 3.394], [3.407, 3.802], [3.815, 4.038], [4.052, 4.657], [4.933, 5.038], [5.052, 5.183], [5.196, 5.459], [5.473, 5.552], [5.565, 5.67], [5.683, 5.723], [5.736, 6.315]]}, {"kind": "s", "id": "s0_0_1", "md": "You could say nothing, complain to your peers, or raise it at the next ==all-hands==.", "zh": "你可以什么都不说，可以跟同事吐槽，也可以在下一次全员大会上提出来。", "sp": null, "gap": false, "start": 6.696, "end": 11.712, "words": [[6.801, 6.893], [6.907, 7.038], [7.051, 7.275], [7.288, 7.788], [8.064, 8.459], [8.472, 8.564], [8.578, 8.709], [8.722, 9.249], [9.525, 9.722], [9.735, 10.025], [10.038, 10.104], [10.117, 10.196], [10.209, 10.275], [10.288, 10.617], [10.63, 11.328]]}, {"kind": "s", "id": "s0_0_2", "md": "All three options are worse than a quiet conversation in your one-on-one.", "zh": "这三种做法，都不如在 1:1 里私下好好聊一聊。", "sp": null, "gap": false, "start": 11.712, "end": 16.392, "words": [[11.817, 12.001], [12.015, 12.291], [12.304, 12.752], [12.765, 12.909], [12.923, 13.357], [13.462, 13.594], [13.607, 13.659], [13.673, 14.094], [14.107, 14.923], [15.067, 15.172], [15.186, 15.33], [15.344, 16.001]]}, {"kind": "s", "id": "s0_1_0", "md": "In private, your manager can change their mind without __losing face__.", "zh": "私下里，经理改主意不会丢面子。", "sp": null, "gap": true, "start": 16.392, "end": 20.808, "words": [[16.497, 16.589], [16.603, 17.076], [17.405, 17.497], [17.51, 17.958], [17.971, 18.142], [18.155, 18.537], [18.55, 18.695], [18.708, 19.076], [19.089, 19.524], [19.537, 19.853], [19.866, 20.418]]}, {"kind": "s", "id": "s0_1_1", "md": "In public, even a good point can feel like a challenge to their ==authority==.", "zh": "当着大家的面，哪怕是一个好意见，也可能让人觉得是在挑战他的权威。", "sp": null, "gap": false, "start": 20.808, "end": 25.2, "words": [[20.913, 21.018], [21.032, 21.505], [21.834, 22.045], [22.058, 22.124], [22.137, 22.413], [22.426, 22.755], [22.769, 22.913], [22.926, 23.242], [23.255, 23.413], [23.426, 23.466], [23.479, 23.979], [23.992, 24.084], [24.097, 24.255], [24.269, 24.808]]}, {"kind": "s", "id": "s0_1_2", "md": "**Disagree in private, early, and with specifics; support in public once it is decided.**", "zh": "反对要私下提、早点提、具体地提；一旦定了，就在公开场合支持。", "sp": null, "gap": false, "start": 25.2, "end": 31.56, "words": [[25.305, 25.845], [25.858, 25.976], [25.989, 26.516], [26.95, 27.358], [27.661, 27.779], [27.792, 27.937], [27.95, 28.845], [29.095, 29.489], [29.503, 29.608], [29.621, 30.042], [30.121, 30.371], [30.384, 30.463], [30.476, 30.582], [30.595, 31.174]]}, {"kind": "s", "id": "s0_2_0", "md": "Timing matters too.", "zh": "时机也很重要。", "sp": null, "gap": true, "start": 31.56, "end": 33.432, "words": [[31.665, 31.915], [31.928, 32.297], [32.31, 32.599]]}, {"kind": "s", "id": "s0_2_1", "md": "A concern raised before an announcement can still shape the plan.", "zh": "在宣布之前提出顾虑，还有机会影响方案。", "sp": null, "gap": false, "start": 33.432, "end": 37.392, "words": [[33.537, 33.59], [33.603, 34.156], [34.169, 34.485], [34.498, 34.879], [34.893, 34.958], [34.971, 35.564], [35.695, 35.84], [35.853, 36.142], [36.156, 36.458], [36.471, 36.55], [36.564, 36.998]]}, {"kind": "s", "id": "s0_2_2", "md": "After the announcement, the same concern sounds like ==resistance==, and your manager now has to __walk back__ something they said to the whole group.", "zh": "宣布之后再提同样的顾虑，听起来就像是在抵触，而经理也得把已经对全组说出口的话收回来。", "sp": null, "gap": false, "start": 37.392, "end": 45.528, "words": [[37.497, 37.76], [37.774, 37.866], [37.879, 38.51], [38.826, 38.918], [38.931, 39.221], [39.234, 39.747], [39.76, 40.129], [40.142, 40.313], [40.326, 41.063], [41.339, 41.458], [41.471, 41.589], [41.603, 42.103], [42.287, 42.563], [42.576, 42.787], [42.8, 42.879], [42.892, 43.274], [43.287, 43.55], [43.563, 43.905], [43.918, 44.024], [44.037, 44.339], [44.353, 44.418], [44.431, 44.524], [44.537, 44.774], [44.787, 45.129]]}, {"kind": "h", "id": "h1", "md": "2. Ask, Show, Listen", "zh": "2. 先问、再摆事实、再听", "start": 45.528, "end": 47.808, "words": [[45.646, 45.857], [46.344, 46.686], [46.791, 46.989], [47.015, 47.423]]}, {"kind": "s", "id": "s1_0_0", "md": "Begin by asking for permission: \"Can I push back on something?\"", "zh": "开头先征得同意：「我能对一件事提点不同意见吗？」", "sp": null, "gap": false, "start": 47.808, "end": 51.72, "words": [[47.913, 48.203], [48.216, 48.4], [48.413, 48.861], [48.874, 49.019], [49.032, 49.545], [49.979, 50.124], [50.137, 50.203], [50.216, 50.479], [50.492, 50.742], [50.755, 50.874], [50.887, 51.295]]}, {"kind": "s", "id": "s1_0_1", "md": "It sounds small, but it __signals respect__ and gets your manager ready to listen.", "zh": "这听起来是件小事，但它传递了尊重，也让经理做好了倾听的准备。", "sp": null, "gap": false, "start": 51.72, "end": 56.76, "words": [[51.825, 51.917], [51.931, 52.312], [52.325, 52.799], [53.088, 53.207], [53.22, 53.312], [53.325, 53.799], [53.812, 54.365], [54.628, 54.746], [54.759, 54.996], [55.009, 55.128], [55.141, 55.615], [55.628, 55.825], [55.838, 55.931], [55.944, 56.365]]}, {"kind": "s", "id": "s1_0_2", "md": "Most managers will say yes, and now the disagreement is something they invited.", "zh": "大多数经理都会说可以，这样一来，这次反对就成了他自己邀请来的。", "sp": null, "gap": false, "start": 56.76, "end": 61.824, "words": [[56.865, 57.115], [57.128, 57.642], [57.655, 57.786], [57.799, 58.036], [58.049, 58.576], [58.865, 58.971], [58.984, 59.155], [59.168, 59.286], [59.299, 60.01], [60.299, 60.392], [60.405, 60.747], [60.76, 60.865], [60.878, 61.431]]}, {"kind": "s", "id": "s1_1_0", "md": "Then describe what you see, not what you feel.", "zh": "然后描述你看到的事实，而不是你的感受。", "sp": null, "gap": true, "start": 61.824, "end": 64.8, "words": [[61.942, 62.048], [62.061, 62.548], [62.561, 62.706], [62.719, 62.811], [62.824, 63.206], [63.64, 63.785], [63.798, 63.903], [63.916, 64.021], [64.035, 64.416]]}, {"kind": "s", "id": "s1_1_1", "md": "\"If we merge the teams in March, both ==roadmaps== slip, and the on-call ==rotation== doubles for half the engineers.\"", "zh": "「如果三月份合并团队，两边的 roadmap 都会延期，一半工程师的 on-call 轮值会翻倍。」", "sp": null, "gap": false, "start": 64.8, "end": 72.288, "words": [[64.984, 64.984], [65.063, 65.168], [65.182, 65.563], [65.576, 65.668], [65.682, 66.063], [66.076, 66.182], [66.195, 66.721], [66.932, 67.208], [67.221, 67.813], [67.826, 68.208], [68.603, 68.655], [68.668, 68.774], [68.787, 69.339], [69.353, 69.971], [69.984, 70.339], [70.353, 70.524], [70.537, 70.879], [70.892, 70.984], [70.997, 71.787]]}, {"kind": "s", "id": "s1_1_2", "md": "Facts about impact are much harder to __brush aside__ than \"I don't think this is a good idea.\"", "zh": "关于影响的事实，比一句「我觉得这不是个好主意」难糊弄过去得多。", "sp": null, "gap": false, "start": 72.288, "end": 77.904, "words": [[72.459, 72.709], [72.722, 72.985], [72.999, 73.538], [73.551, 73.67], [73.683, 73.959], [73.972, 74.301], [74.314, 74.393], [74.406, 74.735], [74.749, 75.222], [75.235, 75.433], [75.749, 75.814], [75.827, 76.077], [76.091, 76.42], [76.433, 76.67], [76.683, 76.788], [76.801, 76.854], [76.867, 77.025], [77.038, 77.512]]}, {"kind": "s", "id": "s1_2_0", "md": "Finish with a real question: \"What am I missing?\"", "zh": "最后真诚地问一句：「我是不是漏了什么？」", "sp": null, "gap": true, "start": 77.904, "end": 80.976, "words": [[78.075, 78.312], [78.325, 78.457], [78.47, 78.509], [78.522, 78.838], [78.851, 79.351], [79.786, 79.904], [79.917, 80.009], [80.022, 80.101], [80.115, 80.575]]}, {"kind": "s", "id": "s1_2_1", "md": "Your manager may know about budget cuts or a reorganization you cannot see yet.", "zh": "你的经理可能知道一些你还看不到的预算削减或者组织调整。", "sp": null, "gap": false, "start": 80.976, "end": 85.968, "words": [[81.081, 81.173], [81.187, 81.634], [81.647, 81.844], [81.858, 82.094], [82.108, 82.384], [82.397, 82.739], [82.752, 83.16], [83.358, 83.489], [83.502, 83.608], [83.621, 84.594], [84.608, 84.7], [84.713, 85.042], [85.055, 85.252], [85.265, 85.581]]}, {"kind": "s", "id": "s1_2_2", "md": "**Sometimes the best result of disagreeing is learning why you were wrong.**", "zh": "有时候，提反对意见最好的结果，是搞明白自己为什么错了。", "sp": null, "gap": false, "start": 85.968, "end": 90.312, "words": [[86.086, 86.534], [86.547, 86.665], [86.679, 87.021], [87.034, 87.442], [87.455, 87.56], [87.573, 88.297], [88.547, 88.665], [88.679, 89.007], [89.021, 89.271], [89.284, 89.429], [89.442, 89.573], [89.586, 89.929]]}, {"kind": "s", "id": "s1_3_0", "md": "If the decision stands, say so out loud: \"Okay, I'll make it work.\"", "zh": "如果决定不变，就明确说出来：「好，我来把它落地。」", "sp": null, "gap": true, "start": 90.312, "end": 95.52, "words": [[90.417, 90.522], [90.536, 90.615], [90.628, 91.115], [91.128, 91.667], [91.851, 92.088], [92.101, 92.417], [92.43, 92.628], [92.641, 92.97], [93.483, 93.878], [94.259, 94.404], [94.417, 94.615], [94.628, 94.72], [94.733, 95.115]]}, {"kind": "s", "id": "s1_3_1", "md": "Then actually do it, without ==hinting== to your team that you were against it.", "zh": "然后真的去做，别在团队面前暗示你当初是反对的。", "sp": null, "gap": false, "start": 95.52, "end": 99.72, "words": [[95.638, 95.809], [95.823, 96.244], [96.257, 96.494], [96.507, 96.652], [97.073, 97.428], [97.441, 97.77], [97.783, 97.888], [97.902, 98.033], [98.046, 98.349], [98.362, 98.481], [98.494, 98.586], [98.599, 98.717], [98.731, 99.125], [99.138, 99.323]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Sending Money Overseas · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "118", "type": "dialogue", "title": "Sending Money Overseas", "meta": "B2 · 约 270 词 · 场景：跨境汇款与到账延误", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Bank Officer", "name_zh": "银行职员", "voice": "en-GB-RyanNeural"}}, "gist": [{"q": "汇款的手续费怎么算？「你」选了哪种方式？", "a": "银行收二十元，中转行或对方银行可能另扣；「你」多付十五元承担全部费用，确保父母收到全额。"}, {"q": "钱为什么没到账？", "a": "收款人名字和对方银行记录不一致，「你」可能在父亲名字中间多打了空格，钱被暂扣了。"}, {"q": "怎么补救？要多久？", "a": "填修改申请表、按账户上的名字改正，收十元，两个工作日内到账。"}], "dictation": [{"id": "s0_0_0", "text": "Hi, I'd like to send some money to my parents in China. What's the best way to do it?"}, {"id": "s0_6_0", "text": "Is there a way to make sure my parents receive the full amount?"}, {"id": "s1_0_0", "text": "Hi, I sent a transfer to China last Monday, and it still hasn't arrived. Could you help me find out what's going on?"}, {"id": "s1_6_0", "text": "Will there be another fee for that, and how long will it take after the correction?"}], "shadow": {"speaker": "A", "text": "Oh, I might have spelled my father's name with a space in the middle. What do I need to do?", "marked": "Oh, / I might have <b>spelled</b> my father's <b>name</b> / with a <b>space</b> in the middle. //<br>What do I <b>need</b> to do? //"}, "prompts": [{"q": "你想每个月固定给父母汇一笔钱，到银行咨询有没有定期汇款服务、汇率怎么锁定、能否在手机上操作。", "ref": "Hi, I send money to my parents in China every month. Is there a way to set up a regular transfer so I don't have to come in each time? Also, can I lock in the exchange rate when I set it up, or is it the rate on the day? And can I manage all of this in the app?", "ref_zh": "你好，我每个月都给在中国的父母汇钱。有没有办法设置定期汇款，不用每次都来银行？另外，设置的时候能锁定汇率吗，还是按当天汇率算？这些能都在手机应用里操作吗？", "id": "ref0"}, {"q": "父母收到的钱比你汇的少了一些。打电话问银行原因，并要求说明各项扣费。", "ref": "Hi, I sent a transfer to my parents last week, and I chose to pay all the charges myself. But they received about two hundred yuan less than expected. Could you tell me why? I'd like a breakdown of every fee that was taken. If it was a mistake on the bank's side, I'd like the difference refunded.", "ref_zh": "你好，我上周给父母汇了一笔钱，选了所有费用由我承担。但他们收到的钱比预期少了大约两百人民币。能告诉我原因吗？我想要一份每项扣费的明细。如果是银行这边的错，希望把差额退还。", "id": "ref1"}], "words": [{"w": "telegraphic transfer", "ipa": "/ˌtelɪˈɡræfɪk ˈtrænsfɜːr/", "zh": "电汇", "ex": "The rent was paid by telegraphic transfer from overseas.", "id": "w0"}, {"w": "exchange rate", "ipa": "/ɪksˈtʃeɪndʒ reɪt/", "zh": "汇率", "ex": "The exchange rate is better at the money changer in the mall.", "id": "w1"}, {"w": "charges", "ipa": "/ˈtʃɑːrdʒɪz/", "zh": "费用", "ex": "Are there any hidden charges I should know about?", "id": "w2"}, {"w": "intermediary", "ipa": "/ˌɪntərˈmiːdieri/", "zh": "中间方，中转行", "ex": "The intermediary bank took a small fee.", "id": "w3"}, {"w": "reference", "ipa": "/ˈrefərəns/", "zh": "参考编号", "ex": "Please quote your booking reference when you call.", "id": "w4"}, {"w": "match", "ipa": "/mætʃ/", "zh": "相符，一致", "ex": "The name on the ticket must match your passport.", "id": "w5"}, {"w": "amendment", "ipa": "/əˈmendmənt/", "zh": "修改，更正", "ex": "I made a small amendment to the contract.", "id": "w6"}, {"w": "on hold", "ipa": "/ɑːn hoʊld/", "zh": "暂缓，暂扣", "ex": "Our plan to move is on hold for now.", "id": "w7"}, {"w": "take a cut", "ipa": "/teɪk ə kʌt/", "zh": "抽成，扣一部分", "ex": "The delivery app takes a cut from every order.", "id": "w8"}], "sections": [{"heading": "1. At the Counter", "heading_zh": "1. 在柜台办汇款", "rows": [[{"id": "s0_0_0", "md": "**Hi, I'd like to send some money to my parents in China. What's the best way to do it?**", "text": "Hi, I'd like to send some money to my parents in China. What's the best way to do it?", "zh": "你好，我想给在中国的父母汇点钱。怎么汇最好？", "sp": "A"}], [{"id": "s0_1_0", "md": "We can do a ==telegraphic transfer== straight to their bank account. How much are you thinking of sending?", "text": "We can do a telegraphic transfer straight to their bank account. How much are you thinking of sending?", "zh": "我们可以电汇直接到他们的银行账户。您打算汇多少？", "sp": "B"}], [{"id": "s0_2_0", "md": "About five thousand Singapore dollars. What's today's ==exchange rate==?", "text": "About five thousand Singapore dollars. What's today's exchange rate?", "zh": "大约五千新币。今天的汇率是多少？", "sp": "A"}], [{"id": "s0_3_0", "md": "It's five point two eight yuan to the dollar right now, but it __moves throughout__ the day.", "text": "It's five point two eight yuan to the dollar right now, but it moves throughout the day.", "zh": "现在是一新币兑五点二八人民币，不过一天之中会变动。", "sp": "B"}], [{"id": "s0_4_0", "md": "And what are the ==charges==? Is there a fee on both sides?", "text": "And what are the charges? Is there a fee on both sides?", "zh": "手续费呢？两边都要收费吗？", "sp": "A"}], [{"id": "s0_5_0", "md": "Our fee is twenty dollars. Their bank, or an ==intermediary== bank, may also __take a cut__.", "text": "Our fee is twenty dollars. Their bank, or an intermediary bank, may also take a cut.", "zh": "我们收二十元。对方银行或者中转行也可能扣一部分。", "sp": "B"}], [{"id": "s0_6_0", "md": "Is there a way to make sure my parents receive the full amount?", "text": "Is there a way to make sure my parents receive the full amount?", "zh": "有没有办法确保我父母收到全额？", "sp": "A"}], [{"id": "s0_7_0", "md": "You can choose to pay all charges yourself. That's an extra fifteen dollars.", "text": "You can choose to pay all charges yourself. That's an extra fifteen dollars.", "zh": "您可以选择所有费用由您承担，要多付十五元。", "sp": "B"}], [{"id": "s0_8_0", "md": "Let's do that. __How long__ will it take to arrive?", "text": "Let's do that. How long will it take to arrive?", "zh": "那就这样。多久能到账？", "sp": "A"}], [{"id": "s0_9_0", "md": "Normally one to three working days.", "text": "Normally one to three working days.", "zh": "一般一到三个工作日。", "sp": "B"}]]}, {"heading": "2. The Money Hasn't Arrived", "heading_zh": "2. 钱没到账", "rows": [[{"id": "s1_0_0", "md": "Hi, I sent a transfer to China last Monday, and it still hasn't arrived. Could you help me find out what's going on?", "text": "Hi, I sent a transfer to China last Monday, and it still hasn't arrived. Could you help me find out what's going on?", "zh": "你好，我上周一往中国汇了一笔钱，到现在还没到账。能帮我查查是怎么回事吗？", "sp": "A"}], [{"id": "s1_1_0", "md": "Certainly. Do you have the transaction ==reference==?", "text": "Certainly. Do you have the transaction reference?", "zh": "当然。您有交易参考号吗？", "sp": "B"}], [{"id": "s1_2_0", "md": "Yes, it's T T, nine four seven, two eight one.", "text": "Yes, it's T T, nine four seven, two eight one.", "zh": "有，是 TT 九四七二八一。", "sp": "A"}], [{"id": "s1_3_0", "md": "Thank you. It looks like the receiving bank has put it __on hold__. The name doesn't quite ==match== their records.", "text": "Thank you. It looks like the receiving bank has put it on hold. The name doesn't quite match their records.", "zh": "谢谢。看起来收款行把这笔钱暂扣了，收款人名字和他们的记录对不上。", "sp": "B"}], [{"id": "s1_4_0", "md": "Oh, I might have spelled my father's name with a space in the middle. What do I need to do?", "text": "Oh, I might have spelled my father's name with a space in the middle. What do I need to do?", "zh": "哦，我可能把我父亲名字中间多打了一个空格。我需要做什么？", "sp": "A"}], [{"id": "s1_5_0", "md": "Please fill in an ==amendment== form with the name exactly as it appears on his account.", "text": "Please fill in an amendment form with the name exactly as it appears on his account.", "zh": "请填一份修改申请表，名字要和他账户上的完全一致。", "sp": "B"}], [{"id": "s1_6_0", "md": "**Will there be another fee for that, and how long will it take after the correction?**", "text": "Will there be another fee for that, and how long will it take after the correction?", "zh": "改这个还要再收费吗？改完之后要多久？", "sp": "A"}], [{"id": "s1_7_0", "md": "There's a ten dollar fee, I'm afraid, and it should __go through__ within two working days.", "text": "There's a ten dollar fee, I'm afraid, and it should go through within two working days.", "zh": "恐怕要收十元，一般两个工作日内就能到账。", "sp": "B"}], [{"id": "s1_8_0", "md": "Alright, I'll fill it in now. Lesson learned. Thanks for your help.", "text": "Alright, I'll fill it in now. Lesson learned. Thanks for your help.", "zh": "好吧，我现在就填。长教训了。谢谢帮忙。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. At the Counter", "zh": "1. 在柜台办汇款", "start": 0.0, "end": 1.872, "words": [[0.105, 0.316], [0.658, 0.737], [0.75, 0.829], [0.842, 1.303]]}, {"kind": "s", "id": "s0_0_0", "md": "**Hi, I'd like to send some money to my parents in China. What's the best way to do it?**", "zh": "你好，我想给在中国的父母汇点钱。怎么汇最好？", "sp": "A", "gap": false, "start": 1.872, "end": 6.912, "words": [[1.99, 2.254], [2.648, 2.78], [2.793, 2.938], [2.951, 3.03], [3.043, 3.306], [3.319, 3.477], [3.49, 3.714], [3.727, 3.806], [3.819, 3.951], [3.964, 4.359], [4.372, 4.451], [4.464, 4.912], [5.346, 5.517], [5.53, 5.635], [5.648, 5.925], [5.938, 6.03], [6.043, 6.122], [6.135, 6.346], [6.359, 6.517]]}, {"kind": "s", "id": "s0_1_0", "md": "We can do a ==telegraphic transfer== straight to their bank account. How much are you thinking of sending?", "zh": "我们可以电汇直接到他们的银行账户。您打算汇多少？", "sp": "B", "gap": false, "start": 6.912, "end": 14.016, "words": [[7.012, 7.223], [7.236, 7.38], [7.394, 7.565], [7.578, 7.644], [7.657, 8.315], [8.328, 8.854], [8.867, 9.236], [9.249, 9.328], [9.341, 9.486], [9.499, 9.828], [9.841, 10.341], [11.251, 11.515], [11.528, 11.804], [11.817, 11.83], [11.844, 12.001], [12.015, 12.422], [12.436, 12.515], [12.528, 13.094]]}, {"kind": "s", "id": "s0_2_0", "md": "About five thousand Singapore dollars. What's today's ==exchange rate==?", "zh": "大约五千新币。今天的汇率是多少？", "sp": "A", "gap": false, "start": 14.016, "end": 18.312, "words": [[14.121, 14.398], [14.411, 14.806], [14.819, 15.2], [15.213, 15.674], [15.687, 16.24], [16.674, 16.832], [16.845, 17.174], [17.187, 17.608], [17.621, 17.924]]}, {"kind": "s", "id": "s0_3_0", "md": "It's five point two eight yuan to the dollar right now, but it __moves throughout__ the day.", "zh": "现在是一新币兑五点二八人民币，不过一天之中会变动。", "sp": "B", "gap": false, "start": 18.312, "end": 23.88, "words": [[18.412, 18.649], [18.662, 18.991], [19.004, 19.267], [19.28, 19.504], [19.517, 19.701], [19.715, 20.096], [20.109, 20.202], [20.215, 20.32], [20.333, 20.622], [20.636, 20.925], [20.938, 21.254], [21.451, 21.583], [21.596, 21.701], [21.715, 22.044], [22.057, 22.438], [22.451, 22.53], [22.544, 22.965]]}, {"kind": "s", "id": "s0_4_0", "md": "And what are the ==charges==? Is there a fee on both sides?", "zh": "手续费呢？两边都要收费吗？", "sp": "A", "gap": false, "start": 23.88, "end": 27.336, "words": [[23.985, 24.064], [24.077, 24.183], [24.196, 24.235], [24.248, 24.327], [24.341, 24.972], [25.406, 25.498], [25.512, 25.643], [25.656, 25.696], [25.709, 25.972], [25.985, 26.104], [26.117, 26.367], [26.38, 26.946]]}, {"kind": "s", "id": "s0_5_0", "md": "Our fee is twenty dollars. Their bank, or an ==intermediary== bank, may also __take a cut__.", "zh": "我们收二十元。对方银行或者中转行也可能扣一部分。", "sp": "B", "gap": false, "start": 27.336, "end": 34.944, "words": [[27.436, 27.712], [27.725, 28.028], [28.041, 28.239], [28.252, 28.62], [28.633, 29.225], [30.136, 30.373], [30.386, 30.794], [31.07, 31.202], [31.215, 31.307], [31.32, 31.965], [31.978, 32.412], [32.649, 32.86], [32.873, 33.228], [33.241, 33.491], [33.504, 33.557], [33.57, 34.031]]}, {"kind": "s", "id": "s0_6_0", "md": "Is there a way to make sure my parents receive the full amount?", "zh": "有没有办法确保我父母收到全额？", "sp": "A", "gap": false, "start": 34.944, "end": 38.256, "words": [[35.049, 35.155], [35.168, 35.299], [35.312, 35.378], [35.391, 35.523], [35.536, 35.668], [35.681, 35.852], [35.865, 36.089], [36.102, 36.233], [36.247, 36.681], [36.694, 37.115], [37.128, 37.207], [37.22, 37.457], [37.47, 37.852]]}, {"kind": "s", "id": "s0_7_0", "md": "You can choose to pay all charges yourself. That's an extra fifteen dollars.", "zh": "您可以选择所有费用由您承担，要多付十五元。", "sp": "B", "gap": false, "start": 38.256, "end": 44.592, "words": [[38.356, 38.527], [38.54, 38.711], [38.724, 39.067], [39.08, 39.172], [39.185, 39.422], [39.435, 39.711], [39.724, 40.198], [40.211, 40.856], [41.767, 42.056], [42.069, 42.188], [42.201, 42.569], [42.582, 43.122], [43.135, 43.674]]}, {"kind": "s", "id": "s0_8_0", "md": "Let's do that. __How long__ will it take to arrive?", "zh": "那就这样。多久能到账？", "sp": "A", "gap": false, "start": 44.592, "end": 47.664, "words": [[44.697, 44.842], [44.855, 45.013], [45.026, 45.316], [45.75, 45.895], [45.908, 46.171], [46.184, 46.316], [46.329, 46.408], [46.421, 46.658], [46.671, 46.776], [46.789, 47.276]]}, {"kind": "s", "id": "s0_9_0", "md": "Normally one to three working days.", "zh": "一般一到三个工作日。", "sp": "B", "gap": false, "start": 47.664, "end": 50.928, "words": [[47.764, 48.225], [48.238, 48.527], [48.54, 48.632], [48.646, 48.948], [48.961, 49.422], [49.435, 50.001]]}, {"kind": "h", "id": "h1", "md": "2. The Money Hasn't Arrived", "zh": "2. 钱没到账", "start": 50.928, "end": 53.304, "words": [[51.046, 51.31], [51.652, 51.744], [51.757, 52.02], [52.033, 52.375], [52.389, 52.915]]}, {"kind": "s", "id": "s1_0_0", "md": "Hi, I sent a transfer to China last Monday, and it still hasn't arrived. Could you help me find out what's going on?", "zh": "你好，我上周一往中国汇了一笔钱，到现在还没到账。能帮我查查是怎么回事吗？", "sp": "A", "gap": false, "start": 53.304, "end": 60.216, "words": [[53.422, 53.712], [54.107, 54.199], [54.212, 54.422], [54.436, 54.475], [54.488, 54.936], [54.949, 55.015], [55.028, 55.343], [55.357, 55.659], [55.672, 56.12], [56.383, 56.488], [56.501, 56.58], [56.593, 56.87], [56.883, 57.225], [57.238, 57.778], [58.212, 58.343], [58.357, 58.449], [58.462, 58.62], [58.633, 58.725], [58.738, 59.015], [59.028, 59.133], [59.146, 59.304], [59.317, 59.554], [59.567, 59.817]]}, {"kind": "s", "id": "s1_1_0", "md": "Certainly. Do you have the transaction ==reference==?", "zh": "当然。您有交易参考号吗？", "sp": "B", "gap": false, "start": 60.216, "end": 64.8, "words": [[60.316, 61.04], [61.95, 62.095], [62.108, 62.227], [62.24, 62.398], [62.411, 62.49], [62.503, 63.187], [63.2, 63.884]]}, {"kind": "s", "id": "s1_2_0", "md": "Yes, it's T T, nine four seven, two eight one.", "zh": "有，是 TT 九四七二八一。", "sp": "A", "gap": false, "start": 64.8, "end": 69.144, "words": [[64.905, 65.326], [65.563, 65.708], [65.721, 65.945], [65.958, 66.339], [66.682, 66.971], [66.984, 67.208], [67.221, 67.616], [67.918, 68.208], [68.221, 68.432], [68.445, 68.761]]}, {"kind": "s", "id": "s1_3_0", "md": "Thank you. It looks like the receiving bank has put it __on hold__. The name doesn't quite ==match== their records.", "zh": "谢谢。看起来收款行把这笔钱暂扣了，收款人名字和他们的记录对不上。", "sp": "B", "gap": false, "start": 69.144, "end": 77.52, "words": [[69.244, 69.547], [69.56, 69.862], [70.773, 70.97], [70.983, 71.181], [71.194, 71.378], [71.391, 71.484], [71.497, 72.036], [72.049, 72.339], [72.352, 72.483], [72.497, 72.694], [72.707, 72.812], [72.826, 72.931], [72.944, 73.47], [74.378, 74.549], [74.562, 74.812], [74.826, 75.102], [75.115, 75.418], [75.431, 75.72], [75.733, 75.839], [75.852, 76.602]]}, {"kind": "s", "id": "s1_4_0", "md": "Oh, I might have spelled my father's name with a space in the middle. What do I need to do?", "zh": "哦，我可能把我父亲名字中间多打了一个空格。我需要做什么？", "sp": "A", "gap": false, "start": 77.52, "end": 82.632, "words": [[77.638, 77.862], [78.257, 78.349], [78.362, 78.546], [78.559, 78.665], [78.678, 78.98], [78.994, 79.112], [79.125, 79.586], [79.599, 79.875], [79.888, 80.02], [80.033, 80.073], [80.086, 80.52], [80.533, 80.599], [80.612, 80.678], [80.691, 81.033], [81.467, 81.533], [81.546, 81.612], [81.625, 81.665], [81.678, 81.888], [81.902, 81.954], [81.967, 82.231]]}, {"kind": "s", "id": "s1_5_0", "md": "Please fill in an ==amendment== form with the name exactly as it appears on his account.", "zh": "请填一份修改申请表，名字要和他账户上的完全一致。", "sp": "B", "gap": false, "start": 82.632, "end": 87.504, "words": [[82.732, 83.021], [83.035, 83.232], [83.245, 83.337], [83.35, 83.416], [83.429, 83.877], [83.89, 84.179], [84.193, 84.285], [84.298, 84.377], [84.39, 84.627], [84.64, 85.1], [85.114, 85.206], [85.219, 85.311], [85.324, 85.719], [85.732, 85.837], [85.85, 86.008], [86.021, 86.574]]}, {"kind": "s", "id": "s1_6_0", "md": "**Will there be another fee for that, and how long will it take after the correction?**", "zh": "改这个还要再收费吗？改完之后要多久？", "sp": "A", "gap": false, "start": 87.504, "end": 91.704, "words": [[87.622, 87.728], [87.741, 87.886], [87.899, 88.044], [88.057, 88.372], [88.386, 88.622], [88.636, 88.793], [88.807, 89.083], [89.399, 89.451], [89.465, 89.636], [89.649, 89.912], [89.925, 90.07], [90.083, 90.162], [90.175, 90.451], [90.465, 90.688], [90.701, 90.78], [90.793, 91.307]]}, {"kind": "s", "id": "s1_7_0", "md": "There's a ten dollar fee, I'm afraid, and it should __go through__ within two working days.", "zh": "恐怕要收十元，一般两个工作日内就能到账。", "sp": "B", "gap": false, "start": 91.704, "end": 97.728, "words": [[91.804, 92.028], [92.041, 92.12], [92.133, 92.436], [92.449, 92.712], [92.725, 93.133], [93.383, 93.515], [93.528, 94.067], [94.304, 94.396], [94.409, 94.514], [94.528, 94.686], [94.699, 94.883], [94.896, 95.212], [95.225, 95.528], [95.541, 95.764], [95.778, 96.238], [96.251, 96.804]]}, {"kind": "s", "id": "s1_8_0", "md": "Alright, I'll fill it in now. Lesson learned. Thanks for your help.", "zh": "好吧，我现在就填。长教训了。谢谢帮忙。", "sp": "A", "gap": false, "start": 97.728, "end": 101.952, "words": [[97.846, 98.175], [98.452, 98.557], [98.57, 98.767], [98.781, 98.846], [98.86, 98.952], [98.965, 99.254], [99.689, 99.991], [100.004, 100.36], [100.807, 100.965], [100.978, 101.11], [101.123, 101.228], [101.241, 101.557]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

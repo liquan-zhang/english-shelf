@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>The First Ten Minutes of an Incident · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "061", "title": "The First Ten Minutes of an Incident", "meta": "B2 · 约 260 词 · 场景：故障响应", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Instinct to Debug", "heading_zh": "1. 想立刻排查的本能", "rows": [[{"id": "s0_0_0", "md": "When an alert fires at two in the morning, every engineer wants to open the logs.", "text": "When an alert fires at two in the morning, every engineer wants to open the logs.", "zh": "凌晨两点告警一响，每个工程师的第一反应都是去翻日志。", "sp": null}, {"id": "s0_0_1", "md": "That instinct is healthy, but in the first ten minutes it is often the wrong job.", "text": "That instinct is healthy, but in the first ten minutes it is often the wrong job.", "zh": "这个本能没毛病，但在头十分钟里，这往往不是该干的事。", "sp": null}, {"id": "s0_0_2", "md": "Five people debugging in five different directions is not a response; it is ==noise==.", "text": "Five people debugging in five different directions is not a response; it is noise.", "zh": "五个人朝五个方向各查各的，那不叫响应，那叫添乱。", "sp": null}], [{"id": "s0_1_0", "md": "The real danger early on is confusion about who is doing what.", "text": "The real danger early on is confusion about who is doing what.", "zh": "初期真正的风险，是谁在干什么没人说得清。", "sp": null}, {"id": "s0_1_1", "md": "Two people restart the same service, a third ==escalates== to the wrong team, and nobody tells the PM.", "text": "Two people restart the same service, a third escalates to the wrong team, and nobody tells the PM.", "zh": "两个人重启了同一个服务，第三个人升级给了错的团队，还没人通知 PM。", "sp": null}, {"id": "s0_1_2", "md": "**Most incidents get worse because of coordination, not because of code.**", "text": "Most incidents get worse because of coordination, not because of code.", "zh": "大多数故障越搞越大，问题出在协同上，而不是代码上。", "sp": null}], [{"id": "s0_2_0", "md": "So before anyone touches production, somebody needs to __take charge__.", "text": "So before anyone touches production, somebody needs to take charge.", "zh": "所以在任何人动线上之前，得有一个人站出来扛指挥。", "sp": null}, {"id": "s0_2_1", "md": "That person does not have to be the most senior engineer on the call.", "text": "That person does not have to be the most senior engineer on the call.", "zh": "这个人不一定是会上资历最深的工程师。", "sp": null}, {"id": "s0_2_2", "md": "They just need to ==claim== the role out loud and __stick with it__.", "text": "They just need to claim the role out loud and stick with it.", "zh": "他只需要大声把这个角色认下来，并且一直担到底。", "sp": null}]]}, {"heading": "2. What the Lead Says First", "heading_zh": "2. 指挥第一句说什么", "rows": [[{"id": "s1_0_0", "md": "**The incident lead's first job is to make the situation visible, not to fix it.**", "text": "The incident lead's first job is to make the situation visible, not to fix it.", "zh": "故障指挥的第一件事是让局面透明，而不是去修。", "sp": null}, {"id": "s1_0_1", "md": "Open one channel, and ask everyone to __post updates there__ instead of in private messages.", "text": "Open one channel, and ask everyone to post updates there instead of in private messages.", "zh": "开一个群，让所有人都在里面同步进展，别私聊。", "sp": null}, {"id": "s1_0_2", "md": "Then assign two roles: one person investigates, and one person communicates.", "text": "Then assign two roles: one person investigates, and one person communicates.", "zh": "然后定两个角色：一个人负责排查，一个人负责对外沟通。", "sp": null}], [{"id": "s1_1_0", "md": "Next, state what you know and what you don't.", "text": "Next, state what you know and what you don't.", "zh": "接下来，说清楚哪些是已知的，哪些还不知道。", "sp": null}, {"id": "s1_1_1", "md": "\"Checkout errors are up since the ten o'clock release; we don't know yet if the release caused it.\"", "text": "\"Checkout errors are up since the ten o'clock release; we don't know yet if the release caused it.\"", "zh": "「十点那次发版之后下单报错上涨了；还不确定是不是发版导致的。」", "sp": null}, {"id": "s1_1_2", "md": "That single sentence stops people from ==speculating== and gives them a shared starting point.", "text": "That single sentence stops people from speculating and gives them a shared starting point.", "zh": "就这一句话，能让大家不再瞎猜，有一个共同的起点。", "sp": null}, {"id": "s1_1_3", "md": "If a rollback is a safe ==mitigation==, try it before you understand the root cause.", "text": "If a rollback is a safe mitigation, try it before you understand the root cause.", "zh": "如果回滚是安全的止血手段，那就在搞清根因之前先回滚。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, __set a rhythm__.", "text": "Finally, set a rhythm.", "zh": "最后，定好节奏。", "sp": null}, {"id": "s1_2_1", "md": "Promise the next update in fifteen minutes, even if there is nothing new to report.", "text": "Promise the next update in fifteen minutes, even if there is nothing new to report.", "zh": "承诺十五分钟后同步下一次进展，哪怕到时候没有新消息。", "sp": null}, {"id": "s1_2_2", "md": "A ==predictable== update tells managers they can stop pinging the engineers.", "text": "A predictable update tells managers they can stop pinging the engineers.", "zh": "有规律的同步能让领导们知道，不用再去追着工程师问了。", "sp": null}, {"id": "s1_2_3", "md": "Silence during an outage feels like chaos, even when the team is making progress.", "text": "Silence during an outage feels like chaos, even when the team is making progress.", "zh": "故障期间一沉默，大家就觉得一团乱，哪怕团队其实在推进。", "sp": null}]]}], "gist": [{"q": "作者认为故障前十分钟最大的危险是什么？", "a": "不是代码本身，而是协调混乱：没人知道谁在做什么，重复操作、升级错人、没人通知 PM。"}, {"q": "故障负责人的第一件事是什么？", "a": "让局面可见而不是亲自修：开一个统一频道，分出排查和沟通两个角色。"}, {"q": "为什么要固定节奏发更新，哪怕没有新进展？", "a": "可预期的更新让管理者不再去追问工程师；沉默会让人觉得一片混乱。"}], "dictation": [{"id": "s0_1_2", "text": "Most incidents get worse because of coordination, not because of code."}, {"id": "s1_0_0", "text": "The incident lead's first job is to make the situation visible, not to fix it."}, {"id": "s1_1_3", "text": "If a rollback is a safe mitigation, try it before you understand the root cause."}, {"id": "s1_2_3", "text": "Silence during an outage feels like chaos, even when the team is making progress."}], "shadow": {"text": "Next, state what you know and what you don't. \"Checkout errors are up since the ten o'clock release; we don't know yet if the release caused it.\" That single sentence stops people from speculating and gives them a shared starting point.", "marked": "Next, / state what you <b>know</b> / and what you <b>don't</b>. //<br>\"Checkout <b>errors</b> are up / since the <b>ten</b> o'clock release; / we <b>don't</b> know yet / if the release <b>caused</b> it.\" //<br>That <b>single</b> sentence / stops people from <b>speculating</b> / and gives them a <b>shared</b> starting point. //"}, "prompts": [{"q": "凌晨告警，群里五个人各自在查、各说各的。你决定站出来当指挥。用 30 秒接管：宣布角色、说清已知和未知、定下一次更新时间。", "ref": "Okay, everyone, I'll run this incident. Let's keep all updates in this channel, please, not in private messages. Mei, you investigate; Tom, you handle communication with support and the PM. Here's what we know: login errors started around one forty, right after the config push. We don't know yet if the push caused it. Let's roll back the config first, and I'll post the next update in fifteen minutes.", "ref_zh": "好，大家听一下，这次故障我来指挥。所有进展都同步在这个群里，别私聊。Mei 你负责排查；Tom 你负责跟客服和 PM 沟通。目前已知的是：登录报错大概从一点四十开始，正好在配置推送之后。还不确定是不是这次推送导致的。我们先把配置回滚，我十五分钟后同步下一次进展。", "id": "ref0"}, {"q": "故障复盘会上，有人说“下次大家都赶紧查日志就行了”。用 30 秒说明为什么前十分钟应该先定角色而不是先查。", "ref": "I understand the instinct, and fast debugging matters. But last night, three of us restarted the same service and nobody told the PM for twenty minutes. The code wasn't the slow part; the coordination was. So I'd suggest a simple rule: in the first few minutes, someone claims the lead role, opens one channel and assigns an investigator and a communicator. Then everyone else debugs.", "ref_zh": "我理解这种本能，快速排查确实重要。但昨晚我们三个人重启了同一个服务，二十分钟都没人通知 PM。慢的不是代码，是协同。所以我建议定个简单的规矩：前几分钟先有人认领指挥角色，开一个群，指定一个排查的、一个沟通的。然后其他人再去查。", "id": "ref1"}], "words": [{"w": "noise", "ipa": "/nɔɪz/", "zh": "噪音；无用的干扰信息", "ex": "Half of these alerts are noise, so the real one got missed.", "id": "w0"}, {"w": "escalate", "ipa": "/ˈeskəˌleɪt/", "zh": "升级（问题上报）", "ex": "If the database team doesn't respond in ten minutes, escalate to their manager.", "id": "w1"}, {"w": "claim (v.)", "ipa": "/kleɪm/", "zh": "认领、主动承担", "ex": "Can someone claim this ticket before the end of the day?", "tts_w": "claim", "id": "w2"}, {"w": "speculate", "ipa": "/ˈspekjəˌleɪt/", "zh": "猜测、推测", "ex": "Let's not speculate about the cause until we see the logs.", "id": "w3"}, {"w": "mitigation", "ipa": "/ˌmɪtɪˈɡeɪʃən/", "zh": "缓解措施、止损手段", "ex": "Turning off the new feature flag is our fastest mitigation.", "id": "w4"}, {"w": "predictable", "ipa": "/prɪˈdɪktəbəl/", "zh": "可预期的", "ex": "Stakeholders care more about predictable updates than perfect ones.", "id": "w5"}, {"w": "coordination", "ipa": "/koʊˌɔːrdɪˈneɪʃən/", "zh": "协调", "ex": "The outage lasted longer because of poor coordination between teams.", "id": "w6"}, {"w": "assign", "ipa": "/əˈsaɪn/", "zh": "分配、指派", "ex": "I'll assign the follow-up items after the call.", "id": "w7"}, {"w": "instinct", "ipa": "/ˈɪnstɪŋkt/", "zh": "本能、直觉", "ex": "My first instinct was to restart the pod, but I checked the metrics first.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Instinct to Debug", "zh": "1. 想立刻排查的本能", "start": 0.0, "end": 2.304, "words": [[0.105, 0.395], [0.711, 0.816], [0.829, 1.303], [1.316, 1.408], [1.421, 1.921]]}, {"kind": "s", "id": "s0_0_0", "md": "When an alert fires at two in the morning, every engineer wants to open the logs.", "zh": "凌晨两点告警一响，每个工程师的第一反应都是去翻日志。", "sp": null, "gap": false, "start": 2.304, "end": 7.44, "words": [[2.422, 2.528], [2.541, 2.607], [2.62, 2.949], [2.962, 3.409], [3.422, 3.541], [3.554, 3.791], [3.804, 3.87], [3.883, 3.949], [3.962, 4.383], [4.804, 5.093], [5.107, 5.725], [5.738, 5.962], [5.975, 6.067], [6.08, 6.357], [6.37, 6.449], [6.462, 7.041]]}, {"kind": "s", "id": "s0_0_1", "md": "That instinct is healthy, but in the first ten minutes it is often the wrong job.", "zh": "这个本能没毛病，但在头十分钟里，这往往不是该干的事。", "sp": null, "gap": false, "start": 7.44, "end": 12.504, "words": [[7.545, 7.716], [7.729, 8.229], [8.243, 8.348], [8.361, 8.848], [9.151, 9.269], [9.282, 9.348], [9.361, 9.453], [9.466, 9.835], [9.848, 10.058], [10.072, 10.506], [10.651, 10.729], [10.743, 10.874], [10.887, 11.256], [11.269, 11.374], [11.387, 11.677], [11.69, 12.111]]}, {"kind": "s", "id": "s0_0_2", "md": "Five people debugging in five different directions is not a response; it is ==noise==.", "zh": "五个人朝五个方向各查各的，那不叫响应，那叫添乱。", "sp": null, "gap": false, "start": 12.504, "end": 18.192, "words": [[12.688, 12.951], [12.965, 13.333], [13.346, 13.965], [13.978, 14.07], [14.083, 14.451], [14.465, 14.754], [14.767, 15.399], [15.557, 15.662], [15.675, 15.951], [15.965, 16.004], [16.017, 16.78], [17.057, 17.136], [17.149, 17.254], [17.267, 17.807]]}, {"kind": "s", "id": "s0_1_0", "md": "The real danger early on is confusion about who is doing what.", "zh": "初期真正的风险，是谁在干什么没人说得清。", "sp": null, "gap": true, "start": 18.192, "end": 22.104, "words": [[18.31, 18.376], [18.389, 18.626], [18.639, 19.021], [19.034, 19.376], [19.389, 19.626], [19.639, 19.732], [19.745, 20.337], [20.35, 20.679], [20.692, 20.889], [20.903, 21.021], [21.034, 21.35], [21.363, 21.718]]}, {"kind": "s", "id": "s0_1_1", "md": "Two people restart the same service, a third ==escalates== to the wrong team, and nobody tells the PM.", "zh": "两个人重启了同一个服务，第三个人升级给了错的团队，还没人通知 PM。", "sp": null, "gap": false, "start": 22.104, "end": 28.608, "words": [[22.222, 22.367], [22.38, 22.736], [22.749, 23.262], [23.275, 23.354], [23.367, 23.643], [23.657, 24.222], [24.446, 24.512], [24.525, 24.972], [24.986, 25.538], [25.551, 25.643], [25.657, 25.749], [25.762, 26.064], [26.078, 26.472], [26.88, 26.972], [26.986, 27.38], [27.393, 27.657], [27.67, 27.762], [27.775, 28.222]]}, {"kind": "s", "id": "s0_1_2", "md": "**Most incidents get worse because of coordination, not because of code.**", "zh": "大多数故障越搞越大，问题出在协同上，而不是代码上。", "sp": null, "gap": false, "start": 28.608, "end": 33.144, "words": [[28.713, 28.99], [29.003, 29.49], [29.503, 29.7], [29.713, 30.108], [30.121, 30.45], [30.463, 30.542], [30.555, 31.345], [31.713, 31.884], [31.897, 32.213], [32.226, 32.319], [32.332, 32.753]]}, {"kind": "s", "id": "s0_2_0", "md": "So before anyone touches production, somebody needs to __take charge__.", "zh": "所以在任何人动线上之前，得有一个人站出来扛指挥。", "sp": null, "gap": true, "start": 33.144, "end": 37.392, "words": [[33.249, 33.394], [33.407, 33.855], [33.868, 34.197], [34.21, 34.565], [34.578, 35.105], [35.486, 35.841], [35.855, 36.078], [36.091, 36.183], [36.197, 36.433], [36.447, 37.012]]}, {"kind": "s", "id": "s0_2_1", "md": "That person does not have to be the most senior engineer on the call.", "zh": "这个人不一定是会上资历最深的工程师。", "sp": null, "gap": false, "start": 37.392, "end": 41.256, "words": [[37.497, 37.655], [37.668, 38.063], [38.076, 38.247], [38.26, 38.51], [38.524, 38.76], [38.774, 38.866], [38.879, 39.01], [39.024, 39.116], [39.129, 39.418], [39.431, 39.839], [39.853, 40.3], [40.313, 40.405], [40.418, 40.497], [40.51, 40.879]]}, {"kind": "s", "id": "s0_2_2", "md": "They just need to ==claim== the role out loud and __stick with it__.", "zh": "他只需要大声把这个角色认下来，并且一直担到底。", "sp": null, "gap": false, "start": 41.256, "end": 44.592, "words": [[41.374, 41.44], [41.453, 41.638], [41.651, 41.769], [41.782, 41.848], [41.861, 42.164], [42.177, 42.282], [42.295, 42.611], [42.624, 42.795], [42.809, 43.217], [43.414, 43.519], [43.532, 43.822], [43.835, 44.019], [44.032, 44.203]]}, {"kind": "h", "id": "h1", "md": "2. What the Lead Says First", "zh": "2. 指挥第一句说什么", "start": 44.592, "end": 47.136, "words": [[44.71, 44.921], [45.381, 45.513], [45.526, 45.618], [45.631, 45.881], [45.895, 46.171], [46.184, 46.75]]}, {"kind": "s", "id": "s1_0_0", "md": "**The incident lead's first job is to make the situation visible, not to fix it.**", "zh": "故障指挥的第一件事是让局面透明，而不是去修。", "sp": null, "gap": false, "start": 47.136, "end": 52.44, "words": [[47.241, 47.347], [47.36, 47.846], [47.86, 48.123], [48.136, 48.583], [48.597, 49.004], [49.097, 49.202], [49.215, 49.307], [49.32, 49.597], [49.61, 49.702], [49.715, 50.452], [50.465, 50.939], [51.268, 51.425], [51.439, 51.518], [51.531, 51.86], [51.873, 52.057]]}, {"kind": "s", "id": "s1_0_1", "md": "Open one channel, and ask everyone to __post updates there__ instead of in private messages.", "zh": "开一个群，让所有人都在里面同步进展，别私聊。", "sp": null, "gap": false, "start": 52.44, "end": 58.008, "words": [[52.545, 52.822], [52.835, 53.032], [53.045, 53.479], [53.887, 53.966], [53.979, 54.256], [54.348, 54.716], [54.729, 54.795], [54.808, 55.203], [55.216, 55.664], [55.677, 55.835], [55.848, 56.269], [56.282, 56.387], [56.401, 56.493], [56.506, 56.927], [56.94, 57.611]]}, {"kind": "s", "id": "s1_0_2", "md": "Then assign two roles: one person investigates, and one person communicates.", "zh": "然后定两个角色：一个人负责排查，一个人负责对外沟通。", "sp": null, "gap": false, "start": 58.008, "end": 63.696, "words": [[58.113, 58.258], [58.271, 58.719], [58.732, 59.061], [59.074, 59.587], [60.008, 60.258], [60.271, 60.653], [60.666, 61.495], [61.705, 61.863], [61.876, 62.126], [62.14, 62.521], [62.534, 63.297]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, state what you know and what you don't.", "zh": "接下来，说清楚哪些是已知的，哪些还不知道。", "sp": null, "gap": true, "start": 63.696, "end": 66.672, "words": [[63.801, 64.209], [64.499, 64.788], [64.801, 64.92], [64.933, 65.025], [65.038, 65.42], [65.564, 65.67], [65.683, 65.801], [65.814, 65.893], [65.907, 66.275]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Checkout errors are up since the ten o'clock release; we don't know yet if the release caused it.\"", "zh": "「十点那次发版之后下单报错上涨了；还不确定是不是发版导致的。」", "sp": null, "gap": false, "start": 66.672, "end": 72.24, "words": [[66.856, 67.119], [67.198, 67.527], [67.54, 67.698], [67.711, 67.83], [67.843, 68.08], [68.093, 68.185], [68.198, 68.422], [68.435, 68.817], [68.83, 69.356], [69.646, 69.777], [69.79, 70.027], [70.04, 70.211], [70.225, 70.54], [70.554, 70.659], [70.672, 70.751], [70.764, 71.159], [71.172, 71.58], [71.593, 71.751]]}, {"kind": "s", "id": "s1_1_2", "md": "That single sentence stops people from ==speculating== and gives them a shared starting point.", "zh": "就这一句话，能让大家不再瞎猜，有一个共同的起点。", "sp": null, "gap": false, "start": 72.24, "end": 77.64, "words": [[72.358, 72.516], [72.529, 72.898], [72.911, 73.332], [73.345, 73.714], [73.727, 74.069], [74.082, 74.253], [74.266, 75.056], [75.306, 75.411], [75.424, 75.674], [75.687, 75.858], [75.964, 76.003], [76.016, 76.424], [76.437, 76.819], [76.832, 77.24]]}, {"kind": "s", "id": "s1_1_3", "md": "If a rollback is a safe ==mitigation==, try it before you understand the root cause.", "zh": "如果回滚是安全的止血手段，那就在搞清根因之前先回滚。", "sp": null, "gap": false, "start": 77.64, "end": 82.752, "words": [[77.745, 77.837], [77.851, 77.903], [77.916, 78.522], [78.587, 78.693], [78.706, 78.758], [78.772, 79.14], [79.153, 79.811], [80.074, 80.298], [80.311, 80.403], [80.416, 80.758], [80.772, 80.916], [80.929, 81.429], [81.443, 81.508], [81.522, 81.772], [81.785, 82.364]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, __set a rhythm__.", "zh": "最后，定好节奏。", "sp": null, "gap": true, "start": 82.752, "end": 84.504, "words": [[82.923, 83.318], [83.515, 83.673], [83.686, 83.726], [83.739, 84.107]]}, {"kind": "s", "id": "s1_2_1", "md": "Promise the next update in fifteen minutes, even if there is nothing new to report.", "zh": "承诺十五分钟后同步下一次进展，哪怕到时候没有新消息。", "sp": null, "gap": false, "start": 84.504, "end": 89.808, "words": [[84.622, 84.965], [84.978, 85.083], [85.096, 85.451], [85.465, 85.912], [85.925, 86.043], [86.057, 86.557], [86.57, 87.004], [87.372, 87.583], [87.596, 87.715], [87.728, 87.872], [87.886, 88.004], [88.017, 88.478], [88.491, 88.728], [88.741, 88.872], [88.886, 89.425]]}, {"kind": "s", "id": "s1_2_2", "md": "A ==predictable== update tells managers they can stop pinging the engineers.", "zh": "有规律的同步能让领导们知道，不用再去追着工程师问了。", "sp": null, "gap": false, "start": 89.808, "end": 94.392, "words": [[89.913, 89.979], [89.992, 90.584], [90.597, 91.032], [91.045, 91.308], [91.321, 91.913], [91.926, 92.058], [92.071, 92.203], [92.216, 92.65], [92.703, 93.111], [93.124, 93.19], [93.203, 94.005]]}, {"kind": "s", "id": "s1_2_3", "md": "Silence during an outage feels like chaos, even when the team is making progress.", "zh": "故障期间一沉默，大家就觉得一团乱，哪怕团队其实在推进。", "sp": null, "gap": false, "start": 94.392, "end": 100.08, "words": [[94.497, 94.984], [94.997, 95.313], [95.326, 95.445], [95.458, 95.839], [95.853, 96.195], [96.208, 96.405], [96.418, 97.103], [97.55, 97.76], [97.774, 97.905], [97.918, 98.01], [98.024, 98.471], [98.589, 98.681], [98.695, 98.971], [98.984, 99.695]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

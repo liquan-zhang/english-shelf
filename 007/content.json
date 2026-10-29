@@ -1,0 +1,187 @@
+{
+  "id": "007",
+  "title": "Running a Meeting That Ends on Time",
+  "meta": "B2 · 约 260 词 · 场景：主持会议",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Topics Expand, Questions Finish",
+      "paragraphs": [
+        [
+          "Most meetings run over for one simple reason.",
+          "The agenda lists topics, not outcomes.",
+          "\"Q four roadmap\" can fill an hour, a day, or a whole week, because there is no point where it is ==obviously== done."
+        ],
+        [
+          "Compare that with \"Decide which two projects we cut from the Q four roadmap.\"",
+          "Now everyone knows what finished looks like.",
+          "People bring ==relevant== data instead of general opinions, and side topics are easier to __spot and set aside__."
+        ],
+        [
+          "**Write every agenda item as a question the group must answer.**",
+          "If you cannot turn an item into a question, it probably belongs in an email.",
+          "This one habit __cuts more time__ than any meeting tool or ==strict== rule."
+        ]
+      ],
+      "heading_zh": "1. 话题会膨胀，问题会收尾",
+      "paragraphs_zh": [
+        [
+          "大多数会议超时，原因很简单。",
+          "议程上列的是话题，不是产出。",
+          "「Q4 路线图」可以聊一小时、一天，甚至一整周，因为它没有一个明显的终点。"
+        ],
+        [
+          "对比一下「决定从 Q4 路线图里砍掉哪两个项目」。",
+          "这下大家都知道怎样才算完成了。",
+          "大家会带着相关数据来，而不是泛泛而谈，跑题的话题也更容易被发现、被搁置。"
+        ],
+        [
+          "把每个议程项都写成一个大家必须回答的问题。",
+          "如果某一项转不成问题，那它大概发邮件就行了。",
+          "光这一个习惯省下的时间，比任何会议工具或严格规定都多。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Keeping the Clock Visible",
+      "paragraphs": [
+        [
+          "Once the meeting starts, give each question a ==time box== and say it out loud.",
+          "\"We have fifteen minutes for the hiring plan.\"",
+          "Saying the number makes the limit feel shared, not like a rule you are ==enforcing== alone."
+        ],
+        [
+          "Halfway through each item, give a quick check.",
+          "\"We're at seven minutes, and I'm hearing two options.\"",
+          "This small update pulls people back from details without anyone __feeling cut off__."
+        ],
+        [
+          "Five minutes before the end, stop the discussion, even if it is going well.",
+          "Use that time to confirm decisions and owners.",
+          "**A meeting that ends on time with clear next steps beats a perfect discussion that runs over.**"
+        ],
+        [
+          "And when you finish early, let people go.",
+          "Nobody has ever complained about getting ten minutes back.",
+          "Over time, your meetings earn a ==reputation==, and people start showing up prepared, because they know you will __respect their time__."
+        ]
+      ],
+      "heading_zh": "2. 让时间一直摆在明面上",
+      "paragraphs_zh": [
+        [
+          "会议一开始，就给每个问题定一个时间盒，并且说出来。",
+          "「招聘计划我们留十五分钟。」",
+          "把数字说出口，这个限制就变成了大家共同的约定，而不像是你一个人在执行规定。"
+        ],
+        [
+          "每一项讨论到一半，做一个快速检查。",
+          "「现在七分钟了，我听到的是两个选项。」",
+          "这个小小的同步能把大家从细节里拉回来，又不会让人觉得被打断。"
+        ],
+        [
+          "结束前五分钟，停止讨论，哪怕正聊得热火朝天。",
+          "用这段时间确认决定和负责人。",
+          "一个准时结束、下一步清晰的会，胜过一场超时的完美讨论。"
+        ],
+        [
+          "如果提前结束了，就放大家走。",
+          "从来没人抱怨过多出来十分钟。",
+          "时间长了，你的会就有了口碑，大家会开始做好准备再来，因为他们知道你尊重他们的时间。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为会议超时最主要的原因是什么？",
+      "a": "议程写的是话题而不是要达成的结果，话题没有明显的结束点。"
+    },
+    {
+      "q": "怎样改写议程能让会议更高效？",
+      "a": "把每个议题写成小组必须回答的问题；写不成问题的，可能发邮件就够了。"
+    },
+    {
+      "q": "会议进行中主持人如何控制时间？",
+      "a": "每个议题说出时限；中途报时并概括现状；结束前五分钟停止讨论，确认决定和负责人；提前结束就放人。"
+    }
+  ],
+  "dictation": [
+    "Write every agenda item as a question the group must answer.",
+    "A meeting that ends on time with clear next steps beats a perfect discussion that runs over.",
+    "If you cannot turn an item into a question, it probably belongs in an email.",
+    "Nobody has ever complained about getting ten minutes back."
+  ],
+  "shadow": {
+    "text": "Once the meeting starts, give each question a time box and say it out loud. \"We have fifteen minutes for the hiring plan.\" Saying the number makes the limit feel shared, not like a rule you are enforcing alone.",
+    "marked": "Once the meeting <b>starts</b>, / give each question a <b>time box</b> / and say it <b>out loud</b>. //<br>\"We have <b>fifteen</b> minutes / for the <b>hiring</b> plan.\" //<br>Saying the <b>number</b> / makes the limit feel <b>shared</b>, / not like a rule you are enforcing <b>alone</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你主持一个四十五分钟的季度规划会。用 30 秒开场：把议程说成三个需要回答的问题，并给每个问题定时间。",
+      "ref": "Thanks for joining. We have forty-five minutes and three questions to answer. First, which two projects do we pause next quarter? Let's give that twenty minutes. Second, do we need a new hire for the data team? Fifteen minutes. Third, who owns the migration? Five minutes. I'll keep an eye on the clock and save the last five minutes to confirm owners.",
+      "ref_zh": "谢谢大家参加。我们有四十五分钟，要回答三个问题。第一，下季度暂停哪两个项目？这个给二十分钟。第二，数据团队需不需要招一个新人？十五分钟。第三，迁移谁来负责？五分钟。我来盯着时间，最后五分钟留出来确认负责人。"
+    },
+    {
+      "q": "会议还剩五分钟，大家在细节上越聊越深。用 30 秒叫停，确认已定事项，把剩下的问题挪到会后。",
+      "ref": "Sorry to stop us, but we have five minutes left, and I want to make sure we leave with decisions. So far, we've agreed to pause the reporting project and keep the search work going. The open question is the exact staffing split. Rather than rush it, can Daniel and Sophie sort that out offline and share a proposal by Thursday? Great, thanks everyone.",
+      "ref_zh": "不好意思打断一下，我们还剩五分钟，我想确保大家带着结论离开。目前我们说好了暂停报表项目，搜索这块继续做。还没定的是具体的人力怎么分。与其仓促定下来，不如让 Daniel 和 Sophie 会后对一下，周四前出个方案？好，谢谢大家。"
+    }
+  ],
+  "words": [
+    {
+      "w": "obviously",
+      "ipa": "/ˈɑːbviəsli/",
+      "zh": "明显地",
+      "ex": "The bug was obviously in the new parser, not the database."
+    },
+    {
+      "w": "relevant",
+      "ipa": "/ˈreləvənt/",
+      "zh": "相关的",
+      "ex": "Please only bring the relevant dashboards to the review."
+    },
+    {
+      "w": "strict",
+      "ipa": "/strɪkt/",
+      "zh": "严格的",
+      "ex": "We have a strict code freeze during the holiday week."
+    },
+    {
+      "w": "time box",
+      "ipa": "/ˈtaɪm bɑːks/",
+      "zh": "时间盒、限定时长",
+      "ex": "Let's put a time box of two days on the spike."
+    },
+    {
+      "w": "enforce",
+      "ipa": "/ɪnˈfɔːrs/",
+      "zh": "执行、强制推行",
+      "ex": "The linter enforces our naming rules automatically."
+    },
+    {
+      "w": "reputation",
+      "ipa": "/ˌrepjəˈteɪʃən/",
+      "zh": "名声、口碑",
+      "ex": "That service has a reputation for breaking on Mondays."
+    },
+    {
+      "w": "run over",
+      "ipa": "/rʌn ˈoʊvər/",
+      "zh": "超时",
+      "ex": "Sorry, the standup ran over; I'll join in five minutes."
+    },
+    {
+      "w": "set aside",
+      "ipa": "/set əˈsaɪd/",
+      "zh": "暂时搁置",
+      "ex": "Let's set aside the UI questions and focus on the API."
+    },
+    {
+      "w": "outcome",
+      "ipa": "/ˈaʊtkʌm/",
+      "zh": "结果、产出",
+      "ex": "The outcome of this meeting should be a go or no-go decision."
+    }
+  ]
+}

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Hosting Friends for After-Work Drinks · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "114", "type": "dialogue", "title": "Hosting Friends for After-Work Drinks", "meta": "B2 · 约 250 词 · 场景：订位、点单与核对账单", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Bar Manager", "name_zh": "酒吧经理", "voice": "en-IN-PrabhatNeural"}}, "gist": [{"q": "「你」订了什么样的位子？还提前安排了什么？", "a": "周四六点半、六个人的靠窗高桌；还预点了一份分享拼盘。"}, {"q": "账单上出了什么错？", "a": "多算了一瓶白葡萄酒，那瓶其实是隔壁桌的，经理去掉了。"}, {"q": "为什么最后一轮啤酒按原价算？", "a": "因为是八点十分下的单，欢乐时段八点已经结束了。"}], "dictation": [{"id": "s0_1_0", "text": "Hi, I'd like to book a table for six this Thursday, around six thirty."}, {"id": "s0_5_0", "text": "Great. One of my friends doesn't drink. Do you have decent mocktails?"}, {"id": "s1_2_0", "text": "Sorry, I think there's a mistake. We only had one bottle of white wine, but there are two on here."}, {"id": "s1_6_0", "text": "Fair enough. Is the service charge already included?"}], "shadow": {"speaker": "A", "text": "Good to know. Could we also pre-order some bar snacks so they're ready when we arrive?", "marked": "Good to <b>know</b>. //<br>Could we also <b>pre-order</b> / some <b>bar snacks</b> / so they're <b>ready</b> / when we <b>arrive</b>? //"}, "prompts": [{"q": "你想给团队在酒吧包一个角落办欢送会，大约十二个人。打电话问能不能预留、有没有最低消费、可不可以带蛋糕。", "ref": "Hi, I'm organising a farewell for a colleague next Friday evening, about twelve people. Would it be possible to reserve a corner area for us from seven? Is there a minimum spend for a group that size? Also, we'd like to bring our own cake. Is that okay, and is there a cake cutting fee?", "ref_zh": "你好，我下周五晚上要给同事办个欢送会，大概十二个人。七点开始能给我们预留一个角落吗？这么多人有没有最低消费？另外我们想自带蛋糕，可以吗？收切蛋糕费吗？", "id": "ref0"}, {"q": "结账时朋友坚持要和你平摊，但你说好今天你请。礼貌地坚持由你买单，并顺便约下次。", "ref": "No, no, put your card away. I invited you all tonight, so this one's on me. It's been ages since we got together, and I really wanted to say thanks for helping me settle in. If you insist, you can get the next round next time. Let's not leave it so long again.", "ref_zh": "不不，把卡收起来。今晚是我请大家的，这顿我来。我们好久没聚了，我也一直想谢谢你们帮我适应这边。你们非要请的话，下次那一轮你们来。下次别隔这么久了。", "id": "ref1"}], "words": [{"w": "happy hour", "ipa": "/ˈhæpi aʊr/", "zh": "欢乐时段（酒水优惠）", "ex": "Happy hour ends at eight, so let's order now.", "id": "w0"}, {"w": "mocktail", "ipa": "/ˈmɑːkteɪl/", "zh": "无酒精鸡尾酒", "ex": "I'm driving tonight, so I'll just have a mocktail.", "id": "w1"}, {"w": "off menu", "ipa": "/ɔːf ˈmenjuː/", "zh": "菜单之外的", "ex": "The chef can cook something off menu for the kids.", "id": "w2"}, {"w": "bar snacks", "ipa": "/bɑːr snæks/", "zh": "下酒小吃", "ex": "The bar snacks here are better than the main dishes.", "id": "w3"}, {"w": "pre-order", "ipa": "/ˌpriː ˈɔːrdər/", "zh": "提前点单", "ex": "You can pre-order the birthday cake online.", "id": "w4"}, {"w": "mistake", "ipa": "/mɪˈsteɪk/", "zh": "错误", "ex": "There's a mistake on my receipt.", "id": "w5"}, {"w": "round", "ipa": "/raʊnd/", "zh": "（给一桌人点的）一轮酒", "ex": "This round is on me.", "id": "w6"}, {"w": "total", "ipa": "/ˈtoʊtəl/", "zh": "总额", "ex": "What's the total with service charge?", "id": "w7"}, {"w": "get the bill", "ipa": "/ɡet ðə bɪl/", "zh": "买单", "ex": "Could we get the bill when you have a moment?", "id": "w8"}], "sections": [{"heading": "1. Booking and Ordering", "heading_zh": "1. 订位和点单", "rows": [[{"id": "s0_0_0", "md": "Good afternoon, Copper Room. How can I help?", "text": "Good afternoon, Copper Room. How can I help?", "zh": "下午好，这里是 Copper Room。有什么可以帮您？", "sp": "B"}], [{"id": "s0_1_0", "md": "**Hi, I'd like to book a table for six this Thursday, around six thirty.**", "text": "Hi, I'd like to book a table for six this Thursday, around six thirty.", "zh": "你好，我想订这周四的位子，六个人，六点半左右。", "sp": "A"}], [{"id": "s0_2_0", "md": "Let me see. I can give you a high table near the window. Is that alright?", "text": "Let me see. I can give you a high table near the window. Is that alright?", "zh": "我看看。可以给您安排靠窗的高桌，行吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "Perfect. Do you have a ==happy hour==, and __until what time__?", "text": "Perfect. Do you have a happy hour, and until what time?", "zh": "太好了。你们有欢乐时段吗？到几点？", "sp": "A"}], [{"id": "s0_4_0", "md": "Yes, until eight. House pours and draught beers are one-for-one.", "text": "Yes, until eight. House pours and draught beers are one-for-one.", "zh": "有，到八点。店酒和生啤买一送一。", "sp": "B"}], [{"id": "s0_5_0", "md": "Great. One of my friends doesn't drink. Do you have decent ==mocktails==?", "text": "Great. One of my friends doesn't drink. Do you have decent mocktails?", "zh": "很好。我有个朋友不喝酒，你们有像样的无酒精鸡尾酒吗？", "sp": "A"}], [{"id": "s0_6_0", "md": "We have three on the menu, and the bartender can make something ==off menu== too.", "text": "We have three on the menu, and the bartender can make something off menu too.", "zh": "菜单上有三款，调酒师也可以做菜单外的。", "sp": "B"}], [{"id": "s0_7_0", "md": "Good to know. Could we also __pre-order__ some ==bar snacks== so they're ready when we arrive?", "text": "Good to know. Could we also pre-order some bar snacks so they're ready when we arrive?", "zh": "好的。我们能不能先预点一些下酒小吃，到的时候就能上？", "sp": "A"}], [{"id": "s0_8_0", "md": "Of course. I'd suggest the sharing platter. It __feeds about__ four to six people.", "text": "Of course. I'd suggest the sharing platter. It feeds about four to six people.", "zh": "当然。推荐拼盘，大概够四到六个人吃。", "sp": "B"}], [{"id": "s0_9_0", "md": "Let's do one platter. The booking is under Lee. Thanks a lot.", "text": "Let's do one platter. The booking is under Lee. Thanks a lot.", "zh": "那就来一份拼盘。订位名字写 Lee。多谢。", "sp": "A"}]]}, {"heading": "2. Settling the Bill", "heading_zh": "2. 结账", "rows": [[{"id": "s1_0_0", "md": "Excuse me, could we __get the bill__, please? It's all on one card.", "text": "Excuse me, could we get the bill, please? It's all on one card.", "zh": "打扰一下，麻烦买单。全部刷一张卡。", "sp": "A"}], [{"id": "s1_1_0", "md": "Certainly. Here you are. Take your time.", "text": "Certainly. Here you are. Take your time.", "zh": "好的，给您。您慢慢看。", "sp": "B"}], [{"id": "s1_2_0", "md": "Sorry, I think there's a ==mistake==. We only had one bottle of white wine, but there are two on here.", "text": "Sorry, I think there's a mistake. We only had one bottle of white wine, but there are two on here.", "zh": "不好意思，好像有点问题。我们只点了一瓶白葡萄酒，账单上是两瓶。", "sp": "A"}], [{"id": "s1_3_0", "md": "Let me check with the bar. You're right, the second one was for the next table. I'll take it off.", "text": "Let me check with the bar. You're right, the second one was for the next table. I'll take it off.", "zh": "我跟吧台确认一下。您说得对，第二瓶是隔壁桌的。我给您去掉。", "sp": "B"}], [{"id": "s1_4_0", "md": "Thanks. And the beers after eight, were those still at the happy hour price?", "text": "Thanks. And the beers after eight, were those still at the happy hour price?", "zh": "谢谢。还有八点以后点的啤酒，还算欢乐时段价吗？", "sp": "A"}], [{"id": "s1_5_0", "md": "The last ==round== came in at eight ten, so that's full price, I'm afraid.", "text": "The last round came in at eight ten, so that's full price, I'm afraid.", "zh": "最后一轮是八点十分下的单，所以恐怕要按原价算。", "sp": "B"}], [{"id": "s1_6_0", "md": "**Fair enough. Is the service charge already included?**", "text": "Fair enough. Is the service charge already included?", "zh": "也合理。服务费已经包含在内了吗？", "sp": "A"}], [{"id": "s1_7_0", "md": "Yes, service charge and GST are both included. Your new ==total== is three hundred and twelve.", "text": "Yes, service charge and GST are both included. Your new total is three hundred and twelve.", "zh": "是的，服务费和消费税都包含了。新的总额是三百一十二。", "sp": "B"}], [{"id": "s1_8_0", "md": "**Great, thanks for sorting that out. We had a really good time.**", "text": "Great, thanks for sorting that out. We had a really good time.", "zh": "好，谢谢你们处理。我们今晚玩得很开心。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Booking and Ordering", "zh": "1. 订位和点单", "start": 0.0, "end": 2.352, "words": [[0.105, 0.368], [0.789, 1.197], [1.329, 1.434], [1.447, 1.947]]}, {"kind": "s", "id": "s0_0_0", "md": "Good afternoon, Copper Room. How can I help?", "zh": "下午好，这里是 Copper Room。有什么可以帮您？", "sp": "B", "gap": false, "start": 2.352, "end": 7.392, "words": [[2.455, 2.705], [2.797, 3.56], [3.705, 4.073], [4.073, 4.494], [5.378, 5.602], [5.602, 5.852], [5.852, 6.01], [6.01, 6.457]]}, {"kind": "s", "id": "s0_1_0", "md": "**Hi, I'd like to book a table for six this Thursday, around six thirty.**", "zh": "你好，我想订这周四的位子，六个人，六点半左右。", "sp": "A", "gap": false, "start": 7.392, "end": 12.168, "words": [[7.51, 7.787], [8.195, 8.339], [8.353, 8.51], [8.524, 8.603], [8.616, 8.813], [8.826, 8.879], [8.892, 9.234], [9.247, 9.405], [9.418, 9.8], [9.813, 10.01], [10.024, 10.603], [10.813, 11.116], [11.129, 11.392], [11.405, 11.774]]}, {"kind": "s", "id": "s0_2_0", "md": "Let me see. I can give you a high table near the window. Is that alright?", "zh": "我看看。可以给您安排靠窗的高桌，行吗？", "sp": "B", "gap": false, "start": 12.168, "end": 19.872, "words": [[12.271, 12.547], [12.56, 12.823], [12.823, 13.178], [14.115, 14.3], [14.3, 14.629], [14.629, 14.879], [14.879, 15.063], [15.102, 15.207], [15.221, 15.536], [15.55, 15.957], [15.957, 16.3], [16.3, 16.444], [16.457, 16.905], [17.852, 17.997], [17.997, 18.273], [18.339, 18.918]]}, {"kind": "s", "id": "s0_3_0", "md": "Perfect. Do you have a ==happy hour==, and __until what time__?", "zh": "太好了。你们有欢乐时段吗？到几点？", "sp": "A", "gap": false, "start": 19.872, "end": 23.448, "words": [[19.99, 20.425], [20.859, 20.911], [20.925, 21.017], [21.03, 21.188], [21.201, 21.254], [21.267, 21.609], [21.622, 21.898], [22.214, 22.267], [22.28, 22.556], [22.569, 22.714], [22.727, 23.069]]}, {"kind": "s", "id": "s0_4_0", "md": "Yes, until eight. House pours and draught beers are one-for-one.", "zh": "有，到八点。店酒和生啤买一送一。", "sp": "B", "gap": false, "start": 23.448, "end": 30.048, "words": [[23.551, 23.945], [24.077, 24.551], [24.643, 24.932], [25.922, 26.264], [26.264, 26.737], [26.816, 27.093], [27.093, 27.435], [27.435, 27.935], [28.014, 28.277], [28.277, 29.093]]}, {"kind": "s", "id": "s0_5_0", "md": "Great. One of my friends doesn't drink. Do you have decent ==mocktails==?", "zh": "很好。我有个朋友不喝酒，你们有像样的无酒精鸡尾酒吗？", "sp": "A", "gap": false, "start": 30.048, "end": 34.608, "words": [[30.153, 30.495], [30.93, 31.022], [31.035, 31.087], [31.101, 31.219], [31.232, 31.693], [31.706, 32.008], [32.022, 32.443], [32.877, 32.93], [32.943, 33.022], [33.035, 33.232], [33.245, 33.548], [33.561, 34.206]]}, {"kind": "s", "id": "s0_6_0", "md": "We have three on the menu, and the bartender can make something ==off menu== too.", "zh": "菜单上有三款，调酒师也可以做菜单外的。", "sp": "B", "gap": false, "start": 34.608, "end": 41.184, "words": [[34.711, 34.921], [34.921, 35.237], [35.25, 35.619], [35.684, 35.882], [35.882, 35.987], [35.987, 36.487], [36.869, 37.053], [37.053, 37.211], [37.211, 37.908], [37.921, 38.171], [38.171, 38.5], [38.5, 39.092], [39.158, 39.487], [39.487, 39.895], [39.895, 40.211]]}, {"kind": "s", "id": "s0_7_0", "md": "Good to know. Could we also __pre-order__ some ==bar snacks== so they're ready when we arrive?", "zh": "好的。我们能不能先预点一些下酒小吃，到的时候就能上？", "sp": "A", "gap": false, "start": 41.184, "end": 46.08, "words": [[41.289, 41.408], [41.421, 41.513], [41.526, 41.789], [42.223, 42.316], [42.329, 42.46], [42.473, 42.776], [42.789, 43.276], [43.289, 43.447], [43.46, 43.71], [43.723, 44.25], [44.368, 44.487], [44.5, 44.671], [44.684, 44.895], [44.908, 45.039], [45.052, 45.158], [45.171, 45.697]]}, {"kind": "s", "id": "s0_8_0", "md": "Of course. I'd suggest the sharing platter. It __feeds about__ four to six people.", "zh": "当然。推荐拼盘，大概够四到六个人吃。", "sp": "B", "gap": false, "start": 46.08, "end": 54.0, "words": [[46.183, 46.393], [46.406, 46.893], [47.83, 48.08], [48.093, 48.619], [48.685, 48.817], [48.817, 49.29], [49.291, 49.791], [50.725, 50.856], [50.856, 51.343], [51.356, 51.738], [51.738, 52.106], [52.106, 52.251], [52.251, 52.593], [52.593, 53.093]]}, {"kind": "s", "id": "s0_9_0", "md": "Let's do one platter. The booking is under Lee. Thanks a lot.", "zh": "那就来一份拼盘。订位名字写 Lee。多谢。", "sp": "A", "gap": false, "start": 54.0, "end": 58.176, "words": [[54.105, 54.237], [54.25, 54.355], [54.368, 54.513], [54.526, 54.961], [55.408, 55.474], [55.487, 55.908], [56.053, 56.184], [56.197, 56.434], [56.447, 56.724], [57.184, 57.368], [57.382, 57.434], [57.447, 57.789]]}, {"kind": "h", "id": "h1", "md": "2. Settling the Bill", "zh": "2. 结账", "start": 58.176, "end": 60.192, "words": [[58.294, 58.492], [58.965, 59.373], [59.387, 59.465], [59.479, 59.794]]}, {"kind": "s", "id": "s1_0_0", "md": "Excuse me, could we __get the bill__, please? It's all on one card.", "zh": "打扰一下，麻烦买单。全部刷一张卡。", "sp": "A", "gap": false, "start": 60.192, "end": 64.416, "words": [[60.297, 60.758], [60.771, 60.955], [61.231, 61.363], [61.376, 61.455], [61.468, 61.6], [61.613, 61.692], [61.705, 61.968], [61.995, 62.534], [62.968, 63.087], [63.1, 63.271], [63.284, 63.403], [63.416, 63.6], [63.613, 64.021]]}, {"kind": "s", "id": "s1_1_0", "md": "Certainly. Here you are. Take your time.", "zh": "好的，给您。您慢慢看。", "sp": "B", "gap": false, "start": 64.416, "end": 69.888, "words": [[64.519, 65.176], [66.113, 66.416], [66.416, 66.6], [66.666, 66.942], [67.903, 68.153], [68.166, 68.482], [68.482, 68.955]]}, {"kind": "s", "id": "s1_2_0", "md": "Sorry, I think there's a ==mistake==. We only had one bottle of white wine, but there are two on here.", "zh": "不好意思，好像有点问题。我们只点了一瓶白葡萄酒，账单上是两瓶。", "sp": "A", "gap": false, "start": 69.888, "end": 76.008, "words": [[69.993, 70.427], [70.651, 70.73], [70.743, 70.941], [70.954, 71.125], [71.138, 71.177], [71.191, 71.73], [72.164, 72.296], [72.309, 72.506], [72.52, 72.691], [72.704, 72.927], [72.941, 73.296], [73.309, 73.401], [73.414, 73.638], [73.651, 74.046], [74.427, 74.559], [74.572, 74.704], [74.717, 74.796], [74.809, 75.085], [75.099, 75.243], [75.256, 75.625]]}, {"kind": "s", "id": "s1_3_0", "md": "Let me check with the bar. You're right, the second one was for the next table. I'll take it off.", "zh": "我跟吧台确认一下。您说得对，第二瓶是隔壁桌的。我给您去掉。", "sp": "B", "gap": false, "start": 76.008, "end": 85.128, "words": [[76.111, 76.387], [76.4, 76.637], [76.663, 76.966], [76.966, 77.216], [77.216, 77.361], [77.361, 77.703], [78.653, 78.955], [78.955, 79.39], [79.666, 79.771], [79.784, 80.232], [80.232, 80.534], [80.534, 80.903], [80.903, 81.153], [81.153, 81.284], [81.284, 81.64], [81.705, 82.14], [83.021, 83.271], [83.297, 83.561], [83.574, 83.745], [83.758, 84.179]]}, {"kind": "s", "id": "s1_4_0", "md": "Thanks. And the beers after eight, were those still at the happy hour price?", "zh": "谢谢。还有八点以后点的啤酒，还算欢乐时段价吗？", "sp": "A", "gap": false, "start": 85.128, "end": 89.904, "words": [[85.26, 85.667], [86.102, 86.167], [86.181, 86.273], [86.286, 86.628], [86.641, 86.983], [86.996, 87.233], [87.615, 87.733], [87.746, 87.97], [87.983, 88.273], [88.286, 88.365], [88.378, 88.457], [88.47, 88.812], [88.825, 88.983], [88.996, 89.51]]}, {"kind": "s", "id": "s1_5_0", "md": "The last ==round== came in at eight ten, so that's full price, I'm afraid.", "zh": "最后一轮是八点十分下的单，所以恐怕要按原价算。", "sp": "B", "gap": false, "start": 89.904, "end": 96.168, "words": [[90.007, 90.112], [90.112, 90.493], [90.533, 90.915], [90.915, 91.309], [91.349, 91.507], [91.533, 91.757], [91.836, 92.099], [92.112, 92.52], [92.822, 93.072], [93.072, 93.467], [93.48, 93.691], [93.704, 94.151], [94.336, 94.638], [94.678, 95.217]]}, {"kind": "s", "id": "s1_6_0", "md": "**Fair enough. Is the service charge already included?**", "zh": "也合理。服务费已经包含在内了吗？", "sp": "A", "gap": false, "start": 96.168, "end": 99.6, "words": [[96.313, 96.458], [96.471, 96.8], [97.234, 97.339], [97.352, 97.444], [97.457, 97.878], [97.892, 98.326], [98.339, 98.694], [98.707, 99.221]]}, {"kind": "s", "id": "s1_7_0", "md": "Yes, service charge and GST are both included. Your new ==total== is three hundred and twelve.", "zh": "是的，服务费和消费税都包含了。新的总额是三百一十二。", "sp": "B", "gap": false, "start": 99.6, "end": 108.6, "words": [[99.703, 100.097], [100.426, 100.966], [100.966, 101.479], [101.558, 101.808], [101.808, 102.439], [102.479, 102.729], [102.729, 103.111], [103.216, 103.887], [104.837, 105.166], [105.179, 105.442], [105.455, 106.021], [106.1, 106.324], [106.337, 106.679], [106.692, 107.074], [107.074, 107.271], [107.271, 107.692]]}, {"kind": "s", "id": "s1_8_0", "md": "**Great, thanks for sorting that out. We had a really good time.**", "zh": "好，谢谢你们处理。我们今晚玩得很开心。", "sp": "A", "gap": false, "start": 108.6, "end": 112.392, "words": [[108.705, 109.008], [109.311, 109.547], [109.561, 109.679], [109.692, 110.021], [110.034, 110.232], [110.245, 110.482], [110.916, 110.995], [111.008, 111.113], [111.126, 111.153], [111.166, 111.455], [111.468, 111.639], [111.653, 112.008]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

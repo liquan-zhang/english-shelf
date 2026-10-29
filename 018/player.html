@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Presenting Bad News Upward · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "018", "title": "Presenting Bad News Upward", "meta": "B2 · 约 280 词 · 场景：向上汇报", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Bad News Gets Worse with Age", "heading_zh": "1. 坏消息越放越坏", "rows": [[{"id": "s0_0_0", "md": "Bad news is like milk; it does not get better if you leave it in the fridge.", "text": "Bad news is like milk; it does not get better if you leave it in the fridge.", "zh": "坏消息就像牛奶，放在冰箱里不会变好。", "sp": null}, {"id": "s0_0_1", "md": "A project that is two weeks late on Monday is still fixable.", "text": "A project that is two weeks late on Monday is still fixable.", "zh": "一个项目周一时延期两周，还有救。", "sp": null}, {"id": "s0_0_2", "md": "The same delay, ==revealed== the day before launch, becomes a crisis that pulls in three directors.", "text": "The same delay, revealed the day before launch, becomes a crisis that pulls in three directors.", "zh": "同样的延期，拖到上线前一天才说出来，就成了要拉上三个总监的危机。", "sp": null}], [{"id": "s0_1_0", "md": "Most people delay bad news for a kind reason.", "text": "Most people delay bad news for a kind reason.", "zh": "大多数人拖着不报坏消息，出发点是好的。", "sp": null}, {"id": "s0_1_1", "md": "They hope to fix the problem quietly and never have to mention it.", "text": "They hope to fix the problem quietly and never have to mention it.", "zh": "他们希望悄悄把问题解决，永远不用提起。", "sp": null}, {"id": "s0_1_2", "md": "Sometimes that works, but when it does not, your manager learns two things at once, that the project is in trouble and that you __kept it from them__.", "text": "Sometimes that works, but when it does not, your manager learns two things at once, that the project is in trouble and that you kept it from them.", "zh": "有时候这样确实行得通，但一旦行不通，你的经理会同时得知两件事：项目出了问题，而且你一直瞒着他。", "sp": null}], [{"id": "s0_2_0", "md": "**Managers can handle bad news; what they cannot handle is surprise.**", "text": "Managers can handle bad news; what they cannot handle is surprise.", "zh": "经理能接受坏消息，他们接受不了的是意外。", "sp": null}, {"id": "s0_2_1", "md": "Early warning gives them time to move people, adjust ==commitments==, or warn their own boss.", "text": "Early warning gives them time to move people, adjust commitments, or warn their own boss.", "zh": "提前预警能让他们有时间调人、调整承诺，或者给自己的老板打个预防针。", "sp": null}, {"id": "s0_2_2", "md": "In that sense, raising a problem early is not ==conceding== failure; it is giving them options.", "text": "In that sense, raising a problem early is not conceding failure; it is giving them options.", "zh": "从这个意义上说，早点暴露问题不是认输，而是给他们留出选择的余地。", "sp": null}]]}, {"heading": "2. Headline, Impact, Options", "heading_zh": "2. 结论、影响、选项", "rows": [[{"id": "s1_0_0", "md": "Open with the headline, not the history.", "text": "Open with the headline, not the history.", "zh": "开口先讲结论，不讲来龙去脉。", "sp": null}, {"id": "s1_0_1", "md": "\"The payment migration will miss the end of the month by about two weeks.\"", "text": "\"The payment migration will miss the end of the month by about two weeks.\"", "zh": "「支付迁移会比月底的节点晚两周左右。」", "sp": null}, {"id": "s1_0_2", "md": "If you start with a long story, your manager spends the whole time __bracing for__ the bad part.", "text": "If you start with a long story, your manager spends the whole time bracing for the bad part.", "zh": "如果你从一个很长的故事讲起，你的经理整个过程都在提心吊胆地等坏消息。", "sp": null}], [{"id": "s1_1_0", "md": "Then explain the impact in their terms.", "text": "Then explain the impact in their terms.", "zh": "然后用他们关心的维度讲清影响。", "sp": null}, {"id": "s1_1_1", "md": "Which customers, which teams, and which promises are affected?", "text": "Which customers, which teams, and which promises are affected?", "zh": "影响到哪些客户、哪些团队、哪些承诺？", "sp": null}, {"id": "s1_1_2", "md": "Keep the cause short and ==factual==, and avoid blaming another team, even if it is true.", "text": "Keep the cause short and factual, and avoid blaming another team, even if it is true.", "zh": "原因要讲得简短、客观，别甩锅给其他团队，哪怕确实是他们的问题。", "sp": null}], [{"id": "s1_2_0", "md": "Most importantly, bring options, with your ==recommendation==.", "text": "Most importantly, bring options, with your recommendation.", "zh": "最重要的是，带着选项来，并给出你的建议。", "sp": null}, {"id": "s1_2_1", "md": "\"We can cut the refund feature and ship on time, or keep it and slip two weeks; I'd suggest cutting it.\"", "text": "\"We can cut the refund feature and ship on time, or keep it and slip two weeks; I'd suggest cutting it.\"", "zh": "「我们可以砍掉退款功能按时上线，或者保留它推迟两周；我建议砍掉。」", "sp": null}, {"id": "s1_2_2", "md": "**Never bring a problem upward without at least one way out.**", "text": "Never bring a problem upward without at least one way out.", "zh": "永远不要只把问题往上抛，至少要带一条出路。", "sp": null}], [{"id": "s1_3_0", "md": "End with exactly what you need, whether it is a decision, extra people, or help __managing expectations__ with another team.", "text": "End with exactly what you need, whether it is a decision, extra people, or help managing expectations with another team.", "zh": "最后讲清楚你具体需要什么，不管是一个决定、更多人手，还是帮忙跟另一个团队管理预期。", "sp": null}, {"id": "s1_3_1", "md": "Delivered this way, bad news can actually ==strengthen== your manager's trust in you.", "text": "Delivered this way, bad news can actually strengthen your manager's trust in you.", "zh": "用这种方式传达，坏消息反而能加深经理对你的信任。", "sp": null}]]}], "gist": [{"q": "作者为什么把坏消息比作牛奶？", "a": "坏消息放着不会变好，越晚说越严重，早说还能补救，晚说就成了危机。"}, {"q": "作者说管理者真正无法接受的是什么？", "a": "不是坏消息本身，而是意外；提前预警能给他们调整人力、承诺和向上沟通的时间。"}, {"q": "向上汇报坏消息的结构是什么？", "a": "先说结论；用对方的语言讲影响，原因简短客观不甩锅；带着选项和自己的建议；最后明确需要什么支持。"}], "dictation": [{"id": "s0_2_0", "text": "Managers can handle bad news; what they cannot handle is surprise."}, {"id": "s1_2_2", "text": "Never bring a problem upward without at least one way out."}, {"id": "s1_0_0", "text": "Open with the headline, not the history."}, {"id": "s0_0_0", "text": "Bad news is like milk; it does not get better if you leave it in the fridge."}], "shadow": {"text": "Most importantly, bring options, with your recommendation. \"We can cut the refund feature and ship on time, or keep it and slip two weeks; I'd suggest cutting it.\"", "marked": "Most <b>importantly</b>, / bring <b>options</b>, / with your <b>recommendation</b>. //<br>\"We can <b>cut</b> the refund feature / and ship on <b>time</b>, / or <b>keep</b> it / and slip <b>two</b> weeks; // I'd suggest <b>cutting</b> it.\" //"}, "prompts": [{"q": "你发现团队负责的数据迁移会比计划晚三周，原因是上游接口变更。用 30 秒向你的总监汇报：结论、影响、选项和建议。", "ref": "I need to flag a risk early. The data migration is going to be about three weeks late. The upstream API changed last week, and we have to rewrite part of the sync logic. The main impact is on the finance reports, which depend on the new tables. We have two options. We can move only the finance tables first and hit the date, or move everything three weeks later. I'd recommend the first option.", "ref_zh": "我需要提前同步一个风险。数据迁移会晚三周左右。上游 API 上周改了，我们得重写一部分同步逻辑。主要影响的是财务报表，它们依赖新表。我们有两个选项。可以先只迁财务相关的表，赶上原定日期；或者三周后整体迁移。我建议选第一个。", "id": "ref0"}, {"q": "线上出了一个影响部分用户的故障，已经止血。用 30 秒向上级简短汇报，并说明你需要他帮什么。", "ref": "Quick heads-up on this morning's incident. For about forty minutes, roughly five percent of users couldn't log in. It's fixed now, and we've rolled back the change that caused it. We'll have a full write-up by Thursday. The one thing I need from you is help with the customer success team, since a few large clients noticed, and I think the message should come from your level.", "ref_zh": "同步一下今天上午的事故。大约四十分钟里，约百分之五的用户登录不了。现在已经修好了，引发问题的改动也已经回滚。周四前我们会出完整的复盘报告。我唯一需要你帮忙的是客户成功团队那边，因为有几个大客户注意到了，我觉得这个口径应该由你这个层级来发。", "id": "ref1"}], "words": [{"w": "reveal", "ipa": "/rɪˈviːl/", "zh": "揭露、透露", "ex": "The audit revealed three services still using the old password hash.", "id": "w0"}, {"w": "commitment", "ipa": "/kəˈmɪtmənt/", "zh": "承诺、已答应的事", "ex": "We can't take this on without dropping another commitment.", "id": "w1"}, {"w": "concede", "ipa": "/kənˈsiːd/", "zh": "承认（失败、观点）", "ex": "I'll concede that the old design was simpler to operate.", "id": "w2"}, {"w": "factual", "ipa": "/ˈfæktʃuəl/", "zh": "基于事实的、客观的", "ex": "Keep the postmortem factual and avoid naming individuals.", "id": "w3"}, {"w": "recommendation", "ipa": "/ˌrekəmenˈdeɪʃən/", "zh": "建议、推荐方案", "ex": "My recommendation is to delay the launch by one week.", "id": "w4"}, {"w": "strengthen", "ipa": "/ˈstreŋkθən/", "zh": "加强", "ex": "The new tests strengthen our confidence in the release.", "id": "w5"}, {"w": "brace for", "ipa": "/breɪs fɔːr/", "zh": "做好（应对坏事的）准备", "ex": "We're bracing for a traffic spike when the campaign goes live.", "id": "w6"}, {"w": "slip (v.)", "ipa": "/slɪp/", "zh": "（进度）延误", "ex": "If the vendor is late, our launch will slip too.", "tts_w": "slip", "id": "w7"}, {"w": "crisis", "ipa": "/ˈkraɪsɪs/", "zh": "危机", "ex": "We turned a small bug into a crisis by ignoring it for a month.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Bad News Gets Worse with Age", "zh": "1. 坏消息越放越坏", "start": 0.0, "end": 2.856, "words": [[0.105, 0.382], [0.75, 1.0], [1.013, 1.289], [1.303, 1.5], [1.513, 1.803], [1.816, 1.974], [1.987, 2.474]]}, {"kind": "s", "id": "s0_0_0", "md": "Bad news is like milk; it does not get better if you leave it in the fridge.", "zh": "坏消息就像牛奶，放在冰箱里不会变好。", "sp": null, "gap": false, "start": 2.856, "end": 7.32, "words": [[2.961, 3.238], [3.251, 3.645], [3.659, 3.79], [3.803, 4.001], [4.014, 4.422], [4.738, 4.803], [4.817, 4.948], [4.961, 5.172], [5.185, 5.382], [5.395, 5.672], [5.685, 5.79], [5.803, 5.922], [5.935, 6.159], [6.172, 6.224], [6.238, 6.317], [6.33, 6.395], [6.409, 6.935]]}, {"kind": "s", "id": "s0_0_1", "md": "A project that is two weeks late on Monday is still fixable.", "zh": "一个项目周一时延期两周，还有救。", "sp": null, "gap": false, "start": 7.32, "end": 11.28, "words": [[7.425, 7.478], [7.491, 7.965], [7.978, 8.123], [8.136, 8.267], [8.281, 8.517], [8.531, 8.833], [8.846, 9.07], [9.083, 9.228], [9.241, 9.754], [9.886, 10.004], [10.017, 10.281], [10.294, 10.886]]}, {"kind": "s", "id": "s0_0_2", "md": "The same delay, ==revealed== the day before launch, becomes a crisis that pulls in three directors.", "zh": "同样的延期，拖到上线前一天才说出来，就成了要拉上三个总监的危机。", "sp": null, "gap": false, "start": 11.28, "end": 17.664, "words": [[11.398, 11.464], [11.477, 11.767], [11.78, 12.227], [12.609, 13.017], [13.03, 13.135], [13.148, 13.359], [13.372, 13.741], [13.754, 14.293], [14.556, 14.925], [14.938, 14.99], [15.004, 15.569], [15.583, 15.74], [15.754, 16.175], [16.188, 16.319], [16.333, 16.569], [16.583, 17.267]]}, {"kind": "s", "id": "s0_1_0", "md": "Most people delay bad news for a kind reason.", "zh": "大多数人拖着不报坏消息，出发点是好的。", "sp": null, "gap": true, "start": 17.664, "end": 20.544, "words": [[17.769, 17.993], [18.006, 18.309], [18.322, 18.611], [18.625, 18.967], [18.98, 19.269], [19.282, 19.427], [19.44, 19.48], [19.493, 19.782], [19.796, 20.164]]}, {"kind": "s", "id": "s0_1_1", "md": "They hope to fix the problem quietly and never have to mention it.", "zh": "他们希望悄悄把问题解决，永远不用提起。", "sp": null, "gap": false, "start": 20.544, "end": 24.456, "words": [[20.662, 20.728], [20.741, 20.939], [20.952, 21.031], [21.044, 21.347], [21.36, 21.452], [21.465, 21.926], [21.939, 22.597], [22.82, 22.965], [22.978, 23.241], [23.255, 23.399], [23.412, 23.478], [23.491, 23.886], [23.899, 24.07]]}, {"kind": "s", "id": "s0_1_2", "md": "Sometimes that works, but when it does not, your manager learns two things at once, that the project is in trouble and that you __kept it from them__.", "zh": "有时候这样确实行得通，但一旦行不通，你的经理会同时得知两件事：项目出了问题，而且你一直瞒着他。", "sp": null, "gap": false, "start": 24.456, "end": 33.024, "words": [[24.574, 25.035], [25.048, 25.206], [25.219, 25.745], [25.995, 26.14], [26.153, 26.259], [26.272, 26.351], [26.364, 26.535], [26.548, 26.956], [27.377, 27.469], [27.482, 27.956], [27.969, 28.324], [28.338, 28.561], [28.574, 28.903], [28.917, 29.009], [29.022, 29.535], [29.785, 29.903], [29.917, 29.995], [30.009, 30.548], [30.561, 30.68], [30.693, 30.798], [30.811, 31.298], [31.561, 31.627], [31.64, 31.759], [31.772, 31.877], [31.89, 32.18], [32.193, 32.259], [32.272, 32.456], [32.469, 32.64]]}, {"kind": "s", "id": "s0_2_0", "md": "**Managers can handle bad news; what they cannot handle is surprise.**", "zh": "经理能接受坏消息，他们接受不了的是意外。", "sp": null, "gap": true, "start": 33.024, "end": 37.44, "words": [[33.129, 33.616], [33.629, 33.774], [33.787, 34.195], [34.208, 34.458], [34.471, 34.892], [35.195, 35.353], [35.366, 35.485], [35.498, 35.853], [35.866, 36.261], [36.274, 36.353], [36.366, 37.037]]}, {"kind": "s", "id": "s0_2_1", "md": "Early warning gives them time to move people, adjust ==commitments==, or warn their own boss.", "zh": "提前预警能让他们有时间调人、调整承诺，或者给自己的老板打个预防针。", "sp": null, "gap": false, "start": 37.44, "end": 43.368, "words": [[37.545, 37.795], [37.808, 38.269], [38.282, 38.558], [38.572, 38.716], [38.729, 39.124], [39.137, 39.243], [39.256, 39.506], [39.519, 40.019], [40.401, 40.716], [40.729, 41.414], [41.716, 41.861], [41.874, 42.098], [42.111, 42.269], [42.282, 42.427], [42.44, 42.979]]}, {"kind": "s", "id": "s0_2_2", "md": "In that sense, raising a problem early is not ==conceding== failure; it is giving them options.", "zh": "从这个意义上说，早点暴露问题不是认输，而是给他们留出选择的余地。", "sp": null, "gap": false, "start": 43.368, "end": 49.56, "words": [[43.473, 43.565], [43.579, 43.776], [43.789, 44.276], [44.526, 44.907], [44.921, 44.973], [44.986, 45.434], [45.447, 45.881], [46.0, 46.131], [46.144, 46.434], [46.447, 47.0], [47.013, 47.513], [47.986, 48.039], [48.052, 48.157], [48.171, 48.407], [48.421, 48.526], [48.539, 49.171]]}, {"kind": "h", "id": "h1", "md": "2. Headline, Impact, Options", "zh": "2. 结论、影响、选项", "start": 49.56, "end": 52.776, "words": [[49.665, 49.902], [50.349, 50.863], [51.073, 51.652], [51.757, 52.376]]}, {"kind": "s", "id": "s1_0_0", "md": "Open with the headline, not the history.", "zh": "开口先讲结论，不讲来龙去脉。", "sp": null, "gap": false, "start": 52.776, "end": 55.296, "words": [[52.881, 53.105], [53.118, 53.237], [53.25, 53.329], [53.342, 53.855], [54.158, 54.329], [54.342, 54.421], [54.434, 54.894]]}, {"kind": "s", "id": "s1_0_1", "md": "\"The payment migration will miss the end of the month by about two weeks.\"", "zh": "「支付迁移会比月底的节点晚两周左右。」", "sp": null, "gap": false, "start": 55.296, "end": 59.736, "words": [[55.52, 55.546], [55.546, 55.875], [55.888, 56.52], [56.533, 56.664], [56.678, 56.98], [56.993, 57.099], [57.112, 57.309], [57.322, 57.375], [57.388, 57.454], [57.467, 57.849], [57.98, 58.151], [58.164, 58.467], [58.48, 58.743], [58.757, 59.322]]}, {"kind": "s", "id": "s1_0_2", "md": "If you start with a long story, your manager spends the whole time __bracing for__ the bad part.", "zh": "如果你从一个很长的故事讲起，你的经理整个过程都在提心吊胆地等坏消息。", "sp": null, "gap": false, "start": 59.736, "end": 65.136, "words": [[59.854, 59.96], [59.973, 60.065], [60.078, 60.354], [60.368, 60.499], [60.512, 60.539], [60.552, 60.881], [60.894, 61.354], [61.67, 61.736], [61.749, 62.236], [62.249, 62.604], [62.618, 62.71], [62.723, 63.078], [63.091, 63.46], [63.473, 63.946], [63.96, 64.065], [64.078, 64.157], [64.17, 64.42], [64.433, 64.749]]}, {"kind": "s", "id": "s1_1_0", "md": "Then explain the impact in their terms.", "zh": "然后用他们关心的维度讲清影响。", "sp": null, "gap": true, "start": 65.136, "end": 67.704, "words": [[65.254, 65.333], [65.347, 65.807], [65.82, 65.912], [65.925, 66.478], [66.491, 66.557], [66.57, 66.715], [66.728, 67.32]]}, {"kind": "s", "id": "s1_1_1", "md": "Which customers, which teams, and which promises are affected?", "zh": "影响到哪些客户、哪些团队、哪些承诺？", "sp": null, "gap": false, "start": 67.704, "end": 71.76, "words": [[67.822, 67.98], [67.993, 68.704], [68.901, 69.138], [69.151, 69.691], [69.901, 70.033], [70.046, 70.217], [70.23, 70.743], [70.757, 70.849], [70.862, 71.375]]}, {"kind": "s", "id": "s1_1_2", "md": "Keep the cause short and ==factual==, and avoid blaming another team, even if it is true.", "zh": "原因要讲得简短、客观，别甩锅给其他团队，哪怕确实是他们的问题。", "sp": null, "gap": false, "start": 71.76, "end": 77.592, "words": [[71.865, 72.063], [72.076, 72.181], [72.194, 72.576], [72.589, 73.023], [73.115, 73.207], [73.221, 73.905], [74.221, 74.286], [74.299, 74.707], [74.721, 75.115], [75.128, 75.431], [75.444, 75.852], [76.273, 76.471], [76.484, 76.615], [76.628, 76.694], [76.707, 76.839], [76.852, 77.194]]}, {"kind": "s", "id": "s1_2_0", "md": "Most importantly, bring options, with your ==recommendation==.", "zh": "最重要的是，带着选项来，并给出你的建议。", "sp": null, "gap": true, "start": 77.592, "end": 81.456, "words": [[77.697, 77.934], [77.947, 78.592], [78.908, 79.118], [79.131, 79.789], [80.013, 80.158], [80.171, 80.289], [80.303, 81.079]]}, {"kind": "s", "id": "s1_2_1", "md": "\"We can cut the refund feature and ship on time, or keep it and slip two weeks; I'd suggest cutting it.\"", "zh": "「我们可以砍掉退款功能按时上线，或者保留它推迟两周；我建议砍掉。」", "sp": null, "gap": false, "start": 81.456, "end": 88.488, "words": [[81.64, 81.693], [81.693, 81.838], [81.851, 82.061], [82.074, 82.153], [82.167, 82.574], [82.588, 83.088], [83.101, 83.18], [83.193, 83.482], [83.495, 83.666], [83.68, 84.114], [84.522, 84.614], [84.627, 84.864], [84.877, 85.048], [85.324, 85.403], [85.417, 85.719], [85.732, 85.943], [85.956, 86.43], [86.838, 86.982], [86.995, 87.456], [87.469, 87.798], [87.811, 87.969]]}, {"kind": "s", "id": "s1_2_2", "md": "**Never bring a problem upward without at least one way out.**", "zh": "永远不要只把问题往上抛，至少要带一条出路。", "sp": null, "gap": false, "start": 88.488, "end": 92.016, "words": [[88.593, 88.817], [88.83, 89.041], [89.054, 89.12], [89.133, 89.593], [89.712, 90.133], [90.146, 90.501], [90.514, 90.62], [90.633, 90.896], [90.909, 91.093], [91.106, 91.33], [91.343, 91.62]]}, {"kind": "s", "id": "s1_3_0", "md": "End with exactly what you need, whether it is a decision, extra people, or help __managing expectations__ with another team.", "zh": "最后讲清楚你具体需要什么，不管是一个决定、更多人手，还是帮忙跟另一个团队管理预期。", "sp": null, "gap": true, "start": 92.016, "end": 99.768, "words": [[92.121, 92.266], [92.279, 92.437], [92.45, 93.069], [93.082, 93.253], [93.266, 93.398], [93.411, 93.819], [94.069, 94.332], [94.345, 94.411], [94.424, 94.529], [94.542, 94.595], [94.608, 95.24], [95.687, 95.976], [95.99, 96.437], [96.898, 96.963], [96.977, 97.213], [97.227, 97.753], [97.766, 98.569], [98.582, 98.727], [98.74, 99.029], [99.042, 99.371]]}, {"kind": "s", "id": "s1_3_1", "md": "Delivered this way, bad news can actually ==strengthen== your manager's trust in you.", "zh": "用这种方式传达，坏消息反而能加深经理对你的信任。", "sp": null, "gap": false, "start": 99.768, "end": 104.808, "words": [[99.873, 100.268], [100.281, 100.479], [100.492, 100.755], [101.176, 101.452], [101.465, 101.821], [101.834, 101.979], [101.992, 102.478], [102.492, 103.005], [103.018, 103.136], [103.15, 103.65], [103.663, 104.071], [104.084, 104.189], [104.202, 104.413]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

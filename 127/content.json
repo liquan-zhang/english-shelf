@@ -1,0 +1,88 @@
+{
+  "id": "127",
+  "type": "dialogue",
+  "title": "Asking the Landlord to Fix Something",
+  "meta": "B2 · 约 320 词 · 场景：找房东报修与谈维修费",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Landlord", "name_zh": "房东", "voice": "en-SG-LunaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Reporting the Problems",
+      "heading_zh": "1. 报修",
+      "lines": [
+        {"sp": "A", "en": "Hi Mrs. Lim, it's Zhang from unit twelve. Sorry to bother you on a Sunday.", "zh": "林太太您好，我是十二号单元的小张。不好意思周日打扰您。"},
+        {"sp": "B", "en": "No problem. Is everything okay with the flat?", "zh": "没事。房子没什么问题吧？"},
+        {"sp": "A", "en": "**There are two things, actually. The kitchen sink is leaking, and the water heater isn't working.**", "zh": "其实有两件事。厨房水槽漏水，热水器也坏了。"},
+        {"sp": "B", "en": "Oh dear. How bad is the ==leak==?", "zh": "哎呀。漏得厉害吗？"},
+        {"sp": "A", "en": "It's dripping from the pipe under the sink. I've put a bucket there and __turned off__ the valve for now.", "zh": "是水槽下面的管子在滴水。我先放了个桶，把阀门关了。"},
+        {"sp": "B", "en": "Good, thank you. And the heater, is there no hot water at all?", "zh": "好，谢谢你。那热水器呢，完全没热水吗？"},
+        {"sp": "A", "en": "None since yesterday. The light on the switch is on, but the water stays cold. With a small kid, it's quite hard.", "zh": "从昨天起就一点都没有。开关的灯是亮的，但出来的水一直是冷的。家里有小孩，挺麻烦的。"},
+        {"sp": "B", "en": "Must be the ==heating element== again. I'll ask my ==plumber== to come by. When are you usually home?", "zh": "估计又是加热管坏了。我叫我的水电师傅过来。你们一般什么时候在家？"},
+        {"sp": "A", "en": "**My wife is home on weekday mornings. Could he come tomorrow before noon?**", "zh": "我太太工作日上午在家。他明天中午之前能来吗？"},
+        {"sp": "B", "en": "I'll try. I'll message you once he ==confirms==.", "zh": "我尽量。他确认了我就发消息给你。"}
+      ]
+    },
+    {
+      "heading": "2. Who Pays for the Repair",
+      "heading_zh": "2. 维修费谁出",
+      "lines": [
+        {"sp": "B", "en": "Hi, the plumber fixed the pipe and changed the heater element. The bill is two hundred and sixty dollars.", "zh": "你好，师傅把管子修好了，也换了热水器加热管。一共两百六十块。"},
+        {"sp": "A", "en": "Thanks for arranging it so quickly. How would you like to handle the cost?", "zh": "谢谢您安排得这么快。费用您打算怎么处理？"},
+        {"sp": "B", "en": "Under the lease, the tenant covers the first one hundred and fifty dollars of each repair, right?", "zh": "按租约，每次维修前一百五十块是租客出，对吧？"},
+        {"sp": "A", "en": "I've read that clause. It's for ==minor== repairs, usually things the tenant has caused.", "zh": "那条我看过。那是指小修，一般是租客造成的问题。"},
+        {"sp": "A", "en": "**The heater is over ten years old, so I'd see it as normal wear and tear.**", "zh": "热水器已经用了十多年了，我觉得这算正常损耗。"},
+        {"sp": "B", "en": "Hmm, fair point. But the pipe, maybe your helper put something heavy on it?", "zh": "嗯，有道理。但那根管子，会不会是你家阿姨在上面压了重东西？"},
+        {"sp": "A", "en": "I don't think so. The plumber said the ==seal== had just worn out. __Would you be okay with__ covering both this time?", "zh": "应该不是。师傅说是密封圈老化了。这次两个都由您出，可以吗？"},
+        {"sp": "B", "en": "Okay, I'll pay for the heater. You pay for the pipe, sixty dollars. Fair?", "zh": "好吧，热水器我出。管子你出，六十块。公平吧？"},
+        {"sp": "A", "en": "That sounds fair. I'll __transfer it__ to you tonight.", "zh": "很公平。我今晚转给您。"},
+        {"sp": "B", "en": "Thanks. I'll send you a copy of the ==invoice== for your records.", "zh": "谢谢。我把发票复印件发给你留底。"},
+        {"sp": "A", "en": "Appreciate it. If anything else breaks, is it okay if I call the plumber ==directly==?", "zh": "多谢。以后再有东西坏了，我可以直接联系师傅吗？"},
+        {"sp": "B", "en": "Sure, but just __check with me__ before he starts any work.", "zh": "可以，不过他动工之前先跟我说一声。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "家里坏了哪两样东西？「你」先做了什么处理？", "a": "厨房水槽下的管子漏水、热水器没热水；先放了桶接水，并关掉了阀门。"},
+    {"q": "房东想按租约怎么分摊费用？「你」用什么理由反驳？", "a": "房东说每次维修前一百五十块由租客出；「你」说那条只适用于租客造成的小修，热水器用了十多年属于正常损耗，管子是密封圈老化。"},
+    {"q": "最后费用怎么分？以后再报修有什么约定？", "a": "房东出热水器的钱，「你」出管子的六十块；以后可以直接找师傅，但动工前先告诉房东。"}
+  ],
+  "dictation": [
+    "There are two things, actually. The kitchen sink is leaking, and the water heater isn't working.",
+    "It's dripping from the pipe under the sink. I've put a bucket there and turned off the valve for now.",
+    "The heater is over ten years old, so I'd see it as normal wear and tear.",
+    "Appreciate it. If anything else breaks, is it okay if I call the plumber directly?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "I've read that clause. It's for minor repairs, usually things the tenant has caused. The heater is over ten years old, so I'd see it as normal wear and tear.",
+    "marked": "I've <b>read</b> that clause. //<br>It's for <b>minor</b> repairs, / usually things the <b>tenant</b> has caused. //<br>The heater is over <b>ten years</b> old, / so I'd see it as <b>normal wear and tear</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "空调漏水滴到地板上，你给房东发语音。说清问题、你已经做了什么、希望什么时候来修。",
+      "ref": "Hi Mrs. Lim, it's Zhang from unit twelve. The air con in the master bedroom is leaking. Water is dripping onto the floor, and I'm worried it'll damage the wood. I've switched it off and put a towel down for now. Could you send someone this week? Any evening after seven works for us.",
+      "ref_zh": "林太太您好，我是十二号单元的小张。主卧空调漏水了，水滴到地板上，我担心会泡坏木地板。我先把空调关了，铺了条毛巾。这周能派人来修吗？我们每天晚上七点以后都可以。"
+    },
+    {
+      "q": "房东答应派人来修，但已经过了一周还没动静。礼貌地催一下，并提出一个具体方案。",
+      "ref": "Hi Mrs. Lim, sorry to chase you on this. It's been a week since I reported the leak, and nobody has come by yet. It's getting worse, and the cabinet under the sink is starting to swell. If your plumber is busy, would you be okay with me calling one myself and sending you the invoice?",
+      "ref_zh": "林太太您好，不好意思又来催您。我报修漏水已经一周了，还没有人来。现在漏得更厉害，水槽下面的柜子都开始泡胀了。如果您的师傅忙，我自己找一个师傅，然后把发票发给您，您看可以吗？"
+    }
+  ],
+  "words": [
+    {"w": "leak", "ipa": "/liːk/", "zh": "漏水；漏洞", "ex": "There's a leak in the ceiling above the bathroom."},
+    {"w": "heating element", "ipa": "/ˈhiːtɪŋ ˌelɪmənt/", "zh": "加热管，加热元件", "ex": "The kettle stopped working because the heating element burned out."},
+    {"w": "plumber", "ipa": "/ˈplʌmər/", "zh": "水管工，水电师傅", "ex": "We need a plumber to fix the toilet."},
+    {"w": "confirm", "ipa": "/kənˈfɜːrm/", "zh": "确认", "ex": "Please confirm the time by tonight."},
+    {"w": "minor", "ipa": "/ˈmaɪnər/", "zh": "小的，次要的", "ex": "It's only a minor problem, so don't worry."},
+    {"w": "wear and tear", "ipa": "/ˌwer ən ˈter/", "zh": "正常磨损，损耗", "ex": "Scratches on the floor are just normal wear and tear."},
+    {"w": "seal", "ipa": "/siːl/", "zh": "密封圈，密封条", "ex": "The fridge door doesn't close well because the seal is broken."},
+    {"w": "invoice", "ipa": "/ˈɪnvɔɪs/", "zh": "发票，账单", "ex": "Could you email me the invoice?"},
+    {"w": "directly", "ipa": "/dəˈrektli/", "zh": "直接地", "ex": "You can book directly on their website."},
+    {"w": "turn off", "ipa": "/tɜːrn ɔːf/", "zh": "关掉", "ex": "Remember to turn off the gas before you go out."}
+  ]
+}

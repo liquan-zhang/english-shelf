@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Booking a Table for a Family Dinner · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "106", "type": "dialogue", "title": "Booking a Table for a Family Dinner", "meta": "B2 · 约 310 词 · 场景：电话订寿宴与迟到通知", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Restaurant Staff", "name_zh": "餐厅店员", "voice": "en-AU-NatashaNeural"}}, "gist": [{"q": "「你」订位时提了哪些要求？", "a": "周六晚七点八个人，要包间；要两张儿童餐椅；爸爸不吃牛肉，一个孩子花生过敏；自带生日蛋糕。"}, {"q": "包间和自带蛋糕各有什么费用？", "a": "包间最低消费八百块；自带蛋糕收二十块蛋糕切费，餐厅帮忙冷藏。"}, {"q": "「你」为什么打第二通电话？餐厅怎么配合的？", "a": "高速上有车祸，要晚二十分钟；餐厅说包间可以保留，前菜等人到了再上，主菜后插蜡烛端蛋糕、员工一起唱生日歌。"}], "dictation": [{"id": "s0_3_0", "text": "It's my mother's seventieth birthday. Do you have a private room, or at least a quieter corner?"}, {"id": "s0_9_0", "text": "Yes. Would it be okay if we brought our own birthday cake?"}, {"id": "s1_3_0", "text": "I'm afraid we're running about twenty minutes late. There's an accident on the expressway."}, {"id": "s1_5_0", "text": "Thank you. We pre-ordered the starters. Could you hold off on them until we arrive?"}], "shadow": {"speaker": "A", "text": "I'm afraid we're running about twenty minutes late. There's an accident on the expressway.", "marked": "I'm <b>afraid</b> / we're running about <b>twenty minutes</b> late. //<br>There's an <b>accident</b> / on the expressway. //"}, "prompts": [{"q": "你订好了周六的位子，但人数从八个变成十一个。打电话给餐厅，问包间能不能坐下，不行的话有什么安排。", "ref": "Hi, this is Lee. I have a booking for eight people this Saturday at seven, in the private room. A few more relatives are flying in, so we'll actually be eleven. Is there any way the room can fit eleven? If it's too tight, could you put two tables together in a quieter part of the main dining area instead?", "ref_zh": "你好，我是 Lee。我订了这周六七点的包间，八个人。又有几个亲戚要飞过来，所以实际上是十一个人。包间能坐得下十一个吗？如果太挤，能不能在大厅安静一点的地方拼两张桌子？", "id": "ref0"}, {"q": "家里孩子突然发烧，你需要取消当晚的订位。打电话给餐厅，道歉并问会不会扣订金，能不能改到下周。", "ref": "Hi, this is Lee. I'm really sorry, but I need to cancel tonight's booking for eight. My son has come down with a fever, and we can't leave him. I know it's very short notice. Will the deposit be refunded, or could we move the booking to next Saturday instead? Same time, same room, if possible.", "ref_zh": "你好，我是 Lee。真的很抱歉，我需要取消今晚八个人的订位。我儿子突然发烧了，我们离不开他。我知道通知得很晚。订金能退吗？或者能改到下周六吗？最好同样的时间、同样的包间。", "id": "ref1"}], "words": [{"w": "private room", "ipa": "/ˈpraɪvət ruːm/", "zh": "包间", "ex": "We booked a private room for the team dinner.", "id": "w0"}, {"w": "minimum spend", "ipa": "/ˈmɪnɪməm spend/", "zh": "最低消费", "ex": "The private room has a minimum spend of five hundred dollars.", "id": "w1"}, {"w": "high chair", "ipa": "/ˈhaɪ tʃer/", "zh": "儿童餐椅", "ex": "Could we get a high chair for the baby?", "id": "w2"}, {"w": "allergic", "ipa": "/əˈlɜːrdʒɪk/", "zh": "过敏的", "ex": "My son is allergic to shellfish.", "id": "w3"}, {"w": "cakeage", "ipa": "/ˈkeɪkɪdʒ/", "zh": "（自带蛋糕）切蛋糕费", "ex": "Some restaurants charge cakeage if you bring your own cake.", "id": "w4"}, {"w": "pre-order (v.)", "ipa": "/ˌpriːˈɔːrdər/", "zh": "预先点（菜）", "ex": "We pre-ordered the roast duck when we booked.", "tts_w": "pre-order", "id": "w5"}, {"w": "mains", "ipa": "/meɪnz/", "zh": "主菜", "ex": "We shared two starters and three mains.", "id": "w6"}, {"w": "candle", "ipa": "/ˈkændəl/", "zh": "蜡烛", "ex": "She blew out all the candles in one go.", "id": "w7"}, {"w": "hold off on", "ipa": "/hoʊld ɔːf ɑːn/", "zh": "暂缓", "ex": "Let's hold off on dessert for now.", "id": "w8"}], "sections": [{"heading": "1. Making the Booking", "heading_zh": "1. 电话订位", "rows": [[{"id": "s0_0_0", "md": "Good afternoon, Harbour Grill. How can I help?", "text": "Good afternoon, Harbour Grill. How can I help?", "zh": "下午好，Harbour Grill。有什么可以帮您？", "sp": "B"}], [{"id": "s0_1_0", "md": "Hi, I'd like to __book a table for__ Saturday night, around seven. There'll be eight of us.", "text": "Hi, I'd like to book a table for Saturday night, around seven. There'll be eight of us.", "zh": "你好，我想订周六晚上七点左右的位子，一共八个人。", "sp": "A"}], [{"id": "s0_2_0", "md": "Let me check. Saturday at seven for eight. Yes, we can do that. Is it a special occasion?", "text": "Let me check. Saturday at seven for eight. Yes, we can do that. Is it a special occasion?", "zh": "我查一下。周六七点，八位。可以的。是有什么特别的日子吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "**It's my mother's seventieth birthday. Do you have a private room, or at least a quieter corner?**", "text": "It's my mother's seventieth birthday. Do you have a private room, or at least a quieter corner?", "zh": "是我妈妈七十大寿。有包间吗？或者至少安静一点的角落？", "sp": "A"}], [{"id": "s0_4_0", "md": "We have a ==private room== that seats ten, but there's a ==minimum spend== of eight hundred dollars.", "text": "We have a private room that seats ten, but there's a minimum spend of eight hundred dollars.", "zh": "我们有一间能坐十个人的包间，不过最低消费是八百块。", "sp": "B"}], [{"id": "s0_5_0", "md": "That should be fine. We'll also need two ==high chairs== for the kids.", "text": "That should be fine. We'll also need two high chairs for the kids.", "zh": "应该没问题。我们还需要两张儿童餐椅。", "sp": "A"}], [{"id": "s0_6_0", "md": "No worries. Any __dietary requirements__ I should note down?", "text": "No worries. Any dietary requirements I should note down?", "zh": "没问题。有什么饮食上的要求需要我记下来吗？", "sp": "B"}], [{"id": "s0_7_0", "md": "My father doesn't eat beef, and one of the kids is ==allergic== to peanuts.", "text": "My father doesn't eat beef, and one of the kids is allergic to peanuts.", "zh": "我爸爸不吃牛肉，有个孩子对花生过敏。", "sp": "A"}], [{"id": "s0_8_0", "md": "Got it, I'll let the kitchen know. Anything else?", "text": "Got it, I'll let the kitchen know. Anything else?", "zh": "好的，我会告诉厨房。还有别的吗？", "sp": "B"}], [{"id": "s0_9_0", "md": "**Yes. Would it be okay if we brought our own birthday cake?**", "text": "Yes. Would it be okay if we brought our own birthday cake?", "zh": "有。我们自己带生日蛋糕可以吗？", "sp": "A"}], [{"id": "s0_10_0", "md": "Of course. There's a ==cakeage== fee of twenty dollars, and we'll keep it in the fridge for you.", "text": "Of course. There's a cakeage fee of twenty dollars, and we'll keep it in the fridge for you.", "zh": "当然可以。蛋糕切费是二十块，我们会帮您放冰箱。", "sp": "B"}], [{"id": "s0_11_0", "md": "That's fine. The booking's under Lee, and my number is nine one two three, four five six seven.", "text": "That's fine. The booking's under Lee, and my number is nine one two three, four five six seven.", "zh": "可以。预订名字写 Lee，我的电话是九一二三，四五六七。", "sp": "A"}], [{"id": "s0_12_0", "md": "Lovely. We'll send you a confirmation by text. See you Saturday!", "text": "Lovely. We'll send you a confirmation by text. See you Saturday!", "zh": "好的。我们会发短信确认。周六见！", "sp": "B"}]]}, {"heading": "2. Running Late", "heading_zh": "2. 要迟到了", "rows": [[{"id": "s1_0_0", "md": "Harbour Grill, this is Natasha.", "text": "Harbour Grill, this is Natasha.", "zh": "Harbour Grill，我是 Natasha。", "sp": "B"}], [{"id": "s1_1_0", "md": "Hi Natasha, this is Lee. I have a booking for eight at seven tonight, in the private room.", "text": "Hi Natasha, this is Lee. I have a booking for eight at seven tonight, in the private room.", "zh": "你好 Natasha，我是 Lee。我订了今晚七点的包间，八个人。", "sp": "A"}], [{"id": "s1_2_0", "md": "Yes, Mr. Lee. We've got everything set up for you.", "text": "Yes, Mr. Lee. We've got everything set up for you.", "zh": "是的，Lee 先生。我们都给您布置好了。", "sp": "B"}], [{"id": "s1_3_0", "md": "**I'm afraid we're running about twenty minutes late. There's an accident on the expressway.**", "text": "I'm afraid we're running about twenty minutes late. There's an accident on the expressway.", "zh": "我们恐怕要晚二十分钟左右。高速上出了车祸。", "sp": "A"}], [{"id": "s1_4_0", "md": "Thanks for letting us know. We normally only __hold the table__ for fifteen minutes, but for the private room, that's fine.", "text": "Thanks for letting us know. We normally only hold the table for fifteen minutes, but for the private room, that's fine.", "zh": "谢谢告知。我们一般只保留位子十五分钟，不过包间没关系。", "sp": "B"}], [{"id": "s1_5_0", "md": "Thank you. We ==pre-ordered== the starters. Could you __hold off on__ them until we arrive?", "text": "Thank you. We pre-ordered the starters. Could you hold off on them until we arrive?", "zh": "谢谢。我们预点了前菜，能等我们到了再上吗？", "sp": "A"}], [{"id": "s1_6_0", "md": "Sure, I'll tell the kitchen to wait. Shall we bring the cake out after the ==mains==?", "text": "Sure, I'll tell the kitchen to wait. Shall we bring the cake out after the mains?", "zh": "好的，我让厨房等一下。蛋糕在主菜之后端出来吗？", "sp": "B"}], [{"id": "s1_7_0", "md": "Yes, please, with ==candles==. And could the staff sing happy birthday? My mum would love that.", "text": "Yes, please, with candles. And could the staff sing happy birthday? My mum would love that.", "zh": "好的，麻烦插上蜡烛。服务员能一起唱生日歌吗？我妈妈会很开心的。", "sp": "A"}], [{"id": "s1_8_0", "md": "Absolutely, we'll __make it special__. Drive safely, and see you soon.", "text": "Absolutely, we'll make it special. Drive safely, and see you soon.", "zh": "当然，我们会让这一刻很特别。路上注意安全，待会儿见。", "sp": "B"}], [{"id": "s1_9_0", "md": "**Thanks so much. See you shortly.**", "text": "Thanks so much. See you shortly.", "zh": "太感谢了。待会儿见。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Making the Booking", "zh": "1. 电话订位", "start": 0.0, "end": 1.872, "words": [[0.105, 0.329], [0.763, 1.013], [1.026, 1.105], [1.118, 1.487]]}, {"kind": "s", "id": "s0_0_0", "md": "Good afternoon, Harbour Grill. How can I help?", "zh": "下午好，Harbour Grill。有什么可以帮您？", "sp": "B", "gap": false, "start": 1.872, "end": 6.864, "words": [[1.974, 2.145], [2.158, 2.869], [3.053, 3.579], [3.592, 3.921], [5.017, 5.122], [5.227, 5.346], [5.385, 5.451], [5.504, 5.806]]}, {"kind": "s", "id": "s0_1_0", "md": "Hi, I'd like to __book a table for__ Saturday night, around seven. There'll be eight of us.", "zh": "你好，我想订周六晚上七点左右的位子，一共八个人。", "sp": "A", "gap": false, "start": 6.864, "end": 12.36, "words": [[6.982, 7.272], [7.667, 7.811], [7.825, 7.982], [7.996, 8.075], [8.088, 8.285], [8.298, 8.351], [8.364, 8.732], [8.746, 8.877], [8.89, 9.351], [9.364, 9.706], [9.956, 10.246], [10.259, 10.614], [11.061, 11.18], [11.193, 11.377], [11.39, 11.496], [11.509, 11.601], [11.614, 11.969]]}, {"kind": "s", "id": "s0_2_0", "md": "Let me check. Saturday at seven for eight. Yes, we can do that. Is it a special occasion?", "zh": "我查一下。周六七点，八位。可以的。是有什么特别的日子吗？", "sp": "B", "gap": false, "start": 12.36, "end": 21.984, "words": [[12.463, 12.673], [12.739, 12.857], [12.897, 13.199], [14.294, 14.821], [14.926, 15.044], [15.097, 15.439], [15.492, 15.636], [15.649, 16.005], [17.11, 17.426], [17.676, 17.873], [17.926, 18.031], [18.057, 18.215], [18.268, 18.505], [19.557, 19.663], [19.663, 19.768], [19.781, 19.873], [19.873, 20.281], [20.321, 20.873]]}, {"kind": "s", "id": "s0_3_0", "md": "**It's my mother's seventieth birthday. Do you have a private room, or at least a quieter corner?**", "zh": "是我妈妈七十大寿。有包间吗？或者至少安静一点的角落？", "sp": "A", "gap": false, "start": 21.984, "end": 27.504, "words": [[22.089, 22.221], [22.234, 22.366], [22.379, 22.747], [22.76, 23.26], [23.273, 23.826], [24.26, 24.3], [24.313, 24.418], [24.431, 24.563], [24.576, 24.655], [24.668, 25.089], [25.102, 25.392], [25.813, 25.905], [25.918, 26.01], [26.023, 26.26], [26.273, 26.313], [26.326, 26.721], [26.734, 27.116]]}, {"kind": "s", "id": "s0_4_0", "md": "We have a ==private room== that seats ten, but there's a ==minimum spend== of eight hundred dollars.", "zh": "我们有一间能坐十个人的包间，不过最低消费是八百块。", "sp": "B", "gap": false, "start": 27.504, "end": 33.768, "words": [[27.607, 27.725], [27.765, 27.936], [27.975, 28.028], [28.028, 28.422], [28.475, 28.764], [28.83, 28.975], [29.028, 29.33], [29.383, 29.686], [30.028, 30.33], [30.33, 30.515], [30.515, 30.607], [30.607, 30.988], [31.067, 31.422], [31.462, 31.554], [31.607, 31.843], [31.87, 32.225], [32.225, 32.633]]}, {"kind": "s", "id": "s0_5_0", "md": "That should be fine. We'll also need two ==high chairs== for the kids.", "zh": "应该没问题。我们还需要两张儿童餐椅。", "sp": "A", "gap": false, "start": 33.768, "end": 37.776, "words": [[33.886, 33.979], [33.992, 34.136], [34.15, 34.242], [34.255, 34.676], [35.11, 35.229], [35.242, 35.531], [35.544, 35.834], [35.847, 36.084], [36.097, 36.307], [36.321, 36.676], [36.689, 36.807], [36.821, 36.886], [36.9, 37.386]]}, {"kind": "s", "id": "s0_6_0", "md": "No worries. Any __dietary requirements__ I should note down?", "zh": "没问题。有什么饮食上的要求需要我记下来吗？", "sp": "B", "gap": false, "start": 37.776, "end": 43.608, "words": [[37.879, 38.102], [38.181, 38.668], [39.815, 40.039], [40.052, 40.605], [40.671, 41.381], [41.434, 41.592], [41.71, 41.881], [41.921, 42.197], [42.197, 42.565]]}, {"kind": "s", "id": "s0_7_0", "md": "My father doesn't eat beef, and one of the kids is ==allergic== to peanuts.", "zh": "我爸爸不吃牛肉，有个孩子对花生过敏。", "sp": "A", "gap": false, "start": 43.608, "end": 47.976, "words": [[43.713, 43.858], [43.871, 44.253], [44.266, 44.595], [44.608, 44.805], [44.819, 45.213], [45.476, 45.555], [45.569, 45.687], [45.7, 45.766], [45.779, 45.871], [45.884, 46.332], [46.345, 46.463], [46.476, 46.897], [46.911, 46.99], [47.003, 47.595]]}, {"kind": "s", "id": "s0_8_0", "md": "Got it, I'll let the kitchen know. Anything else?", "zh": "好的，我会告诉厨房。还有别的吗？", "sp": "B", "gap": false, "start": 47.976, "end": 53.016, "words": [[48.078, 48.275], [48.275, 48.42], [48.696, 48.933], [48.986, 49.183], [49.196, 49.288], [49.302, 49.696], [49.71, 49.946], [51.081, 51.463], [51.542, 51.831]]}, {"kind": "s", "id": "s0_9_0", "md": "**Yes. Would it be okay if we brought our own birthday cake?**", "zh": "有。我们自己带生日蛋糕可以吗？", "sp": "A", "gap": false, "start": 53.016, "end": 56.808, "words": [[53.134, 53.542], [53.977, 54.055], [54.069, 54.148], [54.161, 54.305], [54.319, 54.753], [54.766, 54.884], [54.898, 55.003], [55.016, 55.266], [55.279, 55.384], [55.398, 55.582], [55.595, 56.003], [56.016, 56.411]]}, {"kind": "s", "id": "s0_10_0", "md": "Of course. There's a ==cakeage== fee of twenty dollars, and we'll keep it in the fridge for you.", "zh": "当然可以。蛋糕切费是二十块，我们会帮您放冰箱。", "sp": "B", "gap": false, "start": 56.808, "end": 63.744, "words": [[56.911, 57.016], [57.108, 57.437], [58.611, 58.834], [58.834, 58.94], [58.94, 59.334], [59.413, 59.584], [59.663, 59.716], [59.742, 60.084], [60.111, 60.505], [60.834, 61.097], [61.137, 61.308], [61.347, 61.611], [61.65, 61.703], [61.716, 61.795], [61.808, 61.9], [61.913, 62.216], [62.295, 62.426], [62.44, 62.69]]}, {"kind": "s", "id": "s0_11_0", "md": "That's fine. The booking's under Lee, and my number is nine one two three, four five six seven.", "zh": "可以。预订名字写 Lee，我的电话是九一二三，四五六七。", "sp": "A", "gap": false, "start": 63.744, "end": 70.416, "words": [[63.862, 64.033], [64.047, 64.441], [64.876, 64.981], [64.994, 65.428], [65.441, 65.718], [65.731, 66.007], [66.336, 66.441], [66.455, 66.547], [66.56, 66.941], [66.955, 67.112], [67.126, 67.573], [67.586, 67.81], [67.823, 68.033], [68.047, 68.507], [68.836, 69.047], [69.06, 69.402], [69.415, 69.691], [69.705, 70.02]]}, {"kind": "s", "id": "s0_12_0", "md": "Lovely. We'll send you a confirmation by text. See you Saturday!", "zh": "好的。我们会发短信确认。周六见！", "sp": "B", "gap": false, "start": 70.416, "end": 77.424, "words": [[70.519, 70.94], [72.1, 72.324], [72.377, 72.64], [72.692, 72.798], [72.837, 72.863], [72.877, 73.64], [73.666, 73.798], [73.877, 74.35], [75.429, 75.587], [75.653, 75.771], [75.784, 76.298]]}, {"kind": "h", "id": "h1", "md": "2. Running Late", "zh": "2. 要迟到了", "start": 77.424, "end": 79.296, "words": [[77.529, 77.779], [78.056, 78.319], [78.332, 78.648]]}, {"kind": "s", "id": "s1_0_0", "md": "Harbour Grill, this is Natasha.", "zh": "Harbour Grill，我是 Natasha。", "sp": "B", "gap": false, "start": 79.296, "end": 82.392, "words": [[79.399, 79.741], [79.754, 80.083], [80.32, 80.543], [80.543, 80.675], [80.688, 81.293]]}, {"kind": "s", "id": "s1_1_0", "md": "Hi Natasha, this is Lee. I have a booking for eight at seven tonight, in the private room.", "zh": "你好 Natasha，我是 Lee。我订了今晚七点的包间，八个人。", "sp": "A", "gap": false, "start": 82.392, "end": 87.84, "words": [[82.51, 82.603], [82.616, 83.129], [83.339, 83.51], [83.524, 83.655], [83.668, 83.892], [84.326, 84.405], [84.418, 84.537], [84.55, 84.629], [84.642, 84.945], [84.958, 85.142], [85.247, 85.431], [85.445, 85.55], [85.563, 85.918], [85.931, 86.352], [86.603, 86.681], [86.695, 86.774], [86.787, 87.195], [87.208, 87.445]]}, {"kind": "s", "id": "s1_2_0", "md": "Yes, Mr. Lee. We've got everything set up for you.", "zh": "是的，Lee 先生。我们都给您布置好了。", "sp": "B", "gap": false, "start": 87.84, "end": 93.0, "words": [[87.943, 88.258], [88.469, 88.824], [88.837, 89.008], [90.143, 90.379], [90.419, 90.59], [90.616, 91.09], [91.156, 91.353], [91.366, 91.524], [91.564, 91.682], [91.695, 91.932]]}, {"kind": "s", "id": "s1_3_0", "md": "**I'm afraid we're running about twenty minutes late. There's an accident on the expressway.**", "zh": "我们恐怕要晚二十分钟左右。高速上出了车祸。", "sp": "A", "gap": false, "start": 93.0, "end": 98.064, "words": [[93.105, 93.224], [93.237, 93.684], [93.697, 93.882], [93.895, 94.184], [94.197, 94.487], [94.5, 94.842], [94.855, 95.158], [95.171, 95.487], [95.921, 96.053], [96.066, 96.145], [96.158, 96.632], [96.645, 96.737], [96.75, 96.829], [96.842, 97.684]]}, {"kind": "s", "id": "s1_4_0", "md": "Thanks for letting us know. We normally only __hold the table__ for fifteen minutes, but for the private room, that's fine.", "zh": "谢谢告知。我们一般只保留位子十五分钟，不过包间没关系。", "sp": "B", "gap": false, "start": 98.064, "end": 106.848, "words": [[98.167, 98.469], [98.522, 98.653], [98.667, 98.956], [99.009, 99.101], [99.167, 99.417], [100.551, 100.682], [100.722, 101.09], [101.169, 101.485], [101.525, 101.801], [101.814, 101.893], [101.893, 102.301], [102.314, 102.432], [102.446, 102.88], [102.893, 103.275], [103.669, 103.853], [103.88, 103.998], [103.998, 104.09], [104.09, 104.511], [104.551, 104.88], [105.13, 105.38], [105.419, 105.814]]}, {"kind": "s", "id": "s1_5_0", "md": "Thank you. We ==pre-ordered== the starters. Could you __hold off on__ them until we arrive?", "zh": "谢谢。我们预点了前菜，能等我们到了再上吗？", "sp": "A", "gap": false, "start": 106.848, "end": 111.984, "words": [[106.966, 107.124], [107.137, 107.322], [107.756, 107.887], [107.901, 108.387], [108.401, 108.466], [108.48, 109.111], [109.545, 109.664], [109.677, 109.769], [109.782, 110.006], [110.019, 110.256], [110.269, 110.387], [110.401, 110.572], [110.677, 110.927], [110.94, 111.045], [111.059, 111.598]]}, {"kind": "s", "id": "s1_6_0", "md": "Sure, I'll tell the kitchen to wait. Shall we bring the cake out after the ==mains==?", "zh": "好的，我让厨房等一下。蛋糕在主菜之后端出来吗？", "sp": "B", "gap": false, "start": 111.984, "end": 118.56, "words": [[112.087, 112.35], [112.626, 112.889], [112.942, 113.192], [113.218, 113.297], [113.31, 113.705], [113.731, 113.85], [113.863, 114.179], [115.26, 115.51], [115.537, 115.655], [115.681, 115.879], [115.905, 116.01], [116.023, 116.313], [116.339, 116.497], [116.51, 116.852], [116.852, 116.931], [116.931, 117.392]]}, {"kind": "s", "id": "s1_7_0", "md": "Yes, please, with ==candles==. And could the staff sing happy birthday? My mum would love that.", "zh": "好的，麻烦插上蜡烛。服务员能一起唱生日歌吗？我妈妈会很开心的。", "sp": "A", "gap": false, "start": 118.56, "end": 124.8, "words": [[118.665, 119.126], [119.376, 119.915], [120.099, 120.257], [120.271, 120.876], [121.31, 121.389], [121.402, 121.573], [121.586, 121.665], [121.678, 122.034], [122.047, 122.284], [122.297, 122.599], [122.613, 123.047], [123.481, 123.573], [123.586, 123.731], [123.744, 123.863], [123.876, 124.086], [124.099, 124.402]]}, {"kind": "s", "id": "s1_8_0", "md": "Absolutely, we'll __make it special__. Drive safely, and see you soon.", "zh": "当然，我们会让这一刻很特别。路上注意安全，待会儿见。", "sp": "B", "gap": false, "start": 124.8, "end": 131.04, "words": [[124.903, 125.574], [125.784, 126.047], [126.061, 126.271], [126.297, 126.35], [126.389, 126.837], [127.879, 128.234], [128.261, 128.774], [129.05, 129.221], [129.287, 129.458], [129.524, 129.629], [129.642, 129.997]]}, {"kind": "s", "id": "s1_9_0", "md": "**Thanks so much. See you shortly.**", "zh": "太感谢了。待会儿见。", "sp": "A", "gap": false, "start": 131.04, "end": 133.44, "words": [[131.158, 131.329], [131.343, 131.527], [131.54, 131.908], [132.356, 132.501], [132.514, 132.593], [132.606, 133.053]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

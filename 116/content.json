@@ -1,0 +1,85 @@
+{
+  "id": "116",
+  "type": "dialogue",
+  "title": "Opening a Bank Account",
+  "meta": "B2 · 约 260 词 · 场景：银行开户材料与账户选择",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Bank Officer", "name_zh": "银行职员", "voice": "en-AU-NatashaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Choosing an Account",
+      "heading_zh": "1. 选账户类型",
+      "lines": [
+        {"sp": "B", "en": "Hi, thanks for waiting. What can I do for you today?", "zh": "你好，久等了。今天办什么业务？"},
+        {"sp": "A", "en": "**I'd like to open a savings account. I've just moved here for work.**", "zh": "我想开一个储蓄账户。我刚来这边工作。"},
+        {"sp": "B", "en": "Welcome. Are you after a basic account, or one that pays more ==interest== if your salary goes in?", "zh": "欢迎。您想要普通账户，还是工资打进来就能拿更高利息的那种？"},
+        {"sp": "A", "en": "My salary will go in here, so the second one. Is there a ==minimum balance==?", "zh": "我工资会打到这里，所以要第二种。有最低余额要求吗？"},
+        {"sp": "B", "en": "Yes, three thousand dollars on average each month. If you __fall below__ that, there's a ==fee== of five dollars.", "zh": "有，每月平均余额三千元。低于这个数，收五块钱手续费。"},
+        {"sp": "A", "en": "Okay, that's manageable. Does it __come with__ a debit card I can use overseas?", "zh": "好，这个能接受。账户带一张能在国外用的借记卡吗？"},
+        {"sp": "B", "en": "It does, and you can lock it or change your limits in the app.", "zh": "带的，而且可以在手机应用里锁卡或者改额度。"},
+        {"sp": "A", "en": "Great. What documents do you need from me?", "zh": "好。需要我提供哪些材料？"},
+        {"sp": "B", "en": "Your passport, your ==work pass==, and a ==proof of address== from the last three months.", "zh": "您的护照、工作准证，还有近三个月内的住址证明。"}
+      ]
+    },
+    {
+      "heading": "2. A Problem with the Paperwork",
+      "heading_zh": "2. 材料出了问题",
+      "lines": [
+        {"sp": "A", "en": "Here's my passport and work pass. For the address, I have my tenancy agreement.", "zh": "这是我的护照和工作准证。住址证明我带了租约。"},
+        {"sp": "B", "en": "Hmm, this lease is only in your wife's name, so I can't __accept it__ for you, unfortunately.", "zh": "嗯，这份租约上只有您太太的名字，很遗憾不能作为您的证明。"},
+        {"sp": "A", "en": "**I see. What else would work? We only moved in last month.**", "zh": "明白了。那还有什么可以用？我们上个月才搬进来。"},
+        {"sp": "B", "en": "A ==utility bill== or a letter from your employer with your address would be fine.", "zh": "水电账单，或者公司开的、写有您地址的信都可以。"},
+        {"sp": "A", "en": "My company can send a letter today. Could I __email it over__ instead of coming back?", "zh": "公司今天就能开信。我能直接发邮件给你，不用再跑一趟吗？"},
+        {"sp": "B", "en": "Unfortunately we need to see the ==original==, but you can upload it in the app once you're ==verified==.", "zh": "很遗憾我们需要看原件，不过等您身份核验好后，可以在应用里上传。"},
+        {"sp": "A", "en": "So can we start the application now and finish it later?", "zh": "那我们能先把申请办起来，之后再补材料吗？"},
+        {"sp": "B", "en": "Yes. I'll set everything up today, and the account goes live once your letter is uploaded.", "zh": "可以。今天我把其他都办好，您上传信件后账户就能启用。"},
+        {"sp": "A", "en": "**That works. How long does the card take to arrive?**", "zh": "这样可以。卡多久能寄到？"},
+        {"sp": "B", "en": "About five working days, posted to your home address.", "zh": "大约五个工作日，寄到您家里。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」选了哪种账户？最低余额规则是什么？", "a": "工资入账可拿更高利息的账户；月平均余额要三千元，低于就收五元手续费。"},
+    {"q": "开户材料哪里出了问题？", "a": "租约上只有太太的名字，不能当「你」的住址证明。"},
+    {"q": "最后是怎么解决的？", "a": "今天先办申请，等公司开出写有地址的信后在应用里上传，账户就能启用。"}
+  ],
+  "dictation": [
+    "I'd like to open a savings account. I've just moved here for work.",
+    "Okay, that's manageable. Does it come with a debit card I can use overseas?",
+    "I see. What else would work? We only moved in last month.",
+    "So can we start the application now and finish it later?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "My salary will go in here, so the second one. Is there a minimum balance?",
+    "marked": "My <b>salary</b> will go in <b>here</b>, / so the <b>second</b> one. //<br>Is there a <b>minimum balance</b>? //"
+  },
+  "prompts": [
+    {
+      "q": "你想给孩子开一个儿童储蓄账户。去银行柜台问需要哪些材料、有没有最低余额、孩子长大后怎么转到他自己名下。",
+      "ref": "Hi, I'd like to open a savings account for my son. He's three. What documents do you need, his birth certificate and my passport? Is there a minimum balance for kids' accounts? And when he's older, can the account be moved into his own name, or would he need to open a new one?",
+      "ref_zh": "你好，我想给儿子开个储蓄账户，他三岁。需要哪些材料？他的出生证明和我的护照吗？儿童账户有最低余额要求吗？等他长大了，这个账户能转到他自己名下吗，还是得重新开一个？"
+    },
+    {
+      "q": "你的账户上个月被扣了低于最低余额的手续费，但你觉得自己一直存够了。打电话给银行问清楚并请求退回。",
+      "ref": "Hi, I noticed a fall-below fee on my account last month, and I don't quite understand why. I've kept more than three thousand in there the whole time. Could you check how the average balance was worked out? If it's a mistake, could you reverse the fee? If not, I'd just like to understand the rule better.",
+      "ref_zh": "你好，我发现上个月账户被扣了一笔低于最低余额的费用，不太明白为什么。我账户里一直都有三千以上。能帮我查一下平均余额是怎么算的吗？如果算错了，能把费用退回吗？如果没错，我也想把规则弄清楚。"
+    }
+  ],
+  "words": [
+    {"w": "interest", "ipa": "/ˈɪntrəst/", "zh": "利息", "ex": "This account pays very little interest."},
+    {"w": "minimum balance", "ipa": "/ˈmɪnɪməm ˈbæləns/", "zh": "最低余额", "ex": "Keep the minimum balance or you'll be charged a fee."},
+    {"w": "fee", "ipa": "/fiː/", "zh": "费用，手续费", "ex": "Is there a fee for using other banks' ATMs?"},
+    {"w": "work pass", "ipa": "/wɜːrk pæs/", "zh": "工作准证", "ex": "Bring your work pass when you sign the lease."},
+    {"w": "proof of address", "ipa": "/pruːf əv ˈædres/", "zh": "住址证明", "ex": "A phone bill can be used as proof of address."},
+    {"w": "utility bill", "ipa": "/juːˈtɪləti bɪl/", "zh": "水电账单", "ex": "Our utility bill went up because of the aircon."},
+    {"w": "verify", "ipa": "/ˈverɪfaɪ/", "zh": "核实，验证", "ex": "You need to verify your identity with your passport."},
+    {"w": "original", "ipa": "/əˈrɪdʒənəl/", "zh": "原件", "ex": "Please bring the original and one photocopy."},
+    {"w": "fall below", "ipa": "/fɔːl bɪˈloʊ/", "zh": "低于", "ex": "If your balance falls below the limit, you'll get an alert."},
+    {"w": "tenancy agreement", "ipa": "/ˈtenənsi əˈɡriːmənt/", "zh": "租约", "ex": "Read the tenancy agreement carefully before you sign."}
+  ]
+}

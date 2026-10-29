@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Async First: When Not to Have a Meeting · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "094", "title": "Async First: When Not to Have a Meeting", "meta": "B2 · 约 270 词 · 场景：异步协作", "voice": "en-IN-NeerjaNeural", "rate": "-5%", "sections": [{"heading": "1. Meetings Are the Most Expensive Default", "heading_zh": "1. 开会是最贵的默认选项", "rows": [[{"id": "s0_0_0", "md": "In a global team, a one-hour meeting with eight people is not one hour.", "text": "In a global team, a one-hour meeting with eight people is not one hour.", "zh": "在全球化团队里，八个人开一小时的会，不是一小时。", "sp": null}, {"id": "s0_0_1", "md": "It is eight hours of work, and for someone in another time zone, it might also cost them dinner with their family or an hour of sleep.", "text": "It is eight hours of work, and for someone in another time zone, it might also cost them dinner with their family or an hour of sleep.", "zh": "而是八个小时的工作量，对另一个时区的人来说，可能还要搭上和家人吃的一顿晚饭，或者一小时的睡眠。", "sp": null}, {"id": "s0_0_2", "md": "Yet we schedule meetings almost by ==reflex==.", "text": "Yet we schedule meetings almost by reflex.", "zh": "可我们约会几乎是条件反射。", "sp": null}], [{"id": "s0_1_0", "md": "Async first means the default is written, and a meeting has to ==earn== its place.", "text": "Async first means the default is written, and a meeting has to earn its place.", "zh": "异步优先的意思是，默认用文字沟通，会议得证明自己值得开。", "sp": null}, {"id": "s0_1_1", "md": "Status updates, simple decisions and information sharing can almost always happen in a document or a thread.", "text": "Status updates, simple decisions and information sharing can almost always happen in a document or a thread.", "zh": "进度同步、简单决策和信息共享，几乎都可以在文档或者消息串里完成。", "sp": null}, {"id": "s0_1_2", "md": "**If a meeting could be replaced by a well-written message, it should be.**", "text": "If a meeting could be replaced by a well-written message, it should be.", "zh": "如果一个会能用一条写得好的消息替代，那就该替代。", "sp": null}], [{"id": "s0_2_0", "md": "Async work also helps people who think better in writing, including many colleagues working in a second language.", "text": "Async work also helps people who think better in writing, including many colleagues working in a second language.", "zh": "异步工作也能帮到那些写下来想得更清楚的人，包括很多用第二语言工作的同事。", "sp": null}, {"id": "s0_2_1", "md": "They get time to read, ==reflect== and reply with their best ideas instead of their fastest ones.", "text": "They get time to read, reflect and reply with their best ideas instead of their fastest ones.", "zh": "他们有时间读、想，然后回复自己最好的想法，而不是最快的想法。", "sp": null}, {"id": "s0_2_2", "md": "In a live call, the quickest speaker often wins, even when the quietest person had the better idea.", "text": "In a live call, the quickest speaker often wins, even when the quietest person had the better idea.", "zh": "在实时会议上，往往是嘴最快的人赢，哪怕最安静的那个人想法更好。", "sp": null}]]}, {"heading": "2. Three Reasons to Meet Anyway", "heading_zh": "2. 还是值得开会的三种情况", "rows": [[{"id": "s1_0_0", "md": "Async is not always the answer.", "text": "Async is not always the answer.", "zh": "异步也不是万能的。", "sp": null}, {"id": "s1_0_1", "md": "Before booking a call, ask yourself whether at least one of these three things is true.", "text": "Before booking a call, ask yourself whether at least one of these three things is true.", "zh": "约会之前，先问问自己，下面三条里是不是至少有一条成立。", "sp": null}], [{"id": "s1_1_0", "md": "First, there is a ==conflict== that has gone back and forth in comments more than twice.", "text": "First, there is a conflict that has gone back and forth in comments more than twice.", "zh": "第一，有个分歧在评论里已经来回拉扯了不止两轮。", "sp": null}, {"id": "s1_1_1", "md": "Long threads harden positions, and ten minutes of talking often __clears the air__.", "text": "Long threads harden positions, and ten minutes of talking often clears the air.", "zh": "消息串越长，各自的立场就越固化，聊上十分钟往往就能把话说开。", "sp": null}], [{"id": "s1_2_0", "md": "Second, the problem is still ==fuzzy==.", "text": "Second, the problem is still fuzzy.", "zh": "第二，问题本身还很模糊。", "sp": null}, {"id": "s1_2_1", "md": "When nobody can describe the question clearly yet, a quick ==brainstorm== is faster than a document that nobody knows how to start.", "text": "When nobody can describe the question clearly yet, a quick brainstorm is faster than a document that nobody knows how to start.", "zh": "当谁都还说不清问题是什么的时候，快速脑暴一下，比写一份没人知道从哪下笔的文档要快。", "sp": null}], [{"id": "s1_3_0", "md": "Third, the topic is ==delicate==, such as feedback, a reorganization, or bad news.", "text": "Third, the topic is delicate, such as feedback, a reorganization, or bad news.", "zh": "第三，话题比较敏感，比如给反馈、组织调整，或者坏消息。", "sp": null}, {"id": "s1_3_1", "md": "**Hard conversations deserve a human voice, not a block of text.**", "text": "Hard conversations deserve a human voice, not a block of text.", "zh": "难开口的谈话，值得用人的声音来讲，而不是一大段文字。", "sp": null}, {"id": "s1_3_2", "md": "If none of these apply, __write it up__, __set a deadline__ for comments, and give people their hour back.", "text": "If none of these apply, write it up, set a deadline for comments, and give people their hour back.", "zh": "如果这三条都不沾边，那就写下来，定一个评论截止时间，把这一小时还给大家。", "sp": null}]]}], "gist": [{"q": "为什么作者说会议是“最贵的默认选项”？", "a": "八个人开一小时会就是八小时工作量，对其他时区的人还可能占用晚饭或睡眠，而我们却习惯性地约会。"}, {"q": "异步优先对哪些人特别有帮助？", "a": "擅长书面思考的人，包括用第二语言工作的同事，他们有时间阅读、思考，给出最好而不是最快的想法。"}, {"q": "什么情况下仍然应该开会？", "a": "评论区来回超过两轮的分歧；问题还很模糊、需要头脑风暴；话题敏感（反馈、组织调整、坏消息）。否则写下来、设评论截止时间。"}], "dictation": [{"id": "s0_1_2", "text": "If a meeting could be replaced by a well-written message, it should be."}, {"id": "s0_1_0", "text": "Async first means the default is written, and a meeting has to earn its place."}, {"id": "s1_2_0", "text": "Second, the problem is still fuzzy."}, {"id": "s1_3_1", "text": "Hard conversations deserve a human voice, not a block of text."}], "shadow": {"text": "Async first means the default is written, and a meeting has to earn its place. Status updates, simple decisions and information sharing can almost always happen in a document or a thread. If a meeting could be replaced by a well-written message, it should be.", "marked": "Async <b>first</b> means / the default is <b>written</b>, / and a meeting has to <b>earn</b> its place. //<br><b>Status</b> updates, / simple <b>decisions</b> / and information sharing / can almost <b>always</b> happen / in a document or a <b>thread</b>. //<br>If a meeting could be <b>replaced</b> / by a well-written <b>message</b>, / it <b>should</b> be. //"}, "prompts": [{"q": "老板要求每周一开一小时的全员同步会，参会者分布在四个时区。你提议改成异步更新，30 秒说服他。", "ref": "I'd like to suggest a change to the Monday sync. Most of that hour is status updates, which people could write in a shared doc by Monday noon their time. That saves about eight hours of team time every week, and our Sydney colleagues get their evenings back. We could keep a short call once a month for planning and real discussion.", "ref_zh": "关于周一的同步会，我想提个调整。那一小时大部分都是进度更新，大家完全可以在各自时区的周一中午前写进一个共享文档。这样每周能省下团队大约八个小时，悉尼的同事也能把晚上拿回来。我们可以每月保留一次短会，用来做规划和真正需要讨论的事。", "id": "ref0"}, {"q": "一个设计方案在评论区来回吵了三轮仍无结论。你提议开一个短会。", "ref": "I think this thread has reached the point where writing is slowing us down. We've gone back and forth three times, and I'm not sure we're even disagreeing about the same thing. Can we jump on a fifteen-minute call tomorrow at four Singapore time? I'll summarize both options at the top of the doc first, so we start from the same page.", "ref_zh": "我觉得这个讨论串已经到了文字反而在拖慢我们的地步。我们来回了三轮，我都不确定我们争的是不是同一件事。明天新加坡时间四点开个十五分钟的短会行吗？我先在文档顶部把两个方案总结一下，这样我们从同一个起点开始。", "id": "ref1"}], "words": [{"w": "reflex", "ipa": "/ˈriːfleks/", "zh": "条件反射、本能反应", "ex": "Don't book a meeting by reflex, check if a message would work.", "id": "w0"}, {"w": "earn (v.)", "ipa": "/ɜːrn/", "zh": "赢得、挣得", "ex": "A recurring meeting has to earn its place on the calendar.", "tts_w": "earn", "id": "w1"}, {"w": "reflect", "ipa": "/rɪˈflekt/", "zh": "思考、反思", "ex": "Give people a day to reflect before you ask for a decision.", "id": "w2"}, {"w": "conflict", "ipa": "/ˈkɑːnflɪkt/", "zh": "冲突、分歧", "ex": "There's a conflict between the two teams' roadmaps.", "id": "w3"}, {"w": "fuzzy", "ipa": "/ˈfʌzi/", "zh": "模糊的、不清楚的", "ex": "The scope is still fuzzy, so let's not estimate yet.", "id": "w4"}, {"w": "brainstorm", "ipa": "/ˈbreɪnˌstɔːrm/", "zh": "头脑风暴", "ex": "Let's do a quick brainstorm before anyone writes a proposal.", "id": "w5"}, {"w": "delicate", "ipa": "/ˈdelɪkət/", "zh": "微妙的、需小心处理的", "ex": "Headcount changes are a delicate topic, I'll tell them in person.", "id": "w6"}, {"w": "async", "ipa": "/ˈeɪsɪŋk/", "zh": "异步（的）", "ex": "We run most of our planning async now, in a shared document.", "id": "w7"}, {"w": "clear the air", "ipa": "/klɪr ði er/", "zh": "消除误会、缓和气氛", "ex": "A short call cleared the air after that tense email thread.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Meetings Are the Most Expensive Default", "zh": "1. 开会是最贵的默认选项", "start": 0.0, "end": 4.176, "words": [[0.1, 0.639], [0.666, 1.232], [1.245, 1.35], [1.363, 1.429], [1.442, 1.863], [1.876, 2.574], [2.587, 3.258]]}, {"kind": "s", "id": "s0_0_0", "md": "In a global team, a one-hour meeting with eight people is not one hour.", "zh": "在全球化团队里，八个人开一小时的会，不是一小时。", "sp": null, "gap": false, "start": 4.176, "end": 9.696, "words": [[4.276, 4.5], [4.513, 4.565], [4.579, 5.052], [5.065, 5.5], [5.631, 5.776], [5.789, 6.158], [6.171, 6.618], [6.631, 6.868], [6.881, 7.105], [7.118, 7.539], [7.552, 7.763], [7.776, 8.079], [8.092, 8.434], [8.447, 8.763]]}, {"kind": "s", "id": "s0_0_1", "md": "It is eight hours of work, and for someone in another time zone, it might also cost them dinner with their family or an hour of sleep.", "zh": "而是八个小时的工作量，对另一个时区的人来说，可能还要搭上和家人吃的一顿晚饭，或者一小时的睡眠。", "sp": null, "gap": false, "start": 9.696, "end": 19.296, "words": [[9.796, 10.02], [10.033, 10.204], [10.217, 10.493], [10.507, 10.796], [10.809, 10.941], [10.954, 11.375], [11.507, 11.77], [11.783, 11.928], [11.941, 12.428], [12.441, 12.599], [12.612, 13.072], [13.085, 13.401], [13.414, 13.862], [13.993, 14.164], [14.178, 14.454], [14.467, 14.862], [14.875, 15.309], [15.322, 15.572], [15.585, 15.993], [16.007, 16.204], [16.217, 16.388], [16.401, 17.033], [17.046, 17.309], [17.322, 17.454], [17.467, 17.691], [17.704, 17.849], [17.862, 18.362]]}, {"kind": "s", "id": "s0_0_2", "md": "Yet we schedule meetings almost by ==reflex==.", "zh": "可我们约会几乎是条件反射。", "sp": null, "gap": false, "start": 19.296, "end": 23.496, "words": [[19.396, 19.791], [19.804, 19.975], [19.988, 20.475], [20.488, 21.028], [21.041, 21.62], [21.633, 21.843], [21.857, 22.58]]}, {"kind": "s", "id": "s0_1_0", "md": "Async first means the default is written, and a meeting has to ==earn== its place.", "zh": "异步优先的意思是，默认用文字沟通，会议得证明自己值得开。", "sp": null, "gap": true, "start": 23.496, "end": 29.496, "words": [[23.596, 24.057], [24.07, 24.504], [24.517, 24.846], [24.859, 24.964], [24.978, 25.451], [25.464, 25.635], [25.649, 26.122], [26.254, 26.491], [26.504, 26.543], [26.557, 27.004], [27.017, 27.293], [27.307, 27.491], [27.504, 27.82], [27.833, 28.043], [28.057, 28.583]]}, {"kind": "s", "id": "s0_1_1", "md": "Status updates, simple decisions and information sharing can almost always happen in a document or a thread.", "zh": "进度同步、简单决策和信息共享，几乎都可以在文档或者消息串里完成。", "sp": null, "gap": false, "start": 29.496, "end": 38.04, "words": [[29.596, 30.267], [30.28, 30.872], [31.03, 31.53], [31.543, 32.201], [32.214, 32.359], [32.372, 33.057], [33.07, 33.556], [33.57, 33.741], [33.754, 34.306], [34.32, 34.78], [34.793, 35.214], [35.228, 35.359], [35.372, 35.425], [35.438, 36.188], [36.201, 36.438], [36.451, 36.504], [36.517, 37.096]]}, {"kind": "s", "id": "s0_1_2", "md": "**If a meeting could be replaced by a well-written message, it should be.**", "zh": "如果一个会能用一条写得好的消息替代，那就该替代。", "sp": null, "gap": false, "start": 38.04, "end": 43.2, "words": [[38.14, 38.403], [38.416, 38.469], [38.482, 38.943], [38.956, 39.127], [39.14, 39.298], [39.311, 39.89], [39.903, 40.14], [40.153, 40.258], [40.272, 40.864], [40.877, 41.39], [41.535, 41.693], [41.706, 41.916], [41.929, 42.272]]}, {"kind": "s", "id": "s0_2_0", "md": "Async work also helps people who think better in writing, including many colleagues working in a second language.", "zh": "异步工作也能帮到那些写下来想得更清楚的人，包括很多用第二语言工作的同事。", "sp": null, "gap": true, "start": 43.2, "end": 51.504, "words": [[43.3, 43.8], [43.813, 44.089], [44.103, 44.484], [44.497, 44.879], [44.892, 45.313], [45.326, 45.511], [45.524, 45.839], [45.853, 46.287], [46.3, 46.432], [46.445, 47.05], [47.195, 47.853], [47.866, 48.155], [48.168, 48.642], [48.655, 49.182], [49.195, 49.353], [49.366, 49.418], [49.432, 49.892], [49.905, 50.589]]}, {"kind": "s", "id": "s0_2_1", "md": "They get time to read, ==reflect== and reply with their best ideas instead of their fastest ones.", "zh": "他们有时间读、想，然后回复自己最好的想法，而不是最快的想法。", "sp": null, "gap": false, "start": 51.504, "end": 58.992, "words": [[51.604, 51.828], [51.841, 52.104], [52.117, 52.459], [52.472, 52.604], [52.617, 53.025], [53.236, 53.801], [53.815, 53.959], [53.972, 54.499], [54.512, 54.709], [54.722, 54.907], [54.92, 55.301], [55.315, 55.88], [55.893, 56.407], [56.42, 56.591], [56.604, 56.788], [56.801, 57.459], [57.472, 58.065]]}, {"kind": "s", "id": "s0_2_2", "md": "In a live call, the quickest speaker often wins, even when the quietest person had the better idea.", "zh": "在实时会议上，往往是嘴最快的人赢，哪怕最安静的那个人想法更好。", "sp": null, "gap": false, "start": 58.992, "end": 66.696, "words": [[59.092, 59.316], [59.329, 59.381], [59.395, 59.776], [59.789, 60.237], [60.368, 60.5], [60.513, 61.0], [61.013, 61.552], [61.566, 61.96], [61.974, 62.421], [62.645, 63.052], [63.066, 63.21], [63.224, 63.303], [63.316, 63.895], [63.908, 64.381], [64.395, 64.645], [64.658, 64.75], [64.763, 65.21], [65.224, 65.763]]}, {"kind": "h", "id": "h1", "md": "2. Three Reasons to Meet Anyway", "zh": "2. 还是值得开会的三种情况", "start": 66.696, "end": 70.08, "words": [[66.796, 67.112], [67.23, 67.493], [67.507, 68.033], [68.046, 68.164], [68.178, 68.52], [68.533, 69.151]]}, {"kind": "s", "id": "s1_0_0", "md": "Async is not always the answer.", "zh": "异步也不是万能的。", "sp": null, "gap": false, "start": 70.08, "end": 73.368, "words": [[70.18, 70.68], [70.693, 70.864], [70.877, 71.219], [71.233, 71.746], [71.759, 71.891], [71.904, 72.469]]}, {"kind": "s", "id": "s1_0_1", "md": "Before booking a call, ask yourself whether at least one of these three things is true.", "zh": "约会之前，先问问自己，下面三条里是不是至少有一条成立。", "sp": null, "gap": false, "start": 73.368, "end": 80.016, "words": [[73.468, 73.994], [74.007, 74.376], [74.389, 74.442], [74.455, 74.902], [75.06, 75.468], [75.481, 76.034], [76.047, 76.468], [76.481, 76.639], [76.652, 77.034], [77.047, 77.284], [77.297, 77.415], [77.429, 77.731], [77.744, 78.073], [78.086, 78.468], [78.481, 78.626], [78.639, 79.086]]}, {"kind": "s", "id": "s1_1_0", "md": "First, there is a ==conflict== that has gone back and forth in comments more than twice.", "zh": "第一，有个分歧在评论里已经来回拉扯了不止两轮。", "sp": null, "gap": true, "start": 80.016, "end": 86.208, "words": [[80.116, 80.721], [80.866, 81.037], [81.05, 81.169], [81.182, 81.234], [81.248, 81.892], [81.905, 82.103], [82.116, 82.3], [82.313, 82.656], [82.669, 83.037], [83.05, 83.208], [83.221, 83.603], [83.616, 83.748], [83.761, 84.248], [84.261, 84.524], [84.537, 84.748], [84.761, 85.287]]}, {"kind": "s", "id": "s1_1_1", "md": "Long threads harden positions, and ten minutes of talking often __clears the air__.", "zh": "消息串越长，各自的立场就越固化，聊上十分钟往往就能把话说开。", "sp": null, "gap": false, "start": 86.208, "end": 92.28, "words": [[86.308, 86.834], [86.847, 87.242], [87.255, 87.637], [87.65, 88.374], [88.505, 88.795], [88.808, 89.084], [89.097, 89.466], [89.479, 89.624], [89.637, 90.097], [90.111, 90.466], [90.479, 90.874], [90.887, 91.045], [91.058, 91.361]]}, {"kind": "s", "id": "s1_2_0", "md": "Second, the problem is still ==fuzzy==.", "zh": "第二，问题本身还很模糊。", "sp": null, "gap": true, "start": 92.28, "end": 95.784, "words": [[92.38, 93.091], [93.222, 93.354], [93.367, 93.88], [93.893, 94.025], [94.038, 94.301], [94.314, 94.841]]}, {"kind": "s", "id": "s1_2_1", "md": "When nobody can describe the question clearly yet, a quick ==brainstorm== is faster than a document that nobody knows how to start.", "zh": "当谁都还说不清问题是什么的时候，快速脑暴一下，比写一份没人知道从哪下笔的文档要快。", "sp": null, "gap": false, "start": 95.784, "end": 105.216, "words": [[95.884, 96.134], [96.147, 96.621], [96.634, 96.818], [96.831, 97.41], [97.423, 97.516], [97.529, 98.055], [98.068, 98.568], [98.581, 98.963], [99.2, 99.318], [99.331, 99.608], [99.621, 100.41], [100.423, 100.594], [100.608, 101.081], [101.095, 101.305], [101.318, 101.384], [101.397, 102.134], [102.147, 102.463], [102.476, 102.91], [102.923, 103.266], [103.279, 103.595], [103.608, 103.739], [103.752, 104.305]]}, {"kind": "s", "id": "s1_3_0", "md": "Third, the topic is ==delicate==, such as feedback, a reorganization, or bad news.", "zh": "第三，话题比较敏感，比如给反馈、组织调整，或者坏消息。", "sp": null, "gap": true, "start": 105.216, "end": 112.392, "words": [[105.316, 105.803], [105.934, 106.066], [106.079, 106.487], [106.5, 106.658], [106.671, 107.276], [107.421, 107.763], [107.777, 108.0], [108.013, 108.698], [108.921, 109.053], [109.066, 110.237], [110.369, 110.579], [110.592, 110.948], [110.961, 111.474]]}, {"kind": "s", "id": "s1_3_1", "md": "**Hard conversations deserve a human voice, not a block of text.**", "zh": "难开口的谈话，值得用人的声音来讲，而不是一大段文字。", "sp": null, "gap": false, "start": 112.392, "end": 117.816, "words": [[112.492, 112.887], [112.9, 113.781], [113.795, 114.347], [114.36, 114.426], [114.439, 114.887], [114.9, 115.347], [115.466, 115.755], [115.768, 115.834], [115.847, 116.203], [116.216, 116.387], [116.4, 116.9]]}, {"kind": "s", "id": "s1_3_2", "md": "If none of these apply, __write it up__, __set a deadline__ for comments, and give people their hour back.", "zh": "如果这三条都不沾边，那就写下来，定一个评论截止时间，把这一小时还给大家。", "sp": null, "gap": false, "start": 117.816, "end": 125.064, "words": [[117.916, 118.192], [118.205, 118.416], [118.429, 118.534], [118.548, 118.811], [118.824, 119.377], [119.495, 119.903], [119.916, 120.034], [120.048, 120.311], [120.495, 120.85], [120.863, 120.929], [120.942, 121.482], [121.495, 121.653], [121.666, 122.232], [122.39, 122.653], [122.666, 122.903], [122.916, 123.324], [123.337, 123.574], [123.587, 123.705], [123.719, 124.153]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

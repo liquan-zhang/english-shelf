@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Small Talk Before the Meeting Starts · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "081", "title": "Small Talk Before the Meeting Starts", "meta": "B2 · 约 290 词 · 场景：会前闲聊", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Two Minutes Nobody Plans For", "heading_zh": "1. 没人准备的那两分钟", "rows": [[{"id": "s0_0_0", "md": "Most people treat the first two minutes of a meeting as dead time.", "text": "Most people treat the first two minutes of a meeting as dead time.", "zh": "大多数人把会议开始前的两分钟当成垃圾时间。", "sp": null}, {"id": "s0_0_1", "md": "They check messages, stare at the agenda, or wait in silence for the last person to join.", "text": "They check messages, stare at the agenda, or wait in silence for the last person to join.", "zh": "他们刷消息、盯着议程看，或者干等着最后一个人进会。", "sp": null}, {"id": "s0_0_2", "md": "But those two minutes are often the only ==informal== contact you have with people from other teams.", "text": "But those two minutes are often the only informal contact you have with people from other teams.", "zh": "但这两分钟，往往是你和其他团队的人唯一一次非正式接触。", "sp": null}], [{"id": "s0_1_0", "md": "Nobody remembers the slides from a weekly sync.", "text": "Nobody remembers the slides from a weekly sync.", "zh": "周会上的 PPT 没人记得住。", "sp": null}, {"id": "s0_1_1", "md": "They remember who said hello, who asked about their trip, and who made them laugh.", "text": "They remember who said hello, who asked about their trip, and who made them laugh.", "zh": "大家记得的是谁打了招呼，谁问了他们出去玩得怎么样，谁把他们逗笑了。", "sp": null}, {"id": "s0_1_2", "md": "**Small talk is not a break from work; it is how people decide whether they trust you.**", "text": "Small talk is not a break from work; it is how people decide whether they trust you.", "zh": "闲聊不是工作之余的休息；人家就是靠这个来判断能不能信任你。", "sp": null}], [{"id": "s0_2_0", "md": "The problem is that many of us go blank when there is no agenda.", "text": "The problem is that many of us go blank when there is no agenda.", "zh": "问题是，一没有议程，很多人脑子就一片空白。", "sp": null}, {"id": "s0_2_1", "md": "We __wait for someone else__ to start, and the silence grows ==awkward==.", "text": "We wait for someone else to start, and the silence grows awkward.", "zh": "我们等着别人先开口，沉默越拖越尴尬。", "sp": null}, {"id": "s0_2_2", "md": "The fix is not to become more ==outgoing==.", "text": "The fix is not to become more outgoing.", "zh": "解决办法不是让自己变得更外向。", "sp": null}, {"id": "s0_2_3", "md": "The fix is to have a simple pattern ready before you walk in.", "text": "The fix is to have a simple pattern ready before you walk in.", "zh": "而是进门之前，心里先备好一个简单的套路。", "sp": null}]]}, {"heading": "2. Notice, Ask, Add", "heading_zh": "2. 观察、提问、补一句", "rows": [[{"id": "s1_0_0", "md": "First, notice something small and ==neutral== that everyone shares.", "text": "First, notice something small and neutral that everyone shares.", "zh": "第一步，注意到一件大家都有份的、不起眼又不敏感的小事。", "sp": null}, {"id": "s1_0_1", "md": "It could be the weather, the coffee machine, or the fact that it is Friday.", "text": "It could be the weather, the coffee machine, or the fact that it is Friday.", "zh": "可以是天气、咖啡机，或者今天是周五。", "sp": null}, {"id": "s1_0_2", "md": "\"Everyone looks a bit tired today, long week?\" is enough to __get the ball rolling__.", "text": "\"Everyone looks a bit tired today, long week?\" is enough to get the ball rolling.", "zh": "「今天大家看着都有点累啊，这周挺长的吧？」这一句就足够把话头打开了。", "sp": null}], [{"id": "s1_1_0", "md": "Next, ask a question that is easy to answer.", "text": "Next, ask a question that is easy to answer.", "zh": "第二步，问一个好回答的问题。", "sp": null}, {"id": "s1_1_1", "md": "\"Did you end up going to that concert?\" works better than \"How are you?\", because it shows you __paid attention__ and gives the other person something ==concrete== to say.", "text": "\"Did you end up going to that concert?\" works better than \"How are you?\", because it shows you paid attention and gives the other person something concrete to say.", "zh": "「那场演唱会你最后去了吗？」比「最近怎么样？」好用，因为它说明你上了心，也让对方有具体的东西可聊。", "sp": null}], [{"id": "s1_2_0", "md": "Then add one small detail about yourself.", "text": "Then add one small detail about yourself.", "zh": "第三步，补一句关于自己的小细节。", "sp": null}, {"id": "s1_2_1", "md": "If they say the concert was great, you can say, \"Nice, I've been meaning to see them live.\"", "text": "If they say the concert was great, you can say, \"Nice, I've been meaning to see them live.\"", "zh": "如果对方说演唱会特别棒，你可以说：「真好，我一直想去看他们的现场。」", "sp": null}, {"id": "s1_2_2", "md": "**One question and one detail are enough to turn a silent room into a warm one.**", "text": "One question and one detail are enough to turn a silent room into a warm one.", "zh": "一个问题加一个细节，就能把一屋子的冷场变得热乎起来。", "sp": null}], [{"id": "s1_3_0", "md": "When the host starts the meeting, let the chat go.", "text": "When the host starts the meeting, let the chat go.", "zh": "主持人一开始开会，就别再聊了。", "sp": null}, {"id": "s1_3_1", "md": "You do not need to finish the story.", "text": "You do not need to finish the story.", "zh": "你不需要把故事讲完。", "sp": null}, {"id": "s1_3_2", "md": "A quick \"Let's __pick this up__ later\" leaves the door open, and people will ==associate== you with that small, friendly moment.", "text": "A quick \"Let's pick this up later\" leaves the door open, and people will associate you with that small, friendly moment.", "zh": "一句「回头再接着聊」，给后面留了个口子，大家也会把你和那个轻松友好的小片刻联系在一起。", "sp": null}]]}], "gist": [{"q": "作者怎么看会议开始前的那两分钟？", "a": "不是空白时间，而是和其他组同事唯一的非正式接触；人们正是通过闲聊决定是否信任你。"}, {"q": "作者说冷场的解决办法是什么？", "a": "不是让自己变得更外向，而是进门前准备好一个简单的套路。"}, {"q": "文中的套路有哪几步？", "a": "Notice 注意一个大家共有的中性小事；Ask 问一个好回答的具体问题；Add 补一句关于自己的小细节；会议开始就自然收住，约“回头再聊”。"}], "dictation": [{"id": "s0_1_2", "text": "Small talk is not a break from work; it is how people decide whether they trust you."}, {"id": "s0_2_3", "text": "The fix is to have a simple pattern ready before you walk in."}, {"id": "s1_1_0", "text": "Next, ask a question that is easy to answer."}, {"id": "s1_2_2", "text": "One question and one detail are enough to turn a silent room into a warm one."}], "shadow": {"text": "Then add one small detail about yourself. If they say the concert was great, you can say, \"Nice, I've been meaning to see them live.\" One question and one detail are enough to turn a silent room into a warm one.", "marked": "Then <b>add</b> one small <b>detail</b> / about <b>yourself</b>. //<br>If they say the concert was <b>great</b>, / you can say, / \"<b>Nice</b>, I've been <b>meaning</b> to see them <b>live</b>.\" //<br><b>One</b> question / and <b>one</b> detail / are enough to turn a <b>silent</b> room / into a <b>warm</b> one. //"}, "prompts": [{"q": "周一部门会你提前进了会议室，只有一位伦敦办公室的同事在，他上周刚休假回来。用 Notice, Ask, Add 和他闲聊 30 秒。", "ref": "Morning! You look pretty relaxed, so I guess the holiday did its job? I remember you said you were heading to Portugal. Did you make it to Lisbon in the end? Nice. I've been meaning to go there for years, mostly for the food. Let's grab a coffee after this and you can tell me where to eat.", "ref_zh": "早啊！你看着挺放松的，假期效果不错吧？我记得你说要去葡萄牙。最后去成里斯本了吗？真好。我想去那儿好多年了，主要是冲着吃的。会后一起喝杯咖啡，你给我推荐几家馆子。", "id": "ref0"}, {"q": "线上会议大家都开着摄像头等主持人，场面很安静。你来打破沉默，30 秒。", "ref": "Hi everyone, it's quiet today, are we all saving our energy for Friday? Priya, I saw your post about the half marathon last weekend. How did it go? That's impressive. I tried running outdoors in Singapore once and the humidity defeated me in ten minutes. Okay, looks like we're all here, let's pick this up after the call.", "ref_zh": "大家好，今天挺安静啊，是都在给周五攒电吗？Priya，我看到你发的上周末半马的动态了。跑得怎么样？太厉害了。我在新加坡试过一次户外跑，十分钟就被湿度打败了。好，看样子人都到齐了，这个我们会后再接着聊。", "id": "ref1"}], "words": [{"w": "informal", "ipa": "/ɪnˈfɔːrməl/", "zh": "非正式的", "ex": "Most of our real decisions start in informal chats, not in meetings.", "id": "w0"}, {"w": "awkward", "ipa": "/ˈɔːkwərd/", "zh": "尴尬的、别扭的", "ex": "There was an awkward pause after he asked about the budget.", "id": "w1"}, {"w": "outgoing", "ipa": "/ˈaʊtˌɡoʊɪŋ/", "zh": "外向的、爱社交的", "ex": "You don't have to be outgoing to be good at small talk.", "id": "w2"}, {"w": "neutral", "ipa": "/ˈnuːtrəl/", "zh": "中性的、不偏不倚的", "ex": "The weather is a safe, neutral topic with almost anyone.", "id": "w3"}, {"w": "concrete", "ipa": "/ˈkɑːnkriːt/", "zh": "具体的、实在的", "ex": "Give me one concrete example of where the process slowed you down.", "id": "w4"}, {"w": "associate (v.)", "ipa": "/əˈsoʊʃiˌeɪt/", "zh": "把……联系在一起", "ex": "People still associate our team with that outage last year.", "tts_w": "associate", "id": "w5"}, {"w": "icebreaker", "ipa": "/ˈaɪsˌbreɪkər/", "zh": "破冰的话或活动", "ex": "A quick question about the weekend is a good icebreaker.", "id": "w6"}, {"w": "rapport", "ipa": "/ræˈpɔːr/", "zh": "融洽关系", "ex": "She built good rapport with the vendor before the hard negotiation.", "id": "w7"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Two Minutes Nobody Plans For", "zh": "1. 没人准备的那两分钟", "start": 0.0, "end": 3.0, "words": [[0.105, 0.382], [0.724, 0.829], [0.842, 1.066], [1.079, 1.368], [1.382, 1.816], [1.829, 2.224], [2.237, 2.618]]}, {"kind": "s", "id": "s0_0_0", "md": "Most people treat the first two minutes of a meeting as dead time.", "zh": "大多数人把会议开始前的两分钟当成垃圾时间。", "sp": null, "gap": false, "start": 3.0, "end": 7.104, "words": [[3.105, 3.368], [3.382, 3.724], [3.737, 4.039], [4.053, 4.145], [4.158, 4.526], [4.539, 4.71], [4.724, 5.092], [5.105, 5.171], [5.184, 5.237], [5.25, 5.737], [5.921, 6.066], [6.079, 6.342], [6.355, 6.724]]}, {"kind": "s", "id": "s0_0_1", "md": "They check messages, stare at the agenda, or wait in silence for the last person to join.", "zh": "他们刷消息、盯着议程看，或者干等着最后一个人进会。", "sp": null, "gap": false, "start": 7.104, "end": 12.864, "words": [[7.222, 7.301], [7.315, 7.591], [7.604, 8.275], [8.486, 8.788], [8.801, 8.893], [8.907, 8.999], [9.012, 9.578], [9.959, 10.143], [10.157, 10.42], [10.433, 10.565], [10.578, 11.091], [11.104, 11.209], [11.222, 11.301], [11.315, 11.657], [11.67, 12.025], [12.038, 12.117], [12.13, 12.486]]}, {"kind": "s", "id": "s0_0_2", "md": "But those two minutes are often the only ==informal== contact you have with people from other teams.", "zh": "但这两分钟，往往是你和其他团队的人唯一一次非正式接触。", "sp": null, "gap": false, "start": 12.864, "end": 18.36, "words": [[12.982, 13.088], [13.101, 13.351], [13.364, 13.522], [13.535, 13.864], [13.943, 14.127], [14.14, 14.482], [14.496, 14.64], [14.719, 15.101], [15.114, 15.627], [15.64, 16.18], [16.193, 16.285], [16.298, 16.509], [16.522, 16.667], [16.68, 17.009], [17.022, 17.193], [17.206, 17.417], [17.43, 17.969]]}, {"kind": "s", "id": "s0_1_0", "md": "Nobody remembers the slides from a weekly sync.", "zh": "周会上的 PPT 没人记得住。", "sp": null, "gap": true, "start": 18.36, "end": 21.528, "words": [[18.465, 18.86], [18.873, 19.373], [19.386, 19.478], [19.492, 20.018], [20.031, 20.189], [20.202, 20.268], [20.281, 20.636], [20.649, 21.149]]}, {"kind": "s", "id": "s0_1_1", "md": "They remember who said hello, who asked about their trip, and who made them laugh.", "zh": "大家记得的是谁打了招呼，谁问了他们出去玩得怎么样，谁把他们逗笑了。", "sp": null, "gap": false, "start": 21.528, "end": 26.328, "words": [[21.646, 21.712], [21.725, 22.146], [22.16, 22.265], [22.278, 22.515], [22.528, 22.962], [23.344, 23.462], [23.475, 23.765], [23.778, 24.015], [24.028, 24.173], [24.186, 24.581], [24.91, 24.975], [24.989, 25.12], [25.133, 25.344], [25.357, 25.489], [25.502, 25.936]]}, {"kind": "s", "id": "s0_1_2", "md": "**Small talk is not a break from work; it is how people decide whether they trust you.**", "zh": "闲聊不是工作之余的休息；人家就是靠这个来判断能不能信任你。", "sp": null, "gap": false, "start": 26.328, "end": 31.2, "words": [[26.433, 26.736], [26.749, 27.065], [27.078, 27.183], [27.196, 27.394], [27.407, 27.446], [27.46, 27.736], [27.749, 27.933], [27.946, 28.289], [28.617, 28.683], [28.696, 28.802], [28.815, 28.986], [28.999, 29.354], [29.367, 29.854], [29.867, 30.078], [30.091, 30.196], [30.21, 30.591], [30.604, 30.802]]}, {"kind": "s", "id": "s0_2_0", "md": "The problem is that many of us go blank when there is no agenda.", "zh": "问题是，一没有议程，很多人脑子就一片空白。", "sp": null, "gap": true, "start": 31.2, "end": 35.064, "words": [[31.318, 31.371], [31.384, 31.805], [31.818, 31.911], [31.924, 32.121], [32.134, 32.608], [32.621, 32.713], [32.726, 32.871], [32.884, 33.068], [33.082, 33.529], [33.634, 33.753], [33.766, 33.897], [33.911, 34.016], [34.029, 34.187], [34.2, 34.687]]}, {"kind": "s", "id": "s0_2_1", "md": "We __wait for someone else__ to start, and the silence grows ==awkward==.", "zh": "我们等着别人先开口，沉默越拖越尴尬。", "sp": null, "gap": false, "start": 35.064, "end": 38.904, "words": [[35.169, 35.301], [35.314, 35.525], [35.538, 35.682], [35.696, 36.011], [36.025, 36.222], [36.235, 36.314], [36.327, 36.775], [37.09, 37.156], [37.169, 37.235], [37.248, 37.696], [37.709, 37.998], [38.011, 38.525]]}, {"kind": "s", "id": "s0_2_2", "md": "The fix is not to become more ==outgoing==.", "zh": "解决办法不是让自己变得更外向。", "sp": null, "gap": false, "start": 38.904, "end": 41.376, "words": [[39.022, 39.075], [39.088, 39.351], [39.365, 39.483], [39.496, 39.759], [39.772, 39.851], [39.865, 40.22], [40.233, 40.457], [40.47, 40.996]]}, {"kind": "s", "id": "s0_2_3", "md": "The fix is to have a simple pattern ready before you walk in.", "zh": "而是进门之前，心里先备好一个简单的套路。", "sp": null, "gap": false, "start": 41.376, "end": 44.904, "words": [[41.494, 41.547], [41.56, 41.889], [41.981, 42.1], [42.113, 42.205], [42.218, 42.389], [42.402, 42.468], [42.481, 42.902], [42.915, 43.35], [43.363, 43.6], [43.613, 43.929], [43.942, 44.034], [44.047, 44.35], [44.363, 44.521]]}, {"kind": "h", "id": "h1", "md": "2. Notice, Ask, Add", "zh": "2. 观察、提问、补一句", "start": 44.904, "end": 47.208, "words": [[45.022, 45.233], [45.522, 45.996], [46.101, 46.47], [46.496, 46.825]]}, {"kind": "s", "id": "s1_0_0", "md": "First, notice something small and ==neutral== that everyone shares.", "zh": "第一步，注意到一件大家都有份的、不起眼又不敏感的小事。", "sp": null, "gap": false, "start": 47.208, "end": 51.408, "words": [[47.379, 47.747], [48.05, 48.326], [48.34, 48.669], [48.682, 49.221], [49.234, 49.379], [49.392, 49.866], [49.879, 50.024], [50.037, 50.419], [50.432, 51.011]]}, {"kind": "s", "id": "s1_0_1", "md": "It could be the weather, the coffee machine, or the fact that it is Friday.", "zh": "可以是天气、咖啡机，或者今天是周五。", "sp": null, "gap": false, "start": 51.408, "end": 55.752, "words": [[51.513, 51.592], [51.605, 51.737], [51.75, 51.855], [51.869, 51.974], [51.987, 52.395], [52.671, 52.75], [52.763, 53.145], [53.158, 53.619], [53.921, 54.0], [54.013, 54.092], [54.105, 54.513], [54.526, 54.645], [54.658, 54.724], [54.737, 54.829], [54.842, 55.355]]}, {"kind": "s", "id": "s1_0_2", "md": "\"Everyone looks a bit tired today, long week?\" is enough to __get the ball rolling__.", "zh": "「今天大家看着都有点累啊，这周挺长的吧？」这一句就足够把话头打开了。", "sp": null, "gap": false, "start": 55.752, "end": 60.744, "words": [[55.936, 56.173], [56.252, 56.449], [56.463, 56.528], [56.541, 56.818], [56.831, 57.173], [57.186, 57.528], [57.62, 57.91], [57.923, 58.252], [58.897, 59.015], [59.028, 59.291], [59.305, 59.384], [59.397, 59.568], [59.581, 59.66], [59.673, 59.936], [59.949, 60.357]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, ask a question that is easy to answer.", "zh": "第二步，问一个好回答的问题。", "sp": null, "gap": true, "start": 60.744, "end": 63.936, "words": [[60.849, 61.257], [61.652, 61.836], [61.849, 61.902], [61.915, 62.336], [62.349, 62.481], [62.494, 62.639], [62.652, 62.915], [62.928, 63.047], [63.06, 63.547]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Did you end up going to that concert?\" works better than \"How are you?\", because it shows you __paid attention__ and gives the other person something ==concrete== to say.", "zh": "「那场演唱会你最后去了吗？」比「最近怎么样？」好用，因为它说明你上了心，也让对方有具体的东西可聊。", "sp": null, "gap": false, "start": 63.936, "end": 72.96, "words": [[64.147, 64.147], [64.225, 64.331], [64.344, 64.475], [64.489, 64.607], [64.62, 64.818], [64.831, 64.897], [64.91, 65.107], [65.12, 65.66], [66.028, 66.304], [66.318, 66.633], [66.647, 66.791], [66.818, 67.094], [67.107, 67.278], [67.291, 67.541], [68.225, 68.528], [68.541, 68.62], [68.633, 68.975], [68.989, 69.094], [69.107, 69.383], [69.397, 69.962], [70.068, 70.16], [70.173, 70.436], [70.449, 70.581], [70.66, 70.91], [70.923, 71.331], [71.344, 71.647], [71.66, 72.12], [72.133, 72.212], [72.225, 72.581]]}, {"kind": "s", "id": "s1_2_0", "md": "Then add one small detail about yourself.", "zh": "第三步，补一句关于自己的小细节。", "sp": null, "gap": true, "start": 72.96, "end": 75.672, "words": [[73.078, 73.276], [73.289, 73.46], [73.473, 73.684], [73.697, 73.973], [73.986, 74.447], [74.46, 74.684], [74.697, 75.289]]}, {"kind": "s", "id": "s1_2_1", "md": "If they say the concert was great, you can say, \"Nice, I've been meaning to see them live.\"", "zh": "如果对方说演唱会特别棒，你可以说：「真好，我一直想去看他们的现场。」", "sp": null, "gap": false, "start": 75.672, "end": 81.624, "words": [[75.777, 75.896], [75.909, 76.014], [76.027, 76.225], [76.238, 76.343], [76.356, 76.777], [76.79, 76.948], [76.961, 77.356], [77.633, 77.711], [77.725, 77.856], [77.869, 78.225], [78.804, 79.264], [79.659, 79.79], [79.804, 79.948], [79.961, 80.238], [80.251, 80.317], [80.33, 80.593], [80.606, 80.777], [80.79, 81.225]]}, {"kind": "s", "id": "s1_2_2", "md": "**One question and one detail are enough to turn a silent room into a warm one.**", "zh": "一个问题加一个细节，就能把一屋子的冷场变得热乎起来。", "sp": null, "gap": false, "start": 81.624, "end": 87.024, "words": [[81.742, 82.006], [82.019, 82.624], [82.637, 82.795], [82.808, 83.032], [83.045, 83.624], [83.637, 83.808], [83.821, 84.177], [84.19, 84.282], [84.295, 84.532], [84.545, 84.598], [84.611, 85.124], [85.137, 85.506], [85.663, 85.9], [85.913, 86.006], [86.019, 86.335], [86.348, 86.637]]}, {"kind": "s", "id": "s1_3_0", "md": "When the host starts the meeting, let the chat go.", "zh": "主持人一开始开会，就别再聊了。", "sp": null, "gap": true, "start": 87.024, "end": 90.12, "words": [[87.129, 87.221], [87.235, 87.313], [87.327, 87.708], [87.721, 88.09], [88.103, 88.182], [88.195, 88.563], [88.879, 89.011], [89.024, 89.103], [89.116, 89.432], [89.445, 89.734]]}, {"kind": "s", "id": "s1_3_1", "md": "You do not need to finish the story.", "zh": "你不需要把故事讲完。", "sp": null, "gap": false, "start": 90.12, "end": 92.184, "words": [[90.225, 90.304], [90.317, 90.436], [90.449, 90.659], [90.673, 90.817], [90.831, 90.896], [90.909, 91.212], [91.225, 91.304], [91.317, 91.791]]}, {"kind": "s", "id": "s1_3_2", "md": "A quick \"Let's __pick this up__ later\" leaves the door open, and people will ==associate== you with that small, friendly moment.", "zh": "一句「回头再接着聊」，给后面留了个口子，大家也会把你和那个轻松友好的小片刻联系在一起。", "sp": null, "gap": false, "start": 92.184, "end": 99.888, "words": [[92.302, 92.368], [92.381, 92.737], [93.039, 93.21], [93.223, 93.421], [93.434, 93.645], [93.658, 93.802], [93.816, 94.171], [94.579, 94.855], [94.868, 94.973], [94.987, 95.276], [95.289, 95.605], [95.987, 96.039], [96.052, 96.408], [96.421, 96.566], [96.579, 97.25], [97.263, 97.473], [97.487, 97.644], [97.658, 97.855], [97.868, 98.447], [98.737, 99.066], [99.079, 99.487]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

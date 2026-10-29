@@ -1,0 +1,189 @@
+{
+  "id": "089",
+  "title": "Ending a Conversation Gracefully",
+  "meta": "B2 · 约 270 词 · 场景：结束闲聊",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Why We Get Stuck",
+      "paragraphs": [
+        [
+          "Starting a conversation is hard, but ending one can be even harder.",
+          "You have run out of topics, the other person is still talking, and you need to get back to work.",
+          "So you nod, smile, and stay ten minutes longer than you wanted."
+        ],
+        [
+          "Many of us stay because we are afraid that leaving will seem ==dismissive==.",
+          "In fact, ==dragging== out a tired conversation is worse for both people.",
+          "**Ending a conversation well leaves a better memory than ending it late.**"
+        ],
+        [
+          "The trick is to make the exit feel like a natural close, not an ==escape==.",
+          "Think of it as the last line of a good story, not a door __slammed shut__.",
+          "Done well, the other person walks away feeling heard, not dropped."
+        ]
+      ],
+      "heading_zh": "1. 为什么我们会被困住",
+      "paragraphs_zh": [
+        [
+          "开启一段对话难，结束一段对话可能更难。",
+          "你已经没话题了，对方还在说，而你得回去干活。",
+          "于是你点头、微笑，比自己想的多待了十分钟。"
+        ],
+        [
+          "很多人留下来，是怕一走了之显得敷衍。",
+          "其实，硬撑一段聊乏了的对话，对双方都更糟。",
+          "好好结束一段对话，比拖到很晚才结束，留下的印象更好。"
+        ],
+        [
+          "诀窍在于让离开感觉像是自然收尾，而不是落荒而逃。",
+          "把它想成一个好故事的最后一句，而不是「砰」地关上门。",
+          "收得好，对方走的时候会觉得被倾听了，而不是被晾下了。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Wrap, Reason, Return",
+      "paragraphs": [
+        [
+          "First, ==summarize== the conversation in one line.",
+          "\"Well, it sounds like the move is finally behind you, that's great.\"",
+          "A short summary tells the other person the conversation has reached its natural end."
+        ],
+        [
+          "Second, give a brief, honest reason.",
+          "\"I need to __jump on a call__ in five minutes\" or \"I should grab something to eat before my next meeting\" is enough.",
+          "You do not need to ==justify== it further."
+        ],
+        [
+          "Third, add a reason to talk again that __leaves the door open__.",
+          "\"Let's continue this over lunch next week,\" or \"Send me that article, I'd love to read it.\"",
+          "**People forgive a quick exit when it comes with a reason to talk again.**"
+        ],
+        [
+          "In group settings, it is even easier.",
+          "You can say, \"I'm going to __grab a refill__, great chatting with you,\" and ==drift== toward another circle.",
+          "Nobody expects you to stay in one circle all evening."
+        ]
+      ],
+      "heading_zh": "2. 收尾、理由、留口子",
+      "paragraphs_zh": [
+        [
+          "第一步，用一句话总结刚才聊的。",
+          "「看来搬家这事终于告一段落了，真好。」",
+          "一句简短的总结，就是在告诉对方，这段对话到了自然的终点。"
+        ],
+        [
+          "第二步，给一个简短、真实的理由。",
+          "「我五分钟后要上个会」或者「下个会之前我得先去吃点东西」，就够了。",
+          "不需要再多解释。"
+        ],
+        [
+          "第三步，给下次再聊留个由头，把门留着。",
+          "「下周午饭的时候接着聊」，或者「把那篇文章发我，我挺想看的」。",
+          "只要离开时带着一个再聊的由头，人们都不会介意你走得快。"
+        ],
+        [
+          "在人多的场合，就更容易了。",
+          "你可以说：「我去续杯，跟你聊得很开心。」然后慢慢挪到另一圈人那边。",
+          "没人指望你整晚都待在一个圈子里。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "人们为什么常常被困在对话里？",
+      "a": "担心离开显得冷淡、不尊重，于是点头微笑多待十分钟；其实拖着一段疲惫的对话对双方都更糟。"
+    },
+    {
+      "q": "作者给出的结束对话三步是什么？",
+      "a": "Wrap 用一句话总结；Reason 给一个简短真实的理由，不必多解释；Return 留一个下次再聊的口子。"
+    },
+    {
+      "q": "在多人场合怎么脱身？",
+      "a": "说一句“我去续杯，聊得很开心”，然后自然走向另一圈人。"
+    }
+  ],
+  "dictation": [
+    "Ending a conversation well leaves a better memory than ending it late.",
+    "First, summarize the conversation in one line.",
+    "You do not need to justify it further.",
+    "People forgive a quick exit when it comes with a reason to talk again."
+  ],
+  "shadow": {
+    "text": "Third, add a reason to talk again that leaves the door open. \"Let's continue this over lunch next week,\" or \"Send me that article, I'd love to read it.\" People forgive a quick exit when it comes with a reason to talk again.",
+    "marked": "Third, add a <b>reason</b> to talk <b>again</b> / that leaves the <b>door</b> open. //<br>\"Let's <b>continue</b> this over lunch / next <b>week</b>,\" / or \"<b>Send</b> me that article, / I'd <b>love</b> to read it.\" //<br>People <b>forgive</b> a quick exit / when it comes with a <b>reason</b> / to talk <b>again</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "茶水间里一位产品经理拉着你聊了十分钟他家的装修，你两点有会。用“总结、理由、留口子”结束对话。",
+      "ref": "Sounds like the kitchen is finally coming together, that must be a big relief. I'm sorry to cut this short, but I have a review at two and I still need to read the doc. Send me a photo when it's done though, I'd love to see how it turned out. Good luck with the painters!",
+      "ref_zh": "听起来厨房终于快弄好了，肯定松了一大口气吧。不好意思得先打断一下，我两点有个评审，文档还没看。弄好了给我发张照片啊，挺想看看最后什么样。祝跟油漆师傅打交道顺利！"
+    },
+    {
+      "q": "公司活动上你和一位不太熟的同事已经聊完了话题，想去和另一圈人打招呼。30 秒得体离开。",
+      "ref": "It was really nice to finally meet you in person, after all those calls. I'm going to grab another drink and say hi to a few people from the Jakarta team before they leave. Let's find a time next week to talk more about the data pipeline. I'll send you an invite tomorrow morning.",
+      "ref_zh": "打了那么多电话，终于见到真人了，真的很高兴。我去再拿杯喝的，趁雅加达团队的几个人还没走，过去打个招呼。下周找个时间，我们再细聊聊数据 pipeline。我明天早上给你发邀请。"
+    }
+  ],
+  "words": [
+    {
+      "w": "dismissive",
+      "ipa": "/dɪsˈmɪsɪv/",
+      "zh": "轻视的、不屑一顾的",
+      "ex": "His reply sounded dismissive, even though he didn't mean it that way."
+    },
+    {
+      "w": "drag out",
+      "ipa": "/dræɡ aʊt/",
+      "zh": "拖延、拖长",
+      "ex": "Let's not drag out this meeting, we can settle the rest in the doc."
+    },
+    {
+      "w": "escape (n.)",
+      "ipa": "/ɪˈskeɪp/",
+      "zh": "逃离、脱身",
+      "ex": "Leaving early felt like an escape, so I stayed and said goodbye properly.",
+      "tts_w": "escape"
+    },
+    {
+      "w": "summarize",
+      "ipa": "/ˈsʌməˌraɪz/",
+      "zh": "总结、概括",
+      "ex": "Can someone summarize what we agreed before we drop off?"
+    },
+    {
+      "w": "justify",
+      "ipa": "/ˈdʒʌstɪˌfaɪ/",
+      "zh": "证明……合理、为……辩解",
+      "ex": "You'll need data to justify the extra headcount."
+    },
+    {
+      "w": "drift (v.)",
+      "ipa": "/drɪft/",
+      "zh": "漂移、慢慢走向",
+      "ex": "The discussion drifted away from the original question.",
+      "tts_w": "drift"
+    },
+    {
+      "w": "wrap up",
+      "ipa": "/ræp ʌp/",
+      "zh": "收尾、结束",
+      "ex": "Let's wrap up here and continue on Thursday."
+    },
+    {
+      "w": "linger",
+      "ipa": "/ˈlɪŋɡər/",
+      "zh": "逗留、迟迟不走",
+      "ex": "A few people lingered after the all-hands to ask questions."
+    },
+    {
+      "w": "graceful",
+      "ipa": "/ˈɡreɪsfəl/",
+      "zh": "得体的、优雅的",
+      "ex": "He made a graceful exit when the conversation turned to politics."
+    }
+  ]
+}

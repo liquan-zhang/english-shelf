@@ -1,0 +1,183 @@
+{
+  "id": "077",
+  "title": "Planning Meetings That Produce Plans",
+  "meta": "B2 · 约 270 词 · 场景：规划会议",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Why Planning Meetings Drift",
+      "paragraphs": [
+        [
+          "Many planning meetings end with a ==lengthy== discussion and a promise to __follow up offline__.",
+          "Two hours of senior time later, the plan looks exactly the same as before.",
+          "Everyone leaves tired, and nobody is quite sure what was decided."
+        ],
+        [
+          "The usual cause is that the meeting is doing two jobs at once.",
+          "People are hearing information for the first time while also being asked to decide.",
+          "So the conversation ==drifts== into questions that should have been answered by email a week earlier."
+        ],
+        [
+          "**A planning meeting should be where decisions get made, not where facts get collected.**",
+          "Collect estimates, dependencies, and open questions in the days before.",
+          "By the time everyone sits down, the ==groundwork== should already be done.",
+          "The meeting is for the questions that only the people in the room can answer."
+        ]
+      ],
+      "heading_zh": "1. 规划会为什么会跑偏",
+      "paragraphs_zh": [
+        [
+          "很多规划会最后都是一通冗长的讨论，再加一句「会后线下再跟进」。",
+          "花了两个小时高级别的时间，计划跟之前一模一样。",
+          "大家都累了，走的时候谁也说不准到底定了什么。"
+        ],
+        [
+          "常见的原因是，这个会在同时干两件事。",
+          "大家第一次听到信息，同时又被要求做决定。",
+          "于是讨论就跑偏到一些本该一周前用邮件就答完的问题上。"
+        ],
+        [
+          "规划会应该是做决定的地方，而不是收集信息的地方。",
+          "估时、依赖和待定问题，在会前几天就收集好。",
+          "等大家坐下来的时候，铺垫工作应该已经做完了。",
+          "会议是留给那些只有在场的人才能回答的问题的。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Bring a Draft, Leave with Owners",
+      "paragraphs": [
+        [
+          "Walk in with a draft plan, even a rough one.",
+          "A ==straw man== gives people something concrete to react to.",
+          "**It is much easier to improve a bad plan than to write a good one from a blank page.**"
+        ],
+        [
+          "Spend the meeting on the parts people actually disagree about.",
+          "If everyone accepts the staffing for the first two projects, don't reopen it; spend the time on the ==contested== third one.",
+          "A good facilitator will often say, \"It sounds like we agree on this, so let's __move on__.\""
+        ],
+        [
+          "Before anyone leaves, go through every item and confirm an owner and a date.",
+          "Read them back out loud, so ==misunderstandings== come up while everyone is still in the room.",
+          "Then send the summary within an hour, while the discussion is still fresh.",
+          "A plan without named owners is just a ==wish list==."
+        ]
+      ],
+      "heading_zh": "2. 带着草案进来，带着负责人离开",
+      "paragraphs_zh": [
+        [
+          "带着一份计划草案进会，哪怕很粗糙。",
+          "一个靶子能给大家一个具体的东西去回应。",
+          "改进一份糟糕的计划，比从一张白纸开始写一份好计划容易得多。"
+        ],
+        [
+          "把会议时间花在大家真正有分歧的部分上。",
+          "如果大家都接受前两个项目的人力安排，就别再翻出来讨论；把时间花在有争议的第三个上。",
+          "一个好的主持人经常会说：「听起来这点我们达成一致了，那就往下走。」"
+        ],
+        [
+          "在任何人离开之前，逐项过一遍，确认每项的负责人和日期。",
+          "把它们大声念一遍，这样误解能在大家都还在场的时候暴露出来。",
+          "然后在一小时内发出会议纪要，趁讨论还新鲜。",
+          "没有具体负责人的计划，只是一张愿望清单。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "规划会为什么常常开完了计划没变？",
+      "a": "会议同时在做两件事：大家第一次听到信息，又被要求当场决定，讨论就跑偏到本该会前邮件解决的问题上。"
+    },
+    {
+      "q": "会前应该做什么？带什么进会？",
+      "a": "提前收集估时、依赖和未决问题；带一份草案（稻草人方案）进会，让大家有具体东西可以改。"
+    },
+    {
+      "q": "会议结束前要做哪一步？",
+      "a": "逐项确认负责人和日期并大声复述，暴露误解；一小时内发出总结。没有负责人的计划只是愿望清单。"
+    }
+  ],
+  "dictation": [
+    "A planning meeting should be where decisions get made, not where facts get collected.",
+    "It is much easier to improve a bad plan than to write a good one from a blank page.",
+    "Before anyone leaves, go through every item and confirm an owner and a date.",
+    "A plan without named owners is just a wish list."
+  ],
+  "shadow": {
+    "text": "Before anyone leaves, go through every item and confirm an owner and a date. Read them back out loud, so misunderstandings come up while everyone is still in the room.",
+    "marked": "Before anyone <b>leaves</b>, / go through <b>every</b> item / and confirm an <b>owner</b> / and a <b>date</b>. //<br>Read them back <b>out loud</b>, / so <b>misunderstandings</b> come up / while everyone is <b>still</b> in the room. //"
+  },
+  "prompts": [
+    {
+      "q": "下周你要主持季度规划会。用 30 秒在群里说明会前准备的要求和会议怎么开。",
+      "ref": "Hi all, quick note before next Tuesday's planning session. By Friday, please add your estimates, dependencies, and open questions to the shared doc. I'll turn that into a draft plan over the weekend. In the meeting itself, we won't walk through every item; we'll focus on the parts where we disagree. And we'll finish with an owner and a date for each project, so please come ready to commit.",
+      "ref_zh": "大家好，下周二规划会之前提醒一下。请在周五之前把你们的估时、依赖和待定问题填到共享文档里。我周末会整理成一份计划草案。会上我们不会逐项过；我们只聚焦有分歧的部分。最后每个项目都会定下负责人和日期，所以请大家带着承诺来。"
+    },
+    {
+      "q": "规划会已经开了一个半小时，还在讨论第一个项目的细节。用 30 秒把会议拉回来，确认负责人和日期。",
+      "ref": "Sorry to cut in, but we're at ninety minutes and still on the first project. It sounds like we agree on the approach, and the remaining questions are details that Wei and Sam can sort out offline. Can we confirm Wei as owner, with a first milestone at the end of the month? Then let's move to the search project, which is where we actually disagree.",
+      "ref_zh": "抱歉打断一下，我们已经开了九十分钟，还在第一个项目上。听起来大家对方案是一致的，剩下的问题都是细节，Wei 和 Sam 可以线下解决。我们能不能确认 Wei 做负责人，第一个里程碑定在月底？然后我们进到搜索项目，那才是我们真正有分歧的地方。"
+    }
+  ],
+  "words": [
+    {
+      "w": "lengthy",
+      "ipa": "/ˈleŋθi/",
+      "zh": "冗长的",
+      "ex": "After a lengthy debate, we agreed to keep the old API for now."
+    },
+    {
+      "w": "drift (v.)",
+      "ipa": "/drɪft/",
+      "zh": "偏离、跑题",
+      "ex": "The meeting drifted into a debate about naming conventions.",
+      "tts_w": "drift"
+    },
+    {
+      "w": "groundwork",
+      "ipa": "/ˈɡraʊndˌwɜːrk/",
+      "zh": "前期准备、基础工作",
+      "ex": "She did the groundwork with each team before the review."
+    },
+    {
+      "w": "straw man",
+      "ipa": "/ˌstrɔː ˈmæn/",
+      "zh": "供讨论的初稿方案（稻草人）",
+      "ex": "Here's a straw man for the Q3 roadmap; please tear it apart.",
+      "tts": "Here's a straw man for the third quarter roadmap; please tear it apart."
+    },
+    {
+      "w": "contested",
+      "ipa": "/kənˈtestɪd/",
+      "zh": "有争议的",
+      "ex": "The headcount split is the most contested part of the plan."
+    },
+    {
+      "w": "misunderstanding",
+      "ipa": "/ˌmɪsʌndərˈstændɪŋ/",
+      "zh": "误解",
+      "ex": "To avoid any misunderstanding, the deadline is Friday Singapore time."
+    },
+    {
+      "w": "wish list",
+      "ipa": "/ˈwɪʃ lɪst/",
+      "zh": "愿望清单",
+      "ex": "Without headcount, this roadmap is just a wish list."
+    },
+    {
+      "w": "facilitator",
+      "ipa": "/fəˈsɪlɪˌteɪtər/",
+      "zh": "会议主持人、引导者",
+      "ex": "Can you be the facilitator for the retro this week?"
+    },
+    {
+      "w": "offline",
+      "ipa": "/ˌɔːfˈlaɪn/",
+      "zh": "会后私下（讨论）",
+      "ex": "Let's take the database question offline after the meeting."
+    }
+  ]
+}

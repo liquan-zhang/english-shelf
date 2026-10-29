@@ -1,0 +1,1260 @@
+[
+ {
+  "id": "000",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "How to Disagree Without Making Enemies",
+  "angle": "开会时如何提反对意见（样板篇）",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "001",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "How to Speak Up in the First Five Minutes",
+  "angle": "开会前五分钟先开口，抢定义权",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "002",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "Turning a Messy Discussion into a Decision",
+  "angle": "讨论发散时如何收敛到决定",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "003",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "How to Interrupt Politely",
+  "angle": "礼貌地打断跑题或冗长发言",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "004",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "Summarizing a Meeting in Thirty Seconds",
+  "angle": "会议结尾的三十秒总结",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "005",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "When You Are Put on the Spot",
+  "angle": "被突然点名提问时如何争取时间、稳住",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "006",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "Asking the Question Everyone Is Afraid to Ask",
+  "angle": "问出大家都不敢问的问题",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "007",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "Running a Meeting That Ends on Time",
+  "angle": "主持会议：议程、计时、收尾",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "008",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "Disagreeing with a Senior Leader in Public",
+  "angle": "公开场合不同意高层",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "009",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "Saying I Don't Know Without Losing Credibility",
+  "angle": "说不知道而不丢可信度",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "010",
+  "cat": "A",
+  "cat_name": "会议发言与控场",
+  "title": "Handling the Person Who Talks Too Much",
+  "angle": "应对一直说的人，让安静的人发言",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "011",
+  "cat": "B",
+  "cat_name": "技术演示与汇报",
+  "title": "Opening a Tech Demo with the Problem, Not the Feature",
+  "angle": "演示先讲问题再讲功能",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "012",
+  "cat": "B",
+  "cat_name": "技术演示与汇报",
+  "title": "When the Demo Breaks in Front of Everyone",
+  "angle": "演示翻车时的应对",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "013",
+  "cat": "B",
+  "cat_name": "技术演示与汇报",
+  "title": "Explaining a System to Non-Engineers",
+  "angle": "向非技术同事讲清系统",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "014",
+  "cat": "B",
+  "cat_name": "技术演示与汇报",
+  "title": "Presenting Numbers That People Remember",
+  "angle": "让数字被记住：对比与类比",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "015",
+  "cat": "B",
+  "cat_name": "技术演示与汇报",
+  "title": "Answering Tough Questions After a Presentation",
+  "angle": "演示后的刁钻提问",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "016",
+  "cat": "B",
+  "cat_name": "技术演示与汇报",
+  "title": "The One-Slide Summary",
+  "angle": "一页纸讲清一个项目",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "017",
+  "cat": "B",
+  "cat_name": "技术演示与汇报",
+  "title": "Telling the Story Behind a Metric",
+  "angle": "指标背后的故事：为什么涨为什么跌",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "018",
+  "cat": "B",
+  "cat_name": "技术演示与汇报",
+  "title": "Presenting Bad News Upward",
+  "angle": "向上汇报坏消息",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "019",
+  "cat": "B",
+  "cat_name": "技术演示与汇报",
+  "title": "Demoing Work That Is Not Finished",
+  "angle": "演示半成品并管理预期",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "020",
+  "cat": "B",
+  "cat_name": "技术演示与汇报",
+  "title": "Keeping a Remote Audience Awake",
+  "angle": "线上汇报保持听众注意力",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "021",
+  "cat": "C",
+  "cat_name": "评审与复盘",
+  "title": "What Makes a Good Design Review",
+  "angle": "设计评审要评什么",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "022",
+  "cat": "C",
+  "cat_name": "评审与复盘",
+  "title": "Writing Code Review Comments That Help",
+  "angle": "写有帮助的 code review 评论",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "023",
+  "cat": "C",
+  "cat_name": "评审与复盘",
+  "title": "Receiving Harsh Feedback on Your Design",
+  "angle": "设计被严厉批评时怎么接",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "024",
+  "cat": "C",
+  "cat_name": "评审与复盘",
+  "title": "Running a Blameless Postmortem",
+  "angle": "无责复盘怎么开",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "025",
+  "cat": "C",
+  "cat_name": "评审与复盘",
+  "title": "Asking Why Five Times",
+  "angle": "五个为什么找根因",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "026",
+  "cat": "C",
+  "cat_name": "评审与复盘",
+  "title": "Trade-offs, Not Right Answers",
+  "angle": "架构讨论里讲取舍而非对错",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "027",
+  "cat": "C",
+  "cat_name": "评审与复盘",
+  "title": "Defending a Technical Decision",
+  "angle": "为技术决策辩护而不防御",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "028",
+  "cat": "C",
+  "cat_name": "评审与复盘",
+  "title": "Reviewing a Proposal You Disagree With",
+  "angle": "评审你不认同的方案",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "029",
+  "cat": "C",
+  "cat_name": "评审与复盘",
+  "title": "Turning Lessons Learned into Real Changes",
+  "angle": "把复盘结论变成真正的改进",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "030",
+  "cat": "C",
+  "cat_name": "评审与复盘",
+  "title": "When to Approve with Comments",
+  "angle": "什么时候带意见通过",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "031",
+  "cat": "D",
+  "cat_name": "向上管理与跨级沟通",
+  "title": "Getting Five Minutes with Your Skip-Level",
+  "angle": "和隔级老板的五分钟",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "032",
+  "cat": "D",
+  "cat_name": "向上管理与跨级沟通",
+  "title": "Making Your Work Visible Without Bragging",
+  "angle": "让工作被看见而不显得自夸",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "033",
+  "cat": "D",
+  "cat_name": "向上管理与跨级沟通",
+  "title": "Asking Your Manager for What You Need",
+  "angle": "向经理要资源、要支持",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "034",
+  "cat": "D",
+  "cat_name": "向上管理与跨级沟通",
+  "title": "Pushing Back on an Unrealistic Deadline",
+  "angle": "顶回不现实的截止日期",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "035",
+  "cat": "D",
+  "cat_name": "向上管理与跨级沟通",
+  "title": "The Weekly Update Your Boss Actually Reads",
+  "angle": "老板真的会读的周报",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "036",
+  "cat": "D",
+  "cat_name": "向上管理与跨级沟通",
+  "title": "Disagreeing with Your Manager in a One-on-One",
+  "angle": "一对一里不同意经理",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "037",
+  "cat": "D",
+  "cat_name": "向上管理与跨级沟通",
+  "title": "Understanding What Your Boss Is Measured On",
+  "angle": "理解老板被考核什么",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "038",
+  "cat": "D",
+  "cat_name": "向上管理与跨级沟通",
+  "title": "Escalating Without Burning Bridges",
+  "angle": "升级问题而不伤关系",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "039",
+  "cat": "D",
+  "cat_name": "向上管理与跨级沟通",
+  "title": "Talking About Your Career Growth",
+  "angle": "和经理谈职业发展",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "040",
+  "cat": "D",
+  "cat_name": "向上管理与跨级沟通",
+  "title": "Bringing Solutions, Not Just Problems",
+  "angle": "带着方案去找老板",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "041",
+  "cat": "E",
+  "cat_name": "跨团队协作与谈判",
+  "title": "Getting Help from a Team That Owes You Nothing",
+  "angle": "让不欠你的团队帮你",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "042",
+  "cat": "E",
+  "cat_name": "跨团队协作与谈判",
+  "title": "Translating Your Request into Their Interests",
+  "angle": "把你的需求翻译成对方的利益",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "043",
+  "cat": "E",
+  "cat_name": "跨团队协作与谈判",
+  "title": "Negotiating Scope with Product Managers",
+  "angle": "和产品经理谈范围",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "044",
+  "cat": "E",
+  "cat_name": "跨团队协作与谈判",
+  "title": "Saying No Without Closing the Door",
+  "angle": "拒绝但不关上门",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "045",
+  "cat": "E",
+  "cat_name": "跨团队协作与谈判",
+  "title": "Aligning Two Teams on One Goal",
+  "angle": "让两个团队对齐同一个目标",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "046",
+  "cat": "E",
+  "cat_name": "跨团队协作与谈判",
+  "title": "When Another Team Misses Their Deadline",
+  "angle": "依赖方延期时怎么办",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "047",
+  "cat": "E",
+  "cat_name": "跨团队协作与谈判",
+  "title": "Writing a Request That Gets a Reply",
+  "angle": "写一封会被回复的求助",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "048",
+  "cat": "E",
+  "cat_name": "跨团队协作与谈判",
+  "title": "Finding Who Really Makes the Decision",
+  "angle": "找到真正的决策人",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "049",
+  "cat": "E",
+  "cat_name": "跨团队协作与谈判",
+  "title": "Building Trust Before You Need It",
+  "angle": "需要之前先建立信任",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "050",
+  "cat": "E",
+  "cat_name": "跨团队协作与谈判",
+  "title": "Handling a Turf War",
+  "angle": "处理团队之间的地盘之争",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "051",
+  "cat": "F",
+  "cat_name": "反馈、一对一与带人",
+  "title": "Giving Feedback That People Can Use",
+  "angle": "给能用的反馈：具体、及时",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "052",
+  "cat": "F",
+  "cat_name": "反馈、一对一与带人",
+  "title": "The First One-on-One with a New Report",
+  "angle": "和新下属的第一次一对一",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "053",
+  "cat": "F",
+  "cat_name": "反馈、一对一与带人",
+  "title": "Praising Specific Work, Not People",
+  "angle": "表扬具体的事而不是人",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "054",
+  "cat": "F",
+  "cat_name": "反馈、一对一与带人",
+  "title": "Talking to Someone Who Is Underperforming",
+  "angle": "和表现不佳的人谈话",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "055",
+  "cat": "F",
+  "cat_name": "反馈、一对一与带人",
+  "title": "Delegating Without Disappearing",
+  "angle": "授权但不消失",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "056",
+  "cat": "F",
+  "cat_name": "反馈、一对一与带人",
+  "title": "Coaching with Questions",
+  "angle": "用提问来辅导",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "057",
+  "cat": "F",
+  "cat_name": "反馈、一对一与带人",
+  "title": "Helping a Strong Engineer Grow into a Lead",
+  "angle": "帮强工程师成长为负责人",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "058",
+  "cat": "F",
+  "cat_name": "反馈、一对一与带人",
+  "title": "When Your Report Wants to Quit",
+  "angle": "下属想离职时",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "059",
+  "cat": "F",
+  "cat_name": "反馈、一对一与带人",
+  "title": "Setting Expectations Early",
+  "angle": "尽早讲清期望",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "060",
+  "cat": "F",
+  "cat_name": "反馈、一对一与带人",
+  "title": "Asking for Feedback on Yourself",
+  "angle": "向别人要关于自己的反馈",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "061",
+  "cat": "G",
+  "cat_name": "故障、风险与不确定下决策",
+  "title": "The First Ten Minutes of an Incident",
+  "angle": "故障前十分钟：谁指挥、怎么沟通",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "062",
+  "cat": "G",
+  "cat_name": "故障、风险与不确定下决策",
+  "title": "Writing a Status Update During an Outage",
+  "angle": "故障中的状态通报",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "063",
+  "cat": "G",
+  "cat_name": "故障、风险与不确定下决策",
+  "title": "Rolling Back Is Not Failure",
+  "angle": "回滚不是失败",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "064",
+  "cat": "G",
+  "cat_name": "故障、风险与不确定下决策",
+  "title": "Making a Call with Incomplete Data",
+  "angle": "数据不全时做决定",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "065",
+  "cat": "G",
+  "cat_name": "故障、风险与不确定下决策",
+  "title": "Explaining Risk Without Scaring People",
+  "angle": "讲风险而不吓人",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "066",
+  "cat": "G",
+  "cat_name": "故障、风险与不确定下决策",
+  "title": "Reversible and Irreversible Decisions",
+  "angle": "可逆与不可逆决策",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "067",
+  "cat": "G",
+  "cat_name": "故障、风险与不确定下决策",
+  "title": "When the Launch Date Meets a Critical Bug",
+  "angle": "上线日撞上严重 bug",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "068",
+  "cat": "G",
+  "cat_name": "故障、风险与不确定下决策",
+  "title": "Calm Is Contagious",
+  "angle": "冷静会传染：危机中的语气",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "069",
+  "cat": "G",
+  "cat_name": "故障、风险与不确定下决策",
+  "title": "Telling Customers What Went Wrong",
+  "angle": "向客户说明出了什么问题",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "070",
+  "cat": "G",
+  "cat_name": "故障、风险与不确定下决策",
+  "title": "Planning for the Thing That Will Go Wrong",
+  "angle": "为一定会出错的事做预案",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "071",
+  "cat": "H",
+  "cat_name": "规划、优先级与目标",
+  "title": "Saying What You Will Not Do This Quarter",
+  "angle": "说清本季度不做什么",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "072",
+  "cat": "H",
+  "cat_name": "规划、优先级与目标",
+  "title": "Writing Goals That Can Be Measured",
+  "angle": "写可衡量的目标",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "073",
+  "cat": "H",
+  "cat_name": "规划、优先级与目标",
+  "title": "Estimating When You Really Don't Know",
+  "angle": "真的不知道时怎么估时",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "074",
+  "cat": "H",
+  "cat_name": "规划、优先级与目标",
+  "title": "Cutting Scope to Hit a Date",
+  "angle": "砍范围保日期",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "075",
+  "cat": "H",
+  "cat_name": "规划、优先级与目标",
+  "title": "Prioritizing When Everything Is Urgent",
+  "angle": "什么都急时如何排优先级",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "076",
+  "cat": "H",
+  "cat_name": "规划、优先级与目标",
+  "title": "Making the Case for Technical Debt",
+  "angle": "为技术债争取时间",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "077",
+  "cat": "H",
+  "cat_name": "规划、优先级与目标",
+  "title": "Planning Meetings That Produce Plans",
+  "angle": "能产出计划的规划会",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "078",
+  "cat": "H",
+  "cat_name": "规划、优先级与目标",
+  "title": "Changing Plans Mid-Quarter",
+  "angle": "季度中途改计划",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "079",
+  "cat": "H",
+  "cat_name": "规划、优先级与目标",
+  "title": "Connecting Daily Work to the Big Goal",
+  "angle": "把日常工作连到大目标",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "080",
+  "cat": "H",
+  "cat_name": "规划、优先级与目标",
+  "title": "The Pre-Read That Wins the Meeting",
+  "angle": "会前材料先赢下会议",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "081",
+  "cat": "I",
+  "cat_name": "闲聊与关系建立",
+  "title": "Small Talk Before the Meeting Starts",
+  "angle": "会议开始前的闲聊",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "082",
+  "cat": "I",
+  "cat_name": "闲聊与关系建立",
+  "title": "Remembering Things About People",
+  "angle": "记住关于别人的小事",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "083",
+  "cat": "I",
+  "cat_name": "闲聊与关系建立",
+  "title": "Talking About Your Weekend in Two Sentences",
+  "angle": "两句话聊周末",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "084",
+  "cat": "I",
+  "cat_name": "闲聊与关系建立",
+  "title": "Joining a Conversation at a Team Dinner",
+  "angle": "团队聚餐时加入对话",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "085",
+  "cat": "I",
+  "cat_name": "闲聊与关系建立",
+  "title": "Coffee Chats with People Outside Your Team",
+  "angle": "和组外的人喝咖啡聊天",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "086",
+  "cat": "I",
+  "cat_name": "闲聊与关系建立",
+  "title": "Keeping a Conversation Going with Follow-up Questions",
+  "angle": "用追问把对话聊下去",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "087",
+  "cat": "I",
+  "cat_name": "闲聊与关系建立",
+  "title": "Talking About Food, Travel, and Home",
+  "angle": "聊食物、旅行和家乡",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "088",
+  "cat": "I",
+  "cat_name": "闲聊与关系建立",
+  "title": "Welcoming a New Teammate",
+  "angle": "欢迎新同事",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "089",
+  "cat": "I",
+  "cat_name": "闲聊与关系建立",
+  "title": "Ending a Conversation Gracefully",
+  "angle": "得体地结束对话",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "090",
+  "cat": "I",
+  "cat_name": "闲聊与关系建立",
+  "title": "Being Funny Without Trying Too Hard",
+  "angle": "自然的幽默",
+  "voice": "en-US-AndrewNeural"
+ },
+ {
+  "id": "091",
+  "cat": "J",
+  "cat_name": "全球团队与口音",
+  "title": "Working with Teammates in Five Time Zones",
+  "angle": "五个时区的协作",
+  "voice": "en-IN-PrabhatNeural"
+ },
+ {
+  "id": "092",
+  "cat": "J",
+  "cat_name": "全球团队与口音",
+  "title": "Asking Someone to Repeat Without Embarrassment",
+  "angle": "不尴尬地请人重复",
+  "voice": "en-SG-WayneNeural"
+ },
+ {
+  "id": "093",
+  "cat": "J",
+  "cat_name": "全球团队与口音",
+  "title": "Writing for Readers Whose First Language Isn't English",
+  "angle": "为非母语读者写作",
+  "voice": "en-GB-RyanNeural"
+ },
+ {
+  "id": "094",
+  "cat": "J",
+  "cat_name": "全球团队与口音",
+  "title": "Async First: When Not to Have a Meeting",
+  "angle": "异步优先：什么时候不开会",
+  "voice": "en-IN-NeerjaNeural"
+ },
+ {
+  "id": "095",
+  "cat": "J",
+  "cat_name": "全球团队与口音",
+  "title": "Understanding Indirect Feedback Across Cultures",
+  "angle": "听懂不同文化里的委婉反馈",
+  "voice": "en-SG-LunaNeural"
+ },
+ {
+  "id": "096",
+  "cat": "J",
+  "cat_name": "全球团队与口音",
+  "title": "Leading a Video Call with Bad Connections",
+  "angle": "网络不好时主持视频会",
+  "voice": "en-GB-SoniaNeural"
+ },
+ {
+  "id": "097",
+  "cat": "J",
+  "cat_name": "全球团队与口音",
+  "title": "Checking Understanding Without Sounding Rude",
+  "angle": "确认理解而不显得无礼",
+  "voice": "en-AU-WilliamMultilingualNeural"
+ },
+ {
+  "id": "098",
+  "cat": "J",
+  "cat_name": "全球团队与口音",
+  "title": "Building a Team Culture Across Offices",
+  "angle": "跨办公室建立团队文化",
+  "voice": "en-IN-PrabhatNeural"
+ },
+ {
+  "id": "099",
+  "cat": "J",
+  "cat_name": "全球团队与口音",
+  "title": "When Silence Means Different Things",
+  "angle": "沉默在不同文化里的含义",
+  "voice": "en-AU-NatashaNeural"
+ },
+ {
+  "id": "100",
+  "cat": "J",
+  "cat_name": "全球团队与口音",
+  "title": "Your Accent Is Not the Problem",
+  "angle": "口音不是问题，清晰才是",
+  "voice": "en-SG-WayneNeural"
+ },
+ {
+  "id": "101",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "title": "Checking In at a Hotel",
+  "angle": "酒店入住、要高楼层、押金、延迟退房、空调坏了换房（样板）",
+  "voice": "en-SG-LunaNeural",
+  "sub": "住宿出行"
+ },
+ {
+  "id": "102",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "住宿出行",
+  "title": "Booking an Airbnb and Meeting the Host",
+  "angle": "联系房东、问入住方式、钥匙和规则",
+  "voice": "en-SG-WayneNeural"
+ },
+ {
+  "id": "103",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "住宿出行",
+  "title": "Checking In at the Airport",
+  "angle": "值机：行李超重、选座位、转机",
+  "voice": "en-GB-SoniaNeural"
+ },
+ {
+  "id": "104",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "住宿出行",
+  "title": "Taking a Taxi and Giving Directions",
+  "angle": "打车：说地址、指路、绕路、付款",
+  "voice": "en-IN-PrabhatNeural"
+ },
+ {
+  "id": "105",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "住宿出行",
+  "title": "Renting a Car for the Weekend",
+  "angle": "租车：保险、押金、还车、刮痕",
+  "voice": "en-US-AvaNeural"
+ },
+ {
+  "id": "106",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "餐厅",
+  "title": "Booking a Table for a Family Dinner",
+  "angle": "电话订位：人数、儿童椅、包间、迟到",
+  "voice": "en-AU-NatashaNeural"
+ },
+ {
+  "id": "107",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "餐厅",
+  "title": "Ordering at a Restaurant",
+  "angle": "点餐：问推荐、忌口、辣度、分量",
+  "voice": "en-SG-LunaNeural"
+ },
+ {
+  "id": "108",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "餐厅",
+  "title": "When the Food Is Wrong",
+  "angle": "上错菜、菜凉了、等太久，礼貌投诉",
+  "voice": "en-GB-RyanNeural"
+ },
+ {
+  "id": "109",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "餐厅",
+  "title": "Paying and Splitting the Bill",
+  "angle": "结账：AA、服务费、刷卡、开发票",
+  "voice": "en-IN-NeerjaNeural"
+ },
+ {
+  "id": "110",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "餐厅",
+  "title": "Ordering at a Hawker Centre",
+  "angle": "熟食中心点餐：小份、打包、少辣",
+  "voice": "en-AU-WilliamMultilingualNeural"
+ },
+ {
+  "id": "111",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "酒吧与咖啡",
+  "title": "Ordering Drinks at a Bar",
+  "angle": "点酒：问推荐、happy hour、开 tab",
+  "voice": "en-US-EmmaNeural"
+ },
+ {
+  "id": "112",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "酒吧与咖啡",
+  "title": "Ordering Coffee Your Way",
+  "angle": "咖啡店：定制口味、燕麦奶、做错了",
+  "voice": "en-SG-WayneNeural"
+ },
+ {
+  "id": "113",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "酒吧与咖啡",
+  "title": "Talking to a Stranger at the Bar",
+  "angle": "酒吧和陌生人自然搭话",
+  "voice": "en-GB-SoniaNeural"
+ },
+ {
+  "id": "114",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "酒吧与咖啡",
+  "title": "Hosting Friends for After-Work Drinks",
+  "angle": "下班请朋友喝酒：订位、点单、买单",
+  "voice": "en-IN-PrabhatNeural"
+ },
+ {
+  "id": "115",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "酒吧与咖啡",
+  "title": "Asking the Bartender for Something Non-Alcoholic",
+  "angle": "不喝酒时怎么点、怎么婉拒",
+  "voice": "en-US-AvaNeural"
+ },
+ {
+  "id": "116",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "银行与钱",
+  "title": "Opening a Bank Account",
+  "angle": "开户：材料、账户类型、最低余额、网银",
+  "voice": "en-AU-NatashaNeural"
+ },
+ {
+  "id": "117",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "银行与钱",
+  "title": "Reporting a Lost Card",
+  "angle": "挂失信用卡：冻结、可疑交易、补卡",
+  "voice": "en-SG-LunaNeural"
+ },
+ {
+  "id": "118",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "银行与钱",
+  "title": "Sending Money Overseas",
+  "angle": "跨境汇款：汇率、手续费、到账时间",
+  "voice": "en-GB-RyanNeural"
+ },
+ {
+  "id": "119",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "银行与钱",
+  "title": "Asking About a Strange Charge",
+  "angle": "账单上有不认识的扣款，打电话问",
+  "voice": "en-IN-NeerjaNeural"
+ },
+ {
+  "id": "120",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "银行与钱",
+  "title": "Talking to an Insurance Agent",
+  "angle": "咨询保险：保什么、免赔额、怎么理赔",
+  "voice": "en-AU-WilliamMultilingualNeural"
+ },
+ {
+  "id": "121",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "看病",
+  "title": "Seeing a Doctor at a Clinic",
+  "angle": "全科诊所：描述症状、病假条、复诊",
+  "voice": "en-US-EmmaNeural"
+ },
+ {
+  "id": "122",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "看病",
+  "title": "At the Pharmacy",
+  "angle": "药房：买非处方药、问用法和副作用",
+  "voice": "en-SG-WayneNeural"
+ },
+ {
+  "id": "123",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "看病",
+  "title": "Booking and Visiting the Dentist",
+  "angle": "牙医：预约、牙疼描述、费用和保险",
+  "voice": "en-GB-SoniaNeural"
+ },
+ {
+  "id": "124",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "看病",
+  "title": "Taking Your Child to the Doctor",
+  "angle": "带孩子看病：发烧、过敏、用药剂量",
+  "voice": "en-IN-PrabhatNeural"
+ },
+ {
+  "id": "125",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "看病",
+  "title": "Calling for an Urgent Appointment",
+  "angle": "打电话约急诊、说明紧急程度",
+  "voice": "en-US-AvaNeural"
+ },
+ {
+  "id": "126",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "租房与家",
+  "title": "Viewing an Apartment",
+  "angle": "看房：租金、合同期、家具、谈价",
+  "voice": "en-AU-NatashaNeural"
+ },
+ {
+  "id": "127",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "租房与家",
+  "title": "Asking the Landlord to Fix Something",
+  "angle": "找房东修东西：漏水、热水器、时间",
+  "voice": "en-SG-LunaNeural"
+ },
+ {
+  "id": "128",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "租房与家",
+  "title": "Setting Up Internet and Utilities",
+  "angle": "开通网络水电：套餐、安装预约",
+  "voice": "en-GB-RyanNeural"
+ },
+ {
+  "id": "129",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "租房与家",
+  "title": "Booking Movers",
+  "angle": "搬家公司：报价、打包、易碎品、保险",
+  "voice": "en-IN-NeerjaNeural"
+ },
+ {
+  "id": "130",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "租房与家",
+  "title": "Getting the Deposit Back",
+  "angle": "退租验房，要回押金",
+  "voice": "en-AU-WilliamMultilingualNeural"
+ },
+ {
+  "id": "131",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "购物与售后",
+  "title": "Returning Something You Bought",
+  "angle": "退换货：小票、质量问题、退款方式",
+  "voice": "en-US-EmmaNeural"
+ },
+ {
+  "id": "132",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "购物与售后",
+  "title": "Choosing a Phone Plan",
+  "angle": "电信店选套餐：流量、合约、携号转网",
+  "voice": "en-SG-WayneNeural"
+ },
+ {
+  "id": "133",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "购物与售后",
+  "title": "Getting Your Phone Repaired",
+  "angle": "修手机：报价、保修、取件时间",
+  "voice": "en-GB-SoniaNeural"
+ },
+ {
+  "id": "134",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "购物与售后",
+  "title": "Getting a Haircut",
+  "angle": "理发：说清发型、长度、别剪太短",
+  "voice": "en-IN-PrabhatNeural"
+ },
+ {
+  "id": "135",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "购物与售后",
+  "title": "Shopping for a Gift with Help from Staff",
+  "angle": "请店员帮忙挑礼物、包装、预算",
+  "voice": "en-US-AvaNeural"
+ },
+ {
+  "id": "136",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "孩子与家庭",
+  "title": "Visiting a Preschool",
+  "angle": "参观幼儿园：作息、师生比、学费、语言",
+  "voice": "en-AU-NatashaNeural"
+ },
+ {
+  "id": "137",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "孩子与家庭",
+  "title": "Talking to Your Child's Teacher",
+  "angle": "家长会：孩子的表现、交朋友、作业",
+  "voice": "en-SG-LunaNeural"
+ },
+ {
+  "id": "138",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "孩子与家庭",
+  "title": "Chatting with Other Parents at the Playground",
+  "angle": "游乐场和其他家长聊天、约玩",
+  "voice": "en-GB-RyanNeural"
+ },
+ {
+  "id": "139",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "孩子与家庭",
+  "title": "Hiring a Babysitter",
+  "angle": "找保姆：经验、时间、费用、注意事项",
+  "voice": "en-IN-NeerjaNeural"
+ },
+ {
+  "id": "140",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "孩子与家庭",
+  "title": "Signing Up for Kids' Swimming Lessons",
+  "angle": "报名游泳课：级别、时间、试课",
+  "voice": "en-AU-WilliamMultilingualNeural"
+ },
+ {
+  "id": "141",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "邻居与社交",
+  "title": "Meeting Your New Neighbor",
+  "angle": "新邻居打招呼、互相介绍",
+  "voice": "en-US-EmmaNeural"
+ },
+ {
+  "id": "142",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "邻居与社交",
+  "title": "Dealing with a Noisy Neighbor",
+  "angle": "邻居太吵，友好地沟通",
+  "voice": "en-SG-WayneNeural"
+ },
+ {
+  "id": "143",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "邻居与社交",
+  "title": "Joining a Gym",
+  "angle": "办健身卡：会员类型、私教、冻卡",
+  "voice": "en-GB-SoniaNeural"
+ },
+ {
+  "id": "144",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "邻居与社交",
+  "title": "Small Talk at a Friend's Party",
+  "angle": "朋友派对上和不认识的人聊天",
+  "voice": "en-IN-PrabhatNeural"
+ },
+ {
+  "id": "145",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "邻居与社交",
+  "title": "Inviting Friends Over for Dinner",
+  "angle": "邀请朋友来家里吃饭：时间、忌口",
+  "voice": "en-US-AvaNeural"
+ },
+ {
+  "id": "146",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "办事与求助",
+  "title": "Calling Customer Service",
+  "angle": "打客服电话：转人工、说清问题、要工单号",
+  "voice": "en-AU-NatashaNeural"
+ },
+ {
+  "id": "147",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "办事与求助",
+  "title": "Sending a Parcel at the Post Office",
+  "angle": "邮局寄包裹：时效、申报、保价",
+  "voice": "en-SG-LunaNeural"
+ },
+ {
+  "id": "148",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "办事与求助",
+  "title": "Reporting a Lost Item",
+  "angle": "报失：丢了钱包，描述物品、留联系方式",
+  "voice": "en-GB-RyanNeural"
+ },
+ {
+  "id": "149",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "办事与求助",
+  "title": "Booking a Repair Technician",
+  "angle": "预约空调维修：时间、上门费、报价",
+  "voice": "en-IN-NeerjaNeural"
+ },
+ {
+  "id": "150",
+  "cat": "K",
+  "cat_name": "生活对话",
+  "sub": "办事与求助",
+  "title": "Asking for Directions",
+  "angle": "问路：怎么走、坐什么车、多远",
+  "voice": "en-AU-WilliamMultilingualNeural"
+ }
+]

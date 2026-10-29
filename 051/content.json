@@ -1,0 +1,191 @@
+{
+  "id": "051",
+  "title": "Giving Feedback That People Can Use",
+  "meta": "B2 · 约 280 词 · 场景：给下属反馈",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Feedback Nobody Can Act On",
+      "paragraphs": [
+        [
+          "\"You need to be more proactive.\"",
+          "Most of us have heard a sentence like this in a review, and most of us had no idea what to do with it.",
+          "Proactive about what? In which meetings? Compared to whom?"
+        ],
+        [
+          "Vague feedback is not kind; it is just ==incomplete==.",
+          "The person walks away worried, guesses what you meant, and often changes the wrong thing.",
+          "**If the person cannot picture the next step, you have given an opinion, not feedback.**"
+        ],
+        [
+          "Timing matters just as much.",
+          "Feedback about a design review from two months ago feels like a ==punishment==, not help.",
+          "Details have faded, and the person cannot ==connect== your comment to a real moment anymore.",
+          "By then, the moment to learn from it has already passed."
+        ]
+      ],
+      "heading_zh": "1. 没法照着做的反馈",
+      "paragraphs_zh": [
+        [
+          "「你需要更主动一点。」",
+          "我们大多数人都在绩效评估里听过类似的话，而且大多数人都不知道该怎么办。",
+          "在哪方面主动？在哪些会上？跟谁比？"
+        ],
+        [
+          "模糊的反馈不是善意；它只是不完整。",
+          "对方带着焦虑离开，猜你到底什么意思，结果常常改错了地方。",
+          "如果对方想象不出下一步该怎么做，你给的就是一个看法，而不是反馈。"
+        ],
+        [
+          "时机同样重要。",
+          "针对两个月前一次设计评审的反馈，感觉像是惩罚，而不是帮助。",
+          "细节已经模糊了，对方已经没法把你的评论和一个真实的场景对应起来。",
+          "到那时，从中学习的时机早就过去了。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Make It Specific, Make It Soon",
+      "paragraphs": [
+        [
+          "A simple structure helps: the situation, the behavior, and the ==impact==.",
+          "\"In yesterday's incident call, you went quiet for ten minutes after finding the bad config. The team kept debugging the wrong service.\"",
+          "There are no labels and no guessing, just one ==observable== moment and its result."
+        ],
+        [
+          "Then add a forward-looking request.",
+          "\"Next time, say what you found right away, even if you're only half sure.\"",
+          "It is concrete, it is small, and it is easy to try.",
+          "Now the person knows exactly what better looks like."
+        ],
+        [
+          "Try to give feedback within a day or two.",
+          "Small, frequent comments __feel like coaching__; rare, heavy ones feel like ==judgment==.",
+          "**The sooner you say it, the smaller it feels.**"
+        ],
+        [
+          "Finally, __check for understanding__ instead of assuming it.",
+          "Ask, \"How does that land for you?\" and listen to the answer.",
+          "Sometimes you will learn that the person had context you were missing, and that is ==worth knowing== too."
+        ]
+      ],
+      "heading_zh": "2. 说具体，说及时",
+      "paragraphs_zh": [
+        [
+          "一个简单的结构很好用：情境、行为、影响。",
+          "「昨天故障电话会上，你发现那个错误配置之后沉默了十分钟。团队一直在排查错误的服务。」",
+          "没有贴标签，不用猜，只有一个看得见的瞬间和它的后果。"
+        ],
+        [
+          "然后，加一个面向未来的请求。",
+          "「下次，发现了什么马上说出来，哪怕你只有五成把握。」",
+          "它很具体，很小，也很容易尝试。",
+          "这样对方就清楚地知道「做得更好」是什么样子了。"
+        ],
+        [
+          "尽量在一两天之内给反馈。",
+          "小而频繁的意见像是辅导；少而沉重的意见像是审判。",
+          "说得越早，事情显得越小。"
+        ],
+        [
+          "最后，确认对方理解了，而不是想当然。",
+          "问一句「你听了有什么想法？」，然后认真听回答。",
+          "有时候你会发现对方掌握着你不知道的背景，这同样值得知道。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么 \"You need to be more proactive\" 这样的反馈没用？",
+      "a": "太模糊，对方不知道具体指什么、下一步该做什么，只能猜，常常改错方向；这只是意见不是反馈。"
+    },
+    {
+      "q": "作者推荐的反馈结构是什么？",
+      "a": "情境、行为、影响，再加一个面向未来的具体请求，比如「下次一发现问题就马上说出来」。"
+    },
+    {
+      "q": "关于反馈的时机，作者怎么说？",
+      "a": "一两天内给；小而频繁的反馈像辅导，少而重的像审判；越早说越显得小。最后要确认对方的理解。"
+    }
+  ],
+  "dictation": [
+    "If the person cannot picture the next step, you have given an opinion, not feedback.",
+    "Feedback about a design review from two months ago feels like a punishment, not help.",
+    "Now the person knows exactly what better looks like.",
+    "The sooner you say it, the smaller it feels."
+  ],
+  "shadow": {
+    "text": "Try to give feedback within a day or two. Small, frequent comments feel like coaching; rare, heavy ones feel like judgment. The sooner you say it, the smaller it feels.",
+    "marked": "Try to give feedback / within a <b>day</b> or <b>two</b>. //<br><b>Small</b>, <b>frequent</b> comments / feel like <b>coaching</b>; / <b>rare</b>, <b>heavy</b> ones / feel like <b>judgment</b>. //<br>The <b>sooner</b> you say it, / the <b>smaller</b> it feels. //"
+  },
+  "prompts": [
+    {
+      "q": "下属在昨天的方案评审上，被问到性能数据时一直绕开话题，导致评审没结论。用 30 秒给他具体的反馈：情境、行为、影响和下次的做法。",
+      "ref": "Can I give you some quick feedback on yesterday's review? When Sam asked about the latency numbers, you moved on to the architecture slide twice without answering. Because of that, the reviewers didn't feel ready to approve, and we have to meet again next week. Next time, if you don't have the number, just say so and promise a follow-up. That builds more trust than avoiding it. How does that sound?",
+      "ref_zh": "能就昨天的评审给你一点快速反馈吗？Sam 问到延迟数据的时候，你两次都没回答就直接翻到了架构那页。正因为这样，评审的人觉得还没法批，我们下周还得再开一次。下次如果手头没有数据，直接说没有，然后承诺会后跟进就好。这比回避更能建立信任。你觉得呢？"
+    },
+    {
+      "q": "一位工程师这周主动写了上线检查清单，避免了一次回滚。用 30 秒给他具体的正向反馈，并说明你希望他继续做什么。",
+      "ref": "I want to mention the launch checklist you wrote on Tuesday. Because you added the step to check the feature flag defaults, we caught the wrong setting before the rollout, and we didn't need a rollback. That probably saved us a stressful evening. I'd love for you to keep doing that, and maybe share the checklist with the other two teams on Friday.",
+      "ref_zh": "我想提一下你周二写的上线 checklist。因为你加了检查 feature flag 默认值那一步，我们在灰度之前就发现了错误的配置，没有回滚。这大概帮我们省掉了一个焦头烂额的晚上。希望你继续保持，也可以考虑周五把这份 checklist 分享给另外两个团队。"
+    }
+  ],
+  "words": [
+    {
+      "w": "incomplete",
+      "ipa": "/ˌɪnkəmˈpliːt/",
+      "zh": "不完整的",
+      "ex": "The incident report is incomplete without the timeline."
+    },
+    {
+      "w": "punishment",
+      "ipa": "/ˈpʌnɪʃmənt/",
+      "zh": "惩罚",
+      "ex": "A surprise rating at year end feels like punishment, not feedback."
+    },
+    {
+      "w": "connect",
+      "ipa": "/kəˈnekt/",
+      "zh": "联系起来",
+      "ex": "I couldn't connect the error spike to any deploy."
+    },
+    {
+      "w": "impact",
+      "ipa": "/ˈɪmpækt/",
+      "zh": "影响",
+      "ex": "What was the user impact during the outage?"
+    },
+    {
+      "w": "observable",
+      "ipa": "/əbˈzɜːrvəbl/",
+      "zh": "可观察到的",
+      "ex": "Focus on observable behavior, like missed standups, not attitude."
+    },
+    {
+      "w": "judgment",
+      "ipa": "/ˈdʒʌdʒmənt/",
+      "zh": "评判",
+      "ex": "I'm not passing judgment; I just want to understand what happened."
+    },
+    {
+      "w": "worth knowing",
+      "ipa": "/wɜːrθ ˈnoʊɪŋ/",
+      "zh": "值得知道",
+      "ex": "It's worth knowing that the cache restarts every night."
+    },
+    {
+      "w": "proactive",
+      "ipa": "/proʊˈæktɪv/",
+      "zh": "主动的",
+      "ex": "Being proactive means flagging the risk before the PM asks."
+    },
+    {
+      "w": "forward-looking",
+      "ipa": "/ˈfɔːrwərd ˈlʊkɪŋ/",
+      "zh": "面向未来的",
+      "ex": "Let's keep the postmortem forward-looking and focus on fixes."
+    }
+  ]
+}

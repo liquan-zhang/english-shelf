@@ -1,0 +1,237 @@
+{
+  "id": "104",
+  "type": "dialogue",
+  "title": "Taking a Taxi and Giving Directions",
+  "meta": "B2 · 约 280 词 · 场景：打车指路与车费争议",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Taxi Driver",
+      "name_zh": "司机",
+      "voice": "en-IN-PrabhatNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Getting In and Giving Directions",
+      "heading_zh": "1. 上车与指路",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Good evening, sir. Where to?",
+          "zh": "晚上好，先生。去哪儿？"
+        },
+        {
+          "sp": "A",
+          "en": "Hi. Holland Village, please. It's a condo on Lorong Liput, right behind the market.",
+          "zh": "你好，去荷兰村。是 Lorong Liput 上的一个公寓，就在巴刹后面。"
+        },
+        {
+          "sp": "B",
+          "en": "Sure. Do you want me to take the ==expressway==, or go through town? This time of day, the expressway is usually faster.",
+          "zh": "好的。要走高速，还是走市区？这个点走高速一般快一些。"
+        },
+        {
+          "sp": "A",
+          "en": "**Whichever is faster. I'm in a bit of a rush.**",
+          "zh": "哪条快走哪条。我有点赶时间。"
+        },
+        {
+          "sp": "B",
+          "en": "Okay, expressway then. Is the air con alright for you?",
+          "zh": "好，那就走高速。空调温度还行吗？"
+        },
+        {
+          "sp": "A",
+          "en": "It's a bit cold, actually. Could you __turn it down a little__?",
+          "zh": "其实有点冷。能稍微调小一点吗？"
+        },
+        {
+          "sp": "B",
+          "en": "No problem. When we come off the expressway, should I just follow the GPS?",
+          "zh": "没问题。下了高速以后，我跟着导航走就行？"
+        },
+        {
+          "sp": "A",
+          "en": "Follow it until the ==traffic light==, and then I'll __guide you__ from there. The GPS always takes the long way.",
+          "zh": "跟导航到红绿灯那儿，然后我来给你指路。导航总是绕远。"
+        },
+        {
+          "sp": "B",
+          "en": "Alright. Here's the traffic light now. Which way?",
+          "zh": "好的。到红绿灯了。往哪边走？"
+        },
+        {
+          "sp": "A",
+          "en": "Turn left here, then take the second right. Then __keep going straight__ until you see a ==roundabout==.",
+          "zh": "这里左转，然后第二个路口右转。再一直往前，看到环岛为止。"
+        },
+        {
+          "sp": "B",
+          "en": "Got it. Do you want me to go around it?",
+          "zh": "明白。要绕过环岛吗？"
+        },
+        {
+          "sp": "A",
+          "en": "**No, you can pull over just before it, next to the white gate.**",
+          "zh": "不用，在环岛前面靠边停就行，白色大门旁边。"
+        }
+      ]
+    },
+    {
+      "heading": "2. A Question About the Fare",
+      "heading_zh": "2. 车费有疑问",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Here we are. That'll be thirty-two dollars and forty cents.",
+          "zh": "到了。一共三十二块四。"
+        },
+        {
+          "sp": "A",
+          "en": "**Hmm, that's more than usual. It's normally around twenty. Is there a surcharge I'm missing?**",
+          "zh": "嗯，比平时贵。一般二十块左右。是有什么附加费我没注意到吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Yes, there's a peak hour ==surcharge==, plus the ERP charge on the expressway.",
+          "zh": "是的，有高峰时段附加费，再加上高速上的电子道路收费。"
+        },
+        {
+          "sp": "A",
+          "en": "I see. But I think we also took a ==detour== near the start. __That added__ a few minutes.",
+          "zh": "这样啊。不过我觉得刚开始那段也绕了路，多开了几分钟。"
+        },
+        {
+          "sp": "B",
+          "en": "You're right, sir. I missed the turning earlier, sorry about that. Let me take off five dollars.",
+          "zh": "您说得对，先生。我之前错过了一个路口，不好意思。我给您减五块。"
+        },
+        {
+          "sp": "A",
+          "en": "Thanks, I appreciate that. Can I __pay by card__?",
+          "zh": "谢谢，感谢。可以刷卡吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Of course. Just tap here. Do you need a ==receipt==?",
+          "zh": "当然。在这里拍一下就行。要收据吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Yes, please, a printed one. I'll need it for my ==expenses==.",
+          "zh": "要的，请给我打印的。我要拿去报销。"
+        },
+        {
+          "sp": "B",
+          "en": "Here you go. Don't forget your umbrella, it's still raining.",
+          "zh": "给您。别忘了雨伞，外面还在下雨。"
+        },
+        {
+          "sp": "A",
+          "en": "**Oh, thanks for the reminder. Have a good night, and drive safe.**",
+          "zh": "哦，谢谢提醒。晚安，开车注意安全。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "「你」为什么不想全程跟导航走？",
+      "a": "因为导航总是绕远，所以让司机跟导航到红绿灯，之后由「你」来指路。"
+    },
+    {
+      "q": "车费为什么比平时贵？",
+      "a": "有高峰时段附加费和高速上的电子道路收费，另外开头还绕了一段路。"
+    },
+    {
+      "q": "司机最后怎么处理的？「你」要了什么？",
+      "a": "司机承认错过路口，减了五块钱；「你」刷卡付款，要了打印收据用于报销。"
+    }
+  ],
+  "dictation": [
+    "Whichever is faster. I'm in a bit of a rush.",
+    "No, you can pull over just before it, next to the white gate.",
+    "Hmm, that's more than usual. It's normally around twenty. Is there a surcharge I'm missing?",
+    "I see. But I think we also took a detour near the start. That added a few minutes."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Follow it until the traffic light, and then I'll guide you from there. The GPS always takes the long way.",
+    "marked": "Follow it / until the <b>traffic light</b>, //<br>and then <b>I'll</b> guide you from there. //<br>The GPS / <b>always</b> takes the <b>long</b> way. //"
+  },
+  "prompts": [
+    {
+      "q": "上车后发现司机开的方向不对，可能听错了地址。礼貌地打断他，重新说清楚目的地，并说你可以帮他指路。",
+      "ref": "Sorry, uncle, I think we might be going the wrong way. I'm going to Holland Village, not Holland Road. It's the condo on Lorong Liput, near the market. Could you turn around at the next junction? Don't worry, I'll guide you once we get closer.",
+      "ref_zh": "不好意思师傅，我们好像走错方向了。我去的是荷兰村，不是荷兰路。是 Lorong Liput 上的公寓，靠近巴刹。下个路口能掉个头吗？别担心，快到的时候我给你指路。"
+    },
+    {
+      "q": "下车后发现手机落在出租车上了。给出租车公司打电话，说明时间、上下车地点和车牌的线索，请他们联系司机。",
+      "ref": "Hi, I took one of your taxis about twenty minutes ago, from Raffles Place to Holland Village, and I left my phone on the back seat. I paid by card, so you should have a record of the trip. The driver was very friendly and spoke with an Indian accent. Could you contact him and ask him to call this number? I'm happy to pay for his time.",
+      "ref_zh": "你好，我大概二十分钟前坐了你们的出租车，从莱佛士坊到荷兰村，手机落在后座上了。我是刷卡付的，你们应该有行程记录。司机很友善，有印度口音。能帮我联系他、让他打这个号码吗？我愿意付他跑一趟的钱。"
+    }
+  ],
+  "words": [
+    {
+      "w": "expressway",
+      "ipa": "/ɪkˈspresweɪ/",
+      "zh": "高速公路",
+      "ex": "The expressway is jammed after six."
+    },
+    {
+      "w": "turn down",
+      "ipa": "/tɜːrn daʊn/",
+      "zh": "调小",
+      "ex": "Could you turn down the music a bit?"
+    },
+    {
+      "w": "traffic light",
+      "ipa": "/ˈtræfɪk laɪt/",
+      "zh": "红绿灯",
+      "ex": "Turn right at the next traffic light."
+    },
+    {
+      "w": "roundabout",
+      "ipa": "/ˈraʊndəbaʊt/",
+      "zh": "环岛",
+      "ex": "Take the third exit at the roundabout."
+    },
+    {
+      "w": "pull over",
+      "ipa": "/pʊl ˈoʊvər/",
+      "zh": "靠边停车",
+      "ex": "You can pull over next to the bus stop."
+    },
+    {
+      "w": "surcharge",
+      "ipa": "/ˈsɜːrtʃɑːrdʒ/",
+      "zh": "附加费",
+      "ex": "There's a midnight surcharge on taxi fares."
+    },
+    {
+      "w": "detour",
+      "ipa": "/ˈdiːtʊr/",
+      "zh": "绕路",
+      "ex": "The road was closed, so we had to take a detour."
+    },
+    {
+      "w": "receipt",
+      "ipa": "/rɪˈsiːt/",
+      "zh": "收据",
+      "ex": "Can I get a receipt, please?"
+    },
+    {
+      "w": "expenses",
+      "ipa": "/ɪkˈspensɪz/",
+      "zh": "（可报销的）费用",
+      "ex": "I'll claim the taxi fare as expenses."
+    }
+  ]
+}

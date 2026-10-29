@@ -1,0 +1,180 @@
+{
+  "id": "065",
+  "title": "Explaining Risk Without Scaring People",
+  "meta": "B2 · 约 260 词 · 场景：风险汇报",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Two Ways to Say the Same Thing",
+      "paragraphs": [
+        [
+          "Imagine two engineers describing the same problem to a director.",
+          "The first says, \"The database could fall over during the sale.\"",
+          "The second says, \"There is a small chance the database hits its limit during the sale; if it does, checkout slows for a few minutes, and we have a switch ready to turn off recommendations.\""
+        ],
+        [
+          "Both are honest, but only one of them lets the director sleep at night.",
+          "The first sentence is ==alarming== because it has no size and no plan.",
+          "The listener fills the gap with the worst ==outcome== they can picture."
+        ],
+        [
+          "**Unmeasured risk sounds bigger than it is, and that makes people overreact.**",
+          "They add approval steps, delay launches, or start to ==micromanage== the team.",
+          "Your job is to give them a risk they can __put in perspective__."
+        ]
+      ],
+      "heading_zh": "1. 同一件事的两种说法",
+      "paragraphs_zh": [
+        [
+          "设想两个工程师向总监描述同一个问题。",
+          "第一个说：「大促期间数据库可能会挂。」",
+          "第二个说：「大促期间数据库有小概率打到上限；真打到了，下单会慢几分钟，我们准备好了一个开关，可以把推荐关掉。」"
+        ],
+        [
+          "两个人说的都是实话，但只有一个能让总监睡个安稳觉。",
+          "第一句话吓人，是因为它既没说多大，也没说怎么办。",
+          "听的人会用自己能想到的最坏结果去填这个空白。"
+        ],
+        [
+          "没量化过的风险听起来总比实际更大，这会让人反应过度。",
+          "他们会加审批环节、推迟上线，或者开始事无巨细地管团队。",
+          "你的任务是给他们一个能放在合理位置上看待的风险。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Likelihood, Impact, Plan",
+      "paragraphs": [
+        [
+          "A calm risk statement has three parts.",
+          "Likelihood: how probable is it, in rough terms like \"unlikely\" or \"about one in ten\"?",
+          "Impact: who is affected, for how long, and how badly?",
+          "Plan: what will you do to prevent it, and what will you do if it happens anyway?"
+        ],
+        [
+          "**Never present a risk without the plan that goes with it.**",
+          "The plan is what turns a worry into a ==contained== risk.",
+          "Even a simple fallback, like \"we can __switch back to__ the old flow in five minutes,\" changes the mood in the room."
+        ],
+        [
+          "Finally, match your tone to the ==severity==.",
+          "Don't __play it down__ to look confident, and don't ==dramatize== it to get attention.",
+          "If you are honest about size, people will believe you when you finally say, \"This one is serious.\""
+        ]
+      ],
+      "heading_zh": "2. 可能性、影响、预案",
+      "paragraphs_zh": [
+        [
+          "一个冷静的风险陈述有三个部分。",
+          "可能性：大概有多大概率，用「不太可能」或者「十分之一左右」这种粗略的说法就行。",
+          "影响：影响到谁，持续多久，严重到什么程度？",
+          "预案：你会怎么预防，万一还是发生了又会怎么处理？"
+        ],
+        [
+          "永远不要只抛出风险而不带上对应的预案。",
+          "正是预案，把一个担忧变成了一个可控的风险。",
+          "哪怕只是一个简单的兜底，比如「我们五分钟内就能切回老流程」，也会让屋里的气氛完全不同。"
+        ],
+        [
+          "最后，语气要和严重程度匹配。",
+          "别为了显得自信就轻描淡写，也别为了引起重视就夸大其词。",
+          "如果你对风险大小一直很坦诚，等你终于说「这次是真的严重」时，大家就会信你。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "文中两种说法的关键区别是什么？",
+      "a": "第一种只说“可能挂”，没有大小和预案，很吓人；第二种说清概率小、影响几分钟、并有开关预案。"
+    },
+    {
+      "q": "没有量化的风险会导致什么后果？",
+      "a": "听的人会往最坏处想而过度反应：加审批、推迟上线、开始微观管理团队。"
+    },
+    {
+      "q": "一个冷静的风险陈述包括哪三部分？语气上要注意什么？",
+      "a": "可能性、影响、预案；语气要和严重程度匹配，既不淡化也不夸大，这样真正严重时别人才会信你。"
+    }
+  ],
+  "dictation": [
+    "Unmeasured risk sounds bigger than it is, and that makes people overreact.",
+    "Never present a risk without the plan that goes with it.",
+    "The plan is what turns a worry into a contained risk.",
+    "Don't play it down to look confident, and don't dramatize it to get attention."
+  ],
+  "shadow": {
+    "text": "Never present a risk without the plan that goes with it. The plan is what turns a worry into a contained risk.",
+    "marked": "<b>Never</b> present a risk / without the <b>plan</b> / that goes with it. //<br>The plan is what turns a <b>worry</b> / into a <b>contained</b> risk. //"
+  },
+  "prompts": [
+    {
+      "q": "大促前，总监问你“新缓存方案有没有风险？”。用 30 秒按“可能性、影响、预案”回答，不要吓到他。",
+      "ref": "There is one risk worth knowing about. If traffic is much higher than forecast, the new cache could run out of memory. We think that's unlikely, maybe one in ten. If it happens, product pages would load slower for a few minutes, but checkout isn't affected. We've set an alert at seventy percent memory, and we can switch back to the old cache in under five minutes.",
+      "ref_zh": "有一个风险值得大家知道。如果流量比预估高很多，新缓存可能会内存不够。我们觉得可能性不大，大概十分之一。真发生了，商品页会慢几分钟，但下单不受影响。我们在内存百分之七十设了告警，而且五分钟内就能切回老缓存。"
+    },
+    {
+      "q": "同事在全员群里写“这次迁移可能会丢数据！”，引起恐慌。用 30 秒在会上把这个风险重新讲清楚、讲准确。",
+      "ref": "I want to put yesterday's message in perspective. The risk is real, but it's narrow. Only drafts saved during the ten-minute cutover window could be affected, and we expect that to be a few hundred records at most. We're taking a full backup right before the cutover, and we've tested restoring from it twice. So it's a contained risk with a clear recovery plan.",
+      "ref_zh": "我想把昨天那条消息说得更准确一点。风险是真实存在的，但范围很窄。只有在十分钟切换窗口内保存的草稿可能受影响，我们预计最多也就几百条记录。切换前我们会做一次全量备份，而且已经演练过两次从备份恢复。所以这是一个可控的风险，恢复方案也很清楚。"
+    }
+  ],
+  "words": [
+    {
+      "w": "alarming",
+      "ipa": "/əˈlɑːrmɪŋ/",
+      "zh": "令人担忧的、吓人的",
+      "ex": "The error spike looked alarming, but it was a logging bug."
+    },
+    {
+      "w": "outcome",
+      "ipa": "/ˈaʊtˌkʌm/",
+      "zh": "结果",
+      "ex": "The worst outcome is a few minutes of slower checkout."
+    },
+    {
+      "w": "micromanage",
+      "ipa": "/ˌmaɪkroʊˈmænɪdʒ/",
+      "zh": "微观管理、管得过细",
+      "ex": "After the outage, leadership started to micromanage every release."
+    },
+    {
+      "w": "contain (v.)",
+      "ipa": "/kənˈteɪn/",
+      "zh": "控制住、限制住",
+      "ex": "We contained the issue to one region before it spread.",
+      "tts_w": "contain"
+    },
+    {
+      "w": "severity",
+      "ipa": "/səˈverəti/",
+      "zh": "严重程度",
+      "ex": "Let's agree on the severity level before we page anyone."
+    },
+    {
+      "w": "dramatize",
+      "ipa": "/ˈdræməˌtaɪz/",
+      "zh": "夸大、渲染",
+      "ex": "I don't want to dramatize it, but this bug affects every new user."
+    },
+    {
+      "w": "likelihood",
+      "ipa": "/ˈlaɪkliˌhʊd/",
+      "zh": "可能性",
+      "ex": "The likelihood is low, but the impact would be high."
+    },
+    {
+      "w": "overreact",
+      "ipa": "/ˌoʊvəriˈækt/",
+      "zh": "反应过度",
+      "ex": "Let's not overreact to one bad day of metrics."
+    },
+    {
+      "w": "fallback",
+      "ipa": "/ˈfɔːlˌbæk/",
+      "zh": "后备方案、兜底方案",
+      "ex": "Do we have a fallback if the new model times out?"
+    }
+  ]
+}

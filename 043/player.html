@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Negotiating Scope with Product Managers · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "043", "title": "Negotiating Scope with Product Managers", "meta": "B2 · 约 280 词 · 场景：需求评审", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Scope Is a Trade, Not a Fight", "heading_zh": "1. 范围是交换，不是对抗", "rows": [[{"id": "s0_0_0", "md": "It is planning week, and the product manager walks in with twelve features for a six week cycle.", "text": "It is planning week, and the product manager walks in with twelve features for a six week cycle.", "zh": "到了规划周，产品经理带着十二个需求走进来，而这个周期只有六周。", "sp": null}, {"id": "s0_0_1", "md": "Your first instinct is to say, \"We can't do all of this.\"", "text": "Your first instinct is to say, \"We can't do all of this.\"", "zh": "你的第一反应是说：「这些我们做不完。」", "sp": null}, {"id": "s0_0_2", "md": "It is true, but it ends the conversation instead of starting one.", "text": "It is true, but it ends the conversation instead of starting one.", "zh": "这话没错，但它直接把对话聊死了，而不是开启对话。", "sp": null}], [{"id": "s0_1_0", "md": "A product manager hears \"can't\" as a ==verdict==.", "text": "A product manager hears \"can't\" as a verdict.", "zh": "产品经理听到「做不了」，会当成一个判决。", "sp": null}, {"id": "s0_1_1", "md": "They have already promised something to their boss, so now they feel cornered and start to __push back__ harder.", "text": "They have already promised something to their boss, so now they feel cornered and start to push back harder.", "zh": "他们已经跟老板承诺过了，所以这时候会觉得被逼到墙角，反推得更猛。", "sp": null}, {"id": "s0_1_2", "md": "Meanwhile, your team ends up with a vague ==commitment== to do \"as much as possible.\"", "text": "Meanwhile, your team ends up with a vague commitment to do \"as much as possible.\"", "zh": "与此同时，你的团队最后只得到一个含糊的承诺：「尽量多做」。", "sp": null}], [{"id": "s0_2_0", "md": "The better mindset is that scope is a trade.", "text": "The better mindset is that scope is a trade.", "zh": "更好的心态是：范围是一种交换。", "sp": null}, {"id": "s0_2_1", "md": "Time, people, and quality are fixed for this cycle, so the only real ==variable== is what goes in.", "text": "Time, people, and quality are fixed for this cycle, so the only real variable is what goes in.", "zh": "这个周期里时间、人力和质量都是定死的，所以唯一真正的变量是放进来什么。", "sp": null}, {"id": "s0_2_2", "md": "**Your job is not to say no to features; it is to make the trade-offs visible.**", "text": "Your job is not to say no to features; it is to make the trade-offs visible.", "zh": "你的工作不是对需求说不；而是把取舍摆到明面上。", "sp": null}]]}, {"heading": "2. Turning a Wish List into Choices", "heading_zh": "2. 把愿望清单变成选择题", "rows": [[{"id": "s1_0_0", "md": "Start by asking what problem the release is supposed to solve.", "text": "Start by asking what problem the release is supposed to solve.", "zh": "先问清楚这个版本到底要解决什么问题。", "sp": null}, {"id": "s1_0_1", "md": "Once you agree on the goal, many features suddenly look ==optional==.", "text": "Once you agree on the goal, many features suddenly look optional.", "zh": "目标一旦对齐，很多需求一下子就显得可有可无了。", "sp": null}, {"id": "s1_0_2", "md": "Then ask, \"What is the smallest version that would tell us if this works?\"", "text": "Then ask, \"What is the smallest version that would tell us if this works?\"", "zh": "然后再问：「能告诉我们这件事行不行的最小版本是什么？」", "sp": null}], [{"id": "s1_1_0", "md": "Next, put the list on the screen and __size each item__ roughly, in days, not hours.", "text": "Next, put the list on the screen and size each item roughly, in days, not hours.", "zh": "接下来，把清单投到屏幕上，给每一项粗估个工作量，按天算，不按小时。", "sp": null}, {"id": "s1_1_1", "md": "Draw a line where the capacity runs out.", "text": "Draw a line where the capacity runs out.", "zh": "在容量用完的地方画一条线。", "sp": null}, {"id": "s1_1_2", "md": "Now you are not refusing anything; you are asking the product manager to __rank the work__ above the line.", "text": "Now you are not refusing anything; you are asking the product manager to rank the work above the line.", "zh": "这时候你没有拒绝任何东西；你是在请产品经理给线以上的工作排优先级。", "sp": null}], [{"id": "s1_2_0", "md": "When they want to add something late, use the same ==framing==.", "text": "When they want to add something late, use the same framing.", "zh": "当他们后期想加东西时，用同样的说法。", "sp": null}, {"id": "s1_2_1", "md": "\"Sure, we can add the export feature. Which of these two should we move out to make room?\"", "text": "\"Sure, we can add the export feature. Which of these two should we move out to make room?\"", "zh": "「行，导出功能可以加。这两个里挪出去哪一个来腾位置？」", "sp": null}, {"id": "s1_2_2", "md": "**A new request should always come with a price tag.**", "text": "A new request should always come with a price tag.", "zh": "新需求永远都要带上价签。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, __write down what was cut__ and share it after the meeting.", "text": "Finally, write down what was cut and share it after the meeting.", "zh": "最后，把砍掉的需求写下来，会后发给大家。", "sp": null}, {"id": "s1_3_1", "md": "Cut features have a way of quietly coming back two weeks later.", "text": "Cut features have a way of quietly coming back two weeks later.", "zh": "被砍掉的需求总会在两周后悄悄地又冒出来。", "sp": null}, {"id": "s1_3_2", "md": "A short written ==record== protects your team and keeps everyone honest about the plan.", "text": "A short written record protects your team and keeps everyone honest about the plan.", "zh": "一份简短的书面记录能保护你的团队，也让每个人对计划都诚实。", "sp": null}]]}], "gist": [{"q": "为什么直接说 \"We can't do all of this\" 不好？", "a": "它结束了对话；PM 听到的是判决，会觉得被逼到墙角而更强硬，团队最后只得到一个「尽量做」的模糊承诺。"}, {"q": "作者把范围谈判看成什么？", "a": "一场交换：时间、人力和质量固定，唯一的变量是放进什么；你的任务是让取舍可见，而不是拒绝需求。"}, {"q": "PM 中途要加需求时怎么回应？", "a": "可以加，但问他把哪一项挪出去腾位置；新需求必须带价签。会后把砍掉的内容写下来分享。"}], "dictation": [{"id": "s0_2_2", "text": "Your job is not to say no to features; it is to make the trade-offs visible."}, {"id": "s1_0_2", "text": "Then ask, \"What is the smallest version that would tell us if this works?\""}, {"id": "s1_2_2", "text": "A new request should always come with a price tag."}, {"id": "s1_3_1", "text": "Cut features have a way of quietly coming back two weeks later."}], "shadow": {"text": "Draw a line where the capacity runs out. Now you are not refusing anything; you are asking the product manager to rank the work above the line.", "marked": "Draw a <b>line</b> / where the <b>capacity</b> runs out. //<br>Now you are <b>not</b> refusing anything; / you are asking the product manager / to <b>rank</b> the work / <b>above</b> the line. //"}, "prompts": [{"q": "PM 在迭代中途要求加一个「数据导出」功能，并且不能延期。用 30 秒回应：不拒绝，但让他做取舍。", "ref": "I see why export matters, and we can build it. The catch is that our sprint is already full, so something has to move. Export is about four days of work. We could push back the settings redesign, or we could ship search filters with fewer options. Which one is less important to you for this release?", "ref_zh": "我理解导出功能很重要，我们也能做。问题是这个 sprint 已经排满了，所以得挪掉点什么。导出大概要四天工作量。我们可以把设置页改版往后推，或者搜索筛选先少做几个选项上线。对这个版本来说，你觉得哪个没那么重要？", "id": "ref0"}, {"q": "需求评审会上 PM 列了很多功能。用 30 秒引导大家先对齐目标，并提出做一个最小可验证版本。", "ref": "Before we go through the list, can we agree on what this release needs to prove? If the goal is to see whether sellers actually use bulk editing, then we probably don't need templates or undo in the first version. What's the smallest version that would answer that question? Let's build that first, look at the usage data, and then decide what to add next.", "ref_zh": "在过清单之前，我们能不能先对齐一下这个版本要验证什么？如果目标是看卖家到底会不会用批量编辑，那第一版大概不需要模板和撤销功能。能回答这个问题的最小版本是什么？我们先把它做出来，看看使用数据，再决定接下来加什么。", "id": "ref1"}], "words": [{"w": "verdict", "ipa": "/ˈvɜːrdɪkt/", "zh": "裁决、定论", "ex": "Don't treat my estimate as a final verdict; it's a starting point.", "id": "w0"}, {"w": "commitment", "ipa": "/kəˈmɪtmənt/", "zh": "承诺", "ex": "We can make a firm commitment on the first three items only.", "id": "w1"}, {"w": "variable", "ipa": "/ˈveriəbl/", "zh": "变量", "ex": "With the date fixed, scope is the only variable we control.", "id": "w2"}, {"w": "optional", "ipa": "/ˈɑːpʃənl/", "zh": "可选的", "ex": "Dark mode is optional for this release, so let's move it out.", "id": "w3"}, {"w": "framing", "ipa": "/ˈfreɪmɪŋ/", "zh": "表述框架、说法", "ex": "The framing matters: present it as a choice, not a refusal.", "id": "w4"}, {"w": "record", "ipa": "/ˈrekərd/", "zh": "记录", "ex": "Let's keep a record of what we cut in the planning doc.", "id": "w5"}, {"w": "capacity", "ipa": "/kəˈpæsəti/", "zh": "产能、容量", "ex": "We have capacity for about twenty days of work this sprint.", "id": "w6"}, {"w": "trade-off", "ipa": "/ˈtreɪd ɔːf/", "zh": "取舍、权衡", "ex": "The trade-off is faster delivery but less test coverage.", "id": "w7"}, {"w": "cornered", "ipa": "/ˈkɔːrnərd/", "zh": "被逼到墙角的", "ex": "If he feels cornered, he'll escalate instead of negotiating.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Scope Is a Trade, Not a Fight", "zh": "1. 范围是交换，不是对抗", "start": 0.0, "end": 3.0, "words": [[0.105, 0.355], [0.724, 1.066], [1.145, 1.25], [1.263, 1.316], [1.329, 1.789], [2.039, 2.158], [2.171, 2.21], [2.224, 2.605]]}, {"kind": "s", "id": "s0_0_0", "md": "It is planning week, and the product manager walks in with twelve features for a six week cycle.", "zh": "到了规划周，产品经理带着十二个需求走进来，而这个周期只有六周。", "sp": null, "gap": false, "start": 3.0, "end": 8.928, "words": [[3.105, 3.184], [3.197, 3.316], [3.329, 3.842], [3.855, 4.224], [4.513, 4.566], [4.579, 4.658], [4.671, 5.079], [5.092, 5.54], [5.553, 5.908], [5.921, 6.105], [6.118, 6.263], [6.276, 6.697], [6.711, 7.25], [7.263, 7.447], [7.461, 7.513], [7.526, 7.855], [7.868, 8.053], [8.066, 8.526]]}, {"kind": "s", "id": "s0_0_1", "md": "Your first instinct is to say, \"We can't do all of this.\"", "zh": "你的第一反应是说：「这些我们做不完。」", "sp": null, "gap": false, "start": 8.928, "end": 12.792, "words": [[9.033, 9.152], [9.165, 9.494], [9.507, 9.928], [9.941, 10.046], [10.06, 10.152], [10.165, 10.586], [10.862, 10.994], [11.007, 11.296], [11.31, 11.56], [11.573, 11.823], [11.836, 11.941], [11.954, 12.389]]}, {"kind": "s", "id": "s0_0_2", "md": "It is true, but it ends the conversation instead of starting one.", "zh": "这话没错，但它直接把对话聊死了，而不是开启对话。", "sp": null, "gap": false, "start": 12.792, "end": 16.944, "words": [[12.897, 12.976], [12.989, 13.134], [13.147, 13.634], [13.976, 14.108], [14.121, 14.2], [14.213, 14.397], [14.41, 14.503], [14.516, 15.345], [15.358, 15.766], [15.779, 15.845], [15.858, 16.266], [16.279, 16.555]]}, {"kind": "s", "id": "s0_1_0", "md": "A product manager hears \"can't\" as a ==verdict==.", "zh": "产品经理听到「做不了」，会当成一个判决。", "sp": null, "gap": true, "start": 16.944, "end": 20.04, "words": [[17.049, 17.115], [17.128, 17.51], [17.523, 17.957], [17.97, 18.365], [18.457, 18.891], [18.957, 19.062], [19.076, 19.115], [19.128, 19.655]]}, {"kind": "s", "id": "s0_1_1", "md": "They have already promised something to their boss, so now they feel cornered and start to __push back__ harder.", "zh": "他们已经跟老板承诺过了，所以这时候会觉得被逼到墙角，反推得更猛。", "sp": null, "gap": false, "start": 20.04, "end": 25.872, "words": [[20.145, 20.211], [20.224, 20.329], [20.343, 20.685], [20.698, 21.185], [21.198, 21.514], [21.527, 21.606], [21.619, 21.777], [21.79, 22.264], [22.553, 22.672], [22.685, 22.895], [22.908, 23.053], [23.066, 23.329], [23.343, 23.843], [24.093, 24.185], [24.198, 24.435], [24.448, 24.514], [24.527, 24.79], [24.803, 25.053], [25.066, 25.474]]}, {"kind": "s", "id": "s0_1_2", "md": "Meanwhile, your team ends up with a vague ==commitment== to do \"as much as possible.\"", "zh": "与此同时，你的团队最后只得到一个含糊的承诺：「尽量多做」。", "sp": null, "gap": false, "start": 25.872, "end": 31.392, "words": [[25.977, 26.569], [26.977, 27.069], [27.083, 27.398], [27.543, 27.714], [27.727, 27.872], [27.885, 28.017], [28.03, 28.082], [28.096, 28.477], [28.49, 29.056], [29.069, 29.148], [29.161, 29.517], [29.754, 29.898], [29.911, 30.148], [30.161, 30.254], [30.267, 30.885]]}, {"kind": "s", "id": "s0_2_0", "md": "The better mindset is that scope is a trade.", "zh": "更好的心态是：范围是一种交换。", "sp": null, "gap": true, "start": 31.392, "end": 34.368, "words": [[31.51, 31.576], [31.589, 31.8], [31.813, 32.352], [32.431, 32.537], [32.55, 32.708], [32.721, 33.208], [33.326, 33.431], [33.445, 33.484], [33.497, 33.971]]}, {"kind": "s", "id": "s0_2_1", "md": "Time, people, and quality are fixed for this cycle, so the only real ==variable== is what goes in.", "zh": "这个周期里时间、人力和质量都是定死的，所以唯一真正的变量是放进来什么。", "sp": null, "gap": false, "start": 34.368, "end": 40.824, "words": [[34.486, 34.907], [35.171, 35.71], [35.736, 35.829], [35.842, 36.407], [36.421, 36.539], [36.552, 37.0], [37.013, 37.131], [37.144, 37.302], [37.315, 37.723], [38.157, 38.263], [38.276, 38.394], [38.407, 38.736], [38.75, 38.973], [38.986, 39.5], [39.631, 39.71], [39.723, 39.881], [39.894, 40.184], [40.197, 40.434]]}, {"kind": "s", "id": "s0_2_2", "md": "**Your job is not to say no to features; it is to make the trade-offs visible.**", "zh": "你的工作不是对需求说不；而是把取舍摆到明面上。", "sp": null, "gap": false, "start": 40.824, "end": 45.984, "words": [[40.929, 41.074], [41.087, 41.495], [41.6, 41.706], [41.719, 41.982], [41.995, 42.087], [42.1, 42.363], [42.377, 42.64], [42.653, 42.732], [42.745, 43.429], [43.863, 43.929], [43.942, 44.074], [44.087, 44.179], [44.192, 44.403], [44.416, 44.495], [44.508, 45.113], [45.127, 45.6]]}, {"kind": "h", "id": "h1", "md": "2. Turning a Wish List into Choices", "zh": "2. 把愿望清单变成选择题", "start": 45.984, "end": 49.056, "words": [[46.102, 46.339], [46.773, 47.102], [47.116, 47.181], [47.195, 47.484], [47.497, 47.826], [47.839, 48.01], [48.023, 48.668]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by asking what problem the release is supposed to solve.", "zh": "先问清楚这个版本到底要解决什么问题。", "sp": null, "gap": false, "start": 49.056, "end": 52.776, "words": [[49.161, 49.438], [49.451, 49.609], [49.622, 50.069], [50.082, 50.24], [50.253, 50.648], [50.661, 50.74], [50.753, 51.227], [51.306, 51.411], [51.424, 51.859], [51.872, 51.924], [51.938, 52.398]]}, {"kind": "s", "id": "s1_0_1", "md": "Once you agree on the goal, many features suddenly look ==optional==.", "zh": "目标一旦对齐，很多需求一下子就显得可有可无了。", "sp": null, "gap": false, "start": 52.776, "end": 56.856, "words": [[52.881, 53.065], [53.079, 53.21], [53.223, 53.552], [53.565, 53.671], [53.684, 53.763], [53.776, 54.118], [54.526, 54.737], [54.75, 55.263], [55.276, 55.684], [55.697, 55.921], [55.934, 56.473]]}, {"kind": "s", "id": "s1_0_2", "md": "Then ask, \"What is the smallest version that would tell us if this works?\"", "zh": "然后再问：「能告诉我们这件事行不行的最小版本是什么？」", "sp": null, "gap": false, "start": 56.856, "end": 61.128, "words": [[56.961, 57.198], [57.211, 57.593], [57.882, 58.014], [58.027, 58.132], [58.145, 58.264], [58.277, 58.843], [58.856, 59.211], [59.224, 59.317], [59.33, 59.448], [59.461, 59.698], [59.711, 59.882], [59.895, 60.027], [60.04, 60.198], [60.211, 60.724]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, put the list on the screen and __size each item__ roughly, in days, not hours.", "zh": "接下来，把清单投到屏幕上，给每一项粗估个工作量，按天算，不按小时。", "sp": null, "gap": true, "start": 61.128, "end": 67.44, "words": [[61.233, 61.681], [61.904, 62.062], [62.075, 62.181], [62.194, 62.47], [62.483, 62.562], [62.575, 62.641], [62.654, 63.154], [63.339, 63.457], [63.47, 63.865], [64.023, 64.233], [64.325, 64.628], [64.641, 65.089], [65.352, 65.496], [65.51, 66.062], [66.286, 66.51], [66.523, 67.049]]}, {"kind": "s", "id": "s1_1_1", "md": "Draw a line where the capacity runs out.", "zh": "在容量用完的地方画一条线。", "sp": null, "gap": false, "start": 67.44, "end": 70.08, "words": [[67.545, 67.716], [67.729, 67.808], [67.822, 68.216], [68.229, 68.335], [68.348, 68.427], [68.44, 69.058], [69.072, 69.387], [69.401, 69.69]]}, {"kind": "s", "id": "s1_1_2", "md": "Now you are not refusing anything; you are asking the product manager to __rank the work__ above the line.", "zh": "这时候你没有拒绝任何东西；你是在请产品经理给线以上的工作排优先级。", "sp": null, "gap": false, "start": 70.08, "end": 76.392, "words": [[70.185, 70.356], [70.369, 70.501], [70.514, 70.606], [70.619, 70.935], [70.948, 71.567], [71.58, 72.08], [72.541, 72.606], [72.619, 72.764], [72.777, 73.12], [73.133, 73.212], [73.225, 73.646], [73.659, 74.146], [74.159, 74.304], [74.317, 74.725], [74.791, 74.922], [74.935, 75.238], [75.251, 75.527], [75.541, 75.619], [75.633, 76.001]]}, {"kind": "s", "id": "s1_2_0", "md": "When they want to add something late, use the same ==framing==.", "zh": "当他们后期想加东西时，用同样的说法。", "sp": null, "gap": true, "start": 76.392, "end": 79.776, "words": [[76.497, 76.576], [76.589, 76.668], [76.681, 76.826], [76.839, 76.879], [76.892, 77.155], [77.168, 77.55], [77.563, 77.852], [78.274, 78.51], [78.524, 78.616], [78.629, 78.931], [78.945, 79.379]]}, {"kind": "s", "id": "s1_2_1", "md": "\"Sure, we can add the export feature. Which of these two should we move out to make room?\"", "zh": "「行，导出功能可以加。这两个里挪出去哪一个来腾位置？」", "sp": null, "gap": false, "start": 79.776, "end": 84.792, "words": [[79.96, 80.158], [80.513, 80.605], [80.618, 80.737], [80.75, 80.894], [80.908, 80.987], [81.0, 81.421], [81.434, 81.842], [82.289, 82.434], [82.447, 82.526], [82.539, 82.776], [82.789, 82.96], [82.973, 83.171], [83.184, 83.276], [83.289, 83.565], [83.579, 83.736], [83.75, 83.842], [83.855, 84.105], [84.118, 84.381]]}, {"kind": "s", "id": "s1_2_2", "md": "**A new request should always come with a price tag.**", "zh": "新需求永远都要带上价签。", "sp": null, "gap": false, "start": 84.792, "end": 87.864, "words": [[84.884, 84.924], [84.937, 85.16], [85.174, 85.713], [85.726, 85.937], [85.95, 86.358], [86.371, 86.555], [86.568, 86.687], [86.7, 86.739], [86.753, 87.095], [87.108, 87.463]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, __write down what was cut__ and share it after the meeting.", "zh": "最后，把砍掉的需求写下来，会后发给大家。", "sp": null, "gap": true, "start": 87.864, "end": 91.584, "words": [[88.035, 88.456], [88.772, 88.93], [88.943, 89.167], [89.18, 89.285], [89.298, 89.456], [89.469, 89.811], [89.996, 90.075], [90.088, 90.417], [90.43, 90.496], [90.509, 90.746], [90.759, 90.825], [90.838, 91.193]]}, {"kind": "s", "id": "s1_3_1", "md": "Cut features have a way of quietly coming back two weeks later.", "zh": "被砍掉的需求总会在两周后悄悄地又冒出来。", "sp": null, "gap": false, "start": 91.584, "end": 95.496, "words": [[91.689, 91.873], [91.887, 92.36], [92.373, 92.505], [92.518, 92.584], [92.597, 92.847], [92.86, 92.966], [92.979, 93.571], [93.584, 93.9], [93.913, 94.242], [94.255, 94.439], [94.452, 94.729], [94.742, 95.11]]}, {"kind": "s", "id": "s1_3_2", "md": "A short written ==record== protects your team and keeps everyone honest about the plan.", "zh": "一份简短的书面记录能保护你的团队，也让每个人对计划都诚实。", "sp": null, "gap": false, "start": 95.496, "end": 100.488, "words": [[95.601, 95.641], [95.654, 96.022], [96.035, 96.325], [96.338, 96.693], [96.707, 97.167], [97.18, 97.299], [97.312, 97.693], [97.996, 98.075], [98.088, 98.43], [98.575, 98.957], [98.97, 99.325], [99.338, 99.562], [99.575, 99.654], [99.667, 100.088]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

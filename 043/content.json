@@ -1,0 +1,187 @@
+{
+  "id": "043",
+  "title": "Negotiating Scope with Product Managers",
+  "meta": "B2 · 约 280 词 · 场景：需求评审",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Scope Is a Trade, Not a Fight",
+      "paragraphs": [
+        [
+          "It is planning week, and the product manager walks in with twelve features for a six week cycle.",
+          "Your first instinct is to say, \"We can't do all of this.\"",
+          "It is true, but it ends the conversation instead of starting one."
+        ],
+        [
+          "A product manager hears \"can't\" as a ==verdict==.",
+          "They have already promised something to their boss, so now they feel cornered and start to __push back__ harder.",
+          "Meanwhile, your team ends up with a vague ==commitment== to do \"as much as possible.\""
+        ],
+        [
+          "The better mindset is that scope is a trade.",
+          "Time, people, and quality are fixed for this cycle, so the only real ==variable== is what goes in.",
+          "**Your job is not to say no to features; it is to make the trade-offs visible.**"
+        ]
+      ],
+      "heading_zh": "1. 范围是交换，不是对抗",
+      "paragraphs_zh": [
+        [
+          "到了规划周，产品经理带着十二个需求走进来，而这个周期只有六周。",
+          "你的第一反应是说：「这些我们做不完。」",
+          "这话没错，但它直接把对话聊死了，而不是开启对话。"
+        ],
+        [
+          "产品经理听到「做不了」，会当成一个判决。",
+          "他们已经跟老板承诺过了，所以这时候会觉得被逼到墙角，反推得更猛。",
+          "与此同时，你的团队最后只得到一个含糊的承诺：「尽量多做」。"
+        ],
+        [
+          "更好的心态是：范围是一种交换。",
+          "这个周期里时间、人力和质量都是定死的，所以唯一真正的变量是放进来什么。",
+          "你的工作不是对需求说不；而是把取舍摆到明面上。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Turning a Wish List into Choices",
+      "paragraphs": [
+        [
+          "Start by asking what problem the release is supposed to solve.",
+          "Once you agree on the goal, many features suddenly look ==optional==.",
+          "Then ask, \"What is the smallest version that would tell us if this works?\""
+        ],
+        [
+          "Next, put the list on the screen and __size each item__ roughly, in days, not hours.",
+          "Draw a line where the capacity runs out.",
+          "Now you are not refusing anything; you are asking the product manager to __rank the work__ above the line."
+        ],
+        [
+          "When they want to add something late, use the same ==framing==.",
+          "\"Sure, we can add the export feature. Which of these two should we move out to make room?\"",
+          "**A new request should always come with a price tag.**"
+        ],
+        [
+          "Finally, __write down what was cut__ and share it after the meeting.",
+          "Cut features have a way of quietly coming back two weeks later.",
+          "A short written ==record== protects your team and keeps everyone honest about the plan."
+        ]
+      ],
+      "heading_zh": "2. 把愿望清单变成选择题",
+      "paragraphs_zh": [
+        [
+          "先问清楚这个版本到底要解决什么问题。",
+          "目标一旦对齐，很多需求一下子就显得可有可无了。",
+          "然后再问：「能告诉我们这件事行不行的最小版本是什么？」"
+        ],
+        [
+          "接下来，把清单投到屏幕上，给每一项粗估个工作量，按天算，不按小时。",
+          "在容量用完的地方画一条线。",
+          "这时候你没有拒绝任何东西；你是在请产品经理给线以上的工作排优先级。"
+        ],
+        [
+          "当他们后期想加东西时，用同样的说法。",
+          "「行，导出功能可以加。这两个里挪出去哪一个来腾位置？」",
+          "新需求永远都要带上价签。"
+        ],
+        [
+          "最后，把砍掉的需求写下来，会后发给大家。",
+          "被砍掉的需求总会在两周后悄悄地又冒出来。",
+          "一份简短的书面记录能保护你的团队，也让每个人对计划都诚实。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么直接说 \"We can't do all of this\" 不好？",
+      "a": "它结束了对话；PM 听到的是判决，会觉得被逼到墙角而更强硬，团队最后只得到一个「尽量做」的模糊承诺。"
+    },
+    {
+      "q": "作者把范围谈判看成什么？",
+      "a": "一场交换：时间、人力和质量固定，唯一的变量是放进什么；你的任务是让取舍可见，而不是拒绝需求。"
+    },
+    {
+      "q": "PM 中途要加需求时怎么回应？",
+      "a": "可以加，但问他把哪一项挪出去腾位置；新需求必须带价签。会后把砍掉的内容写下来分享。"
+    }
+  ],
+  "dictation": [
+    "Your job is not to say no to features; it is to make the trade-offs visible.",
+    "Then ask, \"What is the smallest version that would tell us if this works?\"",
+    "A new request should always come with a price tag.",
+    "Cut features have a way of quietly coming back two weeks later."
+  ],
+  "shadow": {
+    "text": "Draw a line where the capacity runs out. Now you are not refusing anything; you are asking the product manager to rank the work above the line.",
+    "marked": "Draw a <b>line</b> / where the <b>capacity</b> runs out. //<br>Now you are <b>not</b> refusing anything; / you are asking the product manager / to <b>rank</b> the work / <b>above</b> the line. //"
+  },
+  "prompts": [
+    {
+      "q": "PM 在迭代中途要求加一个「数据导出」功能，并且不能延期。用 30 秒回应：不拒绝，但让他做取舍。",
+      "ref": "I see why export matters, and we can build it. The catch is that our sprint is already full, so something has to move. Export is about four days of work. We could push back the settings redesign, or we could ship search filters with fewer options. Which one is less important to you for this release?",
+      "ref_zh": "我理解导出功能很重要，我们也能做。问题是这个 sprint 已经排满了，所以得挪掉点什么。导出大概要四天工作量。我们可以把设置页改版往后推，或者搜索筛选先少做几个选项上线。对这个版本来说，你觉得哪个没那么重要？"
+    },
+    {
+      "q": "需求评审会上 PM 列了很多功能。用 30 秒引导大家先对齐目标，并提出做一个最小可验证版本。",
+      "ref": "Before we go through the list, can we agree on what this release needs to prove? If the goal is to see whether sellers actually use bulk editing, then we probably don't need templates or undo in the first version. What's the smallest version that would answer that question? Let's build that first, look at the usage data, and then decide what to add next.",
+      "ref_zh": "在过清单之前，我们能不能先对齐一下这个版本要验证什么？如果目标是看卖家到底会不会用批量编辑，那第一版大概不需要模板和撤销功能。能回答这个问题的最小版本是什么？我们先把它做出来，看看使用数据，再决定接下来加什么。"
+    }
+  ],
+  "words": [
+    {
+      "w": "verdict",
+      "ipa": "/ˈvɜːrdɪkt/",
+      "zh": "裁决、定论",
+      "ex": "Don't treat my estimate as a final verdict; it's a starting point."
+    },
+    {
+      "w": "commitment",
+      "ipa": "/kəˈmɪtmənt/",
+      "zh": "承诺",
+      "ex": "We can make a firm commitment on the first three items only."
+    },
+    {
+      "w": "variable",
+      "ipa": "/ˈveriəbl/",
+      "zh": "变量",
+      "ex": "With the date fixed, scope is the only variable we control."
+    },
+    {
+      "w": "optional",
+      "ipa": "/ˈɑːpʃənl/",
+      "zh": "可选的",
+      "ex": "Dark mode is optional for this release, so let's move it out."
+    },
+    {
+      "w": "framing",
+      "ipa": "/ˈfreɪmɪŋ/",
+      "zh": "表述框架、说法",
+      "ex": "The framing matters: present it as a choice, not a refusal."
+    },
+    {
+      "w": "record",
+      "ipa": "/ˈrekərd/",
+      "zh": "记录",
+      "ex": "Let's keep a record of what we cut in the planning doc."
+    },
+    {
+      "w": "capacity",
+      "ipa": "/kəˈpæsəti/",
+      "zh": "产能、容量",
+      "ex": "We have capacity for about twenty days of work this sprint."
+    },
+    {
+      "w": "trade-off",
+      "ipa": "/ˈtreɪd ɔːf/",
+      "zh": "取舍、权衡",
+      "ex": "The trade-off is faster delivery but less test coverage."
+    },
+    {
+      "w": "cornered",
+      "ipa": "/ˈkɔːrnərd/",
+      "zh": "被逼到墙角的",
+      "ex": "If he feels cornered, he'll escalate instead of negotiating."
+    }
+  ]
+}

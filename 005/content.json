@@ -1,0 +1,187 @@
+{
+  "id": "005",
+  "title": "When You Are Put on the Spot",
+  "meta": "B2 · 约 270 词 · 场景：被突然点名",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Three-Second Panic",
+      "paragraphs": [
+        [
+          "You are half listening in a planning call when a director suddenly says, \"What do you think about the timeline?\"",
+          "Your heart speeds up, your mind goes blank, and you start talking before you know what you want to say.",
+          "Thirty seconds later, you have ==rambled== through three ideas and finished none of them."
+        ],
+        [
+          "This reaction is normal, especially in a second language.",
+          "Your brain is doing two jobs at once, finding the answer and finding the words.",
+          "**The mistake is not being slow; the mistake is filling the silence with noise.**"
+        ],
+        [
+          "Experienced speakers are not faster thinkers.",
+          "They simply have a few ==stock== phrases that __buy them time__ while sounding calm.",
+          "Those phrases let the ==panic== pass before the real answer begins."
+        ]
+      ],
+      "heading_zh": "1. 三秒钟的慌乱",
+      "paragraphs_zh": [
+        [
+          "你在一个规划会上半听不听，一位总监突然问：「你觉得这个时间线怎么样？」",
+          "你心跳加速，脑子一片空白，还没想好要说什么就开口了。",
+          "三十秒后，你东拉西扯说了三个点，一个都没讲完。"
+        ],
+        [
+          "这种反应很正常，用第二语言的时候尤其如此。",
+          "你的大脑在同时干两件事：想答案，还要找词。",
+          "错不在反应慢，错在用噪音去填满沉默。"
+        ],
+        [
+          "有经验的人并不是想得更快。",
+          "他们只是手里有几句现成的话，既能争取时间，听起来又很从容。",
+          "这些话能让慌乱先过去，再开始真正回答。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Buy Time, Then Give a Shape",
+      "paragraphs": [
+        [
+          "Start by ==clarifying== the question, even if you understood it.",
+          "\"Just to make sure, are you asking about the beta date or the full launch?\"",
+          "This gives you five seconds and often makes the question easier to answer."
+        ],
+        [
+          "Next, tell people the shape of your answer before you fill it in.",
+          "\"I'd say two things.\"",
+          "Now you only need to find two points, and listeners can __follow along__ even if your wording is rough."
+        ],
+        [
+          "If you really do not know, split what you know from what you need to check.",
+          "\"From what I've seen, the backend is on track, but I need to confirm the testing ==estimate== with QA.\"",
+          "**A partial answer with a clear next step sounds more ==competent== than a complete guess.**"
+        ],
+        [
+          "Then __follow up in writing__ the same day.",
+          "That message turns an awkward moment into proof that you are ==reliable==."
+        ]
+      ],
+      "heading_zh": "2. 先争取时间，再给出框架",
+      "paragraphs_zh": [
+        [
+          "先澄清一下问题，哪怕你其实听懂了。",
+          "「我确认一下，你问的是 beta 的时间，还是全量上线？」",
+          "这能给你争取五秒钟，而且问题往往也会变得更好回答。"
+        ],
+        [
+          "接着，先告诉大家你回答的框架，再往里填内容。",
+          "「我说两点。」",
+          "这样你只需要想出两个点，就算措辞粗糙，听的人也跟得上。"
+        ],
+        [
+          "如果你真的不知道，就把你知道的和需要确认的分开说。",
+          "「从我看到的情况来说，后端进度正常，但测试的预估我得跟 QA 确认一下。」",
+          "一个不完整但带着明确下一步的回答，比一个完整的瞎猜显得更专业。"
+        ],
+        [
+          "然后当天就用文字跟进。",
+          "这条消息能把一个尴尬的时刻，变成你靠谱的证明。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "被突然点名时，作者说真正的错误是什么？",
+      "a": "不是反应慢，而是用没想清楚的话填满沉默，结果东拉西扯、什么都没说完。"
+    },
+    {
+      "q": "作者给了哪几个争取时间、稳住的方法？",
+      "a": "先澄清问题；先说回答的结构（比如“我说两点”）；不确定时区分已知和待确认；会后当天书面跟进。"
+    },
+    {
+      "q": "为什么“部分答案加明确下一步”比完整的猜测更好？",
+      "a": "它显得更专业可靠，而猜测一旦错了会伤可信度。"
+    }
+  ],
+  "dictation": [
+    "The mistake is not being slow; the mistake is filling the silence with noise.",
+    "A partial answer with a clear next step sounds more competent than a complete guess.",
+    "Next, tell people the shape of your answer before you fill it in.",
+    "Your brain is doing two jobs at once, finding the answer and finding the words."
+  ],
+  "shadow": {
+    "text": "Next, tell people the shape of your answer before you fill it in. \"I'd say two things.\" Now you only need to find two points, and listeners can follow along even if your wording is rough.",
+    "marked": "<b>Next</b>, / tell people the <b>shape</b> of your answer / <b>before</b> you fill it in. //<br>\"I'd say <b>two</b> things.\" //<br>Now you only need to find <b>two</b> points, / and listeners can <b>follow along</b> / even if your wording is <b>rough</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "季度规划会上，VP 突然问你：“你们组的支付重构能不能提前两周？”你还没准备。用 30 秒先争取时间，再给出有结构的回答。",
+      "ref": "Good question. Just to make sure, do you mean the full migration or the first phase? For the first phase, I'd say two things. The code changes could probably move up a week. But the real constraint is testing with the bank partners, and I don't control their schedule. Let me check with them today and send you a realistic date by tomorrow morning.",
+      "ref_zh": "好问题。我确认一下，你指的是整个迁移，还是第一期？第一期的话，我说两点。代码改动大概可以提前一周。但真正的卡点是跟银行合作方的联调测试，他们的排期不在我手里。我今天就去跟他们确认，明早之前给你一个靠谱的日期。"
+    },
+    {
+      "q": "跨部门会议上，有人突然问你某个线上指标为什么下降，你只知道一部分原因。用 30 秒区分已知和待确认的内容，并承诺跟进。",
+      "ref": "Let me split this into what I know and what I don't. What I know is that the drop started on Tuesday, right after the new onboarding flow went out, so that's my main suspect. What I haven't confirmed is whether it's all regions or just one. I'll dig into the data with our analyst this afternoon and post an update in the channel before the end of the day.",
+      "ref_zh": "我把这个分成我知道的和不知道的。我知道的是，下滑是从周二开始的，正好在新的注册引导流程上线之后，所以那是我的头号怀疑对象。我还没确认的是，是所有地区都掉了，还是只有一个地区。今天下午我跟分析师一起深挖一下数据，下班前在群里同步进展。"
+    }
+  ],
+  "words": [
+    {
+      "w": "ramble",
+      "ipa": "/ˈræmbəl/",
+      "zh": "东拉西扯、漫无边际地说",
+      "ex": "Sorry, I'm rambling. The short answer is no, we're not ready."
+    },
+    {
+      "w": "stock (adj.)",
+      "ipa": "/stɑːk/",
+      "zh": "常备的、现成的",
+      "ex": "\"Let me get back to you\" is a stock phrase, but it works.",
+      "tts_w": "stock"
+    },
+    {
+      "w": "panic",
+      "ipa": "/ˈpænɪk/",
+      "zh": "恐慌、慌乱",
+      "ex": "There's no need to panic; the rollback is already running."
+    },
+    {
+      "w": "clarify",
+      "ipa": "/ˈklærəˌfaɪ/",
+      "zh": "澄清、说明",
+      "ex": "Could you clarify whether the deadline includes QA?"
+    },
+    {
+      "w": "estimate (n.)",
+      "ipa": "/ˈestɪmət/",
+      "zh": "估算",
+      "ex": "Our first estimate was two sprints, but it took four.",
+      "tts_w": "estimate"
+    },
+    {
+      "w": "competent",
+      "ipa": "/ˈkɑːmpɪtənt/",
+      "zh": "能干的、称职的",
+      "ex": "He handled the outage call in a calm, competent way."
+    },
+    {
+      "w": "reliable",
+      "ipa": "/rɪˈlaɪəbəl/",
+      "zh": "可靠的",
+      "ex": "She's the most reliable person on the on-call rotation."
+    },
+    {
+      "w": "partial",
+      "ipa": "/ˈpɑːrʃəl/",
+      "zh": "部分的",
+      "ex": "We have a partial fix that covers most users."
+    },
+    {
+      "w": "put someone on the spot",
+      "ipa": "/pʊt ˈsʌmwʌn ɑːn ðə spɑːt/",
+      "zh": "让人当场难堪、突然发难",
+      "ex": "I didn't mean to put you on the spot about the budget."
+    }
+  ]
+}

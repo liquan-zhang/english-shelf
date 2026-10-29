@@ -1,0 +1,177 @@
+{
+  "id": "084",
+  "title": "Joining a Conversation at a Team Dinner",
+  "meta": "B2 · 约 280 词 · 场景：团队聚餐",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Stuck at the End of the Table",
+      "paragraphs": [
+        [
+          "At team dinners, conversations split into small circles of three or four people.",
+          "If you arrive late or sit at the end of the table, you can easily end up __on the outside__, nodding ==politely== for an hour."
+        ],
+        [
+          "Many people wait for a perfect gap before they speak.",
+          "In a ==lively== group, that gap never comes, and the longer you wait, the harder it feels to __jump in__.",
+          "**Waiting for the perfect moment is the most reliable way to stay silent all night.**"
+        ],
+        [
+          "The good news is that you do not need a clever opening line.",
+          "Groups are usually happy to let someone in, as long as you join what they are already talking about instead of changing the ==subject==."
+        ]
+      ],
+      "heading_zh": "1. 被困在桌子尽头",
+      "paragraphs_zh": [
+        [
+          "团队聚餐的时候，聊天会分成三四个人一拨的小圈子。",
+          "要是你来晚了，或者坐在桌子尽头，很容易就被晾在外面，礼貌性点头点一个小时。"
+        ],
+        [
+          "很多人想等一个完美的空当再开口。",
+          "在聊得正热的一桌人里，这种空当根本不会出现，而且等得越久，越觉得插不进去。",
+          "等完美时机，是整晚一句话都说不上的最稳妥方式。"
+        ],
+        [
+          "好消息是，你不需要什么巧妙的开场白。",
+          "大家一般都乐意让人加入，只要你接着他们正在聊的话题，而不是另起炉灶。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Listen First, Then Ask",
+      "paragraphs": [
+        [
+          "Start by listening for a minute to __get the gist__ of the conversation.",
+          "Is it about a football match, a holiday, or the new office?"
+        ],
+        [
+          "Then join with a short question that __builds on__ what you just heard.",
+          "\"Wait, are you talking about the Japan trip? Which city did you like most?\"",
+          "A question is the safest entry, because it puts the ==spotlight== on them, not on you."
+        ],
+        [
+          "Use your body as well.",
+          "Turn your chair toward the group, lean in a little, and react with small sounds like \"Really?\" or \"No way.\"",
+          "These ==signals== tell the group you are part of the circle, even before you say much."
+        ],
+        [
+          "**Once you are in, share one small story of your own, then pass the conversation back.**",
+          "If you see someone else sitting quietly, do them a favor and __bring them in__: \"Ravi, didn't you live in Osaka for a while?\"",
+          "Being the person who includes others is a great way to become ==memorable== at any dinner."
+        ]
+      ],
+      "heading_zh": "2. 先听，再问",
+      "paragraphs_zh": [
+        [
+          "先听上一分钟，搞清楚大家在聊什么。",
+          "是在聊球赛、度假，还是新办公室？"
+        ],
+        [
+          "然后用一个简短的问题接上你刚听到的内容。",
+          "「等下，你们说的是那次日本旅行吗？最喜欢哪个城市？」",
+          "提问是最稳的切入方式，因为聚光灯打在他们身上，而不是你身上。"
+        ],
+        [
+          "肢体也要用上。",
+          "把椅子转向这群人，身体稍微前倾，用「真的假的？」「不会吧！」这种小反应接话。",
+          "这些信号会告诉大家你已经是圈子里的一员了，哪怕你还没说几句。"
+        ],
+        [
+          "一旦加入进去，就分享一个自己的小故事，然后把话头递回去。",
+          "要是看到有人一直闷着不说话，帮他一把，把他拉进来：「Ravi，你是不是在大阪住过一阵子？」",
+          "做那个把别人拉进来的人，是在任何饭局上让人记住你的好办法。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么等一个“完美时机”再开口行不通？",
+      "a": "热闹的小圈子里根本不会出现完美空档，越等越难插话，最后整晚沉默。"
+    },
+    {
+      "q": "加入对话最安全的方式是什么？为什么？",
+      "a": "先听一分钟弄清在聊什么，再用一个接着话题的小问题加入；提问把焦点放在对方身上，而不是自己。"
+    },
+    {
+      "q": "进入对话之后作者建议做什么？",
+      "a": "讲一个自己的小故事再把话抛回去；看到有人沉默就把他拉进来，这样的人在聚餐上最让人记住。"
+    }
+  ],
+  "dictation": [
+    "Waiting for the perfect moment is the most reliable way to stay silent all night.",
+    "A question is the safest entry, because it puts the spotlight on them, not on you.",
+    "Once you are in, share one small story of your own, then pass the conversation back.",
+    "Use your body as well."
+  ],
+  "shadow": {
+    "text": "Then join with a short question that builds on what you just heard. \"Wait, are you talking about the Japan trip? Which city did you like most?\" A question is the safest entry, because it puts the spotlight on them, not on you.",
+    "marked": "Then <b>join</b> with a short <b>question</b> / that builds on what you just <b>heard</b>. //<br>\"<b>Wait</b>, are you talking about the <b>Japan</b> trip? / Which <b>city</b> did you like <b>most</b>?\" //<br>A question is the <b>safest</b> entry, / because it puts the <b>spotlight</b> on <b>them</b>, / not on <b>you</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "团队聚餐，旁边三个同事在聊最近去巴厘岛的旅行，你一直没插上话。用“先听再提问”的方式加入，30 秒。",
+      "ref": "Sorry, I couldn't help overhearing, you were in Bali last month? Which part did you stay in? I've only been once, years ago, and we spent most of the time in Ubud because it rained every day on the coast. Did you get lucky with the weather, or was it the same story?",
+      "ref_zh": "不好意思，没忍住听到了，你们上个月去巴厘岛了？住的哪一块？我只去过一次，好多年前了，因为海边天天下雨，我们大部分时间都待在乌布。你们运气好碰上好天气了吗，还是也一样？"
+    },
+    {
+      "q": "聚餐时你注意到新来的印度同事一直没说话，大家正在聊美食。用一句话把他拉进对话，并接着聊几句。",
+      "ref": "Speaking of spicy food, Arjun, you grew up in Chennai, right? I bet you think everything we've ordered tonight is pretty mild. What's the one dish from home you can't find here in Singapore? Okay, I'm writing that down. Maybe you can take us somewhere good next time, you choose the place.",
+      "ref_zh": "说到辣的，Arjun，你是在金奈长大的对吧？我猜你觉得我们今晚点的这些都挺不辣的。有哪道家乡菜是你在新加坡找不到的？好，我记下来了。下次要不你带我们去个好地方，你来挑。"
+    }
+  ],
+  "words": [
+    {
+      "w": "politely",
+      "ipa": "/pəˈlaɪtli/",
+      "zh": "礼貌地、客气地",
+      "ex": "He nodded politely, but I could tell he didn't agree."
+    },
+    {
+      "w": "lively",
+      "ipa": "/ˈlaɪvli/",
+      "zh": "热烈的、活跃的",
+      "ex": "We had a lively discussion about the new pricing model."
+    },
+    {
+      "w": "subject",
+      "ipa": "/ˈsʌbdʒɪkt/",
+      "zh": "话题",
+      "ex": "Let's not change the subject; we still need an owner for this bug."
+    },
+    {
+      "w": "spotlight",
+      "ipa": "/ˈspɑːtˌlaɪt/",
+      "zh": "焦点、聚光灯",
+      "ex": "I'd rather put the spotlight on the team than on myself."
+    },
+    {
+      "w": "signal (n.)",
+      "ipa": "/ˈsɪɡnəl/",
+      "zh": "信号",
+      "ex": "Turning your camera on is a small signal that you're engaged.",
+      "tts_w": "signal"
+    },
+    {
+      "w": "memorable",
+      "ipa": "/ˈmemərəbəl/",
+      "zh": "难忘的、容易被记住的",
+      "ex": "Her demo was memorable because she told a user's story first."
+    },
+    {
+      "w": "gist",
+      "ipa": "/dʒɪst/",
+      "zh": "要点、大意",
+      "ex": "I missed the start of the call, can you give me the gist?"
+    },
+    {
+      "w": "mingle (v.)",
+      "ipa": "/ˈmɪŋɡəl/",
+      "zh": "（在聚会上）与人交往、走动聊天",
+      "ex": "Grab a drink and mingle a bit, you don't have to stay with our team.",
+      "tts_w": "mingle"
+    }
+  ]
+}

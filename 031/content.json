@@ -1,0 +1,182 @@
+{
+  "id": "031",
+  "title": "Getting Five Minutes with Your Skip-Level",
+  "meta": "B2 · 约 270 词 · 场景：隔级沟通",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. What Your Skip-Level Cannot See",
+      "paragraphs": [
+        [
+          "Your manager's manager runs a group of eighty people.",
+          "Most of what reaches them has been ==filtered== through two layers of managers and cleaned up for slides.",
+          "That is why five minutes with someone close to the work can be worth more to them than another dashboard."
+        ],
+        [
+          "**Your skip-level does not need a status update; they need a view they cannot get from a report.**",
+          "Tell them what you see on the ground: where teams __get stuck__, which ==handoff== keeps failing, what users complain about most.",
+          "Small, specific details are exactly what gets lost on the way up."
+        ],
+        [
+          "Avoid using the time to complain about your manager.",
+          "It puts your skip-level in an ==awkward== position and rarely changes anything.",
+          "If there is a real problem, __raise it with__ your manager first."
+        ]
+      ],
+      "heading_zh": "1. 隔级老板看不到的东西",
+      "paragraphs_zh": [
+        [
+          "你老板的老板管着一个八十人的大组。",
+          "传到他那儿的大部分信息，都已经被两层经理过滤过，还为了做 slides 修饰过。",
+          "所以，跟一个离一线很近的人聊五分钟，对他来说可能比再看一个大盘更有价值。"
+        ],
+        [
+          "隔级老板不需要你汇报进度；他需要的是从报告里看不到的视角。",
+          "告诉他你在一线看到了什么：团队在哪儿卡住、哪个交接环节老出问题、用户抱怨最多的是什么。",
+          "这些细小、具体的细节，恰恰是往上传的过程中最容易丢的。"
+        ],
+        [
+          "别把这个时间拿来抱怨你的直属经理。",
+          "这会让隔级老板很尴尬，而且基本改变不了什么。",
+          "如果真有问题，先跟你的经理提。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. A Five-Minute Script",
+      "paragraphs": [
+        [
+          "Prepare three things before the meeting.",
+          "First, one ==observation== backed by a concrete example.",
+          "\"Two of our launches slipped last month because the data team only takes requests through a form nobody checks.\""
+        ],
+        [
+          "Second, one question that shows you think beyond your own team.",
+          "\"What is the biggest risk you see for our group next year?\"",
+          "Their answer tells you what they __lose sleep over__, which helps you ==prioritize== your own work."
+        ],
+        [
+          "Third, one small ask, if you have one.",
+          "It might be an introduction to another team, or ==sponsorship== for a fix that crosses team lines.",
+          "**Keep the ask small enough that they can say yes on the spot.**"
+        ],
+        [
+          "Afterwards, tell your manager what you discussed.",
+          "When your manager is never surprised, both relationships stay healthy, and the next meeting is easier to get."
+        ]
+      ],
+      "heading_zh": "2. 五分钟谈话的准备",
+      "paragraphs_zh": [
+        [
+          "开会前准备好三样东西。",
+          "第一，一个有具体例子支撑的观察。",
+          "「上个月我们有两个项目延期了，因为数据团队只通过一个没人看的表单接需求。」"
+        ],
+        [
+          "第二，一个能体现你在思考本团队以外事情的问题。",
+          "「您觉得我们组明年最大的风险是什么？」",
+          "他的回答会告诉你他最睡不着觉的是什么，这能帮你给自己的工作排优先级。"
+        ],
+        [
+          "第三，如果有的话，提一个小请求。",
+          "可能是请他帮你引荐另一个团队，或者为一个跨团队的修复站台。",
+          "请求要小到他当场就能答应。"
+        ],
+        [
+          "事后，把聊了什么告诉你的经理。",
+          "经理永远不会被蒙在鼓里，两边的关系才能都保持健康，下次也更容易约到时间。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么和隔级老板的五分钟对他们有价值？",
+      "a": "他们收到的信息经过两层经理过滤和美化，一线的具体细节正是他们缺少的视角。"
+    },
+    {
+      "q": "文章提醒不要在这个时间里做什么？",
+      "a": "不要抱怨自己的直属经理，这会让隔级老板很尴尬，也很少改变什么；真有问题先找直属经理。"
+    },
+    {
+      "q": "五分钟里应该准备哪三样东西？之后还要做什么？",
+      "a": "一个有具体例子的观察、一个超出本团队视角的问题、一个对方能当场答应的小请求；之后把谈话内容告诉直属经理。"
+    }
+  ],
+  "dictation": [
+    "Your skip-level does not need a status update; they need a view they cannot get from a report.",
+    "Keep the ask small enough that they can say yes on the spot.",
+    "Small, specific details are exactly what gets lost on the way up.",
+    "If there is a real problem, raise it with your manager first."
+  ],
+  "shadow": {
+    "text": "Third, one small ask, if you have one. It might be an introduction to another team, or sponsorship for a fix that crosses team lines. Keep the ask small enough that they can say yes on the spot.",
+    "marked": "Third, / one <b>small</b> ask, / if you have one. //<br>It might be an <b>introduction</b> to another team, / or <b>sponsorship</b> for a fix / that <b>crosses</b> team lines. //<br>Keep the ask <b>small</b> enough / that they can say <b>yes</b> / on the <b>spot</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "电梯里碰到隔级老板，他问「最近怎么样？」用 30 秒给他一个一线观察，而不是汇报进度。",
+      "ref": "Pretty good, thanks. One thing I've noticed might be useful for you. Our last two launches were delayed by about a week each, and both times the reason was the same: we were waiting on access approvals from the security team. It's not anyone's fault, the queue is just manual. If it's helpful, I can write up a short note on what's slowing it down.",
+      "ref_zh": "挺好的，谢谢。有件事我注意到了，可能对您有用。我们最近两次上线都各推迟了大约一周，两次原因都一样：在等安全团队的权限审批。这不是谁的错，只是整个流程是人工排队的。如果有帮助的话，我可以写个简短的说明，讲讲是什么在拖慢它。"
+    },
+    {
+      "q": "隔级一对一快结束了，你想请他帮忙引荐另一个部门的负责人来推动一个跨团队修复。用 30 秒提出这个小请求。",
+      "ref": "Before we wrap up, I have one small ask. The duplicate notification bug sits between our team and the messaging team, and right now nobody owns it. I've talked to their engineers, and they're willing, but they need their lead to prioritize it. Would you be open to introducing me to her? A short call should be enough to agree on an owner.",
+      "ref_zh": "结束之前，我有个小请求。重复通知这个 bug 卡在我们团队和消息团队之间，现在没人负责。我跟他们的工程师聊过，他们愿意做，但需要他们的 lead 把它排进优先级。您方便帮我引荐一下她吗？简单开个短会，应该就能把负责人定下来。"
+    }
+  ],
+  "words": [
+    {
+      "w": "skip-level",
+      "ipa": "/ˈskɪp ˌlevəl/",
+      "zh": "隔级上级",
+      "ex": "I have a skip-level one-on-one with the director on Friday.",
+      "tts_w": "skip level"
+    },
+    {
+      "w": "filter (v.)",
+      "ipa": "/ˈfɪltər/",
+      "zh": "过滤",
+      "ex": "Bad news often gets filtered out before it reaches leadership.",
+      "tts_w": "filter"
+    },
+    {
+      "w": "handoff",
+      "ipa": "/ˈhændɔːf/",
+      "zh": "交接",
+      "ex": "Most bugs appear at the handoff between design and engineering."
+    },
+    {
+      "w": "awkward",
+      "ipa": "/ˈɔːkwərd/",
+      "zh": "尴尬的、为难的",
+      "ex": "It was awkward to correct the VP's numbers in front of everyone.",
+      "tts": "It was awkward to correct the vice president's numbers in front of everyone."
+    },
+    {
+      "w": "observation",
+      "ipa": "/ˌɑːbzərˈveɪʃən/",
+      "zh": "观察、看到的情况",
+      "ex": "One observation from on-call: most pages come from the same service."
+    },
+    {
+      "w": "prioritize",
+      "ipa": "/praɪˈɔːrətaɪz/",
+      "zh": "确定优先级",
+      "ex": "We need to prioritize the login bug over new features."
+    },
+    {
+      "w": "sponsorship",
+      "ipa": "/ˈspɑːnsərʃɪp/",
+      "zh": "（高层）支持、背书",
+      "ex": "Without executive sponsorship, the cross-team cleanup will stall."
+    },
+    {
+      "w": "on the spot",
+      "ipa": "/ɑːn ðə ˈspɑːt/",
+      "zh": "当场",
+      "ex": "She approved the extra budget on the spot."
+    }
+  ]
+}

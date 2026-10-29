@@ -1,0 +1,243 @@
+{
+  "id": "103",
+  "type": "dialogue",
+  "title": "Checking In at the Airport",
+  "meta": "B2 · 约 310 词 · 场景：机场值机、行李超重与转机",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Check-in Agent",
+      "name_zh": "值机柜台",
+      "voice": "en-GB-SoniaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. At the Check-in Counter",
+      "heading_zh": "1. 在值机柜台",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Good morning. Where are you flying to today?",
+          "zh": "早上好。今天飞哪里？"
+        },
+        {
+          "sp": "A",
+          "en": "Morning. We're flying to Shanghai, then __connecting to__ Chengdu. It's me, my wife and our son.",
+          "zh": "早上好。我们飞上海，再转机去成都。我、我太太和我儿子三个人。"
+        },
+        {
+          "sp": "B",
+          "en": "Could I see all three passports, please? And are you checking in any bags?",
+          "zh": "麻烦给我看一下三本护照。有行李要托运吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Yes, two suitcases and a ==stroller==. Can we keep the stroller until the gate?",
+          "zh": "有，两个箱子和一辆婴儿推车。推车能推到登机口再托运吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Of course, I'll give you a gate tag for it. Could you put the first suitcase on the ==scale==?",
+          "zh": "当然可以，我给您一张登机口托运的标签。请把第一个箱子放到秤上。"
+        },
+        {
+          "sp": "B",
+          "en": "I'm afraid this one is thirty-one kilos. The ==allowance== is twenty-three per bag.",
+          "zh": "这个恐怕有三十一公斤。每件额度是二十三公斤。"
+        },
+        {
+          "sp": "A",
+          "en": "**Oh, I see. What would it cost for the extra weight?**",
+          "zh": "哦，这样。超重部分要多少钱？"
+        },
+        {
+          "sp": "B",
+          "en": "About one hundred and fifty dollars. Or you could move a few things into the other bag.",
+          "zh": "大概一百五十块。或者您可以挪一些东西到另一个箱子里。"
+        },
+        {
+          "sp": "A",
+          "en": "Let me __move some things over__. The second one is quite light.",
+          "zh": "我挪一点过去吧。第二个箱子挺轻的。"
+        },
+        {
+          "sp": "B",
+          "en": "Perfect, they're both under the limit now. Would you like to choose your seats?",
+          "zh": "好了，现在两个都没超。您要选座位吗？"
+        },
+        {
+          "sp": "A",
+          "en": "**Could we sit together, ideally near the front of the plane?**",
+          "zh": "我们能坐在一起吗？最好靠前一点。"
+        },
+        {
+          "sp": "B",
+          "en": "I have three together in row twelve, with a window. Shall I take those?",
+          "zh": "第十二排有三个连座，带窗。给您选这个？"
+        },
+        {
+          "sp": "A",
+          "en": "Yes, please. That's great.",
+          "zh": "好的，太好了。"
+        }
+      ]
+    },
+    {
+      "heading": "2. A Tight Connection",
+      "heading_zh": "2. 转机时间太紧",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "**One more question. Will our bags go all the way through to Chengdu?**",
+          "zh": "还有个问题。我们的行李能直挂到成都吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Since Shanghai is your first stop in China, you'll need to collect your bags and clear ==customs== there.",
+          "zh": "因为上海是你们入境中国的第一站，需要在那边提行李、过海关。"
+        },
+        {
+          "sp": "A",
+          "en": "But our ==layover== is only seventy minutes. That sounds really tight. What happens if we __miss the connection__?",
+          "zh": "可我们中转只有七十分钟，听起来很紧。要是赶不上转机怎么办？"
+        },
+        {
+          "sp": "B",
+          "en": "Both flights are on one ticket, so the airline will ==rebook== you on the next flight at no cost.",
+          "zh": "两段航班是同一张票，所以航空公司会免费给你们改签到下一班。"
+        },
+        {
+          "sp": "A",
+          "en": "That's a relief. Is there anything we can do to __save time__?",
+          "zh": "那就放心了。有什么办法能节省点时间吗？"
+        },
+        {
+          "sp": "B",
+          "en": "I'll tag your bags as priority, so they come out first. And being near the front will help.",
+          "zh": "我给你们的行李贴优先标签，会先出来。坐得靠前也有帮助。"
+        },
+        {
+          "sp": "A",
+          "en": "Great. And where's the ==transfer== desk in Shanghai?",
+          "zh": "好的。上海的中转柜台在哪儿？"
+        },
+        {
+          "sp": "B",
+          "en": "After customs, follow the signs for domestic transfers. It's right after the baggage hall.",
+          "zh": "过了海关，跟着国内中转的指示牌走，就在行李大厅后面。"
+        },
+        {
+          "sp": "A",
+          "en": "**Got it. Thanks, you've been really helpful.**",
+          "zh": "明白了。谢谢，你帮了大忙。"
+        },
+        {
+          "sp": "B",
+          "en": "Here are your ==boarding passes==. Boarding starts at nine forty. Have a lovely flight.",
+          "zh": "这是你们的登机牌。九点四十开始登机。旅途愉快。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "第一个箱子出了什么问题？「你」怎么处理的？",
+      "a": "超重了，三十一公斤，额度是二十三公斤；「你」没付超重费，把东西挪到了较轻的第二个箱子里。"
+    },
+    {
+      "q": "行李能直挂到成都吗？为什么？",
+      "a": "不能。上海是入境第一站，要在上海提行李、过海关。"
+    },
+    {
+      "q": "如果赶不上转机怎么办？柜台帮了什么忙？",
+      "a": "两段是同一张票，航空公司会免费改签下一班；柜台给行李贴了优先标签，还告诉了中转柜台的位置。"
+    }
+  ],
+  "dictation": [
+    "Oh, I see. What would it cost for the extra weight?",
+    "Could we sit together, ideally near the front of the plane?",
+    "One more question. Will our bags go all the way through to Chengdu?",
+    "But our layover is only seventy minutes. That sounds really tight. What happens if we miss the connection?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "But our layover is only seventy minutes. That sounds really tight. What happens if we miss the connection?",
+    "marked": "But our <b>layover</b> / is only <b>seventy</b> minutes. //<br>That sounds <b>really</b> tight. //<br>What happens / if we <b>miss</b> the connection? //"
+  },
+  "prompts": [
+    {
+      "q": "你带孩子出行，行李里有一个儿童安全座椅，想问值机柜台能不能免费托运，以及能不能带上飞机用。",
+      "ref": "Hi, quick question before we check in. We're travelling with a car seat for our son. Can we check it in for free, or does it count as one of our bags? And if there's an empty seat next to us, would we be allowed to bring it on board and use it? He sleeps much better in it.",
+      "ref_zh": "你好，值机前想问一下。我们带了一个儿童安全座椅。能免费托运吗，还是要算作一件行李？如果我们旁边有空座，能带上飞机用吗？他坐在里面睡得好很多。"
+    },
+    {
+      "q": "航班延误三个小时，你会赶不上下一程。到柜台问能不能改签，以及有没有餐券或休息室。",
+      "ref": "Hi, our flight to Shanghai has been delayed by three hours, so we'll definitely miss our connection to Chengdu. Could you rebook us on a later flight today? There are three of us, including a small child. Also, is there a meal voucher or a lounge we could use while we wait? It's going to be a long afternoon.",
+      "ref_zh": "你好，我们飞上海的航班延误了三个小时，肯定赶不上转去成都的那班了。能帮我们改签今天晚一点的航班吗？我们三个人，有一个小孩。另外等的时候有餐券或者休息室可以用吗？这个下午会很漫长。"
+    }
+  ],
+  "words": [
+    {
+      "w": "stroller",
+      "ipa": "/ˈstroʊlər/",
+      "zh": "婴儿推车",
+      "ex": "Can we take the stroller up to the gate?"
+    },
+    {
+      "w": "scale",
+      "ipa": "/skeɪl/",
+      "zh": "秤",
+      "ex": "Please put your bag on the scale."
+    },
+    {
+      "w": "allowance",
+      "ipa": "/əˈlaʊəns/",
+      "zh": "（行李）额度",
+      "ex": "My baggage allowance is thirty kilos."
+    },
+    {
+      "w": "customs",
+      "ipa": "/ˈkʌstəmz/",
+      "zh": "海关",
+      "ex": "It took us an hour to get through customs."
+    },
+    {
+      "w": "layover",
+      "ipa": "/ˈleɪoʊvər/",
+      "zh": "中转停留",
+      "ex": "We have a two-hour layover in Hong Kong.",
+      "tts": "We have a two hour layover in Hong Kong."
+    },
+    {
+      "w": "miss the connection",
+      "ipa": "/mɪs ðə kəˈnekʃən/",
+      "zh": "赶不上转机",
+      "ex": "If the flight is late, we'll miss the connection."
+    },
+    {
+      "w": "rebook",
+      "ipa": "/ˌriːˈbʊk/",
+      "zh": "改签",
+      "ex": "The airline rebooked us on the next flight."
+    },
+    {
+      "w": "transfer",
+      "ipa": "/ˈtrænsfɜːr/",
+      "zh": "中转",
+      "ex": "Follow the signs to the transfer desk."
+    },
+    {
+      "w": "boarding pass",
+      "ipa": "/ˈbɔːrdɪŋ pæs/",
+      "zh": "登机牌",
+      "ex": "Please have your boarding pass ready."
+    }
+  ]
+}

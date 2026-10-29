@@ -1,0 +1,192 @@
+{
+  "id": "006",
+  "title": "Asking the Question Everyone Is Afraid to Ask",
+  "meta": "B2 · 约 270 词 · 场景：会议提问",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Question in Everyone's Head",
+      "paragraphs": [
+        [
+          "In almost every big meeting, there is one question that half the room is thinking and nobody is asking.",
+          "\"Who is actually going to maintain this after launch?\"",
+          "\"Do we have the data to back up that growth number?\"",
+          "\"Didn't we try this two years ago?\""
+        ],
+        [
+          "People stay quiet for ==understandable== reasons.",
+          "They worry the question sounds ==naive==, or that it will __make the presenter look bad__ in front of leadership.",
+          "So everyone nods, and the ==assumption== survives another month."
+        ],
+        [
+          "**The scary question is usually the one with the most value.**",
+          "If you are confused, you are rarely the only one.",
+          "Asking it early saves the team from __building on a weak foundation__."
+        ]
+      ],
+      "heading_zh": "1. 每个人心里的那个问题",
+      "paragraphs_zh": [
+        [
+          "几乎每个大会上，都有一个问题是半屋子人心里在想、却没人问出口的。",
+          "「上线之后到底谁来维护这个东西？」",
+          "「这个增长数字有数据撑着吗？」",
+          "「这个我们两年前不是试过吗？」"
+        ],
+        [
+          "大家不吭声，原因也可以理解。",
+          "他们担心问题显得太幼稚，或者让讲的人在老板面前下不来台。",
+          "于是大家都点头，这个假设又多活了一个月。"
+        ],
+        [
+          "最让人发怵的问题，通常也最有价值。",
+          "如果你有疑惑，很少只有你一个人疑惑。",
+          "早点问出来，能避免团队在一个不牢靠的地基上往上盖楼。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. How to Ask It Without Starting a Fight",
+      "paragraphs": [
+        [
+          "First, own the confusion.",
+          "Phrases like \"Help me understand\" or \"I might be missing something\" __lower the temperature__.",
+          "They make it clear you are curious, not ==accusing== anyone."
+        ],
+        [
+          "Second, connect the question to a consequence.",
+          "Instead of \"Is this number real?\", try \"If the growth is closer to five percent, does the plan still work?\"",
+          "Now you are testing the plan, not the person."
+        ],
+        [
+          "Third, ask about ==ownership== and history directly, because those are the topics people avoid most.",
+          "\"Who will be on call for this?\" sounds simple, but it often reveals that nobody has thought about it.",
+          "**Simple questions expose missing plans faster than clever ones.**"
+        ],
+        [
+          "Finally, if the room goes quiet, do not rush to fill it.",
+          "Give the presenter a moment to think.",
+          "A ==genuine== answer, even \"We don't know yet,\" is worth far more than a confident ==dodge==.",
+          "Either way, the team now knows where the real risk sits, and that is exactly why you asked."
+        ]
+      ],
+      "heading_zh": "2. 怎么问才不会吵起来",
+      "paragraphs_zh": [
+        [
+          "第一，把困惑揽到自己身上。",
+          "像「帮我理解一下」或者「可能是我漏了什么」这样的说法，能让气氛降降温。",
+          "这表明你是好奇，而不是在指责谁。"
+        ],
+        [
+          "第二，把问题和后果挂上钩。",
+          "别问「这个数字靠谱吗？」，试试问「如果增长只有百分之五左右，这个方案还成立吗？」",
+          "这样你检验的是方案，而不是人。"
+        ],
+        [
+          "第三，直接问归属和历史，因为这是大家最爱回避的话题。",
+          "「这个谁来 on-call？」听起来很简单，但经常会暴露出根本没人想过这件事。",
+          "简单的问题比聪明的问题更快暴露计划里的缺口。"
+        ],
+        [
+          "最后，如果全场安静下来，别急着去填。",
+          "给讲的人一点时间想一想。",
+          "一个真诚的回答，哪怕是「我们还不知道」，也比一个自信的打太极值钱得多。",
+          "不管答案是什么，团队现在都知道真正的风险在哪儿了，而这正是你问这个问题的原因。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "大家为什么不敢问那个关键问题？",
+      "a": "怕问题显得幼稚，或怕在领导面前让讲者难堪，于是都点头，错误假设就继续存在。"
+    },
+    {
+      "q": "作者给出了哪些提问技巧，让尖锐问题不变成冲突？",
+      "a": "先承认自己没搞懂；把问题和后果挂钩，检验方案而不是人；直接问归属和历史；问完别急着填补沉默。"
+    },
+    {
+      "q": "为什么作者说“谁来值班”这种简单问题很有价值？",
+      "a": "简单问题往往能暴露出根本没人考虑过的缺失计划。"
+    }
+  ],
+  "dictation": [
+    "The scary question is usually the one with the most value.",
+    "Simple questions expose missing plans faster than clever ones.",
+    "If you are confused, you are rarely the only one.",
+    "Now you are testing the plan, not the person."
+  ],
+  "shadow": {
+    "text": "Second, connect the question to a consequence. Instead of \"Is this number real?\", try \"If the growth is closer to five percent, does the plan still work?\" Now you are testing the plan, not the person.",
+    "marked": "<b>Second</b>, / connect the question / to a <b>consequence</b>. //<br>Instead of \"Is this number <b>real</b>?\", / try \"If the growth is closer to <b>five</b> percent, / does the plan <b>still</b> work?\" //<br>Now you are testing the <b>plan</b>, / <b>not</b> the person. //"
+  },
+  "prompts": [
+    {
+      "q": "另一个团队在大会上展示新平台方案，很亮眼，但没人提谁来长期维护。用 30 秒问出这个问题，语气好奇而不是指责。",
+      "ref": "This looks great, and I can see a lot of teams using it. Help me understand one thing, though. After the launch, who's going to own the platform day to day? I'm thinking about on-call, upgrades, and support questions from other teams. If that's already planned, great. If not, it might be worth deciding before we sign up more users.",
+      "ref_zh": "这个看起来很棒，我能想到很多团队都会用。不过有一点想请你帮我理解一下。上线之后，平台的日常运维谁来负责？我想的是 on-call、升级，还有其他团队来问的支持问题。如果已经规划好了，那很好。如果还没有，可能值得在接入更多用户之前先定下来。"
+    },
+    {
+      "q": "PM 的方案基于“用户增长百分之三十”的假设，你觉得太乐观。用 30 秒把质疑和后果挂钩，而不是直接说数字不对。",
+      "ref": "I might be missing something, so let me ask it this way. The plan assumes thirty percent growth next quarter. If we only get half of that, what happens? Do we still need the extra servers, and does the hiring plan still make sense? I'm not saying the number is wrong. I just want to know the plan survives if we land a bit lower.",
+      "ref_zh": "可能是我漏了什么，那我换个方式问。这个方案假设下季度增长百分之三十。如果只有一半，会怎么样？额外的服务器还需要吗？招聘计划还说得通吗？我不是说这个数字不对。我只是想确认，就算结果低一点，这个方案也扛得住。"
+    }
+  ],
+  "words": [
+    {
+      "w": "understandable",
+      "ipa": "/ˌʌndərˈstændəbəl/",
+      "zh": "可以理解的",
+      "ex": "The delay is understandable given the vendor issue."
+    },
+    {
+      "w": "naive",
+      "ipa": "/naɪˈiːv/",
+      "zh": "天真的、幼稚的",
+      "ex": "This might be a naive question, but why do we need two queues?"
+    },
+    {
+      "w": "assumption",
+      "ipa": "/əˈsʌmpʃən/",
+      "zh": "假设、前提",
+      "ex": "The whole capacity plan rests on one assumption about peak traffic."
+    },
+    {
+      "w": "accuse",
+      "ipa": "/əˈkjuːz/",
+      "zh": "指责、指控",
+      "ex": "Nobody is accusing your team; we just want to understand the timeline."
+    },
+    {
+      "w": "ownership",
+      "ipa": "/ˈoʊnərʃɪp/",
+      "zh": "归属、负责",
+      "ex": "Ownership of the shared library is unclear right now."
+    },
+    {
+      "w": "genuine",
+      "ipa": "/ˈdʒenjuɪn/",
+      "zh": "真实的、真诚的",
+      "ex": "I have a genuine question about how the retry logic works."
+    },
+    {
+      "w": "dodge (n.)",
+      "ipa": "/dɑːdʒ/",
+      "zh": "回避、搪塞",
+      "ex": "Saying \"it depends\" felt like a dodge, so I asked again.",
+      "tts_w": "dodge"
+    },
+    {
+      "w": "consequence",
+      "ipa": "/ˈkɑːnsəˌkwens/",
+      "zh": "后果",
+      "ex": "One consequence of skipping the review was a broken checkout page."
+    },
+    {
+      "w": "expose",
+      "ipa": "/ɪkˈspoʊz/",
+      "zh": "暴露、揭示",
+      "ex": "The load test exposed a memory leak in the gateway."
+    }
+  ]
+}

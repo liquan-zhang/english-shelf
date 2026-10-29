@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Ordering Coffee Your Way · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "112", "type": "dialogue", "title": "Ordering Coffee Your Way", "meta": "B2 · 约 250 词 · 场景：咖啡店定制点单与做错饮品", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Barista", "name_zh": "咖啡师", "voice": "en-SG-WayneNeural"}}, "gist": [{"q": "「你」点的咖啡有哪些定制要求？", "a": "大杯燕麦奶拿铁，特别烫，半泵香草糖浆，多加一份浓缩。"}, {"q": "拿到咖啡后出了什么问题？「你」为什么特别在意？", "a": "拿错成别人的普通牛奶拿铁；因为「你」不能喝乳制品。"}, {"q": "咖啡师最后怎么处理的？", "a": "按要求重做一杯，并且那个可颂免费送了。"}], "dictation": [{"id": "s0_1_0", "text": "Can I get a large latte with oat milk, please?"}, {"id": "s0_5_0", "text": "Just half a pump of vanilla. I don't like it too sweet."}, {"id": "s1_0_0", "text": "Sorry, excuse me. I think this might be the wrong drink. It tastes like regular milk."}, {"id": "s1_4_0", "text": "That's the one. Could you also put a lid on it? I'll take it to go after all."}], "shadow": {"speaker": "A", "text": "No worries. I just can't have dairy, so I wanted to double-check.", "marked": "No <b>worries</b>. //<br>I just <b>can't</b> have <b>dairy</b>, / so I wanted to <b>double</b>-check. //"}, "prompts": [{"q": "你在咖啡店想点一杯冰美式，但要少冰、不加糖，另外问问有没有低咖啡因的选项。用 30 秒点单。", "ref": "Hi, can I get an iced Americano, please? Less ice, and no sugar or syrup at all. Actually, do you have a decaf option? I've already had two coffees today. If you do, I'll go with decaf. And could I get it in a medium size? Thanks.", "ref_zh": "你好，请给我一杯冰美式。少冰，完全不要糖或糖浆。对了，你们有低咖啡因的吗？我今天已经喝了两杯咖啡了。有的话我就换低因的。中杯就行，谢谢。", "id": "ref0"}, {"q": "你在外卖平台点的咖啡送到后发现是热的，而你点的是冰的。打电话给店里，说明情况并提出你想怎么处理。", "ref": "Hi, I just got a delivery from your shop under the name Lee. I ordered an iced latte, but this one is hot. I think the order got mixed up. Would it be possible to send the right one, or could you refund the drink instead? Either is fine with me, I just want to sort it out.", "ref_zh": "你好，我刚收到你们店的外卖，名字是 Lee。我点的是冰拿铁，送来的是热的，应该是弄混了。能重新送一杯对的吗？或者这杯给我退款也行。两种都可以，我就是想把事情处理好。", "id": "ref1"}], "words": [{"w": "extra hot", "ipa": "/ˈekstrə hɑːt/", "zh": "特别烫（咖啡定制）", "ex": "Can I get my flat white extra hot, please?", "id": "w0"}, {"w": "syrup", "ipa": "/ˈsɪrəp/", "zh": "糖浆", "ex": "No syrup for me, thanks. I'm cutting down on sugar.", "id": "w1"}, {"w": "shot", "ipa": "/ʃɑːt/", "zh": "一份浓缩咖啡", "ex": "I'll have a cappuccino with an extra shot.", "id": "w2"}, {"w": "half a pump", "ipa": "/hæf ə pʌmp/", "zh": "半泵（糖浆）", "ex": "Just half a pump of caramel, please.", "id": "w3"}, {"w": "label", "ipa": "/ˈleɪbəl/", "zh": "标签", "ex": "Check the label on the cup before you take it.", "id": "w4"}, {"w": "remake (v.)", "ipa": "/ˌriːˈmeɪk/", "zh": "重做", "ex": "Sorry, we'll remake your drink right away.", "tts_w": "remake", "id": "w5"}, {"w": "on the house", "ipa": "/ɑːn ðə haʊs/", "zh": "店家请客，免费", "ex": "The dessert is on the house tonight.", "id": "w6"}, {"w": "dairy", "ipa": "/ˈderi/", "zh": "乳制品", "ex": "My son can't have dairy, so we always ask for soy milk.", "id": "w7"}, {"w": "double-check", "ipa": "/ˌdʌbəl ˈtʃek/", "zh": "再确认一下", "ex": "Let me double-check the address before I pay.", "id": "w8"}], "sections": [{"heading": "1. At the Counter", "heading_zh": "1. 在柜台点单", "rows": [[{"id": "s0_0_0", "md": "Morning! What can I get started for you?", "text": "Morning! What can I get started for you?", "zh": "早！想喝点什么？", "sp": "B"}], [{"id": "s0_1_0", "md": "**Can I get a large latte with oat milk, please?**", "text": "Can I get a large latte with oat milk, please?", "zh": "请给我一杯大杯燕麦奶拿铁。", "sp": "A"}], [{"id": "s0_2_0", "md": "Sure. Oat milk is an extra eighty cents. Is that okay?", "text": "Sure. Oat milk is an extra eighty cents. Is that okay?", "zh": "好的。燕麦奶要加八毛钱，可以吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "That's fine. And could you __make it__ ==extra hot==? I've got a long walk to the office.", "text": "That's fine. And could you make it extra hot? I've got a long walk to the office.", "zh": "没问题。能做得特别烫一点吗？我走到公司要挺久。", "sp": "A"}], [{"id": "s0_4_0", "md": "No problem. Any ==syrup==? We have vanilla, caramel and hazelnut.", "text": "No problem. Any syrup? We have vanilla, caramel and hazelnut.", "zh": "没问题。要加糖浆吗？有香草、焦糖和榛子的。", "sp": "B"}], [{"id": "s0_5_0", "md": "Just __half a pump__ of vanilla. I don't like it too sweet.", "text": "Just half a pump of vanilla. I don't like it too sweet.", "zh": "香草的，只要半泵。我不喜欢太甜。", "sp": "A"}], [{"id": "s0_6_0", "md": "Half a pump, got it. Would you like an extra ==shot==? It's quite a mild blend.", "text": "Half a pump, got it. Would you like an extra shot? It's quite a mild blend.", "zh": "半泵，记下了。要不要多加一份浓缩？我们这款豆子味道比较淡。", "sp": "B"}], [{"id": "s0_7_0", "md": "Oh, yes, __go ahead__. I need it today. And one plain croissant, __for here__.", "text": "Oh, yes, go ahead. I need it today. And one plain croissant, for here.", "zh": "哦，好，加吧。今天确实需要。再要一个原味可颂，在这儿吃。", "sp": "A"}], [{"id": "s0_8_0", "md": "Alright, that's eight forty altogether. Can I get a name for the cup?", "text": "Alright, that's eight forty altogether. Can I get a name for the cup?", "zh": "好的，一共八块四。杯子上写什么名字？", "sp": "B"}], [{"id": "s0_9_0", "md": "It's Lee. L, E, E. Can I pay by card?", "text": "It's Lee. L, E, E. Can I pay by card?", "zh": "Lee。L、E、E。能刷卡吗？", "sp": "A"}], [{"id": "s0_10_0", "md": "Of course, just tap here whenever you're ready.", "text": "Of course, just tap here whenever you're ready.", "zh": "当然，准备好了在这儿拍一下就行。", "sp": "B"}]]}, {"heading": "2. The Wrong Drink", "heading_zh": "2. 饮品做错了", "rows": [[{"id": "s1_0_0", "md": "Sorry, __excuse me__. I think this might be the wrong drink. It tastes like regular milk.", "text": "Sorry, excuse me. I think this might be the wrong drink. It tastes like regular milk.", "zh": "不好意思，打扰一下。我觉得这杯可能做错了，喝着像普通牛奶。", "sp": "A"}], [{"id": "s1_1_0", "md": "Oh, let me check the ==label==. You're right, this one's for another order. My apologies.", "text": "Oh, let me check the label. You're right, this one's for another order. My apologies.", "zh": "哦，我看看标签。您说得对，这杯是别人的单。抱歉。", "sp": "B"}], [{"id": "s1_2_0", "md": "No worries. I just can't have dairy, so I wanted to __double-check__.", "text": "No worries. I just can't have dairy, so I wanted to double-check.", "zh": "没关系。我只是不能喝乳制品，所以想确认一下。", "sp": "A"}], [{"id": "s1_3_0", "md": "Totally understand. I'll ==remake== it now, oat milk, extra hot, half vanilla, extra shot.", "text": "Totally understand. I'll remake it now, oat milk, extra hot, half vanilla, extra shot.", "zh": "完全理解。我马上重做：燕麦奶、特别烫、半泵香草、多加一份浓缩。", "sp": "B"}], [{"id": "s1_4_0", "md": "**That's the one. Could you also put a lid on it? I'll take it to go after all.**", "text": "That's the one. Could you also put a lid on it? I'll take it to go after all.", "zh": "就是这个。能帮我加个盖子吗？我还是打包带走吧。", "sp": "A"}], [{"id": "s1_5_0", "md": "Sure thing. And since you had to wait, the croissant is ==on the house== today.", "text": "Sure thing. And since you had to wait, the croissant is on the house today.", "zh": "没问题。让您久等了，今天可颂算我们请的。", "sp": "B"}], [{"id": "s1_6_0", "md": "Oh, you don't have to do that. But thank you, that's really nice of you.", "text": "Oh, you don't have to do that. But thank you, that's really nice of you.", "zh": "哎，不用这样的。不过谢谢，你人真好。", "sp": "A"}], [{"id": "s1_7_0", "md": "Here you go. Careful, it's very hot. Have a good day at work!", "text": "Here you go. Careful, it's very hot. Have a good day at work!", "zh": "给您。小心，很烫。祝您上班顺利！", "sp": "B"}], [{"id": "s1_8_0", "md": "**Thanks, you too. See you tomorrow.**", "text": "Thanks, you too. See you tomorrow.", "zh": "谢谢，你也是。明天见。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. At the Counter", "zh": "1. 在柜台点单", "start": 0.0, "end": 1.704, "words": [[0.105, 0.316], [0.658, 0.737], [0.75, 0.829], [0.842, 1.303]]}, {"kind": "s", "id": "s0_0_0", "md": "Morning! What can I get started for you?", "zh": "早！想喝点什么？", "sp": "B", "gap": false, "start": 1.704, "end": 6.144, "words": [[1.807, 2.491], [3.388, 3.638], [3.651, 3.796], [3.809, 3.888], [3.901, 4.099], [4.112, 4.559], [4.572, 4.743], [4.757, 5.217]]}, {"kind": "s", "id": "s0_1_0", "md": "**Can I get a large latte with oat milk, please?**", "zh": "请给我一杯大杯燕麦奶拿铁。", "sp": "A", "gap": false, "start": 6.144, "end": 9.36, "words": [[6.249, 6.341], [6.355, 6.433], [6.447, 6.578], [6.591, 6.631], [6.644, 7.065], [7.078, 7.499], [7.512, 7.697], [7.71, 7.868], [7.881, 8.249], [8.433, 8.96]]}, {"kind": "s", "id": "s0_2_0", "md": "Sure. Oat milk is an extra eighty cents. Is that okay?", "zh": "好的。燕麦奶要加八毛钱，可以吗？", "sp": "B", "gap": false, "start": 9.36, "end": 16.704, "words": [[9.463, 10.186], [11.084, 11.307], [11.321, 11.649], [11.663, 11.834], [11.847, 12.018], [12.031, 12.531], [12.544, 12.873], [12.886, 13.663], [14.584, 14.794], [14.807, 15.057], [15.071, 15.781]]}, {"kind": "s", "id": "s0_3_0", "md": "That's fine. And could you __make it__ ==extra hot==? I've got a long walk to the office.", "zh": "没问题。能做得特别烫一点吗？我走到公司要挺久。", "sp": "A", "gap": false, "start": 16.704, "end": 21.528, "words": [[16.822, 16.993], [17.007, 17.401], [17.836, 17.901], [17.915, 18.059], [18.072, 18.138], [18.151, 18.336], [18.349, 18.415], [18.428, 18.73], [18.743, 19.099], [19.533, 19.638], [19.651, 19.783], [19.796, 19.836], [19.849, 20.138], [20.151, 20.375], [20.388, 20.467], [20.48, 20.599], [20.612, 21.138]]}, {"kind": "s", "id": "s0_4_0", "md": "No problem. Any ==syrup==? We have vanilla, caramel and hazelnut.", "zh": "没问题。要加糖浆吗？有香草、焦糖和榛子的。", "sp": "B", "gap": false, "start": 21.528, "end": 29.544, "words": [[21.631, 21.973], [21.986, 22.683], [23.607, 23.91], [23.923, 24.607], [25.515, 25.686], [25.699, 25.91], [25.923, 26.62], [26.896, 27.594], [27.686, 27.778], [27.791, 28.62]]}, {"kind": "s", "id": "s0_5_0", "md": "Just __half a pump__ of vanilla. I don't like it too sweet.", "zh": "香草的，只要半泵。我不喜欢太甜。", "sp": "A", "gap": false, "start": 29.544, "end": 32.88, "words": [[29.649, 29.807], [29.82, 30.044], [30.057, 30.123], [30.136, 30.386], [30.399, 30.478], [30.491, 30.939], [31.373, 31.426], [31.439, 31.597], [31.61, 31.768], [31.781, 31.86], [31.873, 32.031], [32.044, 32.491]]}, {"kind": "s", "id": "s0_6_0", "md": "Half a pump, got it. Would you like an extra ==shot==? It's quite a mild blend.", "zh": "半泵，记下了。要不要多加一份浓缩？我们这款豆子味道比较淡。", "sp": "B", "gap": false, "start": 32.88, "end": 41.112, "words": [[32.983, 33.312], [33.325, 33.417], [33.43, 33.93], [34.167, 34.43], [34.443, 34.864], [35.788, 35.998], [36.012, 36.156], [36.169, 36.433], [36.446, 36.577], [36.591, 36.985], [36.998, 37.604], [38.525, 38.788], [38.801, 39.143], [39.156, 39.209], [39.222, 39.564], [39.577, 40.183]]}, {"kind": "s", "id": "s0_7_0", "md": "Oh, yes, __go ahead__. I need it today. And one plain croissant, __for here__.", "zh": "哦，好，加吧。今天确实需要。再要一个原味可颂，在这儿吃。", "sp": "A", "gap": false, "start": 41.112, "end": 45.912, "words": [[41.217, 41.349], [41.375, 41.678], [41.704, 41.849], [41.862, 42.217], [42.651, 42.691], [42.704, 42.849], [42.862, 42.928], [42.941, 43.283], [43.717, 43.823], [43.836, 43.994], [44.007, 44.257], [44.27, 44.796], [45.02, 45.151], [45.165, 45.507]]}, {"kind": "s", "id": "s0_8_0", "md": "Alright, that's eight forty altogether. Can I get a name for the cup?", "zh": "好的，一共八块四。杯子上写什么名字？", "sp": "B", "gap": false, "start": 45.912, "end": 52.584, "words": [[46.015, 46.594], [46.817, 47.278], [47.291, 47.554], [47.567, 48.067], [48.08, 48.975], [49.899, 50.096], [50.109, 50.215], [50.228, 50.451], [50.465, 50.504], [50.517, 50.82], [50.833, 50.978], [50.991, 51.109], [51.123, 51.662]]}, {"kind": "s", "id": "s0_9_0", "md": "It's Lee. L, E, E. Can I pay by card?", "zh": "Lee。L、E、E。能刷卡吗？", "sp": "A", "gap": false, "start": 52.584, "end": 56.376, "words": [[52.689, 52.834], [52.847, 53.123], [53.558, 53.821], [54.137, 54.347], [54.373, 54.584], [55.018, 55.123], [55.137, 55.202], [55.216, 55.4], [55.413, 55.597], [55.61, 55.979]]}, {"kind": "s", "id": "s0_10_0", "md": "Of course, just tap here whenever you're ready.", "zh": "当然，准备好了在这儿拍一下就行。", "sp": "B", "gap": false, "start": 56.376, "end": 60.576, "words": [[56.479, 56.715], [56.729, 57.321], [57.531, 57.873], [57.887, 58.123], [58.137, 58.413], [58.426, 58.9], [58.913, 59.058], [59.071, 59.637]]}, {"kind": "h", "id": "h1", "md": "2. The Wrong Drink", "zh": "2. 饮品做错了", "start": 60.576, "end": 62.496, "words": [[60.694, 60.944], [61.221, 61.313], [61.326, 61.642], [61.655, 62.102]]}, {"kind": "s", "id": "s1_0_0", "md": "Sorry, __excuse me__. I think this might be the wrong drink. It tastes like regular milk.", "zh": "不好意思，打扰一下。我觉得这杯可能做错了，喝着像普通牛奶。", "sp": "A", "gap": false, "start": 62.496, "end": 67.872, "words": [[62.601, 62.904], [62.93, 63.338], [63.351, 63.522], [63.97, 64.049], [64.062, 64.259], [64.272, 64.43], [64.443, 64.641], [64.654, 64.746], [64.759, 64.851], [64.864, 65.128], [65.141, 65.601], [66.035, 66.154], [66.167, 66.522], [66.535, 66.706], [66.72, 67.101], [67.114, 67.483]]}, {"kind": "s", "id": "s1_1_0", "md": "Oh, let me check the ==label==. You're right, this one's for another order. My apologies.", "zh": "哦，我看看标签。您说得对，这杯是别人的单。抱歉。", "sp": "B", "gap": false, "start": 67.872, "end": 76.92, "words": [[67.975, 68.317], [68.58, 68.843], [68.856, 69.027], [69.04, 69.343], [69.356, 69.448], [69.461, 70.106], [71.03, 71.254], [71.267, 71.688], [71.911, 72.175], [72.188, 72.53], [72.543, 72.714], [72.727, 73.135], [73.148, 73.688], [74.609, 74.872], [74.885, 75.99]]}, {"kind": "s", "id": "s1_2_0", "md": "No worries. I just can't have dairy, so I wanted to __double-check__.", "zh": "没关系。我只是不能喝乳制品，所以想确认一下。", "sp": "A", "gap": false, "start": 76.92, "end": 81.288, "words": [[77.025, 77.196], [77.209, 77.736], [78.183, 78.249], [78.262, 78.46], [78.473, 78.696], [78.709, 78.933], [78.946, 79.341], [79.631, 79.762], [79.775, 79.815], [79.828, 80.078], [80.091, 80.144], [80.157, 80.907]]}, {"kind": "s", "id": "s1_3_0", "md": "Totally understand. I'll ==remake== it now, oat milk, extra hot, half vanilla, extra shot.", "zh": "完全理解。我马上重做：燕麦奶、特别烫、半泵香草、多加一份浓缩。", "sp": "B", "gap": false, "start": 81.288, "end": 90.912, "words": [[81.391, 81.996], [82.009, 82.983], [83.906, 84.091], [84.104, 84.472], [84.485, 84.591], [84.604, 85.13], [85.367, 85.617], [85.63, 86.183], [86.42, 86.893], [86.906, 87.42], [87.67, 88.012], [88.025, 88.67], [88.92, 89.38], [89.393, 89.985]]}, {"kind": "s", "id": "s1_4_0", "md": "**That's the one. Could you also put a lid on it? I'll take it to go after all.**", "zh": "就是这个。能帮我加个盖子吗？我还是打包带走吧。", "sp": "A", "gap": false, "start": 90.912, "end": 95.328, "words": [[91.03, 91.201], [91.215, 91.333], [91.346, 91.636], [92.07, 92.188], [92.201, 92.294], [92.307, 92.557], [92.57, 92.715], [92.728, 92.767], [92.78, 92.978], [92.991, 93.136], [93.149, 93.307], [93.741, 93.846], [93.859, 94.044], [94.057, 94.109], [94.123, 94.188], [94.201, 94.386], [94.399, 94.701], [94.715, 94.925]]}, {"kind": "s", "id": "s1_5_0", "md": "Sure thing. And since you had to wait, the croissant is ==on the house== today.", "zh": "没问题。让您久等了，今天可颂算我们请的。", "sp": "B", "gap": false, "start": 95.328, "end": 101.952, "words": [[95.431, 95.786], [95.799, 96.352], [97.262, 97.446], [97.46, 97.802], [97.815, 97.933], [97.946, 98.17], [98.183, 98.288], [98.302, 98.788], [99.025, 99.196], [99.21, 99.683], [99.696, 99.881], [99.894, 100.025], [100.039, 100.117], [100.131, 100.46], [100.473, 101.025]]}, {"kind": "s", "id": "s1_6_0", "md": "Oh, you don't have to do that. But thank you, that's really nice of you.", "zh": "哎，不用这样的。不过谢谢，你人真好。", "sp": "A", "gap": false, "start": 101.952, "end": 106.272, "words": [[102.057, 102.228], [102.413, 102.465], [102.478, 102.663], [102.676, 102.847], [102.86, 102.952], [102.965, 103.136], [103.149, 103.452], [103.899, 104.005], [104.018, 104.255], [104.268, 104.452], [104.86, 105.044], [105.057, 105.255], [105.268, 105.57], [105.584, 105.663], [105.676, 105.886]]}, {"kind": "s", "id": "s1_7_0", "md": "Here you go. Careful, it's very hot. Have a good day at work!", "zh": "给您。小心，很烫。祝您上班顺利！", "sp": "B", "gap": false, "start": 106.272, "end": 114.024, "words": [[106.375, 106.651], [106.664, 106.848], [106.861, 107.322], [108.233, 108.996], [109.246, 109.575], [109.588, 109.851], [109.864, 110.443], [111.364, 111.654], [111.667, 111.772], [111.785, 112.048], [112.061, 112.351], [112.364, 112.548], [112.561, 113.101]]}, {"kind": "s", "id": "s1_8_0", "md": "**Thanks, you too. See you tomorrow.**", "zh": "谢谢，你也是。明天见。", "sp": "A", "gap": false, "start": 114.024, "end": 116.304, "words": [[114.156, 114.353], [114.379, 114.471], [114.485, 114.761], [115.208, 115.34], [115.353, 115.432], [115.445, 115.906]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

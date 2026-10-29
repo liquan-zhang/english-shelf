@@ -1,0 +1,181 @@
+{
+  "id": "035",
+  "title": "The Weekly Update Your Boss Actually Reads",
+  "meta": "B2 · 约 270 词 · 场景：周报",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Written for a Thirty-Second Read",
+      "paragraphs": [
+        [
+          "Your boss opens your weekly update on a phone, between two meetings.",
+          "They will read the first three lines, maybe four.",
+          "If the important part is in paragraph five, it is ==effectively== invisible."
+        ],
+        [
+          "Most updates are written like a ==diary==: what we did on Monday, what we did on Tuesday.",
+          "That format is easy to write and hard to use.",
+          "**Your boss does not need to know what you did; they need to know what changed and what needs them.**"
+        ],
+        [
+          "So __flip the order__.",
+          "Put decisions and risks at the top, and the list of finished tasks at the bottom, or cut it entirely.",
+          "A good update can be ==skimmed== in thirty seconds and still lead to the right action."
+        ]
+      ],
+      "heading_zh": "1. 按三十秒读完来写",
+      "paragraphs_zh": [
+        [
+          "你老板是在两个会之间，用手机打开你的周报的。",
+          "他会读前三行，也许四行。",
+          "如果重点放在第五段，那基本等于没写。"
+        ],
+        [
+          "大多数周报写得像日记：周一做了什么，周二做了什么。",
+          "这种格式写起来容易，用起来难。",
+          "老板不需要知道你做了什么；他需要知道什么变了，以及什么需要他出手。"
+        ],
+        [
+          "所以要把顺序倒过来。",
+          "把需要的决策和风险放在最上面，已完成任务的列表放在最下面，或者干脆删掉。",
+          "一份好的周报，扫三十秒就能看完，而且照样能让人做出正确的动作。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Four Parts, Same Order Every Week",
+      "paragraphs": [
+        [
+          "**Open with the one thing that needs a reply, like \"Need your call on the launch date by Thursday.\"**",
+          "If nothing needs your boss, say so, because that is useful too."
+        ],
+        [
+          "Next, give an overall status with a short ==rationale==.",
+          "\"Yellow, because the vendor is two weeks late with the new API\" says more than a table of twenty green tasks.",
+          "A color without a reason __leaves your boss guessing__."
+        ],
+        [
+          "Then list only what changed since last week: new risks, slipped dates, and wins worth noting.",
+          "Unchanged items are ==noise==, and noise teaches people to stop reading.",
+          "Close with what is coming next week, in one or two lines."
+        ],
+        [
+          "Keep the same structure every week.",
+          "A ==consistent== shape lets your boss __find what they need__ without thinking.",
+          "Over time, they learn to trust that a quiet update really means things are fine, and they stop __chasing you for status__."
+        ]
+      ],
+      "heading_zh": "2. 四个部分，每周同一个顺序",
+      "paragraphs_zh": [
+        [
+          "开头就写那件需要回复的事，比如「需要你在周四前定一下上线日期」。",
+          "如果没有需要老板处理的事，也直接说，因为这本身也是有用的信息。"
+        ],
+        [
+          "接下来，给一个整体状态，附上简短的理由。",
+          "「黄灯，因为供应商的新 API 晚了两周」，比一张写满二十个绿灯任务的表格信息量大得多。",
+          "只有颜色没有理由，老板只能去猜。"
+        ],
+        [
+          "然后只列出跟上周相比有变化的东西：新的风险、延期的日期，以及值得一提的进展。",
+          "没变化的条目都是噪音，噪音只会让人养成不读的习惯。",
+          "最后用一两行写下周的计划。"
+        ],
+        [
+          "每周保持同样的结构。",
+          "格式固定，老板不用动脑子就能找到他要的东西。",
+          "时间长了，他会相信一份平静的周报确实意味着一切正常，也就不会再追着你问进度了。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "老板通常怎么读周报？这对写法意味着什么？",
+      "a": "在手机上、两个会之间读，只看前三四行；重要内容放在后面等于看不见，要倒过来写。"
+    },
+    {
+      "q": "作者批评的「日记式」周报是什么？",
+      "a": "按时间流水账写周一做了什么、周二做了什么；容易写但不好用，老板要的是变化和需要他做的事。"
+    },
+    {
+      "q": "推荐的周报四部分是什么？",
+      "a": "需要老板回复的事；整体状态加一句理由；只列本周变化（新风险、延期、值得一提的成果）；下周计划一两行。每周结构保持一致。"
+    }
+  ],
+  "dictation": [
+    "Your boss does not need to know what you did; they need to know what changed and what needs them.",
+    "Unchanged items are noise, and noise teaches people to stop reading.",
+    "A color without a reason leaves your boss guessing.",
+    "Keep the same structure every week."
+  ],
+  "shadow": {
+    "text": "Most updates are written like a diary: what we did on Monday, what we did on Tuesday. That format is easy to write and hard to use.",
+    "marked": "Most updates are written / like a <b>diary</b>: / what we did on <b>Monday</b>, / what we did on <b>Tuesday</b>. //<br>That format is <b>easy</b> to write / and <b>hard</b> to use. //"
+  },
+  "prompts": [
+    {
+      "q": "老板在电梯里问你：「这周项目怎么样？」按周报的顺序用 30 秒口头回答：需要他决定的事、状态和理由、本周变化。",
+      "ref": "One thing first: I need your call on whether we delay the launch by a week or ship without the export feature. I'd like an answer by Thursday. Overall we're yellow, because the vendor is late with the payment API. Since last week, the load test passed and we closed the two crash bugs. Next week is mostly about the vendor integration.",
+      "ref_zh": "先说一件事：我需要你定一下，是把上线推迟一周，还是不带导出功能先上线。希望周四前能给我答复。整体是黄灯，因为供应商的支付 API 延期了。跟上周相比，压测通过了，两个崩溃 bug 也都关掉了。下周主要是做供应商的对接。"
+    },
+    {
+      "q": "你接手了一个新团队，他们的周报是很长的流水账。用 30 秒在团队会上提出新的周报格式。",
+      "ref": "I'd like to try a new format for our weekly update. Leadership reads it on their phones, so the first line should be anything we need from them. Then one status color with a one-line reason. Then only what changed since last week, and a line on next week. If nothing changed, it's fine to keep it short. Let's try it for a month and see if we get better responses.",
+      "ref_zh": "我想给我们的周报试一种新格式。管理层是在手机上看的，所以第一行应该写我们需要他们做的事。然后是一个状态颜色，加一行理由。再然后只写跟上周相比的变化，外加一行下周计划。如果没什么变化，写短一点也没关系。我们先试一个月，看看反馈会不会更好。"
+    }
+  ],
+  "words": [
+    {
+      "w": "effectively",
+      "ipa": "/ɪˈfektɪvli/",
+      "zh": "实际上、等于",
+      "ex": "Without an owner, the ticket is effectively dead."
+    },
+    {
+      "w": "diary",
+      "ipa": "/ˈdaɪəri/",
+      "zh": "日记",
+      "ex": "This update reads like a diary; what's the headline?"
+    },
+    {
+      "w": "skim (v.)",
+      "ipa": "/skɪm/",
+      "zh": "略读、浏览",
+      "ex": "Most people will only skim the doc, so put the decision first.",
+      "tts_w": "skim"
+    },
+    {
+      "w": "rationale",
+      "ipa": "/ˌræʃəˈnæl/",
+      "zh": "理由、依据",
+      "ex": "Please add a short rationale for marking the project red."
+    },
+    {
+      "w": "vendor",
+      "ipa": "/ˈvendər/",
+      "zh": "供应商",
+      "ex": "The vendor pushed their release, so our integration is blocked."
+    },
+    {
+      "w": "noise",
+      "ipa": "/nɔɪz/",
+      "zh": "噪音、无用信息",
+      "ex": "Too many low-priority alerts turn into noise that people ignore."
+    },
+    {
+      "w": "consistent",
+      "ipa": "/kənˈsɪstənt/",
+      "zh": "一致的、稳定的",
+      "ex": "A consistent format makes the weekly report quick to read."
+    },
+    {
+      "w": "flip (v.)",
+      "ipa": "/flɪp/",
+      "zh": "翻转、调换",
+      "ex": "Let's flip the agenda and start with the open decisions.",
+      "tts_w": "flip"
+    }
+  ]
+}

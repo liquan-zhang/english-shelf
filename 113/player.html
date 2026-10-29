@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Talking to a Stranger at the Bar · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "113", "type": "dialogue", "title": "Talking to a Stranger at the Bar", "meta": "B2 · 约 250 词 · 场景：酒吧和陌生人搭话与告别", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Stranger", "name_zh": "陌生人", "voice": "en-GB-SoniaNeural"}}, "gist": [{"q": "「你」是怎么开启对话的？", "a": "先问旁边的座位有没有人，再问对方喝的是什么酒。"}, {"q": "对方是哪里人、做什么工作？", "a": "来自曼彻斯特，原本外派两年后留在了这里，做物流，主要追踪延误的货运。"}, {"q": "「你」用什么理由结束了聊天？", "a": "说儿子六点就起床，不能太晚，然后自我介绍并道别。"}], "dictation": [{"id": "s0_2_0", "text": "Thanks. That looks good. What are you drinking, if you don't mind me asking?"}, {"id": "s0_6_0", "text": "No, I'm originally from China. I moved here with my family about two years ago. What about you?"}, {"id": "s1_3_0", "text": "Sorry, I didn't quite catch that. Did you say chasing ships?"}, {"id": "s1_8_0", "text": "It was really nice chatting with you. I'm Lee, by the way."}], "shadow": {"speaker": "A", "text": "I'll check it out. Well, I should head off. My son gets up at six, so no late nights for me.", "marked": "I'll <b>check</b> it out. //<br><b>Well</b>, / I should <b>head off</b>. //<br>My <b>son</b> gets up at <b>six</b>, / so no <b>late</b> nights for me. //"}, "prompts": [{"q": "在朋友的生日聚会上，你旁边站着一个谁都不认识的人。主动搭话：介绍自己、说明你和寿星的关系，再问对方一个问题。", "ref": "Hi, I don't think we've met. I'm Lee. I know Daniel from work, we sit on the same floor. How do you know him? I have to say, this is a great place for a party. Have you been here before? I'm always looking for somewhere new to take my family on weekends.", "ref_zh": "你好，我们好像还没见过。我叫 Lee，跟 Daniel 是同事，在同一层办公。你是怎么认识他的？说真的，这地方办聚会真不错。你以前来过吗？我周末总在找新地方带家人去。", "id": "ref0"}, {"q": "在酒吧有人一直拉着你聊，你想礼貌地结束对话回到朋友那边。说一段既得体又明确的话。", "ref": "Sorry, I'm going to have to steal myself away. My friends are waiting for me over there, and I promised I'd only be a minute. It was really good talking to you, though. Good luck with the new job, and enjoy the rest of your night.", "ref_zh": "不好意思，我得先走开一下了。我朋友在那边等我，我说好只离开一会儿的。不过跟你聊得很开心。新工作顺利，今晚玩得开心。", "id": "ref1"}], "words": [{"w": "craft beer", "ipa": "/kræft bɪr/", "zh": "精酿啤酒", "ex": "This bar has over twenty craft beers on tap.", "id": "w0"}, {"w": "posting", "ipa": "/ˈpoʊstɪŋ/", "zh": "外派任职", "ex": "She's here on a three-year posting from London.", "tts": "She's here on a three-year posting from London.", "id": "w1"}, {"w": "grow on (someone)", "ipa": "/ɡroʊ ɑːn/", "zh": "越来越让人喜欢", "ex": "Durian is strange at first, but it grows on you.", "tts_w": "grow on", "id": "w2"}, {"w": "logistics", "ipa": "/ləˈdʒɪstɪks/", "zh": "物流", "ex": "My neighbour works in logistics at the port.", "id": "w3"}, {"w": "chase", "ipa": "/tʃeɪs/", "zh": "追；催办", "ex": "I had to chase the agent three times for the contract.", "id": "w4"}, {"w": "recommend", "ipa": "/ˌrekəˈmend/", "zh": "推荐", "ex": "Can you recommend a good dim sum place nearby?", "id": "w5"}, {"w": "help yourself", "ipa": "/help jərˈself/", "zh": "请随意，自便", "ex": "There's coffee in the kitchen, help yourself.", "id": "w6"}, {"w": "head off", "ipa": "/hed ɔːf/", "zh": "离开，动身", "ex": "I'd better head off before the rain starts.", "id": "w7"}, {"w": "talk (someone) into", "ipa": "/tɔːk ˈɪntuː/", "zh": "说服某人做某事", "ex": "My wife talked me into joining the gym.", "tts_w": "talk into", "id": "w8"}], "sections": [{"heading": "1. Breaking the Ice", "heading_zh": "1. 打开话题", "rows": [[{"id": "s0_0_0", "md": "**Sorry, is anyone sitting here?**", "text": "Sorry, is anyone sitting here?", "zh": "不好意思，这儿有人坐吗？", "sp": "A"}], [{"id": "s0_1_0", "md": "No, it's free. __Help yourself__.", "text": "No, it's free. Help yourself.", "zh": "没有，空着呢。请坐。", "sp": "B"}], [{"id": "s0_2_0", "md": "Thanks. That looks good. What are you drinking, if you don't mind me asking?", "text": "Thanks. That looks good. What are you drinking, if you don't mind me asking?", "zh": "谢谢。你那杯看着不错。冒昧问一下，你喝的是什么？", "sp": "A"}], [{"id": "s0_3_0", "md": "It's a local ==craft== beer, a bit fruity. The bartender __talked me into__ it, and I'm glad he did.", "text": "It's a local craft beer, a bit fruity. The bartender talked me into it, and I'm glad he did.", "zh": "本地的一款精酿啤酒，有点果香。是酒保推荐的，还好我听了他的。", "sp": "B"}], [{"id": "s0_4_0", "md": "Maybe I'll try one too. Do you come here often? It's my first time.", "text": "Maybe I'll try one too. Do you come here often? It's my first time.", "zh": "那我也来一杯吧。你常来这儿吗？我是第一次来。", "sp": "A"}], [{"id": "s0_5_0", "md": "Most Fridays, actually. It's close to my office. You don't sound like you're from around here.", "text": "Most Fridays, actually. It's close to my office. You don't sound like you're from around here.", "zh": "其实差不多每个周五都来，离我公司近。听口音你不是本地人吧？", "sp": "B"}], [{"id": "s0_6_0", "md": "No, I'm originally from China. I moved here with my family about two years ago. What about you?", "text": "No, I'm originally from China. I moved here with my family about two years ago. What about you?", "zh": "不是，我是中国人。大概两年前带着家人搬过来的。你呢？", "sp": "A"}], [{"id": "s0_7_0", "md": "I'm from Manchester. I came out on a two-year ==posting== and somehow never left.", "text": "I'm from Manchester. I came out on a two-year posting and somehow never left.", "zh": "我是曼彻斯特人。本来是公司外派两年，结果不知怎么就留下来了。", "sp": "B"}], [{"id": "s0_8_0", "md": "That __happens a lot__ here, doesn't it? The weather ==grows on you==.", "text": "That happens a lot here, doesn't it? The weather grows on you.", "zh": "这种事在这儿挺常见的，对吧？天气慢慢就让人习惯了。", "sp": "A"}]]}, {"heading": "2. Keeping It Going, Then Wrapping Up", "heading_zh": "2. 接着聊，再自然收尾", "rows": [[{"id": "s1_0_0", "md": "So what do you do? Let me guess, something in tech?", "text": "So what do you do? Let me guess, something in tech?", "zh": "那你是做什么的？我猜猜，搞技术的？", "sp": "B"}], [{"id": "s1_1_0", "md": "Good guess. I manage a team at a tech company. And you?", "text": "Good guess. I manage a team at a tech company. And you?", "zh": "猜对了。我在一家科技公司带团队。你呢？", "sp": "A"}], [{"id": "s1_2_0", "md": "I'm in ==logistics==, which is rather less glamorous. Mostly ==chasing== ships around the region.", "text": "I'm in logistics, which is rather less glamorous. Mostly chasing ships around the region.", "zh": "我做物流，没那么光鲜。基本上就是在区域里到处追船期。", "sp": "B"}], [{"id": "s1_3_0", "md": "**Sorry, I didn't quite catch that. Did you say chasing ships?**", "text": "Sorry, I didn't quite catch that. Did you say chasing ships?", "zh": "不好意思，我没太听清。你是说追船吗？", "sp": "A"}], [{"id": "s1_4_0", "md": "Ha, yes. Tracking shipments that are late, basically. It's less exciting than it sounds.", "text": "Ha, yes. Tracking shipments that are late, basically. It's less exciting than it sounds.", "zh": "哈，对。说白了就是盯那些延误的货。没听起来那么刺激。", "sp": "B"}], [{"id": "s1_5_0", "md": "Still sounds more exciting than my meetings. Any good places around here you'd ==recommend==?", "text": "Still sounds more exciting than my meetings. Any good places around here you'd recommend?", "zh": "那也比我开会有意思。这附近有什么好地方推荐吗？", "sp": "A"}], [{"id": "s1_6_0", "md": "There's a little jazz bar two streets down. Quiet, decent wine, no one shouting.", "text": "There's a little jazz bar two streets down. Quiet, decent wine, no one shouting.", "zh": "往前两条街有个小爵士酒吧。安静，红酒不错，没人大吵大闹。", "sp": "B"}], [{"id": "s1_7_0", "md": "I'll __check it out__. Well, I should __head off__. My son gets up at six, so no late nights for me.", "text": "I'll check it out. Well, I should head off. My son gets up at six, so no late nights for me.", "zh": "我去看看。好了，我得走了。我儿子六点就起，我可熬不了夜。", "sp": "A"}], [{"id": "s1_8_0", "md": "**It was really nice chatting with you. I'm Lee, by the way.**", "text": "It was really nice chatting with you. I'm Lee, by the way.", "zh": "跟你聊天很开心。对了，我叫 Lee。", "sp": "A"}], [{"id": "s1_9_0", "md": "Sophie. Nice to meet you, Lee. Maybe see you here next Friday.", "text": "Sophie. Nice to meet you, Lee. Maybe see you here next Friday.", "zh": "我叫 Sophie。很高兴认识你，Lee。说不定下周五这儿见。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Breaking the Ice", "zh": "1. 打开话题", "start": 0.0, "end": 1.8, "words": [[0.105, 0.329], [0.355, 0.737], [0.75, 0.868], [0.882, 1.408]]}, {"kind": "s", "id": "s0_0_0", "md": "**Sorry, is anyone sitting here?**", "zh": "不好意思，这儿有人坐吗？", "sp": "A", "gap": false, "start": 1.8, "end": 3.888, "words": [[1.918, 2.313], [2.511, 2.642], [2.655, 2.945], [2.958, 3.234], [3.247, 3.497]]}, {"kind": "s", "id": "s0_1_0", "md": "No, it's free. __Help yourself__.", "zh": "没有，空着呢。请坐。", "sp": "B", "gap": false, "start": 3.888, "end": 7.248, "words": [[3.991, 4.425], [4.635, 4.846], [4.859, 5.333], [5.743, 6.059], [6.072, 6.849]]}, {"kind": "s", "id": "s0_2_0", "md": "Thanks. That looks good. What are you drinking, if you don't mind me asking?", "zh": "谢谢。你那杯看着不错。冒昧问一下，你喝的是什么？", "sp": "A", "gap": false, "start": 7.248, "end": 11.736, "words": [[7.38, 7.787], [8.235, 8.327], [8.34, 8.498], [8.511, 8.801], [9.235, 9.327], [9.34, 9.393], [9.406, 9.511], [9.524, 9.985], [10.195, 10.287], [10.301, 10.366], [10.38, 10.564], [10.577, 10.761], [10.774, 10.88], [10.893, 11.34]]}, {"kind": "s", "id": "s0_3_0", "md": "It's a local ==craft== beer, a bit fruity. The bartender __talked me into__ it, and I'm glad he did.", "zh": "本地的一款精酿啤酒，有点果香。是酒保推荐的，还好我听了他的。", "sp": "B", "gap": false, "start": 11.736, "end": 18.72, "words": [[11.878, 12.049], [12.062, 12.115], [12.128, 12.562], [12.575, 12.983], [12.997, 13.365], [13.668, 13.72], [13.733, 13.944], [13.957, 14.536], [14.96, 15.078], [15.091, 15.736], [15.749, 16.104], [16.118, 16.223], [16.236, 16.604], [16.618, 16.854], [17.157, 17.262], [17.275, 17.42], [17.433, 17.762], [17.775, 17.907], [17.92, 18.341]]}, {"kind": "s", "id": "s0_4_0", "md": "Maybe I'll try one too. Do you come here often? It's my first time.", "zh": "那我也来一杯吧。你常来这儿吗？我是第一次来。", "sp": "A", "gap": false, "start": 18.72, "end": 22.992, "words": [[18.825, 19.062], [19.075, 19.154], [19.167, 19.391], [19.404, 19.615], [19.628, 19.93], [20.365, 20.417], [20.431, 20.523], [20.536, 20.72], [20.733, 20.917], [20.931, 21.286], [21.72, 21.812], [21.825, 21.944], [21.957, 22.286], [22.299, 22.602]]}, {"kind": "s", "id": "s0_5_0", "md": "Most Fridays, actually. It's close to my office. You don't sound like you're from around here.", "zh": "其实差不多每个周五都来，离我公司近。听口音你不是本地人吧？", "sp": "B", "gap": false, "start": 22.992, "end": 30.168, "words": [[23.108, 23.489], [23.503, 24.213], [24.463, 25.095], [25.492, 25.689], [25.703, 26.058], [26.071, 26.176], [26.189, 26.387], [26.4, 27.018], [27.439, 27.584], [27.597, 27.874], [27.887, 28.229], [28.242, 28.466], [28.479, 28.689], [28.703, 28.913], [28.926, 29.347], [29.36, 29.768]]}, {"kind": "s", "id": "s0_6_0", "md": "No, I'm originally from China. I moved here with my family about two years ago. What about you?", "zh": "不是，我是中国人。大概两年前带着家人搬过来的。你呢？", "sp": "A", "gap": false, "start": 30.168, "end": 36.288, "words": [[30.273, 30.523], [30.905, 31.05], [31.063, 31.563], [31.576, 31.747], [31.76, 32.207], [32.642, 32.694], [32.707, 32.984], [32.997, 33.142], [33.155, 33.273], [33.286, 33.405], [33.418, 33.786], [33.8, 34.05], [34.063, 34.247], [34.26, 34.536], [34.55, 34.892], [35.326, 35.431], [35.444, 35.694], [35.707, 35.905]]}, {"kind": "s", "id": "s0_7_0", "md": "I'm from Manchester. I came out on a two-year ==posting== and somehow never left.", "zh": "我是曼彻斯特人。本来是公司外派两年，结果不知怎么就留下来了。", "sp": "B", "gap": false, "start": 36.288, "end": 42.12, "words": [[36.404, 36.68], [36.693, 36.904], [36.917, 37.772], [38.196, 38.314], [38.327, 38.617], [38.63, 38.893], [38.906, 39.012], [39.025, 39.104], [39.117, 39.577], [39.591, 40.222], [40.235, 40.406], [40.42, 40.854], [40.867, 41.156], [41.17, 41.722]]}, {"kind": "s", "id": "s0_8_0", "md": "That __happens a lot__ here, doesn't it? The weather ==grows on you==.", "zh": "这种事在这儿挺常见的，对吧？天气慢慢就让人习惯了。", "sp": "A", "gap": false, "start": 42.12, "end": 45.576, "words": [[42.238, 42.344], [42.357, 42.686], [42.699, 42.738], [42.752, 43.041], [43.054, 43.331], [43.357, 43.607], [43.62, 43.778], [44.212, 44.265], [44.278, 44.515], [44.528, 44.804], [44.817, 44.975], [44.988, 45.173]]}, {"kind": "h", "id": "h1", "md": "2. Keeping It Going, Then Wrapping Up", "zh": "2. 接着聊，再自然收尾", "start": 45.576, "end": 48.768, "words": [[45.681, 45.918], [46.444, 46.773], [46.787, 46.879], [46.892, 47.26], [47.576, 47.734], [47.747, 48.129], [48.142, 48.365]]}, {"kind": "s", "id": "s1_0_0", "md": "So what do you do? Let me guess, something in tech?", "zh": "那你是做什么的？我猜猜，搞技术的？", "sp": "B", "gap": false, "start": 48.768, "end": 53.184, "words": [[48.884, 49.147], [49.16, 49.397], [49.41, 49.515], [49.529, 49.713], [49.726, 50.173], [50.584, 50.821], [50.834, 50.979], [50.992, 51.465], [51.715, 52.123], [52.136, 52.268], [52.281, 52.794]]}, {"kind": "s", "id": "s1_1_0", "md": "Good guess. I manage a team at a tech company. And you?", "zh": "猜对了。我在一家科技公司带团队。你呢？", "sp": "A", "gap": false, "start": 53.184, "end": 56.952, "words": [[53.289, 53.395], [53.408, 53.802], [54.237, 54.289], [54.302, 54.579], [54.592, 54.645], [54.658, 54.934], [54.947, 55.026], [55.039, 55.092], [55.105, 55.355], [55.368, 55.816], [56.25, 56.355], [56.368, 56.566]]}, {"kind": "s", "id": "s1_2_0", "md": "I'm in ==logistics==, which is rather less glamorous. Mostly ==chasing== ships around the region.", "zh": "我做物流，没那么光鲜。基本上就是在区域里到处追船期。", "sp": "B", "gap": false, "start": 56.952, "end": 63.648, "words": [[57.094, 57.305], [57.318, 57.436], [57.449, 58.291], [58.555, 58.739], [58.752, 58.884], [58.897, 59.226], [59.239, 59.502], [59.515, 60.291], [60.689, 61.241], [61.255, 61.755], [61.768, 62.215], [62.228, 62.57], [62.584, 62.676], [62.689, 63.255]]}, {"kind": "s", "id": "s1_3_0", "md": "**Sorry, I didn't quite catch that. Did you say chasing ships?**", "zh": "不好意思，我没太听清。你是说追船吗？", "sp": "A", "gap": false, "start": 63.648, "end": 67.608, "words": [[63.753, 64.187], [64.398, 64.477], [64.49, 64.674], [64.687, 64.911], [64.924, 65.187], [65.201, 65.543], [65.977, 66.082], [66.095, 66.161], [66.174, 66.359], [66.372, 66.727], [66.74, 67.214]]}, {"kind": "s", "id": "s1_4_0", "md": "Ha, yes. Tracking shipments that are late, basically. It's less exciting than it sounds.", "zh": "哈，对。说白了就是盯那些延误的货。没听起来那么刺激。", "sp": "B", "gap": false, "start": 67.608, "end": 75.048, "words": [[67.737, 68.105], [68.395, 68.934], [69.332, 69.792], [69.805, 70.411], [70.424, 70.621], [70.634, 70.674], [70.687, 71.174], [71.45, 72.134], [72.555, 72.74], [72.753, 73.016], [73.029, 73.661], [73.674, 73.819], [73.832, 73.963], [73.976, 74.647]]}, {"kind": "s", "id": "s1_5_0", "md": "Still sounds more exciting than my meetings. Any good places around here you'd ==recommend==?", "zh": "那也比我开会有意思。这附近有什么好地方推荐吗？", "sp": "A", "gap": false, "start": 75.048, "end": 80.136, "words": [[75.153, 75.403], [75.416, 75.732], [75.745, 75.956], [75.969, 76.482], [76.495, 76.614], [76.627, 76.759], [76.772, 77.364], [77.798, 77.943], [77.956, 78.114], [78.127, 78.522], [78.535, 78.851], [78.864, 79.048], [79.061, 79.219], [79.232, 79.732]]}, {"kind": "s", "id": "s1_6_0", "md": "There's a little jazz bar two streets down. Quiet, decent wine, no one shouting.", "zh": "往前两条街有个小爵士酒吧。安静，红酒不错，没人大吵大闹。", "sp": "B", "gap": false, "start": 80.136, "end": 86.808, "words": [[80.278, 80.489], [80.502, 80.554], [80.568, 80.923], [80.936, 81.357], [81.37, 81.607], [81.62, 81.91], [81.923, 82.344], [82.357, 82.804], [83.187, 83.858], [84.121, 84.555], [84.568, 85.016], [85.345, 85.529], [85.542, 85.752], [85.766, 86.423]]}, {"kind": "s", "id": "s1_7_0", "md": "I'll __check it out__. Well, I should __head off__. My son gets up at six, so no late nights for me.", "zh": "我去看看。好了，我得走了。我儿子六点就起，我可熬不了夜。", "sp": "A", "gap": false, "start": 86.808, "end": 92.328, "words": [[86.913, 86.992], [87.005, 87.19], [87.203, 87.282], [87.295, 87.518], [87.953, 88.15], [88.176, 88.203], [88.216, 88.374], [88.387, 88.532], [88.545, 88.847], [89.282, 89.4], [89.413, 89.65], [89.663, 89.847], [89.861, 89.966], [89.979, 90.071], [90.084, 90.571], [90.795, 90.913], [90.926, 91.111], [91.124, 91.321], [91.334, 91.584], [91.597, 91.742], [91.755, 91.926]]}, {"kind": "s", "id": "s1_8_0", "md": "**It was really nice chatting with you. I'm Lee, by the way.**", "zh": "跟你聊天很开心。对了，我叫 Lee。", "sp": "A", "gap": false, "start": 92.328, "end": 95.496, "words": [[92.433, 92.499], [92.512, 92.631], [92.644, 92.854], [92.867, 93.091], [93.104, 93.42], [93.433, 93.591], [93.604, 93.789], [94.236, 94.381], [94.394, 94.565], [94.591, 94.736], [94.749, 94.841], [94.854, 95.104]]}, {"kind": "s", "id": "s1_9_0", "md": "Sophie. Nice to meet you, Lee. Maybe see you here next Friday.", "zh": "我叫 Sophie。很高兴认识你，Lee。说不定下周五这儿见。", "sp": "B", "gap": false, "start": 95.496, "end": 101.352, "words": [[95.597, 96.32], [96.733, 97.075], [97.088, 97.22], [97.233, 97.522], [97.535, 97.772], [97.996, 98.391], [98.785, 99.154], [99.167, 99.404], [99.417, 99.614], [99.628, 99.97], [99.983, 100.325], [100.338, 100.97]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

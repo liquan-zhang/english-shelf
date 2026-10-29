@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>The Weekly Update Your Boss Actually Reads · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "035", "title": "The Weekly Update Your Boss Actually Reads", "meta": "B2 · 约 270 词 · 场景：周报", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Written for a Thirty-Second Read", "heading_zh": "1. 按三十秒读完来写", "rows": [[{"id": "s0_0_0", "md": "Your boss opens your weekly update on a phone, between two meetings.", "text": "Your boss opens your weekly update on a phone, between two meetings.", "zh": "你老板是在两个会之间，用手机打开你的周报的。", "sp": null}, {"id": "s0_0_1", "md": "They will read the first three lines, maybe four.", "text": "They will read the first three lines, maybe four.", "zh": "他会读前三行，也许四行。", "sp": null}, {"id": "s0_0_2", "md": "If the important part is in paragraph five, it is ==effectively== invisible.", "text": "If the important part is in paragraph five, it is effectively invisible.", "zh": "如果重点放在第五段，那基本等于没写。", "sp": null}], [{"id": "s0_1_0", "md": "Most updates are written like a ==diary==: what we did on Monday, what we did on Tuesday.", "text": "Most updates are written like a diary: what we did on Monday, what we did on Tuesday.", "zh": "大多数周报写得像日记：周一做了什么，周二做了什么。", "sp": null}, {"id": "s0_1_1", "md": "That format is easy to write and hard to use.", "text": "That format is easy to write and hard to use.", "zh": "这种格式写起来容易，用起来难。", "sp": null}, {"id": "s0_1_2", "md": "**Your boss does not need to know what you did; they need to know what changed and what needs them.**", "text": "Your boss does not need to know what you did; they need to know what changed and what needs them.", "zh": "老板不需要知道你做了什么；他需要知道什么变了，以及什么需要他出手。", "sp": null}], [{"id": "s0_2_0", "md": "So __flip the order__.", "text": "So flip the order.", "zh": "所以要把顺序倒过来。", "sp": null}, {"id": "s0_2_1", "md": "Put decisions and risks at the top, and the list of finished tasks at the bottom, or cut it entirely.", "text": "Put decisions and risks at the top, and the list of finished tasks at the bottom, or cut it entirely.", "zh": "把需要的决策和风险放在最上面，已完成任务的列表放在最下面，或者干脆删掉。", "sp": null}, {"id": "s0_2_2", "md": "A good update can be ==skimmed== in thirty seconds and still lead to the right action.", "text": "A good update can be skimmed in thirty seconds and still lead to the right action.", "zh": "一份好的周报，扫三十秒就能看完，而且照样能让人做出正确的动作。", "sp": null}]]}, {"heading": "2. Four Parts, Same Order Every Week", "heading_zh": "2. 四个部分，每周同一个顺序", "rows": [[{"id": "s1_0_0", "md": "**Open with the one thing that needs a reply, like \"Need your call on the launch date by Thursday.\"**", "text": "Open with the one thing that needs a reply, like \"Need your call on the launch date by Thursday.\"", "zh": "开头就写那件需要回复的事，比如「需要你在周四前定一下上线日期」。", "sp": null}, {"id": "s1_0_1", "md": "If nothing needs your boss, say so, because that is useful too.", "text": "If nothing needs your boss, say so, because that is useful too.", "zh": "如果没有需要老板处理的事，也直接说，因为这本身也是有用的信息。", "sp": null}], [{"id": "s1_1_0", "md": "Next, give an overall status with a short ==rationale==.", "text": "Next, give an overall status with a short rationale.", "zh": "接下来，给一个整体状态，附上简短的理由。", "sp": null}, {"id": "s1_1_1", "md": "\"Yellow, because the vendor is two weeks late with the new API\" says more than a table of twenty green tasks.", "text": "\"Yellow, because the vendor is two weeks late with the new API\" says more than a table of twenty green tasks.", "zh": "「黄灯，因为供应商的新 API 晚了两周」，比一张写满二十个绿灯任务的表格信息量大得多。", "sp": null}, {"id": "s1_1_2", "md": "A color without a reason __leaves your boss guessing__.", "text": "A color without a reason leaves your boss guessing.", "zh": "只有颜色没有理由，老板只能去猜。", "sp": null}], [{"id": "s1_2_0", "md": "Then list only what changed since last week: new risks, slipped dates, and wins worth noting.", "text": "Then list only what changed since last week: new risks, slipped dates, and wins worth noting.", "zh": "然后只列出跟上周相比有变化的东西：新的风险、延期的日期，以及值得一提的进展。", "sp": null}, {"id": "s1_2_1", "md": "Unchanged items are ==noise==, and noise teaches people to stop reading.", "text": "Unchanged items are noise, and noise teaches people to stop reading.", "zh": "没变化的条目都是噪音，噪音只会让人养成不读的习惯。", "sp": null}, {"id": "s1_2_2", "md": "Close with what is coming next week, in one or two lines.", "text": "Close with what is coming next week, in one or two lines.", "zh": "最后用一两行写下周的计划。", "sp": null}], [{"id": "s1_3_0", "md": "Keep the same structure every week.", "text": "Keep the same structure every week.", "zh": "每周保持同样的结构。", "sp": null}, {"id": "s1_3_1", "md": "A ==consistent== shape lets your boss __find what they need__ without thinking.", "text": "A consistent shape lets your boss find what they need without thinking.", "zh": "格式固定，老板不用动脑子就能找到他要的东西。", "sp": null}, {"id": "s1_3_2", "md": "Over time, they learn to trust that a quiet update really means things are fine, and they stop __chasing you for status__.", "text": "Over time, they learn to trust that a quiet update really means things are fine, and they stop chasing you for status.", "zh": "时间长了，他会相信一份平静的周报确实意味着一切正常，也就不会再追着你问进度了。", "sp": null}]]}], "gist": [{"q": "老板通常怎么读周报？这对写法意味着什么？", "a": "在手机上、两个会之间读，只看前三四行；重要内容放在后面等于看不见，要倒过来写。"}, {"q": "作者批评的「日记式」周报是什么？", "a": "按时间流水账写周一做了什么、周二做了什么；容易写但不好用，老板要的是变化和需要他做的事。"}, {"q": "推荐的周报四部分是什么？", "a": "需要老板回复的事；整体状态加一句理由；只列本周变化（新风险、延期、值得一提的成果）；下周计划一两行。每周结构保持一致。"}], "dictation": [{"id": "s0_1_2", "text": "Your boss does not need to know what you did; they need to know what changed and what needs them."}, {"id": "s1_2_1", "text": "Unchanged items are noise, and noise teaches people to stop reading."}, {"id": "s1_1_2", "text": "A color without a reason leaves your boss guessing."}, {"id": "s1_3_0", "text": "Keep the same structure every week."}], "shadow": {"text": "Most updates are written like a diary: what we did on Monday, what we did on Tuesday. That format is easy to write and hard to use.", "marked": "Most updates are written / like a <b>diary</b>: / what we did on <b>Monday</b>, / what we did on <b>Tuesday</b>. //<br>That format is <b>easy</b> to write / and <b>hard</b> to use. //"}, "prompts": [{"q": "老板在电梯里问你：「这周项目怎么样？」按周报的顺序用 30 秒口头回答：需要他决定的事、状态和理由、本周变化。", "ref": "One thing first: I need your call on whether we delay the launch by a week or ship without the export feature. I'd like an answer by Thursday. Overall we're yellow, because the vendor is late with the payment API. Since last week, the load test passed and we closed the two crash bugs. Next week is mostly about the vendor integration.", "ref_zh": "先说一件事：我需要你定一下，是把上线推迟一周，还是不带导出功能先上线。希望周四前能给我答复。整体是黄灯，因为供应商的支付 API 延期了。跟上周相比，压测通过了，两个崩溃 bug 也都关掉了。下周主要是做供应商的对接。", "id": "ref0"}, {"q": "你接手了一个新团队，他们的周报是很长的流水账。用 30 秒在团队会上提出新的周报格式。", "ref": "I'd like to try a new format for our weekly update. Leadership reads it on their phones, so the first line should be anything we need from them. Then one status color with a one-line reason. Then only what changed since last week, and a line on next week. If nothing changed, it's fine to keep it short. Let's try it for a month and see if we get better responses.", "ref_zh": "我想给我们的周报试一种新格式。管理层是在手机上看的，所以第一行应该写我们需要他们做的事。然后是一个状态颜色，加一行理由。再然后只写跟上周相比的变化，外加一行下周计划。如果没什么变化，写短一点也没关系。我们先试一个月，看看反馈会不会更好。", "id": "ref1"}], "words": [{"w": "effectively", "ipa": "/ɪˈfektɪvli/", "zh": "实际上、等于", "ex": "Without an owner, the ticket is effectively dead.", "id": "w0"}, {"w": "diary", "ipa": "/ˈdaɪəri/", "zh": "日记", "ex": "This update reads like a diary; what's the headline?", "id": "w1"}, {"w": "skim (v.)", "ipa": "/skɪm/", "zh": "略读、浏览", "ex": "Most people will only skim the doc, so put the decision first.", "tts_w": "skim", "id": "w2"}, {"w": "rationale", "ipa": "/ˌræʃəˈnæl/", "zh": "理由、依据", "ex": "Please add a short rationale for marking the project red.", "id": "w3"}, {"w": "vendor", "ipa": "/ˈvendər/", "zh": "供应商", "ex": "The vendor pushed their release, so our integration is blocked.", "id": "w4"}, {"w": "noise", "ipa": "/nɔɪz/", "zh": "噪音、无用信息", "ex": "Too many low-priority alerts turn into noise that people ignore.", "id": "w5"}, {"w": "consistent", "ipa": "/kənˈsɪstənt/", "zh": "一致的、稳定的", "ex": "A consistent format makes the weekly report quick to read.", "id": "w6"}, {"w": "flip (v.)", "ipa": "/flɪp/", "zh": "翻转、调换", "ex": "Let's flip the agenda and start with the open decisions.", "tts_w": "flip", "id": "w7"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Written for a Thirty-Second Read", "zh": "1. 按三十秒读完来写", "start": 0.0, "end": 2.736, "words": [[0.105, 0.421], [0.763, 1.039], [1.053, 1.21], [1.224, 1.276], [1.289, 2.053], [2.066, 2.355]]}, {"kind": "s", "id": "s0_0_0", "md": "Your boss opens your weekly update on a phone, between two meetings.", "zh": "你老板是在两个会之间，用手机打开你的周报的。", "sp": null, "gap": false, "start": 2.736, "end": 7.272, "words": [[2.841, 2.986], [2.999, 3.368], [3.447, 3.802], [3.815, 3.96], [3.973, 4.381], [4.394, 4.802], [4.815, 4.947], [4.96, 4.999], [5.012, 5.433], [5.736, 6.065], [6.078, 6.289], [6.302, 6.894]]}, {"kind": "s", "id": "s0_0_1", "md": "They will read the first three lines, maybe four.", "zh": "他会读前三行，也许四行。", "sp": null, "gap": false, "start": 7.272, "end": 10.656, "words": [[7.377, 7.482], [7.496, 7.64], [7.654, 7.851], [7.864, 7.956], [7.969, 8.417], [8.43, 8.746], [8.759, 9.364], [9.561, 9.825], [9.838, 10.259]]}, {"kind": "s", "id": "s0_0_2", "md": "If the important part is in paragraph five, it is ==effectively== invisible.", "zh": "如果重点放在第五段，那基本等于没写。", "sp": null, "gap": false, "start": 10.656, "end": 15.288, "words": [[10.761, 10.88], [10.893, 10.945], [10.959, 11.432], [11.445, 11.761], [11.84, 11.959], [11.972, 12.077], [12.09, 12.709], [12.722, 13.182], [13.498, 13.564], [13.577, 13.669], [13.682, 14.327], [14.34, 14.906]]}, {"kind": "s", "id": "s0_1_0", "md": "Most updates are written like a ==diary==: what we did on Monday, what we did on Tuesday.", "zh": "大多数周报写得像日记：周一做了什么，周二做了什么。", "sp": null, "gap": true, "start": 15.288, "end": 20.616, "words": [[15.393, 15.656], [15.67, 16.117], [16.183, 16.38], [16.393, 16.656], [16.67, 16.827], [16.841, 16.893], [16.906, 17.393], [17.801, 17.906], [17.92, 18.025], [18.038, 18.196], [18.209, 18.354], [18.367, 18.841], [19.077, 19.183], [19.196, 19.301], [19.314, 19.472], [19.485, 19.63], [19.643, 20.235]]}, {"kind": "s", "id": "s0_1_1", "md": "That format is easy to write and hard to use.", "zh": "这种格式写起来容易，用起来难。", "sp": null, "gap": false, "start": 20.616, "end": 23.784, "words": [[20.721, 20.84], [20.853, 21.274], [21.287, 21.432], [21.577, 21.853], [21.866, 21.984], [21.998, 22.392], [22.471, 22.55], [22.563, 22.853], [22.866, 22.945], [22.958, 23.392]]}, {"kind": "s", "id": "s0_1_2", "md": "**Your boss does not need to know what you did; they need to know what changed and what needs them.**", "zh": "老板不需要知道你做了什么；他需要知道什么变了，以及什么需要他出手。", "sp": null, "gap": false, "start": 23.784, "end": 29.136, "words": [[23.889, 24.008], [24.021, 24.363], [24.376, 24.534], [24.547, 24.863], [24.876, 25.087], [25.1, 25.166], [25.179, 25.402], [25.416, 25.547], [25.56, 25.652], [25.666, 25.942], [26.376, 26.468], [26.481, 26.666], [26.679, 26.745], [26.758, 26.968], [26.981, 27.139], [27.152, 27.771], [27.916, 28.034], [28.047, 28.218], [28.231, 28.547], [28.56, 28.745]]}, {"kind": "s", "id": "s0_2_0", "md": "So __flip the order__.", "zh": "所以要把顺序倒过来。", "sp": null, "gap": true, "start": 29.136, "end": 31.008, "words": [[29.241, 29.439], [29.452, 29.728], [29.741, 29.82], [29.833, 30.228]]}, {"kind": "s", "id": "s0_2_1", "md": "Put decisions and risks at the top, and the list of finished tasks at the bottom, or cut it entirely.", "zh": "把需要的决策和风险放在最上面，已完成任务的列表放在最下面，或者干脆删掉。", "sp": null, "gap": false, "start": 31.008, "end": 37.224, "words": [[31.126, 31.284], [31.297, 31.903], [31.916, 32.061], [32.074, 32.442], [32.455, 32.534], [32.547, 32.626], [32.64, 33.061], [33.376, 33.429], [33.442, 33.547], [33.561, 33.89], [33.903, 33.982], [33.995, 34.416], [34.429, 34.863], [34.876, 34.955], [34.969, 35.047], [35.061, 35.455], [35.784, 35.876], [35.89, 36.087], [36.1, 36.179], [36.192, 36.837]]}, {"kind": "s", "id": "s0_2_2", "md": "A good update can be ==skimmed== in thirty seconds and still lead to the right action.", "zh": "一份好的周报，扫三十秒就能看完，而且照样能让人做出正确的动作。", "sp": null, "gap": false, "start": 37.224, "end": 42.336, "words": [[37.329, 37.408], [37.421, 37.619], [37.632, 38.079], [38.092, 38.237], [38.25, 38.382], [38.395, 38.777], [38.79, 38.895], [38.908, 39.29], [39.303, 39.908], [40.119, 40.263], [40.277, 40.658], [40.671, 41.013], [41.027, 41.119], [41.132, 41.224], [41.237, 41.487], [41.5, 41.948]]}, {"kind": "h", "id": "h1", "md": "2. Four Parts, Same Order Every Week", "zh": "2. 四个部分，每周同一个顺序", "start": 42.336, "end": 45.936, "words": [[42.441, 42.665], [43.139, 43.323], [43.336, 43.836], [44.073, 44.389], [44.402, 44.744], [44.915, 45.139], [45.152, 45.533]]}, {"kind": "s", "id": "s1_0_0", "md": "**Open with the one thing that needs a reply, like \"Need your call on the launch date by Thursday.\"**", "zh": "开头就写那件需要回复的事，比如「需要你在周四前定一下上线日期」。", "sp": null, "gap": false, "start": 45.936, "end": 52.08, "words": [[46.028, 46.278], [46.291, 46.423], [46.436, 46.541], [46.554, 46.818], [46.831, 47.133], [47.147, 47.304], [47.318, 47.581], [47.594, 47.647], [47.66, 48.173], [48.568, 48.791], [49.041, 49.278], [49.291, 49.41], [49.423, 49.725], [49.739, 49.818], [49.831, 49.91], [49.923, 50.291], [50.304, 50.62], [50.739, 50.91], [50.923, 51.581]]}, {"kind": "s", "id": "s1_0_1", "md": "If nothing needs your boss, say so, because that is useful too.", "zh": "如果没有需要老板处理的事，也直接说，因为这本身也是有用的信息。", "sp": null, "gap": false, "start": 52.08, "end": 56.352, "words": [[52.185, 52.317], [52.33, 52.685], [52.698, 52.922], [52.935, 53.054], [53.067, 53.54], [53.777, 53.988], [54.001, 54.383], [54.646, 54.922], [54.935, 55.119], [55.133, 55.238], [55.251, 55.659], [55.672, 55.975]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, give an overall status with a short ==rationale==.", "zh": "接下来，给一个整体状态，附上简短的理由。", "sp": null, "gap": true, "start": 56.352, "end": 60.048, "words": [[56.457, 56.905], [57.155, 57.299], [57.313, 57.431], [57.444, 57.944], [57.957, 58.457], [58.47, 58.615], [58.628, 58.655], [58.668, 59.023], [59.036, 59.655]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Yellow, because the vendor is two weeks late with the new API\" says more than a table of twenty green tasks.", "zh": "「黄灯，因为供应商的新 API 晚了两周」，比一张写满二十个绿灯任务的表格信息量大得多。", "sp": null, "gap": false, "start": 60.048, "end": 67.08, "words": [[60.232, 60.469], [60.811, 61.101], [61.114, 61.206], [61.219, 61.614], [61.627, 61.785], [61.798, 62.061], [62.074, 62.39], [62.403, 62.68], [62.693, 62.824], [62.837, 62.903], [62.916, 63.219], [63.232, 63.837], [64.18, 64.416], [64.43, 64.666], [64.68, 64.798], [64.811, 64.864], [64.877, 65.311], [65.324, 65.43], [65.443, 65.732], [65.745, 66.022], [66.035, 66.693]]}, {"kind": "s", "id": "s1_1_2", "md": "A color without a reason __leaves your boss guessing__.", "zh": "只有颜色没有理由，老板只能去猜。", "sp": null, "gap": false, "start": 67.08, "end": 70.032, "words": [[67.185, 67.251], [67.264, 67.593], [67.606, 67.948], [67.962, 68.001], [68.014, 68.501], [68.514, 68.791], [68.804, 68.909], [68.922, 69.225], [69.238, 69.646]]}, {"kind": "s", "id": "s1_2_0", "md": "Then list only what changed since last week: new risks, slipped dates, and wins worth noting.", "zh": "然后只列出跟上周相比有变化的东西：新的风险、延期的日期，以及值得一提的进展。", "sp": null, "gap": true, "start": 70.032, "end": 76.656, "words": [[70.137, 70.348], [70.361, 70.637], [70.743, 71.058], [71.071, 71.269], [71.282, 71.782], [71.795, 71.993], [72.006, 72.348], [72.361, 72.677], [73.098, 73.308], [73.321, 73.927], [74.111, 74.466], [74.479, 74.914], [75.177, 75.348], [75.361, 75.677], [75.69, 75.887], [75.9, 76.256]]}, {"kind": "s", "id": "s1_2_1", "md": "Unchanged items are ==noise==, and noise teaches people to stop reading.", "zh": "没变化的条目都是噪音，噪音只会让人养成不读的习惯。", "sp": null, "gap": false, "start": 76.656, "end": 81.168, "words": [[76.761, 77.314], [77.327, 77.709], [77.722, 77.867], [77.88, 78.485], [78.748, 78.919], [78.932, 79.288], [79.301, 79.682], [79.695, 79.998], [80.011, 80.064], [80.077, 80.445], [80.459, 80.788]]}, {"kind": "s", "id": "s1_2_2", "md": "Close with what is coming next week, in one or two lines.", "zh": "最后用一两行写下周的计划。", "sp": null, "gap": false, "start": 81.168, "end": 84.984, "words": [[81.273, 81.55], [81.563, 81.721], [81.734, 81.865], [81.879, 81.984], [81.997, 82.313], [82.326, 82.642], [82.655, 83.023], [83.286, 83.444], [83.457, 83.668], [83.681, 83.76], [83.773, 83.984], [83.997, 84.589]]}, {"kind": "s", "id": "s1_3_0", "md": "Keep the same structure every week.", "zh": "每周保持同样的结构。", "sp": null, "gap": true, "start": 84.984, "end": 87.432, "words": [[85.089, 85.273], [85.287, 85.379], [85.392, 85.681], [85.695, 86.26], [86.405, 86.629], [86.642, 87.05]]}, {"kind": "s", "id": "s1_3_1", "md": "A ==consistent== shape lets your boss __find what they need__ without thinking.", "zh": "格式固定，老板不用动脑子就能找到他要的东西。", "sp": null, "gap": false, "start": 87.432, "end": 91.488, "words": [[87.537, 87.59], [87.603, 88.169], [88.182, 88.524], [88.643, 88.84], [88.853, 88.985], [88.998, 89.3], [89.314, 89.629], [89.643, 89.774], [89.787, 89.906], [89.919, 90.3], [90.314, 90.682], [90.695, 91.09]]}, {"kind": "s", "id": "s1_3_2", "md": "Over time, they learn to trust that a quiet update really means things are fine, and they stop __chasing you for status__.", "zh": "时间长了，他会相信一份平静的周报确实意味着一切正常，也就不会再追着你问进度了。", "sp": null, "gap": false, "start": 91.488, "end": 98.664, "words": [[91.593, 91.791], [91.804, 92.251], [92.659, 92.738], [92.751, 92.975], [92.988, 93.054], [93.067, 93.462], [93.475, 93.58], [93.593, 93.646], [93.659, 94.08], [94.093, 94.541], [94.554, 94.87], [94.883, 95.185], [95.199, 95.488], [95.501, 95.593], [95.606, 96.054], [96.449, 96.501], [96.514, 96.606], [96.62, 96.935], [96.949, 97.383], [97.396, 97.501], [97.514, 97.633], [97.646, 98.277]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+{
+  "id": "118",
+  "type": "dialogue",
+  "title": "Sending Money Overseas",
+  "meta": "B2 · 约 270 词 · 场景：跨境汇款与到账延误",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Bank Officer", "name_zh": "银行职员", "voice": "en-GB-RyanNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. At the Counter",
+      "heading_zh": "1. 在柜台办汇款",
+      "lines": [
+        {"sp": "A", "en": "**Hi, I'd like to send some money to my parents in China. What's the best way to do it?**", "zh": "你好，我想给在中国的父母汇点钱。怎么汇最好？"},
+        {"sp": "B", "en": "We can do a ==telegraphic transfer== straight to their bank account. How much are you thinking of sending?", "zh": "我们可以电汇直接到他们的银行账户。您打算汇多少？"},
+        {"sp": "A", "en": "About five thousand Singapore dollars. What's today's ==exchange rate==?", "zh": "大约五千新币。今天的汇率是多少？"},
+        {"sp": "B", "en": "It's five point two eight yuan to the dollar right now, but it __moves throughout__ the day.", "zh": "现在是一新币兑五点二八人民币，不过一天之中会变动。"},
+        {"sp": "A", "en": "And what are the ==charges==? Is there a fee on both sides?", "zh": "手续费呢？两边都要收费吗？"},
+        {"sp": "B", "en": "Our fee is twenty dollars. Their bank, or an ==intermediary== bank, may also __take a cut__.", "zh": "我们收二十元。对方银行或者中转行也可能扣一部分。"},
+        {"sp": "A", "en": "Is there a way to make sure my parents receive the full amount?", "zh": "有没有办法确保我父母收到全额？"},
+        {"sp": "B", "en": "You can choose to pay all charges yourself. That's an extra fifteen dollars.", "zh": "您可以选择所有费用由您承担，要多付十五元。"},
+        {"sp": "A", "en": "Let's do that. __How long__ will it take to arrive?", "zh": "那就这样。多久能到账？"},
+        {"sp": "B", "en": "Normally one to three working days.", "zh": "一般一到三个工作日。"}
+      ]
+    },
+    {
+      "heading": "2. The Money Hasn't Arrived",
+      "heading_zh": "2. 钱没到账",
+      "lines": [
+        {"sp": "A", "en": "Hi, I sent a transfer to China last Monday, and it still hasn't arrived. Could you help me find out what's going on?", "zh": "你好，我上周一往中国汇了一笔钱，到现在还没到账。能帮我查查是怎么回事吗？"},
+        {"sp": "B", "en": "Certainly. Do you have the transaction ==reference==?", "zh": "当然。您有交易参考号吗？"},
+        {"sp": "A", "en": "Yes, it's T T, nine four seven, two eight one.", "zh": "有，是 TT 九四七二八一。"},
+        {"sp": "B", "en": "Thank you. It looks like the receiving bank has put it __on hold__. The name doesn't quite ==match== their records.", "zh": "谢谢。看起来收款行把这笔钱暂扣了，收款人名字和他们的记录对不上。"},
+        {"sp": "A", "en": "Oh, I might have spelled my father's name with a space in the middle. What do I need to do?", "zh": "哦，我可能把我父亲名字中间多打了一个空格。我需要做什么？"},
+        {"sp": "B", "en": "Please fill in an ==amendment== form with the name exactly as it appears on his account.", "zh": "请填一份修改申请表，名字要和他账户上的完全一致。"},
+        {"sp": "A", "en": "**Will there be another fee for that, and how long will it take after the correction?**", "zh": "改这个还要再收费吗？改完之后要多久？"},
+        {"sp": "B", "en": "There's a ten dollar fee, I'm afraid, and it should __go through__ within two working days.", "zh": "恐怕要收十元，一般两个工作日内就能到账。"},
+        {"sp": "A", "en": "Alright, I'll fill it in now. Lesson learned. Thanks for your help.", "zh": "好吧，我现在就填。长教训了。谢谢帮忙。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "汇款的手续费怎么算？「你」选了哪种方式？", "a": "银行收二十元，中转行或对方银行可能另扣；「你」多付十五元承担全部费用，确保父母收到全额。"},
+    {"q": "钱为什么没到账？", "a": "收款人名字和对方银行记录不一致，「你」可能在父亲名字中间多打了空格，钱被暂扣了。"},
+    {"q": "怎么补救？要多久？", "a": "填修改申请表、按账户上的名字改正，收十元，两个工作日内到账。"}
+  ],
+  "dictation": [
+    "Hi, I'd like to send some money to my parents in China. What's the best way to do it?",
+    "Is there a way to make sure my parents receive the full amount?",
+    "Hi, I sent a transfer to China last Monday, and it still hasn't arrived. Could you help me find out what's going on?",
+    "Will there be another fee for that, and how long will it take after the correction?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Oh, I might have spelled my father's name with a space in the middle. What do I need to do?",
+    "marked": "Oh, / I might have <b>spelled</b> my father's <b>name</b> / with a <b>space</b> in the middle. //<br>What do I <b>need</b> to do? //"
+  },
+  "prompts": [
+    {
+      "q": "你想每个月固定给父母汇一笔钱，到银行咨询有没有定期汇款服务、汇率怎么锁定、能否在手机上操作。",
+      "ref": "Hi, I send money to my parents in China every month. Is there a way to set up a regular transfer so I don't have to come in each time? Also, can I lock in the exchange rate when I set it up, or is it the rate on the day? And can I manage all of this in the app?",
+      "ref_zh": "你好，我每个月都给在中国的父母汇钱。有没有办法设置定期汇款，不用每次都来银行？另外，设置的时候能锁定汇率吗，还是按当天汇率算？这些能都在手机应用里操作吗？"
+    },
+    {
+      "q": "父母收到的钱比你汇的少了一些。打电话问银行原因，并要求说明各项扣费。",
+      "ref": "Hi, I sent a transfer to my parents last week, and I chose to pay all the charges myself. But they received about two hundred yuan less than expected. Could you tell me why? I'd like a breakdown of every fee that was taken. If it was a mistake on the bank's side, I'd like the difference refunded.",
+      "ref_zh": "你好，我上周给父母汇了一笔钱，选了所有费用由我承担。但他们收到的钱比预期少了大约两百人民币。能告诉我原因吗？我想要一份每项扣费的明细。如果是银行这边的错，希望把差额退还。"
+    }
+  ],
+  "words": [
+    {"w": "telegraphic transfer", "ipa": "/ˌtelɪˈɡræfɪk ˈtrænsfɜːr/", "zh": "电汇", "ex": "The rent was paid by telegraphic transfer from overseas."},
+    {"w": "exchange rate", "ipa": "/ɪksˈtʃeɪndʒ reɪt/", "zh": "汇率", "ex": "The exchange rate is better at the money changer in the mall."},
+    {"w": "charges", "ipa": "/ˈtʃɑːrdʒɪz/", "zh": "费用", "ex": "Are there any hidden charges I should know about?"},
+    {"w": "intermediary", "ipa": "/ˌɪntərˈmiːdieri/", "zh": "中间方，中转行", "ex": "The intermediary bank took a small fee."},
+    {"w": "reference", "ipa": "/ˈrefərəns/", "zh": "参考编号", "ex": "Please quote your booking reference when you call."},
+    {"w": "match", "ipa": "/mætʃ/", "zh": "相符，一致", "ex": "The name on the ticket must match your passport."},
+    {"w": "amendment", "ipa": "/əˈmendmənt/", "zh": "修改，更正", "ex": "I made a small amendment to the contract."},
+    {"w": "on hold", "ipa": "/ɑːn hoʊld/", "zh": "暂缓，暂扣", "ex": "Our plan to move is on hold for now."},
+    {"w": "take a cut", "ipa": "/teɪk ə kʌt/", "zh": "抽成，扣一部分", "ex": "The delivery app takes a cut from every order."}
+  ]
+}

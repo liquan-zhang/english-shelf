@@ -1,0 +1,188 @@
+{
+  "id": "009",
+  "title": "Saying I Don't Know Without Losing Credibility",
+  "meta": "B2 · 约 280 词 · 场景：回答问题",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Two Engineers, One Question",
+      "paragraphs": [
+        [
+          "Imagine two engineers being asked the same thing in a review.",
+          "\"How many users will this migration affect?\"",
+          "The first one answers right away with a confident number.",
+          "The second says, \"I don't know yet, but I can find out by tomorrow.\""
+        ],
+        [
+          "A week later, the first number turns out to be wrong by a factor of ten.",
+          "From then on, people quietly double-check everything that engineer says.",
+          "The second engineer, meanwhile, has become the person whose answers people __take at face value__."
+        ],
+        [
+          "**Credibility does not come from always knowing; it comes from being right about what you know.**",
+          "Leaders learn very quickly whose ==confidence== is ==calibrated== and whose is just a performance.",
+          "A ==bluff== might save you for one meeting, but it costs you the next ten."
+        ]
+      ],
+      "heading_zh": "1. 两个工程师，同一个问题",
+      "paragraphs_zh": [
+        [
+          "想象两个工程师在评审会上被问了同一个问题。",
+          "「这次迁移会影响多少用户？」",
+          "第一个张口就给了一个很自信的数字。",
+          "第二个说：「我现在还不知道，但明天之前能查清楚。」"
+        ],
+        [
+          "一周后，第一个数字被发现差了十倍。",
+          "从那以后，那个工程师说的每句话，大家都会悄悄再核实一遍。",
+          "而第二个工程师，成了那个说什么大家都直接信的人。"
+        ],
+        [
+          "信誉不是来自什么都知道，而是来自你对自己知道的东西判断准确。",
+          "领导很快就能看出来，谁的自信是有分寸的，谁的只是在表演。",
+          "硬撑也许能帮你混过一个会，但接下来十个会都要还。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Make Not Knowing Sound Useful",
+      "paragraphs": [
+        [
+          "The trick is to never stop at \"I don't know.\"",
+          "**Follow it with what you do know, how you will find out, and when.**",
+          "\"I don't have the exact number, but it's only users on the old app version, and I'll pull the figure from the logs by noon.\""
+        ],
+        [
+          "It also helps to __put a number on your certainty__.",
+          "\"I'm fairly sure it's under ten percent, maybe seventy percent ==confident==.\"",
+          "This sounds ==precise== even when the answer is rough, and it tells people how much weight to give it."
+        ],
+        [
+          "If the question is outside your area, __point to the right person__ instead of guessing.",
+          "\"That's really a question for the data team, I'll ==loop in== Anna.\""
+        ],
+        [
+          "Finally, close the gap you opened.",
+          "Send the real answer when you promised, even if nobody reminds you.",
+          "Each time you do this, the words \"I don't know\" become a little more ==trustworthy==."
+        ]
+      ],
+      "heading_zh": "2. 让「不知道」听起来也有用",
+      "paragraphs_zh": [
+        [
+          "诀窍是永远别停在「我不知道」上。",
+          "后面要接上你知道什么、你打算怎么查、什么时候给答复。",
+          "「具体数字我手上没有，但只涉及老版本 app 的用户，中午前我从日志里把数拉出来。」"
+        ],
+        [
+          "给你的把握程度报个数也很有帮助。",
+          "「我比较确定在百分之十以下，大概七成把握。」",
+          "哪怕答案很粗略，这样说听起来也很精确，还能让大家知道这个答案该信几分。"
+        ],
+        [
+          "如果问题超出了你的范围，就指给对的人，别瞎猜。",
+          "「这个其实得问数据团队，我把 Anna 拉进来。」"
+        ],
+        [
+          "最后，把你留下的口子补上。",
+          "在你承诺的时间把真实答案发出去，哪怕没人提醒你。",
+          "每这样做一次，你说「我不知道」时就更值得信任一点。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "两位工程师的例子说明了什么？",
+      "a": "随口给出错误数字的人从此被人怀疑；坦诚说“不知道但明天给你”的人反而赢得信任。"
+    },
+    {
+      "q": "作者认为可信度从哪里来？",
+      "a": "不是永远都知道答案，而是对自己知道的部分判断准确，信心与实际相符。"
+    },
+    {
+      "q": "说“不知道”之后应该补充什么？",
+      "a": "说出已知部分、怎么查、什么时候给答案；给出把握程度；不是自己领域就指向对的人；按时兑现承诺。"
+    }
+  ],
+  "dictation": [
+    "Credibility does not come from always knowing; it comes from being right about what you know.",
+    "Follow it with what you do know, how you will find out, and when.",
+    "A bluff might save you for one meeting, but it costs you the next ten.",
+    "Send the real answer when you promised, even if nobody reminds you."
+  ],
+  "shadow": {
+    "text": "The trick is to never stop at \"I don't know.\" Follow it with what you do know, how you will find out, and when.",
+    "marked": "The <b>trick</b> / is to <b>never</b> stop at / \"I <b>don't</b> know.\" //<br>Follow it with what you <b>do</b> know, / <b>how</b> you will find out, / and <b>when</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "评审会上，总监问你：“这次数据库迁移会让多少请求变慢？”你没有确切数字。用 30 秒回答：说已知部分、把握程度、怎么查、什么时候给结果。",
+      "ref": "I don't have an exact number yet. What I do know is that only the reporting queries touch the old tables, and those are a small share of our traffic. My best guess is under five percent of requests, and I'd say I'm about seventy percent confident in that. I'll run a replay test this afternoon and send you the real figure by tomorrow morning.",
+      "ref_zh": "我现在还没有确切的数字。我知道的是，只有报表查询会碰到老表，而这部分只占我们流量的一小块。我最好的估计是不到百分之五的请求，大概有七成把握。今天下午我跑一个回放测试，明早之前把准确数字发给你。"
+    },
+    {
+      "q": "客户沟通会上，有人问你一个法务合规的问题，不在你的领域。用 30 秒不丢面子地说不知道，并指向对的人。",
+      "ref": "That's a great question, and I don't want to give you a half-right answer on something this important. Data retention rules are really owned by our legal and privacy team. What I can tell you is that the system supports deleting user data on request. I'll loop in our privacy lead today, and we'll come back to you with a written answer this week.",
+      "ref_zh": "这个问题很好，这么重要的事，我不想给你一个半对不对的答案。数据保留的规则其实归法务和隐私团队管。我能告诉你的是，系统支持按用户请求删除数据。我今天就把隐私负责人拉进来，这周内给你一个书面答复。"
+    }
+  ],
+  "words": [
+    {
+      "w": "confidence",
+      "ipa": "/ˈkɑːnfɪdəns/",
+      "zh": "信心、把握",
+      "ex": "We have high confidence in the fix, but we'll keep monitoring."
+    },
+    {
+      "w": "calibrated",
+      "ipa": "/ˈkæləˌbreɪtɪd/",
+      "zh": "（判断）校准过的、与实际相符的",
+      "ex": "His estimates are well calibrated; when he says two weeks, it's two weeks."
+    },
+    {
+      "w": "bluff (n.)",
+      "ipa": "/blʌf/",
+      "zh": "虚张声势",
+      "ex": "The confident answer was a bluff, and the logs proved it.",
+      "tts_w": "bluff"
+    },
+    {
+      "w": "confident",
+      "ipa": "/ˈkɑːnfɪdənt/",
+      "zh": "有把握的",
+      "ex": "I'm confident the cache is warm before peak hours."
+    },
+    {
+      "w": "precise",
+      "ipa": "/prɪˈsaɪs/",
+      "zh": "精确的",
+      "ex": "Can you be more precise about when the errors started?"
+    },
+    {
+      "w": "loop in",
+      "ipa": "/luːp ɪn/",
+      "zh": "拉进来（沟通）",
+      "ex": "Let me loop in the security team before we open the port."
+    },
+    {
+      "w": "trustworthy",
+      "ipa": "/ˈtrʌstˌwɜːrði/",
+      "zh": "值得信赖的",
+      "ex": "These metrics aren't trustworthy until we fix the double counting."
+    },
+    {
+      "w": "take at face value",
+      "ipa": "/teɪk æt feɪs ˈvælju/",
+      "zh": "直接相信、照单全收",
+      "ex": "Don't take the vendor's benchmark at face value."
+    },
+    {
+      "w": "certainty",
+      "ipa": "/ˈsɜːrtənti/",
+      "zh": "确定性、把握",
+      "ex": "We can't say with certainty that the patch fixed it."
+    }
+  ]
+}

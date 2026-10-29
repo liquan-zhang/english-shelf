@@ -1,0 +1,196 @@
+{
+  "id": "015",
+  "title": "Answering Tough Questions After a Presentation",
+  "meta": "B2 · 约 280 词 · 场景：答疑环节",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Every Hard Question Hides a Worry",
+      "paragraphs": [
+        [
+          "You finish your talk, and the first hand goes up.",
+          "\"Honestly, why should we trust this when the last migration failed?\"",
+          "The room goes quiet, and everyone turns to see how you react."
+        ],
+        [
+          "It is natural to hear a question like that as an attack and to start ==defending== yourself.",
+          "But most tough questions are not really about you.",
+          "They come from a worry the person has not fully ==articulated==, like losing a weekend to an outage or missing a deadline of their own.",
+          "**If you answer the worry instead of the wording, the tone of the room changes.**"
+        ],
+        [
+          "That means your first job is not to respond.",
+          "It is to understand what is really being asked, and to make the person feel ==heard== before you __make your case__."
+        ]
+      ],
+      "heading_zh": "1. 每个尖锐问题背后都藏着一份担心",
+      "paragraphs_zh": [
+        [
+          "你讲完了，第一只手举了起来。",
+          "「说实话，上次迁移都失败了，凭什么让我们相信这次？」",
+          "全场安静下来，所有人都转过头看你怎么反应。"
+        ],
+        [
+          "听到这种问题，人很自然会把它当成攻击，然后开始为自己辩护。",
+          "但大多数尖锐的问题其实不是冲你来的。",
+          "它们来自对方还没完全说出口的担心，比如怕周末被故障搭进去，或者怕耽误自己的 deadline。",
+          "如果你回应的是这份担心，而不是字面上的措辞，全场的气氛就会变。"
+        ],
+        [
+          "所以你的第一件事不是回答。",
+          "而是搞清楚对方真正在问什么，在摆出你的理由之前，先让对方感到自己被听见了。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Pause, Name the Concern, Answer Short",
+      "paragraphs": [
+        [
+          "Start with a real pause.",
+          "Two seconds of silence makes you look ==thoughtful==, not lost, and it keeps you from replying on ==autopilot==."
+        ],
+        [
+          "Then name the concern behind the question.",
+          "\"It sounds like the real concern is whether we'll repeat the mistakes from last time.\"",
+          "If you got it wrong, the person will correct you, and now you know what to answer."
+        ],
+        [
+          "Give the headline first, in one sentence, then one piece of ==support==.",
+          "\"Yes, we learned from it, and this time every step can be rolled back in minutes.\"",
+          "**Short answers sound confident; long answers sound defensive.**"
+        ],
+        [
+          "If part of the challenge is fair, __admit it openly__.",
+          "\"You're right that our testing was weak last time.\"",
+          "Agreeing with the ==valid== part makes the rest of your answer far more believable.",
+          "And if you need more time, offer to __take it offline__ rather than __drag the whole room__ into the details."
+        ]
+      ],
+      "heading_zh": "2. 停顿、点出顾虑、简短作答",
+      "paragraphs_zh": [
+        [
+          "先真正停顿一下。",
+          "两秒钟的沉默会让你显得在思考，而不是懵了，还能防止你条件反射地张口就答。"
+        ],
+        [
+          "然后点出问题背后的顾虑。",
+          "「听起来你真正担心的是，我们会不会重蹈上次的覆辙。」",
+          "如果你理解错了，对方会纠正你，这样你就知道该回答什么了。"
+        ],
+        [
+          "先用一句话给出结论，再给一个支撑点。",
+          "「会吸取教训的，这次每一步都能在几分钟内回滚。」",
+          "回答短，听起来就有底气；回答长，听起来就像在辩解。"
+        ],
+        [
+          "如果对方的质疑有一部分是对的，就大方承认。",
+          "「你说得对，上次我们的测试确实没做好。」",
+          "认可合理的那部分，你其余的回答就可信得多。",
+          "如果需要更多时间，就提议会后单独聊，而不是把全场都拖进细节里。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为刁钻问题背后通常是什么？",
+      "a": "提问者没说出口的担忧，比如怕周末处理故障或耽误自己的截止日期，而不是针对你个人。"
+    },
+    {
+      "q": "回答刁钻问题的步骤是什么？",
+      "a": "先真正停顿两秒；说出问题背后的担忧；先给一句结论再给一个支撑；对合理的部分坦然承认；细节太多就会后再谈。"
+    },
+    {
+      "q": "为什么作者说短回答更好？",
+      "a": "短回答听起来自信，长回答听起来像在辩解。"
+    }
+  ],
+  "dictation": [
+    "If you answer the worry instead of the wording, the tone of the room changes.",
+    "Short answers sound confident; long answers sound defensive.",
+    "Agreeing with the valid part makes the rest of your answer far more believable.",
+    "If you got it wrong, the person will correct you, and now you know what to answer."
+  ],
+  "shadow": {
+    "text": "Then name the concern behind the question. \"It sounds like the real concern is whether we'll repeat the mistakes from last time.\"",
+    "marked": "Then <b>name</b> the concern / <b>behind</b> the question. //<br>\"It sounds like the <b>real</b> concern / is whether we'll <b>repeat</b> the mistakes / from <b>last</b> time.\" //"
+  },
+  "prompts": [
+    {
+      "q": "你讲完新架构方案，一位资深工程师质问：“上次重构拖了半年，凭什么这次能按时？”用 30 秒回应：停顿、说出背后的担忧、短答、承认合理部分。",
+      "ref": "That's a fair question. It sounds like the real concern is whether this turns into another six-month project that blocks everyone else. You're right that the last refactor ran long, mostly because we tried to change everything at once. This time we're moving one service at a time, and each step ships on its own. If the first step slips, we'll know within three weeks, not six months.",
+      "ref_zh": "这个问题很合理。听起来你真正担心的是，这会不会又变成一个拖半年、把所有人都卡住的项目。你说得对，上次重构确实超期了，主要是因为我们想一次把所有东西都改掉。这次我们一次只迁一个服务，每一步都单独上线。如果第一步延期了，我们三周内就会知道，而不是等到半年后。"
+    },
+    {
+      "q": "汇报结束时，有人提出一个很细的技术问题，需要十分钟才能讲清。用 30 秒给出简短回答，并把细节挪到会后。",
+      "ref": "Great question, and the short answer is yes, the new cache handles that case. The full explanation involves how we invalidate keys across regions, and it would take a while to walk through properly. Rather than pull the whole group into the details, could we grab fifteen minutes after this? I'll also add a short section on it to the design doc, so anyone curious can read it.",
+      "ref_zh": "好问题，简短的回答是：能，新缓存能处理这种情况。完整的解释涉及我们怎么跨地区让 key 失效，要讲清楚得花不少时间。与其把大家都拉进细节里，会后我们单独聊十五分钟怎么样？我也会在设计文档里加一小节讲这个，感兴趣的人都可以去看。"
+    }
+  ],
+  "words": [
+    {
+      "w": "defend",
+      "ipa": "/dɪˈfend/",
+      "zh": "辩护、捍卫",
+      "ex": "I'm not trying to defend the old design; I just want to explain why we chose it."
+    },
+    {
+      "w": "heard (feel heard)",
+      "ipa": "/hɜːrd/",
+      "zh": "（感到）被倾听",
+      "ex": "Repeat their concern first, so the customer feels heard.",
+      "tts_w": "heard"
+    },
+    {
+      "w": "thoughtful",
+      "ipa": "/ˈθɔːtfəl/",
+      "zh": "深思熟虑的",
+      "ex": "Thanks for the thoughtful review comments on my pull request."
+    },
+    {
+      "w": "autopilot",
+      "ipa": "/ˈɔːtoʊˌpaɪlət/",
+      "zh": "自动驾驶状态、不过脑子",
+      "ex": "After ten interviews in a row, I was answering on autopilot."
+    },
+    {
+      "w": "support (n.)",
+      "ipa": "/səˈpɔːrt/",
+      "zh": "支撑、论据",
+      "ex": "Do we have any data in support of this change?",
+      "tts_w": "support"
+    },
+    {
+      "w": "valid",
+      "ipa": "/ˈvælɪd/",
+      "zh": "合理的、站得住的",
+      "ex": "That's a valid point; the retry logic could cause duplicate orders."
+    },
+    {
+      "w": "defensive",
+      "ipa": "/dɪˈfensɪv/",
+      "zh": "防御性的、急于辩解的",
+      "ex": "He got defensive when we asked about the missed deadline."
+    },
+    {
+      "w": "make your case",
+      "ipa": "/meɪk jʊr keɪs/",
+      "zh": "陈述理由、论证观点",
+      "ex": "You'll have ten minutes to make your case for more headcount."
+    },
+    {
+      "w": "take it offline",
+      "ipa": "/teɪk ɪt ˌɔːfˈlaɪn/",
+      "zh": "会后单独讨论",
+      "ex": "This is getting detailed; let's take it offline."
+    },
+    {
+      "w": "articulate (v.)",
+      "ipa": "/ɑːrˈtɪkjəˌleɪt/",
+      "zh": "清楚表达",
+      "ex": "She articulated the trade-off better than anyone in the review.",
+      "tts_w": "articulate"
+    }
+  ]
+}

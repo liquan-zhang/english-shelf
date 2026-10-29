@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>What Makes a Good Design Review · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "021", "title": "What Makes a Good Design Review", "meta": "B2 · 约 280 词 · 场景：设计评审", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Diagram Is Not the Design", "heading_zh": "1. 架构图不等于设计", "rows": [[{"id": "s0_0_0", "md": "Most design reviews spend forty minutes on __boxes and arrows__.", "text": "Most design reviews spend forty minutes on boxes and arrows.", "zh": "大多数设计评审会花四十分钟在框框和箭头上。", "sp": null}, {"id": "s0_0_1", "md": "Someone asks why the queue is drawn on the left, and someone else suggests a different name for the cache.", "text": "Someone asks why the queue is drawn on the left, and someone else suggests a different name for the cache.", "zh": "有人问队列为什么画在左边，又有人建议给缓存换个名字。", "sp": null}, {"id": "s0_0_2", "md": "The meeting ends, everyone feels ==productive==, and the hard questions were never asked.", "text": "The meeting ends, everyone feels productive, and the hard questions were never asked.", "zh": "会开完了，大家都觉得挺有成效，可真正难的问题一个都没问。", "sp": null}], [{"id": "s0_1_0", "md": "A diagram shows what the system looks like.", "text": "A diagram shows what the system looks like.", "zh": "架构图展示的是系统长什么样。", "sp": null}, {"id": "s0_1_1", "md": "A design is the set of decisions behind it, and the ==assumptions== those decisions rest on.", "text": "A design is the set of decisions behind it, and the assumptions those decisions rest on.", "zh": "设计则是背后的一系列决策，以及这些决策所依赖的假设。", "sp": null}, {"id": "s0_1_2", "md": "**A good review tests the assumptions, because that is where designs usually break.**", "text": "A good review tests the assumptions, because that is where designs usually break.", "zh": "好的评审要去检验这些假设，因为设计通常就是在这里出问题的。", "sp": null}], [{"id": "s0_2_0", "md": "So before the meeting, the author should __spell out__ the three decisions that matter most.", "text": "So before the meeting, the author should spell out the three decisions that matter most.", "zh": "所以开会之前，作者应该把最关键的三个决策讲清楚。", "sp": null}, {"id": "s0_2_1", "md": "Why build a new service instead of extending the old one?", "text": "Why build a new service instead of extending the old one?", "zh": "为什么要新建一个服务，而不是在老服务上扩展？", "sp": null}, {"id": "s0_2_2", "md": "Why accept eventual ==consistency== instead of strong consistency?", "text": "Why accept eventual consistency instead of strong consistency?", "zh": "为什么接受最终一致性，而不是强一致性？", "sp": null}, {"id": "s0_2_3", "md": "Each decision should come with the option that was rejected and the reason.", "text": "Each decision should come with the option that was rejected and the reason.", "zh": "每个决策都要附上被否掉的方案和否掉的理由。", "sp": null}]]}, {"heading": "2. Three Questions for Reviewers", "heading_zh": "2. 评审人该问的三个问题", "rows": [[{"id": "s1_0_0", "md": "As a reviewer, your job is not to redesign the system in the room.", "text": "As a reviewer, your job is not to redesign the system in the room.", "zh": "作为评审人，你的任务不是在会上把系统重新设计一遍。", "sp": null}, {"id": "s1_0_1", "md": "It is to __poke holes in__ the thinking while changes are still cheap.", "text": "It is to poke holes in the thinking while changes are still cheap.", "zh": "而是趁改动成本还低的时候，去挑思路里的漏洞。", "sp": null}, {"id": "s1_0_2", "md": "Three questions do most of the work.", "text": "Three questions do most of the work.", "zh": "三个问题就能解决大部分事情。", "sp": null}], [{"id": "s1_1_0", "md": "First, what happens when this part fails?", "text": "First, what happens when this part fails?", "zh": "第一，这部分挂了会怎样？", "sp": null}, {"id": "s1_1_1", "md": "Ask about timeouts, retries, and what the user sees when a ==dependency== is down.", "text": "Ask about timeouts, retries, and what the user sees when a dependency is down.", "zh": "问问超时、重试，以及依赖挂掉时用户会看到什么。", "sp": null}, {"id": "s1_1_2", "md": "If the answer is \"it won't fail,\" you have found your first ==gap==.", "text": "If the answer is \"it won't fail,\" you have found your first gap.", "zh": "如果回答是「它不会挂」，那你就找到第一个漏洞了。", "sp": null}], [{"id": "s1_2_0", "md": "Second, what does this look like at ten times the traffic?", "text": "Second, what does this look like at ten times the traffic?", "zh": "第二，流量涨到十倍会是什么样？", "sp": null}, {"id": "s1_2_1", "md": "You are not asking the author to build for that scale today.", "text": "You are not asking the author to build for that scale today.", "zh": "你不是要作者现在就按那个量级去建。", "sp": null}, {"id": "s1_2_2", "md": "You are checking whether the design __paints the team into a corner__ later.", "text": "You are checking whether the design paints the team into a corner later.", "zh": "你是在确认这个设计以后会不会把团队逼进死胡同。", "sp": null}], [{"id": "s1_3_0", "md": "Third, how will we know it is working?", "text": "Third, how will we know it is working?", "zh": "第三，我们怎么知道它运行正常？", "sp": null}, {"id": "s1_3_1", "md": "A design without metrics, alerts, and a ==rollback== plan is only half finished.", "text": "A design without metrics, alerts, and a rollback plan is only half finished.", "zh": "一个没有指标、告警和回滚方案的设计，只完成了一半。", "sp": null}, {"id": "s1_3_2", "md": "**If you leave with a list of decisions and open risks, it was a good review, even if nobody moved a single box.**", "text": "If you leave with a list of decisions and open risks, it was a good review, even if nobody moved a single box.", "zh": "如果散会时你手里有一份决策清单和待解决的风险，那就是一次好的评审，哪怕没人挪动过一个框。", "sp": null}]]}], "gist": [{"q": "作者认为很多设计评审的问题出在哪里？", "a": "把时间花在框和箭头（图本身）上，真正难的问题没人问；图不等于设计，设计是背后的决策和假设。"}, {"q": "评审前作者应该准备什么？", "a": "讲清楚最重要的三个决策，每个决策附上被否掉的方案和理由。"}, {"q": "评审者可以问哪三个问题？", "a": "这部分挂了会怎样；流量涨到十倍会怎样；我们怎么知道它运转正常（指标、告警、回滚方案）。"}], "dictation": [{"id": "s0_1_2", "text": "A good review tests the assumptions, because that is where designs usually break."}, {"id": "s0_1_1", "text": "A design is the set of decisions behind it, and the assumptions those decisions rest on."}, {"id": "s0_2_3", "text": "Each decision should come with the option that was rejected and the reason."}, {"id": "s1_3_2", "text": "If you leave with a list of decisions and open risks, it was a good review, even if nobody moved a single box."}], "shadow": {"text": "A diagram shows what the system looks like. A design is the set of decisions behind it, and the assumptions those decisions rest on. A good review tests the assumptions, because that is where designs usually break.", "marked": "A <b>diagram</b> shows / what the system <b>looks</b> like. //<br>A <b>design</b> is the set of <b>decisions</b> behind it, / and the <b>assumptions</b> / those decisions rest on. //<br>A good review / <b>tests</b> the assumptions, / because that is where designs <b>usually break</b>. //"}, "prompts": [{"q": "同事在评审会上讲一个新的缓存方案，图画得很漂亮但没讲失败场景。用 30 秒问两个问题：挂了会怎样、怎么知道它在正常工作。", "ref": "This looks clean, thanks for walking us through it. I have two questions before we go further. First, what happens when the cache cluster is down? Do requests fall through to the database, and can the database handle that load? Second, how will we know it's working after launch? I'd like to see the hit rate on a dashboard and an alert if latency jumps.", "ref_zh": "方案看着挺清晰的，谢谢你带大家过了一遍。往下聊之前我有两个问题。第一，缓存集群挂了会怎样？请求会不会直接打到数据库上，数据库扛得住吗？第二，上线之后我们怎么知道它运行正常？我希望能在大盘上看到命中率，延迟突然飙升的时候要有告警。", "id": "ref0"}, {"q": "你是方案作者，评审会开场。用 30 秒告诉大家这次请重点评审哪两个决策，以及你否掉了什么方案。", "ref": "Before we look at the diagram, I want to point out the two decisions I'd like you to challenge. One, we're building a separate service instead of extending the order service, because the release cycles are very different. Two, we're accepting eventual consistency for the counters. We considered strong consistency, but it doubled the write latency. If either assumption looks wrong to you, that's the most useful feedback today.", "ref_zh": "看图之前，我想先点出两个希望大家来挑战的决策。第一，我们是新建一个独立服务，而不是在订单服务上扩展，因为两边的发布节奏差别很大。第二，计数器这块我们接受最终一致性。我们考虑过强一致性，但写延迟会翻倍。如果你觉得哪个假设不对，那就是今天最有价值的反馈。", "id": "ref1"}], "words": [{"w": "productive", "ipa": "/prəˈdʌktɪv/", "zh": "有成效的", "ex": "The sync felt productive, but we left without a single decision.", "id": "w0"}, {"w": "assumption", "ipa": "/əˈsʌmpʃən/", "zh": "假设、前提", "ex": "The whole design rests on the assumption that traffic stays flat.", "id": "w1"}, {"w": "consistency", "ipa": "/kənˈsɪstənsi/", "zh": "一致性", "ex": "We traded strong consistency for lower write latency.", "id": "w2"}, {"w": "eventual", "ipa": "/ɪˈventʃuəl/", "zh": "最终的", "ex": "Eventual consistency is fine for like counts, not for payments.", "id": "w3"}, {"w": "dependency", "ipa": "/dɪˈpendənsi/", "zh": "依赖（项）", "ex": "If the auth dependency times out, we show a cached profile.", "id": "w4"}, {"w": "gap", "ipa": "/ɡæp/", "zh": "漏洞、缺口", "ex": "The review exposed a gap in how we handle retries.", "id": "w5"}, {"w": "rollback", "ipa": "/ˈroʊlbæk/", "zh": "回滚", "ex": "We need a rollback plan before this goes to production.", "id": "w6"}, {"w": "reject (v.)", "ipa": "/rɪˈdʒekt/", "zh": "否决、拒绝", "ex": "We rejected the shared database option because of the coupling.", "tts_w": "reject", "id": "w7"}, {"w": "metric", "ipa": "/ˈmetrɪk/", "zh": "指标", "ex": "Which metric tells us the new path is healthy?", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Diagram Is Not the Design", "zh": "1. 架构图不等于设计", "start": 0.0, "end": 2.688, "words": [[0.105, 0.355], [0.684, 0.789], [0.803, 1.355], [1.368, 1.474], [1.487, 1.75], [1.763, 1.842], [1.855, 2.303]]}, {"kind": "s", "id": "s0_0_0", "md": "Most design reviews spend forty minutes on __boxes and arrows__.", "zh": "大多数设计评审会花四十分钟在框框和箭头上。", "sp": null, "gap": false, "start": 2.688, "end": 6.792, "words": [[2.793, 3.043], [3.056, 3.491], [3.504, 4.004], [4.017, 4.359], [4.372, 4.727], [4.741, 5.056], [5.07, 5.201], [5.214, 5.741], [5.754, 5.846], [5.859, 6.412]]}, {"kind": "s", "id": "s0_0_1", "md": "Someone asks why the queue is drawn on the left, and someone else suggests a different name for the cache.", "zh": "有人问队列为什么画在左边，又有人建议给缓存换个名字。", "sp": null, "gap": false, "start": 6.792, "end": 12.864, "words": [[6.897, 7.239], [7.253, 7.595], [7.608, 7.739], [7.753, 7.858], [7.871, 8.2], [8.213, 8.345], [8.358, 8.66], [8.674, 8.753], [8.766, 8.845], [8.858, 9.318], [9.621, 9.687], [9.7, 10.029], [10.042, 10.292], [10.305, 10.831], [10.845, 10.976], [10.989, 11.358], [11.371, 11.647], [11.66, 11.779], [11.792, 11.871], [11.884, 12.463]]}, {"kind": "s", "id": "s0_0_2", "md": "The meeting ends, everyone feels ==productive==, and the hard questions were never asked.", "zh": "会开完了，大家都觉得挺有成效，可真正难的问题一个都没问。", "sp": null, "gap": false, "start": 12.864, "end": 18.168, "words": [[12.982, 13.048], [13.061, 13.443], [13.456, 13.943], [14.219, 14.64], [14.653, 14.982], [14.996, 15.614], [15.93, 15.982], [15.996, 16.061], [16.075, 16.377], [16.39, 16.851], [16.864, 16.969], [16.982, 17.298], [17.311, 17.772]]}, {"kind": "s", "id": "s0_1_0", "md": "A diagram shows what the system looks like.", "zh": "架构图展示的是系统长什么样。", "sp": null, "gap": true, "start": 18.168, "end": 20.808, "words": [[18.273, 18.339], [18.352, 18.879], [18.892, 19.221], [19.234, 19.352], [19.365, 19.444], [19.457, 19.839], [19.852, 20.063], [20.076, 20.418]]}, {"kind": "s", "id": "s0_1_1", "md": "A design is the set of decisions behind it, and the ==assumptions== those decisions rest on.", "zh": "设计则是背后的一系列决策，以及这些决策所依赖的假设。", "sp": null, "gap": false, "start": 20.808, "end": 26.4, "words": [[20.913, 20.979], [20.992, 21.466], [21.479, 21.584], [21.597, 21.69], [21.703, 21.966], [21.979, 22.084], [22.097, 22.729], [22.742, 23.203], [23.216, 23.374], [23.69, 23.742], [23.755, 23.848], [23.861, 24.558], [24.571, 24.795], [24.808, 25.374], [25.387, 25.716], [25.729, 26.018]]}, {"kind": "s", "id": "s0_1_2", "md": "**A good review tests the assumptions, because that is where designs usually break.**", "zh": "好的评审要去检验这些假设，因为设计通常就是在这里出问题的。", "sp": null, "gap": false, "start": 26.4, "end": 31.584, "words": [[26.505, 26.597], [26.611, 26.861], [26.874, 27.321], [27.334, 27.821], [27.834, 27.939], [27.953, 28.716], [28.953, 29.282], [29.295, 29.492], [29.505, 29.61], [29.624, 29.768], [29.782, 30.374], [30.387, 30.768], [30.782, 31.203]]}, {"kind": "s", "id": "s0_2_0", "md": "So before the meeting, the author should __spell out__ the three decisions that matter most.", "zh": "所以开会之前，作者应该把最关键的三个决策讲清楚。", "sp": null, "gap": true, "start": 31.584, "end": 36.6, "words": [[31.689, 31.86], [31.873, 32.202], [32.216, 32.281], [32.295, 32.676], [32.966, 33.071], [33.084, 33.466], [33.479, 33.663], [33.676, 34.031], [34.045, 34.202], [34.216, 34.295], [34.308, 34.61], [34.623, 35.189], [35.202, 35.373], [35.387, 35.676], [35.689, 36.202]]}, {"kind": "s", "id": "s0_2_1", "md": "Why build a new service instead of extending the old one?", "zh": "为什么要新建一个服务，而不是在老服务上扩展？", "sp": null, "gap": false, "start": 36.6, "end": 39.96, "words": [[36.718, 36.85], [36.863, 37.074], [37.087, 37.113], [37.126, 37.35], [37.363, 37.942], [37.955, 38.337], [38.35, 38.429], [38.442, 38.955], [38.968, 39.061], [39.074, 39.284], [39.297, 39.561]]}, {"kind": "s", "id": "s0_2_2", "md": "Why accept eventual ==consistency== instead of strong consistency?", "zh": "为什么接受最终一致性，而不是强一致性？", "sp": null, "gap": false, "start": 39.96, "end": 44.304, "words": [[40.065, 40.249], [40.263, 40.697], [40.71, 41.21], [41.223, 42.065], [42.223, 42.578], [42.592, 42.671], [42.684, 43.092], [43.105, 43.921]]}, {"kind": "s", "id": "s0_2_3", "md": "Each decision should come with the option that was rejected and the reason.", "zh": "每个决策都要附上被否掉的方案和否掉的理由。", "sp": null, "gap": false, "start": 44.304, "end": 48.552, "words": [[44.409, 44.607], [44.62, 45.146], [45.159, 45.383], [45.396, 45.62], [45.633, 45.765], [45.778, 45.883], [45.896, 46.357], [46.37, 46.501], [46.515, 46.659], [46.672, 47.304], [47.515, 47.633], [47.646, 47.712], [47.725, 48.159]]}, {"kind": "h", "id": "h1", "md": "2. Three Questions for Reviewers", "zh": "2. 评审人该问的三个问题", "start": 48.552, "end": 51.384, "words": [[48.67, 48.92], [49.368, 49.605], [49.618, 50.157], [50.17, 50.315], [50.328, 50.986]]}, {"kind": "s", "id": "s1_0_0", "md": "As a reviewer, your job is not to redesign the system in the room.", "zh": "作为评审人，你的任务不是在会上把系统重新设计一遍。", "sp": null, "gap": false, "start": 51.384, "end": 55.68, "words": [[51.489, 51.608], [51.621, 51.66], [51.673, 52.226], [52.647, 52.739], [52.752, 53.095], [53.173, 53.279], [53.292, 53.581], [53.595, 53.752], [53.766, 54.318], [54.331, 54.41], [54.423, 54.818], [54.831, 54.897], [54.91, 54.976], [54.989, 55.292]]}, {"kind": "s", "id": "s1_0_1", "md": "It is to __poke holes in__ the thinking while changes are still cheap.", "zh": "而是趁改动成本还低的时候，去挑思路里的漏洞。", "sp": null, "gap": false, "start": 55.68, "end": 59.376, "words": [[55.785, 55.864], [55.877, 55.983], [55.996, 56.101], [56.114, 56.43], [56.443, 56.746], [56.759, 56.838], [56.851, 56.93], [56.943, 57.404], [57.562, 57.733], [57.746, 58.18], [58.193, 58.298], [58.312, 58.588], [58.601, 58.983]]}, {"kind": "s", "id": "s1_0_2", "md": "Three questions do most of the work.", "zh": "三个问题就能解决大部分事情。", "sp": null, "gap": false, "start": 59.376, "end": 61.776, "words": [[59.521, 59.692], [59.705, 60.231], [60.244, 60.455], [60.468, 60.837], [60.85, 60.902], [60.915, 60.994], [61.008, 61.376]]}, {"kind": "s", "id": "s1_1_0", "md": "First, what happens when this part fails?", "zh": "第一，这部分挂了会怎样？", "sp": null, "gap": true, "start": 61.776, "end": 64.512, "words": [[61.934, 62.302], [62.565, 62.684], [62.697, 63.079], [63.092, 63.223], [63.237, 63.355], [63.368, 63.605], [63.618, 64.131]]}, {"kind": "s", "id": "s1_1_1", "md": "Ask about timeouts, retries, and what the user sees when a ==dependency== is down.", "zh": "问问超时、重试，以及依赖挂掉时用户会看到什么。", "sp": null, "gap": false, "start": 64.512, "end": 70.104, "words": [[64.604, 64.841], [64.854, 65.117], [65.13, 65.907], [66.104, 66.92], [67.13, 67.262], [67.275, 67.433], [67.446, 67.499], [67.512, 67.933], [67.946, 68.328], [68.341, 68.459], [68.473, 68.525], [68.538, 69.17], [69.183, 69.315], [69.328, 69.709]]}, {"kind": "s", "id": "s1_1_2", "md": "If the answer is \"it won't fail,\" you have found your first ==gap==.", "zh": "如果回答是「它不会挂」，那你就找到第一个漏洞了。", "sp": null, "gap": false, "start": 70.104, "end": 74.472, "words": [[70.209, 70.314], [70.328, 70.42], [70.433, 70.893], [70.907, 71.222], [71.393, 71.564], [71.578, 71.88], [71.893, 72.341], [72.775, 72.854], [72.867, 72.999], [73.012, 73.262], [73.275, 73.367], [73.38, 73.709], [73.722, 74.078]]}, {"kind": "s", "id": "s1_2_0", "md": "Second, what does this look like at ten times the traffic?", "zh": "第二，流量涨到十倍会是什么样？", "sp": null, "gap": true, "start": 74.472, "end": 78.024, "words": [[74.59, 74.998], [75.433, 75.511], [75.525, 75.643], [75.656, 75.84], [75.854, 76.025], [76.038, 76.248], [76.261, 76.38], [76.393, 76.669], [76.683, 76.985], [76.998, 77.077], [77.09, 77.643]]}, {"kind": "s", "id": "s1_2_1", "md": "You are not asking the author to build for that scale today.", "zh": "你不是要作者现在就按那个量级去建。", "sp": null, "gap": false, "start": 78.024, "end": 81.24, "words": [[78.129, 78.208], [78.221, 78.3], [78.313, 78.55], [78.563, 78.932], [78.945, 79.05], [79.063, 79.458], [79.471, 79.577], [79.59, 79.84], [79.853, 79.971], [79.985, 80.156], [80.169, 80.471], [80.485, 80.853]]}, {"kind": "s", "id": "s1_2_2", "md": "You are checking whether the design __paints the team into a corner__ later.", "zh": "你是在确认这个设计以后会不会把团队逼进死胡同。", "sp": null, "gap": false, "start": 81.24, "end": 85.608, "words": [[81.345, 81.437], [81.451, 81.556], [81.569, 82.029], [82.043, 82.293], [82.306, 82.398], [82.411, 83.029], [83.108, 83.477], [83.49, 83.595], [83.608, 84.029], [84.148, 84.385], [84.398, 84.464], [84.477, 84.819], [84.832, 85.214]]}, {"kind": "s", "id": "s1_3_0", "md": "Third, how will we know it is working?", "zh": "第三，我们怎么知道它运行正常？", "sp": null, "gap": true, "start": 85.608, "end": 88.176, "words": [[85.766, 86.213], [86.608, 86.713], [86.726, 86.832], [86.845, 86.937], [86.95, 87.161], [87.174, 87.24], [87.253, 87.345], [87.358, 87.779]]}, {"kind": "s", "id": "s1_3_1", "md": "A design without metrics, alerts, and a ==rollback== plan is only half finished.", "zh": "一个没有指标、告警和回滚方案的设计，只完成了一半。", "sp": null, "gap": false, "start": 88.176, "end": 93.84, "words": [[88.268, 88.321], [88.334, 88.742], [88.755, 89.137], [89.15, 89.808], [89.992, 90.584], [90.834, 90.939], [90.952, 90.992], [91.005, 91.531], [91.544, 91.913], [92.137, 92.308], [92.321, 92.597], [92.61, 92.9], [92.913, 93.452]]}, {"kind": "s", "id": "s1_3_2", "md": "**If you leave with a list of decisions and open risks, it was a good review, even if nobody moved a single box.**", "zh": "如果散会时你手里有一份决策清单和待解决的风险，那就是一次好的评审，哪怕没人挪动过一个框。", "sp": null, "gap": false, "start": 93.84, "end": 101.112, "words": [[93.945, 94.064], [94.077, 94.182], [94.195, 94.432], [94.445, 94.577], [94.59, 94.629], [94.643, 94.985], [94.998, 95.09], [95.103, 95.787], [95.801, 95.998], [96.011, 96.314], [96.327, 96.827], [97.103, 97.156], [97.169, 97.314], [97.327, 97.406], [97.419, 97.643], [97.656, 98.129], [98.577, 98.787], [98.801, 98.919], [98.932, 99.432], [99.445, 99.761], [99.774, 99.814], [99.827, 100.169], [100.182, 100.722]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

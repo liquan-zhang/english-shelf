@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Joining a Conversation at a Team Dinner · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "084", "title": "Joining a Conversation at a Team Dinner", "meta": "B2 · 约 280 词 · 场景：团队聚餐", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Stuck at the End of the Table", "heading_zh": "1. 被困在桌子尽头", "rows": [[{"id": "s0_0_0", "md": "At team dinners, conversations split into small circles of three or four people.", "text": "At team dinners, conversations split into small circles of three or four people.", "zh": "团队聚餐的时候，聊天会分成三四个人一拨的小圈子。", "sp": null}, {"id": "s0_0_1", "md": "If you arrive late or sit at the end of the table, you can easily end up __on the outside__, nodding ==politely== for an hour.", "text": "If you arrive late or sit at the end of the table, you can easily end up on the outside, nodding politely for an hour.", "zh": "要是你来晚了，或者坐在桌子尽头，很容易就被晾在外面，礼貌性点头点一个小时。", "sp": null}], [{"id": "s0_1_0", "md": "Many people wait for a perfect gap before they speak.", "text": "Many people wait for a perfect gap before they speak.", "zh": "很多人想等一个完美的空当再开口。", "sp": null}, {"id": "s0_1_1", "md": "In a ==lively== group, that gap never comes, and the longer you wait, the harder it feels to __jump in__.", "text": "In a lively group, that gap never comes, and the longer you wait, the harder it feels to jump in.", "zh": "在聊得正热的一桌人里，这种空当根本不会出现，而且等得越久，越觉得插不进去。", "sp": null}, {"id": "s0_1_2", "md": "**Waiting for the perfect moment is the most reliable way to stay silent all night.**", "text": "Waiting for the perfect moment is the most reliable way to stay silent all night.", "zh": "等完美时机，是整晚一句话都说不上的最稳妥方式。", "sp": null}], [{"id": "s0_2_0", "md": "The good news is that you do not need a clever opening line.", "text": "The good news is that you do not need a clever opening line.", "zh": "好消息是，你不需要什么巧妙的开场白。", "sp": null}, {"id": "s0_2_1", "md": "Groups are usually happy to let someone in, as long as you join what they are already talking about instead of changing the ==subject==.", "text": "Groups are usually happy to let someone in, as long as you join what they are already talking about instead of changing the subject.", "zh": "大家一般都乐意让人加入，只要你接着他们正在聊的话题，而不是另起炉灶。", "sp": null}]]}, {"heading": "2. Listen First, Then Ask", "heading_zh": "2. 先听，再问", "rows": [[{"id": "s1_0_0", "md": "Start by listening for a minute to __get the gist__ of the conversation.", "text": "Start by listening for a minute to get the gist of the conversation.", "zh": "先听上一分钟，搞清楚大家在聊什么。", "sp": null}, {"id": "s1_0_1", "md": "Is it about a football match, a holiday, or the new office?", "text": "Is it about a football match, a holiday, or the new office?", "zh": "是在聊球赛、度假，还是新办公室？", "sp": null}], [{"id": "s1_1_0", "md": "Then join with a short question that __builds on__ what you just heard.", "text": "Then join with a short question that builds on what you just heard.", "zh": "然后用一个简短的问题接上你刚听到的内容。", "sp": null}, {"id": "s1_1_1", "md": "\"Wait, are you talking about the Japan trip? Which city did you like most?\"", "text": "\"Wait, are you talking about the Japan trip? Which city did you like most?\"", "zh": "「等下，你们说的是那次日本旅行吗？最喜欢哪个城市？」", "sp": null}, {"id": "s1_1_2", "md": "A question is the safest entry, because it puts the ==spotlight== on them, not on you.", "text": "A question is the safest entry, because it puts the spotlight on them, not on you.", "zh": "提问是最稳的切入方式，因为聚光灯打在他们身上，而不是你身上。", "sp": null}], [{"id": "s1_2_0", "md": "Use your body as well.", "text": "Use your body as well.", "zh": "肢体也要用上。", "sp": null}, {"id": "s1_2_1", "md": "Turn your chair toward the group, lean in a little, and react with small sounds like \"Really?\" or \"No way.\"", "text": "Turn your chair toward the group, lean in a little, and react with small sounds like \"Really?\" or \"No way.\"", "zh": "把椅子转向这群人，身体稍微前倾，用「真的假的？」「不会吧！」这种小反应接话。", "sp": null}, {"id": "s1_2_2", "md": "These ==signals== tell the group you are part of the circle, even before you say much.", "text": "These signals tell the group you are part of the circle, even before you say much.", "zh": "这些信号会告诉大家你已经是圈子里的一员了，哪怕你还没说几句。", "sp": null}], [{"id": "s1_3_0", "md": "**Once you are in, share one small story of your own, then pass the conversation back.**", "text": "Once you are in, share one small story of your own, then pass the conversation back.", "zh": "一旦加入进去，就分享一个自己的小故事，然后把话头递回去。", "sp": null}, {"id": "s1_3_1", "md": "If you see someone else sitting quietly, do them a favor and __bring them in__: \"Ravi, didn't you live in Osaka for a while?\"", "text": "If you see someone else sitting quietly, do them a favor and bring them in: \"Ravi, didn't you live in Osaka for a while?\"", "zh": "要是看到有人一直闷着不说话，帮他一把，把他拉进来：「Ravi，你是不是在大阪住过一阵子？」", "sp": null}, {"id": "s1_3_2", "md": "Being the person who includes others is a great way to become ==memorable== at any dinner.", "text": "Being the person who includes others is a great way to become memorable at any dinner.", "zh": "做那个把别人拉进来的人，是在任何饭局上让人记住你的好办法。", "sp": null}]]}], "gist": [{"q": "为什么等一个“完美时机”再开口行不通？", "a": "热闹的小圈子里根本不会出现完美空档，越等越难插话，最后整晚沉默。"}, {"q": "加入对话最安全的方式是什么？为什么？", "a": "先听一分钟弄清在聊什么，再用一个接着话题的小问题加入；提问把焦点放在对方身上，而不是自己。"}, {"q": "进入对话之后作者建议做什么？", "a": "讲一个自己的小故事再把话抛回去；看到有人沉默就把他拉进来，这样的人在聚餐上最让人记住。"}], "dictation": [{"id": "s0_1_2", "text": "Waiting for the perfect moment is the most reliable way to stay silent all night."}, {"id": "s1_1_2", "text": "A question is the safest entry, because it puts the spotlight on them, not on you."}, {"id": "s1_3_0", "text": "Once you are in, share one small story of your own, then pass the conversation back."}, {"id": "s1_2_0", "text": "Use your body as well."}], "shadow": {"text": "Then join with a short question that builds on what you just heard. \"Wait, are you talking about the Japan trip? Which city did you like most?\" A question is the safest entry, because it puts the spotlight on them, not on you.", "marked": "Then <b>join</b> with a short <b>question</b> / that builds on what you just <b>heard</b>. //<br>\"<b>Wait</b>, are you talking about the <b>Japan</b> trip? / Which <b>city</b> did you like <b>most</b>?\" //<br>A question is the <b>safest</b> entry, / because it puts the <b>spotlight</b> on <b>them</b>, / not on <b>you</b>. //"}, "prompts": [{"q": "团队聚餐，旁边三个同事在聊最近去巴厘岛的旅行，你一直没插上话。用“先听再提问”的方式加入，30 秒。", "ref": "Sorry, I couldn't help overhearing, you were in Bali last month? Which part did you stay in? I've only been once, years ago, and we spent most of the time in Ubud because it rained every day on the coast. Did you get lucky with the weather, or was it the same story?", "ref_zh": "不好意思，没忍住听到了，你们上个月去巴厘岛了？住的哪一块？我只去过一次，好多年前了，因为海边天天下雨，我们大部分时间都待在乌布。你们运气好碰上好天气了吗，还是也一样？", "id": "ref0"}, {"q": "聚餐时你注意到新来的印度同事一直没说话，大家正在聊美食。用一句话把他拉进对话，并接着聊几句。", "ref": "Speaking of spicy food, Arjun, you grew up in Chennai, right? I bet you think everything we've ordered tonight is pretty mild. What's the one dish from home you can't find here in Singapore? Okay, I'm writing that down. Maybe you can take us somewhere good next time, you choose the place.", "ref_zh": "说到辣的，Arjun，你是在金奈长大的对吧？我猜你觉得我们今晚点的这些都挺不辣的。有哪道家乡菜是你在新加坡找不到的？好，我记下来了。下次要不你带我们去个好地方，你来挑。", "id": "ref1"}], "words": [{"w": "politely", "ipa": "/pəˈlaɪtli/", "zh": "礼貌地、客气地", "ex": "He nodded politely, but I could tell he didn't agree.", "id": "w0"}, {"w": "lively", "ipa": "/ˈlaɪvli/", "zh": "热烈的、活跃的", "ex": "We had a lively discussion about the new pricing model.", "id": "w1"}, {"w": "subject", "ipa": "/ˈsʌbdʒɪkt/", "zh": "话题", "ex": "Let's not change the subject; we still need an owner for this bug.", "id": "w2"}, {"w": "spotlight", "ipa": "/ˈspɑːtˌlaɪt/", "zh": "焦点、聚光灯", "ex": "I'd rather put the spotlight on the team than on myself.", "id": "w3"}, {"w": "signal (n.)", "ipa": "/ˈsɪɡnəl/", "zh": "信号", "ex": "Turning your camera on is a small signal that you're engaged.", "tts_w": "signal", "id": "w4"}, {"w": "memorable", "ipa": "/ˈmemərəbəl/", "zh": "难忘的、容易被记住的", "ex": "Her demo was memorable because she told a user's story first.", "id": "w5"}, {"w": "gist", "ipa": "/dʒɪst/", "zh": "要点、大意", "ex": "I missed the start of the call, can you give me the gist?", "id": "w6"}, {"w": "mingle (v.)", "ipa": "/ˈmɪŋɡəl/", "zh": "（在聚会上）与人交往、走动聊天", "ex": "Grab a drink and mingle a bit, you don't have to stay with our team.", "tts_w": "mingle", "id": "w7"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Stuck at the End of the Table", "zh": "1. 被困在桌子尽头", "start": 0.0, "end": 2.352, "words": [[0.105, 0.355], [0.711, 1.0], [1.013, 1.079], [1.092, 1.184], [1.197, 1.382], [1.395, 1.447], [1.461, 1.526], [1.539, 1.96]]}, {"kind": "s", "id": "s0_0_0", "md": "At team dinners, conversations split into small circles of three or four people.", "zh": "团队聚餐的时候，聊天会分成三四个人一拨的小圈子。", "sp": null, "gap": false, "start": 2.352, "end": 7.92, "words": [[2.457, 2.589], [2.602, 2.839], [2.852, 3.352], [3.589, 4.378], [4.391, 4.812], [4.826, 5.062], [5.076, 5.497], [5.51, 5.984], [5.997, 6.089], [6.102, 6.589], [6.707, 6.852], [6.865, 7.128], [7.141, 7.536]]}, {"kind": "s", "id": "s0_0_1", "md": "If you arrive late or sit at the end of the table, you can easily end up __on the outside__, nodding ==politely== for an hour.", "zh": "要是你来晚了，或者坐在桌子尽头，很容易就被晾在外面，礼貌性点头点一个小时。", "sp": null, "gap": false, "start": 7.92, "end": 15.36, "words": [[8.025, 8.144], [8.157, 8.275], [8.288, 8.723], [8.736, 9.091], [9.17, 9.288], [9.302, 9.552], [9.565, 9.644], [9.657, 9.749], [9.762, 9.946], [9.959, 10.025], [10.038, 10.117], [10.131, 10.565], [10.881, 10.959], [10.973, 11.117], [11.236, 11.683], [11.696, 11.907], [11.92, 12.078], [12.157, 12.275], [12.288, 12.394], [12.407, 13.065], [13.459, 13.788], [13.802, 14.315], [14.328, 14.486], [14.499, 14.578], [14.591, 14.973]]}, {"kind": "s", "id": "s0_1_0", "md": "Many people wait for a perfect gap before they speak.", "zh": "很多人想等一个完美的空当再开口。", "sp": null, "gap": true, "start": 15.36, "end": 18.768, "words": [[15.465, 15.663], [15.676, 16.005], [16.018, 16.242], [16.255, 16.439], [16.452, 16.505], [16.518, 17.031], [17.044, 17.36], [17.465, 17.794], [17.807, 17.899], [17.913, 18.386]]}, {"kind": "s", "id": "s0_1_1", "md": "In a ==lively== group, that gap never comes, and the longer you wait, the harder it feels to __jump in__.", "zh": "在聊得正热的一桌人里，这种空当根本不会出现，而且等得越久，越觉得插不进去。", "sp": null, "gap": false, "start": 18.768, "end": 25.464, "words": [[18.873, 18.952], [18.965, 19.031], [19.044, 19.531], [19.544, 19.913], [20.229, 20.452], [20.465, 20.794], [20.9, 21.229], [21.242, 21.794], [22.044, 22.123], [22.136, 22.229], [22.242, 22.623], [22.636, 22.794], [22.807, 23.163], [23.452, 23.531], [23.544, 23.926], [23.939, 24.031], [24.044, 24.4], [24.413, 24.505], [24.518, 24.821], [24.834, 25.071]]}, {"kind": "s", "id": "s0_1_2", "md": "**Waiting for the perfect moment is the most reliable way to stay silent all night.**", "zh": "等完美时机，是整晚一句话都说不上的最稳妥方式。", "sp": null, "gap": false, "start": 25.464, "end": 30.936, "words": [[25.569, 25.872], [25.885, 26.003], [26.017, 26.122], [26.135, 26.648], [26.661, 27.082], [27.346, 27.451], [27.464, 27.556], [27.569, 27.872], [27.885, 28.503], [28.517, 28.819], [28.832, 28.951], [28.964, 29.28], [29.293, 29.806], [29.925, 30.135], [30.148, 30.543]]}, {"kind": "s", "id": "s0_2_0", "md": "The good news is that you do not need a clever opening line.", "zh": "好消息是，你不需要什么巧妙的开场白。", "sp": null, "gap": true, "start": 30.936, "end": 34.512, "words": [[31.054, 31.133], [31.147, 31.331], [31.344, 31.712], [31.804, 31.897], [31.91, 32.041], [32.054, 32.147], [32.16, 32.344], [32.357, 32.66], [32.673, 32.896], [32.91, 32.962], [32.975, 33.41], [33.423, 33.778], [33.791, 34.12]]}, {"kind": "s", "id": "s0_2_1", "md": "Groups are usually happy to let someone in, as long as you join what they are already talking about instead of changing the ==subject==.", "zh": "大家一般都乐意让人加入，只要你接着他们正在聊的话题，而不是另起炉灶。", "sp": null, "gap": false, "start": 34.512, "end": 41.448, "words": [[34.617, 34.867], [34.88, 34.973], [34.986, 35.394], [35.407, 35.749], [35.762, 35.854], [35.867, 36.065], [36.078, 36.433], [36.446, 36.617], [37.051, 37.157], [37.17, 37.38], [37.394, 37.499], [37.512, 37.604], [37.617, 37.933], [37.946, 38.078], [38.091, 38.183], [38.196, 38.367], [38.38, 38.775], [38.788, 39.183], [39.196, 39.525], [39.538, 39.92], [39.933, 40.012], [40.025, 40.394], [40.407, 40.473], [40.486, 41.065]]}, {"kind": "h", "id": "h1", "md": "2. Listen First, Then Ask", "zh": "2. 先听，再问", "start": 41.448, "end": 44.208, "words": [[41.566, 41.777], [42.224, 42.487], [42.501, 42.987], [43.224, 43.369], [43.382, 43.816]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by listening for a minute to __get the gist__ of the conversation.", "zh": "先听上一分钟，搞清楚大家在聊什么。", "sp": null, "gap": false, "start": 44.208, "end": 48.048, "words": [[44.326, 44.629], [44.642, 44.761], [44.774, 45.247], [45.261, 45.419], [45.432, 45.471], [45.484, 45.8], [45.813, 45.919], [45.932, 46.142], [46.155, 46.261], [46.274, 46.695], [46.708, 46.774], [46.787, 46.866], [46.879, 47.655]]}, {"kind": "s", "id": "s1_0_1", "md": "Is it about a football match, a holiday, or the new office?", "zh": "是在聊球赛、度假，还是新办公室？", "sp": null, "gap": false, "start": 48.048, "end": 52.08, "words": [[48.153, 48.272], [48.285, 48.337], [48.351, 48.561], [48.574, 48.614], [48.627, 49.127], [49.14, 49.653], [49.851, 49.89], [49.903, 50.469], [50.706, 50.798], [50.811, 50.89], [50.903, 51.101], [51.114, 51.693]]}, {"kind": "s", "id": "s1_1_0", "md": "Then join with a short question that __builds on__ what you just heard.", "zh": "然后用一个简短的问题接上你刚听到的内容。", "sp": null, "gap": true, "start": 52.08, "end": 55.608, "words": [[52.198, 52.343], [52.356, 52.633], [52.646, 52.791], [52.804, 52.843], [52.856, 53.212], [53.225, 53.698], [53.712, 53.883], [53.896, 54.225], [54.238, 54.356], [54.369, 54.501], [54.514, 54.593], [54.606, 54.883], [54.896, 55.212]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Wait, are you talking about the Japan trip? Which city did you like most?\"", "zh": "「等下，你们说的是那次日本旅行吗？最喜欢哪个城市？」", "sp": null, "gap": false, "start": 55.608, "end": 60.12, "words": [[55.792, 55.963], [56.45, 56.542], [56.555, 56.634], [56.647, 56.963], [56.976, 57.174], [57.187, 57.266], [57.279, 57.647], [57.661, 58.016], [58.463, 58.595], [58.608, 58.845], [58.858, 58.99], [59.003, 59.095], [59.108, 59.319], [59.332, 59.805]]}, {"kind": "s", "id": "s1_1_2", "md": "A question is the safest entry, because it puts the ==spotlight== on them, not on you.", "zh": "提问是最稳的切入方式，因为聚光灯打在他们身上，而不是你身上。", "sp": null, "gap": false, "start": 60.12, "end": 65.424, "words": [[60.225, 60.304], [60.317, 60.804], [60.817, 60.962], [60.975, 61.067], [61.081, 61.659], [61.673, 62.081], [62.317, 62.594], [62.607, 62.699], [62.712, 62.975], [62.988, 63.094], [63.107, 63.699], [63.712, 63.857], [63.87, 64.028], [64.436, 64.62], [64.633, 64.804], [64.817, 65.041]]}, {"kind": "s", "id": "s1_2_0", "md": "Use your body as well.", "zh": "肢体也要用上。", "sp": null, "gap": true, "start": 65.424, "end": 67.032, "words": [[65.529, 65.7], [65.713, 65.832], [65.845, 66.174], [66.187, 66.292], [66.306, 66.635]]}, {"kind": "s", "id": "s1_2_1", "md": "Turn your chair toward the group, lean in a little, and react with small sounds like \"Really?\" or \"No way.\"", "zh": "把椅子转向这群人，身体稍微前倾，用「真的假的？」「不会吧！」这种小反应接话。", "sp": null, "gap": false, "start": 67.032, "end": 73.968, "words": [[67.137, 67.335], [67.348, 67.479], [67.493, 67.861], [67.874, 68.15], [68.164, 68.243], [68.256, 68.598], [69.032, 69.282], [69.295, 69.387], [69.4, 69.453], [69.466, 69.795], [70.177, 70.243], [70.256, 70.677], [70.69, 70.808], [70.821, 71.229], [71.243, 71.585], [71.598, 71.782], [71.821, 72.269], [72.637, 72.861], [72.887, 73.137], [73.15, 73.466]]}, {"kind": "s", "id": "s1_2_2", "md": "These ==signals== tell the group you are part of the circle, even before you say much.", "zh": "这些信号会告诉大家你已经是圈子里的一员了，哪怕你还没说几句。", "sp": null, "gap": false, "start": 73.968, "end": 78.888, "words": [[74.073, 74.323], [74.336, 74.784], [74.797, 75.021], [75.034, 75.126], [75.139, 75.442], [75.455, 75.56], [75.573, 75.678], [75.692, 75.928], [75.942, 76.007], [76.021, 76.1], [76.113, 76.573], [77.007, 77.231], [77.244, 77.626], [77.639, 77.731], [77.744, 77.981], [77.994, 78.494]]}, {"kind": "s", "id": "s1_3_0", "md": "**Once you are in, share one small story of your own, then pass the conversation back.**", "zh": "一旦加入进去，就分享一个自己的小故事，然后把话头递回去。", "sp": null, "gap": true, "start": 78.888, "end": 84.408, "words": [[79.006, 79.204], [79.217, 79.335], [79.349, 79.48], [79.493, 79.783], [80.112, 80.401], [80.414, 80.612], [80.625, 80.941], [80.954, 81.349], [81.362, 81.441], [81.454, 81.625], [81.638, 81.888], [82.296, 82.467], [82.48, 82.796], [82.809, 82.901], [82.914, 83.599], [83.612, 84.02]]}, {"kind": "s", "id": "s1_3_1", "md": "If you see someone else sitting quietly, do them a favor and __bring them in__: \"Ravi, didn't you live in Osaka for a while?\"", "zh": "要是看到有人一直闷着不说话，帮他一把，把他拉进来：「Ravi，你是不是在大阪住过一阵子？」", "sp": null, "gap": false, "start": 84.408, "end": 92.256, "words": [[84.513, 84.632], [84.645, 84.75], [84.763, 84.974], [84.987, 85.303], [85.316, 85.5], [85.513, 85.776], [85.79, 86.382], [86.671, 86.803], [86.816, 86.961], [86.974, 87.026], [87.04, 87.619], [87.763, 87.855], [87.869, 88.171], [88.184, 88.329], [88.342, 88.619], [89.224, 89.605], [90.04, 90.25], [90.263, 90.368], [90.382, 90.566], [90.579, 90.671], [90.684, 91.158], [91.171, 91.369], [91.382, 91.434], [91.447, 91.842]]}, {"kind": "s", "id": "s1_3_2", "md": "Being the person who includes others is a great way to become ==memorable== at any dinner.", "zh": "做那个把别人拉进来的人，是在任何饭局上让人记住你的好办法。", "sp": null, "gap": false, "start": 92.256, "end": 97.968, "words": [[92.361, 92.598], [92.611, 92.716], [92.73, 93.177], [93.19, 93.335], [93.348, 93.874], [93.888, 94.361], [94.506, 94.638], [94.651, 94.717], [94.73, 95.177], [95.19, 95.559], [95.572, 95.717], [95.73, 96.138], [96.151, 96.717], [96.874, 96.993], [97.059, 97.23], [97.243, 97.585]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+{
+  "id": "058",
+  "title": "When Your Report Wants to Quit",
+  "meta": "B2 · 约 270 词 · 场景：留人谈话",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The First Five Minutes Matter Most",
+      "paragraphs": [
+        [
+          "Your best backend engineer asks for a quick call and says, \"I've been thinking about leaving.\"",
+          "Your stomach drops.",
+          "You think about the roadmap, the on-call rotation, and how you will explain this to your manager."
+        ],
+        [
+          "In that moment, most managers make one of two mistakes.",
+          "They panic and promise things they cannot deliver, or they ==take it personally== and go cold.",
+          "Both reactions tell the engineer that your feelings matter more than theirs."
+        ],
+        [
+          "**Your first job is not to keep them; it is to understand them.**",
+          "Thank them for telling you early, because many people simply hand in a ==resignation== letter.",
+          "Then ==resist== the urge to __fix it on the spot__, and just listen."
+        ]
+      ],
+      "heading_zh": "1. 最关键的是头五分钟",
+      "paragraphs_zh": [
+        [
+          "你最好的后端工程师约你快速通个话，说：「我最近在考虑离开。」",
+          "你心里一沉。",
+          "你想到了 roadmap、on-call 排班，还有该怎么跟你老板解释。"
+        ],
+        [
+          "在那一刻，大多数管理者会犯两种错误中的一种。",
+          "要么慌了，许下自己兑现不了的承诺；要么觉得是针对自己，态度一下子冷下来。",
+          "这两种反应都在告诉工程师：你的感受比他的更重要。"
+        ],
+        [
+          "你的第一要务不是留住他；而是理解他。",
+          "谢谢他早点告诉你，因为很多人直接就递辞职信了。",
+          "然后忍住当场解决问题的冲动，只是听。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Finding the Real Reason",
+      "paragraphs": [
+        [
+          "The first reason people give is often the safest one, like salary or a long commute.",
+          "Ask gently, \"If that were solved, would you still be thinking about leaving?\"",
+          "The answer usually __points to__ something deeper: boring work, a ==stalled== promotion, or tension with someone on the team."
+        ],
+        [
+          "Once you know the real reason, be honest about what you can change.",
+          "If they want harder problems, you might move them onto the new streaming project next quarter.",
+          "If they want a promotion that cannot happen this year, say so clearly.",
+          "**A vague promise that falls through later does more damage than a hard truth today.**"
+        ],
+        [
+          "Sometimes the right outcome is that they leave.",
+          "A better opportunity elsewhere is not a ==betrayal==, and treating it like one hurts the team that stays behind.",
+          "Help them hand over their work well, and __part on good terms__.",
+          "Engineers who leave ==gracefully== often come back, or send great people your way."
+        ]
+      ],
+      "heading_zh": "2. 找到真正的原因",
+      "paragraphs_zh": [
+        [
+          "人们给出的第一个理由，往往是最安全的那个，比如薪资或者通勤太远。",
+          "温和地问一句：「如果这个问题解决了，你还会考虑离开吗？」",
+          "答案通常会指向更深层的东西：工作没意思、晋升卡住了，或者跟团队里某个人有矛盾。"
+        ],
+        [
+          "一旦知道了真正的原因，就诚实地说清楚你能改变什么。",
+          "如果他想做更有挑战的事，你也许可以下个季度把他调到新的流式计算项目上。",
+          "如果他想要的晋升今年不可能实现，就明确说出来。",
+          "一个之后落空的含糊承诺，比今天一个难听的实话伤害更大。"
+        ],
+        [
+          "有时候，正确的结果就是他离开。",
+          "外面有更好的机会并不是背叛，把它当成背叛，伤害的是留下来的团队。",
+          "帮他把工作好好交接，好聚好散。",
+          "体面离开的工程师常常会回来，或者给你推荐很优秀的人。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "听到下属想离职时，经理常犯哪两种错误？",
+      "a": "慌乱之下许诺做不到的事，或者当成针对自己而变冷淡；两者都在告诉对方你的感受比他的重要。"
+    },
+    {
+      "q": "怎样找到对方想走的真实原因？",
+      "a": "对方先说的往往是最安全的理由（薪水、通勤）；温和地问「如果这个解决了，你还会考虑走吗」，答案通常指向更深的原因。"
+    },
+    {
+      "q": "如果对方最终要走，作者建议怎么做？",
+      "a": "别把它当背叛，帮他做好交接，好聚好散；体面离开的人常会回来或推荐好人选。"
+    }
+  ],
+  "dictation": [
+    "Your first job is not to keep them; it is to understand them.",
+    "Then resist the urge to fix it on the spot, and just listen.",
+    "A vague promise that falls through later does more damage than a hard truth today.",
+    "Sometimes the right outcome is that they leave."
+  ],
+  "shadow": {
+    "text": "In that moment, most managers make one of two mistakes. They panic and promise things they cannot deliver, or they take it personally and go cold. Both reactions tell the engineer that your feelings matter more than theirs.",
+    "marked": "In that moment, / most managers make one of <b>two</b> mistakes. //<br>They <b>panic</b> / and promise things they <b>cannot</b> deliver, / or they take it <b>personally</b> / and go <b>cold</b>. //<br><b>Both</b> reactions tell the engineer / that <b>your</b> feelings matter more / than <b>theirs</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "下属在一对一里突然说他在考虑离职。用 30 秒回应：先感谢，不慌不许诺，然后请他多讲讲。",
+      "ref": "Thank you for telling me, really. I know that's not an easy thing to bring up, and I'd much rather hear it from you now than read it in an email. I'm not going to try to talk you out of anything today. I just want to understand. Can you tell me more about what's been on your mind, and how long you've felt this way?",
+      "ref_zh": "真的谢谢你告诉我。我知道这事不好开口，我宁愿现在听你亲口说，也不想在邮件里看到。今天我不会试图劝你什么。我只是想了解一下。能多跟我说说你最近在想什么吗？这种感觉有多久了？"
+    },
+    {
+      "q": "下属说想走是因为晋升没希望，而你知道今年确实升不了。用 30 秒诚实回应，同时说明你能做什么。",
+      "ref": "I want to be straight with you, because you deserve that. A promotion this cycle isn't realistic; the calibration is already closed. What I can do is give you the payments redesign next quarter, which is exactly the scope the next level needs, and write a clear growth plan with you this week. If that's still not enough, I'll understand, and I'll support whatever you decide.",
+      "ref_zh": "我想跟你直说，因为你值得我这么做。这一轮晋升不现实了；校准已经结束了。我能做的是下个季度把支付改版交给你，这正好是下一级需要的范围，这周再跟你一起写一份清晰的成长计划。如果这样还是不够，我能理解，不管你怎么决定我都支持。"
+    }
+  ],
+  "words": [
+    {
+      "w": "take it personally",
+      "ipa": "/teɪk ɪt ˈpɜːrsənəli/",
+      "zh": "当成针对自己",
+      "ex": "Don't take it personally; the review comments are about the code."
+    },
+    {
+      "w": "resignation",
+      "ipa": "/ˌrezɪɡˈneɪʃən/",
+      "zh": "辞职（信）",
+      "ex": "She handed in her resignation the day after the reorg."
+    },
+    {
+      "w": "resist",
+      "ipa": "/rɪˈzɪst/",
+      "zh": "抵制、忍住",
+      "ex": "Resist the urge to deploy a hotfix before we understand the cause."
+    },
+    {
+      "w": "stalled",
+      "ipa": "/stɔːld/",
+      "zh": "停滞的",
+      "ex": "The migration has been stalled since the lead engineer left."
+    },
+    {
+      "w": "betrayal",
+      "ipa": "/bɪˈtreɪəl/",
+      "zh": "背叛",
+      "ex": "Leaving for a better role is a career move, not a betrayal."
+    },
+    {
+      "w": "gracefully",
+      "ipa": "/ˈɡreɪsfəli/",
+      "zh": "体面地、优雅地",
+      "ex": "The service should degrade gracefully when the cache is down."
+    },
+    {
+      "w": "fall through",
+      "ipa": "/fɔːl θruː/",
+      "zh": "落空、泡汤",
+      "ex": "The vendor deal fell through, so we're building it ourselves."
+    },
+    {
+      "w": "panic",
+      "ipa": "/ˈpænɪk/",
+      "zh": "惊慌",
+      "ex": "Don't panic; we can roll back in five minutes."
+    },
+    {
+      "w": "commute",
+      "ipa": "/kəˈmjuːt/",
+      "zh": "通勤",
+      "ex": "Her commute is over an hour, so she prefers remote days."
+    }
+  ]
+}

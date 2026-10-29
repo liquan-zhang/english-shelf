@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Running a Meeting That Ends on Time · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "007", "title": "Running a Meeting That Ends on Time", "meta": "B2 · 约 260 词 · 场景：主持会议", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Topics Expand, Questions Finish", "heading_zh": "1. 话题会膨胀，问题会收尾", "rows": [[{"id": "s0_0_0", "md": "Most meetings run over for one simple reason.", "text": "Most meetings run over for one simple reason.", "zh": "大多数会议超时，原因很简单。", "sp": null}, {"id": "s0_0_1", "md": "The agenda lists topics, not outcomes.", "text": "The agenda lists topics, not outcomes.", "zh": "议程上列的是话题，不是产出。", "sp": null}, {"id": "s0_0_2", "md": "\"Q four roadmap\" can fill an hour, a day, or a whole week, because there is no point where it is ==obviously== done.", "text": "\"Q four roadmap\" can fill an hour, a day, or a whole week, because there is no point where it is obviously done.", "zh": "「Q4 路线图」可以聊一小时、一天，甚至一整周，因为它没有一个明显的终点。", "sp": null}], [{"id": "s0_1_0", "md": "Compare that with \"Decide which two projects we cut from the Q four roadmap.\"", "text": "Compare that with \"Decide which two projects we cut from the Q four roadmap.\"", "zh": "对比一下「决定从 Q4 路线图里砍掉哪两个项目」。", "sp": null}, {"id": "s0_1_1", "md": "Now everyone knows what finished looks like.", "text": "Now everyone knows what finished looks like.", "zh": "这下大家都知道怎样才算完成了。", "sp": null}, {"id": "s0_1_2", "md": "People bring ==relevant== data instead of general opinions, and side topics are easier to __spot and set aside__.", "text": "People bring relevant data instead of general opinions, and side topics are easier to spot and set aside.", "zh": "大家会带着相关数据来，而不是泛泛而谈，跑题的话题也更容易被发现、被搁置。", "sp": null}], [{"id": "s0_2_0", "md": "**Write every agenda item as a question the group must answer.**", "text": "Write every agenda item as a question the group must answer.", "zh": "把每个议程项都写成一个大家必须回答的问题。", "sp": null}, {"id": "s0_2_1", "md": "If you cannot turn an item into a question, it probably belongs in an email.", "text": "If you cannot turn an item into a question, it probably belongs in an email.", "zh": "如果某一项转不成问题，那它大概发邮件就行了。", "sp": null}, {"id": "s0_2_2", "md": "This one habit __cuts more time__ than any meeting tool or ==strict== rule.", "text": "This one habit cuts more time than any meeting tool or strict rule.", "zh": "光这一个习惯省下的时间，比任何会议工具或严格规定都多。", "sp": null}]]}, {"heading": "2. Keeping the Clock Visible", "heading_zh": "2. 让时间一直摆在明面上", "rows": [[{"id": "s1_0_0", "md": "Once the meeting starts, give each question a ==time box== and say it out loud.", "text": "Once the meeting starts, give each question a time box and say it out loud.", "zh": "会议一开始，就给每个问题定一个时间盒，并且说出来。", "sp": null}, {"id": "s1_0_1", "md": "\"We have fifteen minutes for the hiring plan.\"", "text": "\"We have fifteen minutes for the hiring plan.\"", "zh": "「招聘计划我们留十五分钟。」", "sp": null}, {"id": "s1_0_2", "md": "Saying the number makes the limit feel shared, not like a rule you are ==enforcing== alone.", "text": "Saying the number makes the limit feel shared, not like a rule you are enforcing alone.", "zh": "把数字说出口，这个限制就变成了大家共同的约定，而不像是你一个人在执行规定。", "sp": null}], [{"id": "s1_1_0", "md": "Halfway through each item, give a quick check.", "text": "Halfway through each item, give a quick check.", "zh": "每一项讨论到一半，做一个快速检查。", "sp": null}, {"id": "s1_1_1", "md": "\"We're at seven minutes, and I'm hearing two options.\"", "text": "\"We're at seven minutes, and I'm hearing two options.\"", "zh": "「现在七分钟了，我听到的是两个选项。」", "sp": null}, {"id": "s1_1_2", "md": "This small update pulls people back from details without anyone __feeling cut off__.", "text": "This small update pulls people back from details without anyone feeling cut off.", "zh": "这个小小的同步能把大家从细节里拉回来，又不会让人觉得被打断。", "sp": null}], [{"id": "s1_2_0", "md": "Five minutes before the end, stop the discussion, even if it is going well.", "text": "Five minutes before the end, stop the discussion, even if it is going well.", "zh": "结束前五分钟，停止讨论，哪怕正聊得热火朝天。", "sp": null}, {"id": "s1_2_1", "md": "Use that time to confirm decisions and owners.", "text": "Use that time to confirm decisions and owners.", "zh": "用这段时间确认决定和负责人。", "sp": null}, {"id": "s1_2_2", "md": "**A meeting that ends on time with clear next steps beats a perfect discussion that runs over.**", "text": "A meeting that ends on time with clear next steps beats a perfect discussion that runs over.", "zh": "一个准时结束、下一步清晰的会，胜过一场超时的完美讨论。", "sp": null}], [{"id": "s1_3_0", "md": "And when you finish early, let people go.", "text": "And when you finish early, let people go.", "zh": "如果提前结束了，就放大家走。", "sp": null}, {"id": "s1_3_1", "md": "Nobody has ever complained about getting ten minutes back.", "text": "Nobody has ever complained about getting ten minutes back.", "zh": "从来没人抱怨过多出来十分钟。", "sp": null}, {"id": "s1_3_2", "md": "Over time, your meetings earn a ==reputation==, and people start showing up prepared, because they know you will __respect their time__.", "text": "Over time, your meetings earn a reputation, and people start showing up prepared, because they know you will respect their time.", "zh": "时间长了，你的会就有了口碑，大家会开始做好准备再来，因为他们知道你尊重他们的时间。", "sp": null}]]}], "gist": [{"q": "作者认为会议超时最主要的原因是什么？", "a": "议程写的是话题而不是要达成的结果，话题没有明显的结束点。"}, {"q": "怎样改写议程能让会议更高效？", "a": "把每个议题写成小组必须回答的问题；写不成问题的，可能发邮件就够了。"}, {"q": "会议进行中主持人如何控制时间？", "a": "每个议题说出时限；中途报时并概括现状；结束前五分钟停止讨论，确认决定和负责人；提前结束就放人。"}], "dictation": [{"id": "s0_2_0", "text": "Write every agenda item as a question the group must answer."}, {"id": "s1_2_2", "text": "A meeting that ends on time with clear next steps beats a perfect discussion that runs over."}, {"id": "s0_2_1", "text": "If you cannot turn an item into a question, it probably belongs in an email."}, {"id": "s1_3_1", "text": "Nobody has ever complained about getting ten minutes back."}], "shadow": {"text": "Once the meeting starts, give each question a time box and say it out loud. \"We have fifteen minutes for the hiring plan.\" Saying the number makes the limit feel shared, not like a rule you are enforcing alone.", "marked": "Once the meeting <b>starts</b>, / give each question a <b>time box</b> / and say it <b>out loud</b>. //<br>\"We have <b>fifteen</b> minutes / for the <b>hiring</b> plan.\" //<br>Saying the <b>number</b> / makes the limit feel <b>shared</b>, / not like a rule you are enforcing <b>alone</b>. //"}, "prompts": [{"q": "你主持一个四十五分钟的季度规划会。用 30 秒开场：把议程说成三个需要回答的问题，并给每个问题定时间。", "ref": "Thanks for joining. We have forty-five minutes and three questions to answer. First, which two projects do we pause next quarter? Let's give that twenty minutes. Second, do we need a new hire for the data team? Fifteen minutes. Third, who owns the migration? Five minutes. I'll keep an eye on the clock and save the last five minutes to confirm owners.", "ref_zh": "谢谢大家参加。我们有四十五分钟，要回答三个问题。第一，下季度暂停哪两个项目？这个给二十分钟。第二，数据团队需不需要招一个新人？十五分钟。第三，迁移谁来负责？五分钟。我来盯着时间，最后五分钟留出来确认负责人。", "id": "ref0"}, {"q": "会议还剩五分钟，大家在细节上越聊越深。用 30 秒叫停，确认已定事项，把剩下的问题挪到会后。", "ref": "Sorry to stop us, but we have five minutes left, and I want to make sure we leave with decisions. So far, we've agreed to pause the reporting project and keep the search work going. The open question is the exact staffing split. Rather than rush it, can Daniel and Sophie sort that out offline and share a proposal by Thursday? Great, thanks everyone.", "ref_zh": "不好意思打断一下，我们还剩五分钟，我想确保大家带着结论离开。目前我们说好了暂停报表项目，搜索这块继续做。还没定的是具体的人力怎么分。与其仓促定下来，不如让 Daniel 和 Sophie 会后对一下，周四前出个方案？好，谢谢大家。", "id": "ref1"}], "words": [{"w": "obviously", "ipa": "/ˈɑːbviəsli/", "zh": "明显地", "ex": "The bug was obviously in the new parser, not the database.", "id": "w0"}, {"w": "relevant", "ipa": "/ˈreləvənt/", "zh": "相关的", "ex": "Please only bring the relevant dashboards to the review.", "id": "w1"}, {"w": "strict", "ipa": "/strɪkt/", "zh": "严格的", "ex": "We have a strict code freeze during the holiday week.", "id": "w2"}, {"w": "time box", "ipa": "/ˈtaɪm bɑːks/", "zh": "时间盒、限定时长", "ex": "Let's put a time box of two days on the spike.", "id": "w3"}, {"w": "enforce", "ipa": "/ɪnˈfɔːrs/", "zh": "执行、强制推行", "ex": "The linter enforces our naming rules automatically.", "id": "w4"}, {"w": "reputation", "ipa": "/ˌrepjəˈteɪʃən/", "zh": "名声、口碑", "ex": "That service has a reputation for breaking on Mondays.", "id": "w5"}, {"w": "run over", "ipa": "/rʌn ˈoʊvər/", "zh": "超时", "ex": "Sorry, the standup ran over; I'll join in five minutes.", "id": "w6"}, {"w": "set aside", "ipa": "/set əˈsaɪd/", "zh": "暂时搁置", "ex": "Let's set aside the UI questions and focus on the API.", "id": "w7"}, {"w": "outcome", "ipa": "/ˈaʊtkʌm/", "zh": "结果、产出", "ex": "The outcome of this meeting should be a go or no-go decision.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Topics Expand, Questions Finish", "zh": "1. 话题会膨胀，问题会收尾", "start": 0.0, "end": 3.552, "words": [[0.105, 0.382], [0.803, 1.224], [1.237, 1.868], [2.132, 2.618], [2.632, 3.171]]}, {"kind": "s", "id": "s0_0_0", "md": "Most meetings run over for one simple reason.", "zh": "大多数会议超时，原因很简单。", "sp": null, "gap": false, "start": 3.552, "end": 6.408, "words": [[3.657, 3.894], [3.907, 4.263], [4.276, 4.539], [4.552, 4.828], [4.841, 5.026], [5.039, 5.302], [5.315, 5.644], [5.657, 6.013]]}, {"kind": "s", "id": "s0_0_1", "md": "The agenda lists topics, not outcomes.", "zh": "议程上列的是话题，不是产出。", "sp": null, "gap": false, "start": 6.408, "end": 9.384, "words": [[6.513, 6.592], [6.605, 7.0], [7.013, 7.316], [7.329, 7.974], [8.171, 8.382], [8.395, 9.0]]}, {"kind": "s", "id": "s0_0_2", "md": "\"Q four roadmap\" can fill an hour, a day, or a whole week, because there is no point where it is ==obviously== done.", "zh": "「Q4 路线图」可以聊一小时、一天，甚至一整周，因为它没有一个明显的终点。", "sp": null, "gap": false, "start": 9.384, "end": 17.184, "words": [[9.581, 9.621], [9.7, 9.989], [10.002, 10.595], [10.792, 10.923], [10.937, 11.226], [11.239, 11.318], [11.331, 11.687], [12.081, 12.134], [12.147, 12.568], [12.963, 13.134], [13.147, 13.187], [13.2, 13.555], [13.568, 13.963], [14.252, 14.542], [14.555, 14.713], [14.726, 14.831], [14.845, 15.081], [15.095, 15.516], [15.529, 15.713], [15.726, 15.792], [15.805, 15.923], [15.937, 16.437], [16.45, 16.792]]}, {"kind": "s", "id": "s0_1_0", "md": "Compare that with \"Decide which two projects we cut from the Q four roadmap.\"", "zh": "对比一下「决定从 Q4 路线图里砍掉哪两个项目」。", "sp": null, "gap": true, "start": 17.184, "end": 21.96, "words": [[17.289, 17.631], [17.645, 17.802], [17.816, 17.987], [18.013, 18.5], [18.513, 18.763], [18.776, 19.0], [19.013, 19.566], [19.579, 19.724], [19.737, 20.013], [20.026, 20.184], [20.197, 20.276], [20.289, 20.605], [20.618, 20.96], [20.973, 21.566]]}, {"kind": "s", "id": "s0_1_1", "md": "Now everyone knows what finished looks like.", "zh": "这下大家都知道怎样才算完成了。", "sp": null, "gap": false, "start": 21.96, "end": 24.336, "words": [[22.065, 22.249], [22.263, 22.657], [22.671, 22.934], [22.947, 23.078], [23.092, 23.407], [23.421, 23.605], [23.618, 23.947]]}, {"kind": "s", "id": "s0_1_2", "md": "People bring ==relevant== data instead of general opinions, and side topics are easier to __spot and set aside__.", "zh": "大家会带着相关数据来，而不是泛泛而谈，跑题的话题也更容易被发现、被搁置。", "sp": null, "gap": false, "start": 24.336, "end": 31.44, "words": [[24.454, 24.757], [24.77, 25.073], [25.086, 25.52], [25.533, 25.902], [25.915, 26.323], [26.336, 26.441], [26.454, 26.849], [26.862, 27.494], [27.757, 27.889], [27.902, 28.218], [28.231, 28.652], [28.665, 28.862], [29.02, 29.389], [29.402, 29.468], [29.481, 29.968], [30.244, 30.323], [30.336, 30.573], [30.586, 31.06]]}, {"kind": "s", "id": "s0_2_0", "md": "**Write every agenda item as a question the group must answer.**", "zh": "把每个议程项都写成一个大家必须回答的问题。", "sp": null, "gap": true, "start": 31.44, "end": 35.592, "words": [[31.545, 31.848], [31.979, 32.269], [32.282, 32.69], [32.703, 33.085], [33.203, 33.308], [33.322, 33.374], [33.387, 33.848], [33.861, 33.953], [33.966, 34.335], [34.479, 34.756], [34.769, 35.203]]}, {"kind": "s", "id": "s0_2_1", "md": "If you cannot turn an item into a question, it probably belongs in an email.", "zh": "如果某一项转不成问题，那它大概发邮件就行了。", "sp": null, "gap": false, "start": 35.592, "end": 40.536, "words": [[35.697, 35.803], [35.816, 35.908], [35.921, 36.289], [36.303, 36.526], [36.539, 36.645], [36.658, 36.947], [36.96, 37.21], [37.224, 37.276], [37.289, 37.816], [38.237, 38.303], [38.316, 38.816], [38.829, 39.381], [39.395, 39.539], [39.553, 39.645], [39.658, 40.131]]}, {"kind": "s", "id": "s0_2_2", "md": "This one habit __cuts more time__ than any meeting tool or ==strict== rule.", "zh": "光这一个习惯省下的时间，比任何会议工具或严格规定都多。", "sp": null, "gap": false, "start": 40.536, "end": 45.048, "words": [[40.654, 40.852], [40.865, 41.049], [41.062, 41.444], [41.457, 41.72], [41.733, 41.997], [42.01, 42.391], [42.483, 42.628], [42.76, 42.97], [42.983, 43.325], [43.339, 43.72], [43.891, 43.983], [43.997, 44.339], [44.352, 44.668]]}, {"kind": "h", "id": "h1", "md": "2. Keeping the Clock Visible", "zh": "2. 让时间一直摆在明面上", "start": 45.048, "end": 47.448, "words": [[45.153, 45.39], [45.745, 46.048], [46.061, 46.14], [46.153, 46.509], [46.522, 47.048]]}, {"kind": "s", "id": "s1_0_0", "md": "Once the meeting starts, give each question a ==time box== and say it out loud.", "zh": "会议一开始，就给每个问题定一个时间盒，并且说出来。", "sp": null, "gap": false, "start": 47.448, "end": 52.224, "words": [[47.566, 47.751], [47.764, 47.856], [47.869, 48.158], [48.172, 48.764], [49.014, 49.198], [49.211, 49.382], [49.395, 49.803], [49.816, 49.856], [49.869, 50.172], [50.185, 50.698], [50.816, 50.948], [50.961, 51.198], [51.211, 51.277], [51.29, 51.461], [51.474, 51.83]]}, {"kind": "s", "id": "s1_0_1", "md": "\"We have fifteen minutes for the hiring plan.\"", "zh": "「招聘计划我们留十五分钟。」", "sp": null, "gap": false, "start": 52.224, "end": 54.888, "words": [[52.408, 52.408], [52.487, 52.698], [52.711, 53.184], [53.198, 53.487], [53.5, 53.619], [53.632, 53.698], [53.711, 54.092], [54.106, 54.487]]}, {"kind": "s", "id": "s1_0_2", "md": "Saying the number makes the limit feel shared, not like a rule you are ==enforcing== alone.", "zh": "把数字说出口，这个限制就变成了大家共同的约定，而不像是你一个人在执行规定。", "sp": null, "gap": false, "start": 54.888, "end": 60.552, "words": [[55.006, 55.349], [55.362, 55.427], [55.441, 55.862], [56.046, 56.349], [56.362, 56.48], [56.493, 56.862], [56.875, 57.164], [57.177, 57.691], [58.112, 58.283], [58.296, 58.454], [58.467, 58.506], [58.52, 58.927], [58.941, 59.059], [59.072, 59.191], [59.204, 59.77], [59.783, 60.164]]}, {"kind": "s", "id": "s1_1_0", "md": "Halfway through each item, give a quick check.", "zh": "每一项讨论到一半，做一个快速检查。", "sp": null, "gap": true, "start": 60.552, "end": 63.504, "words": [[60.657, 61.052], [61.065, 61.289], [61.302, 61.605], [61.618, 61.934], [62.236, 62.355], [62.368, 62.42], [62.434, 62.684], [62.697, 63.118]]}, {"kind": "s", "id": "s1_1_1", "md": "\"We're at seven minutes, and I'm hearing two options.\"", "zh": "「现在七分钟了，我听到的是两个选项。」", "sp": null, "gap": false, "start": 63.504, "end": 67.008, "words": [[63.688, 63.688], [63.767, 63.846], [63.859, 64.188], [64.201, 64.649], [64.899, 65.043], [65.057, 65.175], [65.188, 65.636], [65.649, 65.938], [65.951, 66.596]]}, {"kind": "s", "id": "s1_1_2", "md": "This small update pulls people back from details without anyone __feeling cut off__.", "zh": "这个小小的同步能把大家从细节里拉回来，又不会让人觉得被打断。", "sp": null, "gap": false, "start": 67.008, "end": 72.264, "words": [[67.113, 67.324], [67.337, 67.679], [67.692, 68.153], [68.166, 68.547], [68.561, 68.89], [68.903, 69.153], [69.166, 69.35], [69.363, 69.982], [70.126, 70.534], [70.547, 70.89], [70.903, 71.258], [71.271, 71.482], [71.495, 71.876]]}, {"kind": "s", "id": "s1_2_0", "md": "Five minutes before the end, stop the discussion, even if it is going well.", "zh": "结束前五分钟，停止讨论，哪怕正聊得热火朝天。", "sp": null, "gap": true, "start": 72.264, "end": 77.136, "words": [[72.448, 72.646], [72.659, 72.922], [72.935, 73.29], [73.303, 73.409], [73.422, 73.843], [74.08, 74.409], [74.422, 74.501], [74.514, 75.093], [75.527, 75.738], [75.751, 75.882], [75.896, 75.975], [75.988, 76.106], [76.119, 76.396], [76.409, 76.751]]}, {"kind": "s", "id": "s1_2_1", "md": "Use that time to confirm decisions and owners.", "zh": "用这段时间确认决定和负责人。", "sp": null, "gap": false, "start": 77.136, "end": 80.256, "words": [[77.241, 77.439], [77.452, 77.636], [77.649, 77.939], [77.952, 78.057], [78.07, 78.491], [78.504, 79.149], [79.162, 79.347], [79.36, 79.873]]}, {"kind": "s", "id": "s1_2_2", "md": "**A meeting that ends on time with clear next steps beats a perfect discussion that runs over.**", "zh": "一个准时结束、下一步清晰的会，胜过一场超时的完美讨论。", "sp": null, "gap": false, "start": 80.256, "end": 86.088, "words": [[80.348, 80.401], [80.414, 80.756], [80.769, 80.927], [80.94, 81.138], [81.151, 81.322], [81.335, 81.717], [81.73, 81.888], [81.901, 82.269], [82.282, 82.572], [82.585, 82.98], [82.993, 83.348], [83.427, 83.48], [83.493, 83.98], [83.993, 84.585], [84.809, 85.019], [85.032, 85.282], [85.295, 85.69]]}, {"kind": "s", "id": "s1_3_0", "md": "And when you finish early, let people go.", "zh": "如果提前结束了，就放大家走。", "sp": null, "gap": true, "start": 86.088, "end": 88.68, "words": [[86.193, 86.272], [86.285, 86.417], [86.43, 86.549], [86.562, 86.891], [86.904, 87.272], [87.549, 87.667], [87.68, 87.996], [88.009, 88.285]]}, {"kind": "s", "id": "s1_3_1", "md": "Nobody has ever complained about getting ten minutes back.", "zh": "从来没人抱怨过多出来十分钟。", "sp": null, "gap": false, "start": 88.68, "end": 92.04, "words": [[88.785, 89.141], [89.154, 89.364], [89.377, 89.601], [89.614, 90.088], [90.101, 90.364], [90.377, 90.641], [90.654, 90.904], [90.917, 91.206], [91.219, 91.654]]}, {"kind": "s", "id": "s1_3_2", "md": "Over time, your meetings earn a ==reputation==, and people start showing up prepared, because they know you will __respect their time__.", "zh": "时间长了，你的会就有了口碑，大家会开始做好准备再来，因为他们知道你尊重他们的时间。", "sp": null, "gap": false, "start": 92.04, "end": 99.72, "words": [[92.145, 92.343], [92.356, 92.79], [93.211, 93.316], [93.329, 93.829], [93.843, 94.027], [94.04, 94.079], [94.093, 94.843], [95.145, 95.211], [95.224, 95.566], [95.579, 95.856], [95.869, 96.264], [96.277, 96.395], [96.408, 97.014], [97.316, 97.606], [97.619, 97.737], [97.751, 98.04], [98.053, 98.172], [98.185, 98.316], [98.329, 98.764], [98.777, 98.935], [98.948, 99.329]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

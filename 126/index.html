@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Viewing an Apartment · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "126", "type": "dialogue", "title": "Viewing an Apartment", "meta": "B2 · 约 320 词 · 场景：看房问条件与谈租金", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Property Agent", "name_zh": "房产中介", "voice": "en-AU-NatashaNeural"}}, "gist": [{"q": "房子开价多少？包括什么、不包括什么？", "a": "月租四千二，全家具，不包括水电煤；水电煤大概每月两百。"}, {"q": "「你」在看房时问了哪些和孩子有关、和房况有关的问题？", "a": "问了小区有没有游乐场、附近有没有走路能到的幼儿园；还指出浴室天花板发霉，要求入住前处理。"}, {"q": "最后谈成了什么条件？", "a": "签两年，月租四千一，搬走旧沙发、处理霉斑，租约里加外交条款；下一步签意向书、付一个月诚意金。"}], "dictation": [{"id": "s0_3_0", "text": "Roughly how much are the utilities for a family of three?"}, {"id": "s0_7_0", "text": "We have a toddler. Is there a playground in the condo, and any preschools within walking distance?"}, {"id": "s1_1_0", "text": "Would the landlord consider four thousand if we sign for two years?"}, {"id": "s1_5_0", "text": "Yes, I'd like a diplomatic clause, in case my company relocates me."}], "shadow": {"speaker": "A", "text": "I understand. We can move in on the first of next month, and we don't have any pets.", "marked": "I <b>understand</b>. //<br>We can move in / on the <b>first</b> of next month, / and we <b>don't</b> have any <b>pets</b>. //"}, "prompts": [{"q": "看房时你发现厨房没有洗衣机、主卧空调很旧。跟中介提出，希望房东在入住前解决，并问谁负责空调保养。", "ref": "I like the layout, but there are a couple of things. There's no washing machine in the kitchen, and the air con in the master bedroom looks quite old. Could the landlord put in a washing machine and service the air con before we move in? Also, who's responsible for the regular air con servicing during the lease?", "ref_zh": "我喜欢这个格局，但有几点。厨房没有洗衣机，主卧的空调看起来很旧了。房东能在我们入住前装一台洗衣机、把空调保养一下吗？另外，租期内空调定期保养由谁负责？", "id": "ref0"}, {"q": "中介说房东不肯降价。你换个角度谈：不降价的话，能不能多给点别的条件。", "ref": "Okay, I understand he won't go lower on the rent. In that case, could we ask for something else instead? For example, could he include the internet, or give us two weeks rent free while we move in? We're a quiet family and happy to sign for two years, so we'd be reliable tenants.", "ref_zh": "好，我理解他租金不肯再降。那我们能不能换点别的？比如包网费，或者入住时给两周免租期？我们是很安静的家庭，也愿意签两年，会是很靠谱的租客。", "id": "ref1"}], "words": [{"w": "fully furnished", "ipa": "/ˈfʊli ˈfɜːrnɪʃt/", "zh": "全家具的", "ex": "We're looking for a fully furnished flat near the MRT.", "id": "w0"}, {"w": "utilities", "ipa": "/juːˈtɪlətiz/", "zh": "水电煤等公用事业费", "ex": "Our utilities went up a lot during the hot months.", "id": "w1"}, {"w": "lease", "ipa": "/liːs/", "zh": "租约，租期", "ex": "Our lease ends in March, so we need to decide soon.", "id": "w2"}, {"w": "mould", "ipa": "/moʊld/", "zh": "霉，霉斑", "ex": "Open the windows, or mould will grow in the bathroom.", "id": "w3"}, {"w": "tenancy agreement", "ipa": "/ˈtenənsi əˌɡriːmənt/", "zh": "租赁合同", "ex": "Read the tenancy agreement carefully before you sign.", "id": "w4"}, {"w": "diplomatic clause", "ipa": "/ˌdɪpləˈmætɪk klɔːz/", "zh": "外交条款（工作调动可提前解约）", "ex": "Most expats ask for a diplomatic clause in their lease.", "id": "w5"}, {"w": "relocate", "ipa": "/ˌriːˈloʊkeɪt/", "zh": "调动，搬迁", "ex": "Her company relocated her to Tokyo last year.", "id": "w6"}, {"w": "letter of intent", "ipa": "/ˈletər əv ɪnˈtent/", "zh": "意向书", "ex": "We signed the letter of intent the same day.", "id": "w7"}, {"w": "good faith deposit", "ipa": "/ɡʊd feɪθ dɪˈpɑːzɪt/", "zh": "诚意金", "ex": "The good faith deposit becomes part of the security deposit.", "id": "w8"}, {"w": "break the lease", "ipa": "/breɪk ðə liːs/", "zh": "提前解约", "ex": "If you break the lease early, you may lose your deposit.", "id": "w9"}], "sections": [{"heading": "1. Looking Around the Unit", "heading_zh": "1. 看房", "rows": [[{"id": "s0_0_0", "md": "So this is the living room. It gets the morning sun, and the unit is ==fully furnished==.", "text": "So this is the living room. It gets the morning sun, and the unit is fully furnished.", "zh": "这是客厅。早上有阳光，房子是全家具的。", "sp": "B"}], [{"id": "s0_1_0", "md": "It's nice and bright. How much is the rent __per month__?", "text": "It's nice and bright. How much is the rent per month?", "zh": "挺亮堂的。月租多少？", "sp": "A"}], [{"id": "s0_2_0", "md": "The landlord is asking four thousand two hundred. That doesn't include ==utilities==.", "text": "The landlord is asking four thousand two hundred. That doesn't include utilities.", "zh": "房东开价四千二。不包括水电煤。", "sp": "B"}], [{"id": "s0_3_0", "md": "**Roughly how much are the utilities for a family of three?**", "text": "Roughly how much are the utilities for a family of three?", "zh": "一家三口，水电煤大概每月多少？", "sp": "A"}], [{"id": "s0_4_0", "md": "Most tenants pay around two hundred a month, a bit more if you run the air con all night.", "text": "Most tenants pay around two hundred a month, a bit more if you run the air con all night.", "zh": "大部分租客每月两百左右，要是空调整晚开会多一点。", "sp": "B"}], [{"id": "s0_5_0", "md": "And what's the minimum ==lease== period?", "text": "And what's the minimum lease period?", "zh": "最短租期是多久？", "sp": "A"}], [{"id": "s0_6_0", "md": "Two years ideally, but the landlord might consider one year at a slightly higher rent.", "text": "Two years ideally, but the landlord might consider one year at a slightly higher rent.", "zh": "最好两年，不过一年的话房东可能也会考虑，只是租金稍高。", "sp": "B"}], [{"id": "s0_7_0", "md": "We have a toddler. Is there a playground in the condo, and any preschools __within walking distance__?", "text": "We have a toddler. Is there a playground in the condo, and any preschools within walking distance?", "zh": "我们有个小娃。公寓里有游乐场吗？走路能到的幼儿园有吗？", "sp": "A"}], [{"id": "s0_8_0", "md": "There's a playground next to the pool, and two preschools about five minutes away.", "text": "There's a playground next to the pool, and two preschools about five minutes away.", "zh": "泳池旁边有个游乐场，五分钟路程有两家幼儿园。", "sp": "B"}], [{"id": "s0_9_0", "md": "Good. I noticed some ==mould== on the bathroom ceiling. Would that be fixed before we move in?", "text": "Good. I noticed some mould on the bathroom ceiling. Would that be fixed before we move in?", "zh": "好的。我看到浴室天花板有点发霉。入住前能处理好吗？", "sp": "A"}], [{"id": "s0_10_0", "md": "I'll raise it with the landlord. I'm sure he'd be happy to __sort it out__.", "text": "I'll raise it with the landlord. I'm sure he'd be happy to sort it out.", "zh": "我跟房东提一下。他应该很乐意处理。", "sp": "B"}]]}, {"heading": "2. Making an Offer", "heading_zh": "2. 出价", "rows": [[{"id": "s1_0_0", "md": "We really like the place, and we'd like to make an offer.", "text": "We really like the place, and we'd like to make an offer.", "zh": "我们很喜欢这套房，想出个价。", "sp": "A"}], [{"id": "s1_1_0", "md": "**Would the landlord consider four thousand if we sign for two years?**", "text": "Would the landlord consider four thousand if we sign for two years?", "zh": "如果签两年，房东能接受四千吗？", "sp": "A"}], [{"id": "s1_2_0", "md": "That's a fair bit lower. I can __put it to him__, but he's had a few other viewings this week.", "text": "That's a fair bit lower. I can put it to him, but he's had a few other viewings this week.", "zh": "这低了不少。我可以帮你转达，不过这周还有别人来看过。", "sp": "B"}], [{"id": "s1_3_0", "md": "I understand. We can move in on the first of next month, and we don't have any pets.", "text": "I understand. We can move in on the first of next month, and we don't have any pets.", "zh": "理解。我们下个月一号就能入住，而且没养宠物。", "sp": "A"}], [{"id": "s1_4_0", "md": "That helps. Is there anything else you'd want in the ==tenancy agreement==?", "text": "That helps. Is there anything else you'd want in the tenancy agreement?", "zh": "这是加分项。租约里你们还想加什么条款吗？", "sp": "B"}], [{"id": "s1_5_0", "md": "Yes, I'd like a ==diplomatic clause==, in case my company ==relocates== me.", "text": "Yes, I'd like a diplomatic clause, in case my company relocates me.", "zh": "有，我想加一个外交条款，以防公司把我调走。", "sp": "A"}], [{"id": "s1_6_0", "md": "That's pretty standard. It usually lets you __break the lease__ after twelve months with two months' notice.", "text": "That's pretty standard. It usually lets you break the lease after twelve months with two months' notice.", "zh": "这挺常见的。一般是满十二个月后，提前两个月通知就能提前解约。", "sp": "B"}], [{"id": "s1_7_0", "md": "Perfect. And could the old sofa be removed? We're bringing our own.", "text": "Perfect. And could the old sofa be removed? We're bringing our own.", "zh": "太好了。另外能把那个旧沙发搬走吗？我们自己有。", "sp": "A"}], [{"id": "s1_8_0", "md": "Let me give him a call. Okay, he'll do four thousand one hundred, with the sofa removed and the mould fixed.", "text": "Let me give him a call. Okay, he'll do four thousand one hundred, with the sofa removed and the mould fixed.", "zh": "我给他打个电话。好，他同意四千一，搬走沙发，把霉处理掉。", "sp": "B"}], [{"id": "s1_9_0", "md": "**That works for us. What's the next step?**", "text": "That works for us. What's the next step?", "zh": "我们可以接受。下一步怎么走？", "sp": "A"}], [{"id": "s1_10_0", "md": "I'll send you a ==letter of intent==. You'd pay a ==good faith deposit== of one month's rent to secure it.", "text": "I'll send you a letter of intent. You'd pay a good faith deposit of one month's rent to secure it.", "zh": "我把意向书发给你。你付一个月租金作为诚意金，把房子定下来。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Looking Around the Unit", "zh": "1. 看房", "start": 0.0, "end": 2.16, "words": [[0.105, 0.329], [0.776, 1.013], [1.026, 1.303], [1.316, 1.355], [1.368, 1.763]]}, {"kind": "s", "id": "s0_0_0", "md": "So this is the living room. It gets the morning sun, and the unit is ==fully furnished==.", "zh": "这是客厅。早上有阳光，房子是全家具的。", "sp": "B", "gap": false, "start": 2.16, "end": 9.192, "words": [[2.263, 2.486], [2.552, 2.723], [2.736, 2.894], [2.907, 3.013], [3.026, 3.315], [3.355, 3.684], [4.778, 4.871], [4.884, 5.147], [5.173, 5.292], [5.292, 5.634], [5.699, 6.015], [6.278, 6.542], [6.555, 6.647], [6.647, 7.002], [7.055, 7.2], [7.226, 7.515], [7.568, 8.134]]}, {"kind": "s", "id": "s0_1_0", "md": "It's nice and bright. How much is the rent __per month__?", "zh": "挺亮堂的。月租多少？", "sp": "A", "gap": false, "start": 9.192, "end": 12.36, "words": [[9.297, 9.429], [9.442, 9.758], [9.771, 9.85], [9.863, 10.231], [10.679, 10.771], [10.784, 10.955], [10.968, 11.06], [11.074, 11.166], [11.179, 11.402], [11.416, 11.534], [11.547, 11.955]]}, {"kind": "s", "id": "s0_2_0", "md": "The landlord is asking four thousand two hundred. That doesn't include ==utilities==.", "zh": "房东开价四千二。不包括水电煤。", "sp": "B", "gap": false, "start": 12.36, "end": 19.44, "words": [[12.463, 12.555], [12.581, 13.173], [13.226, 13.371], [13.384, 13.923], [13.976, 14.226], [14.252, 14.726], [14.726, 14.936], [15.002, 15.463], [16.492, 16.702], [16.728, 17.084], [17.097, 17.518], [17.544, 18.294]]}, {"kind": "s", "id": "s0_3_0", "md": "**Roughly how much are the utilities for a family of three?**", "zh": "一家三口，水电煤大概每月多少？", "sp": "A", "gap": false, "start": 19.44, "end": 22.68, "words": [[19.545, 19.835], [19.848, 20.032], [20.045, 20.269], [20.282, 20.348], [20.361, 20.427], [20.44, 21.151], [21.164, 21.348], [21.361, 21.4], [21.414, 21.808], [21.822, 21.901], [21.914, 22.295]]}, {"kind": "s", "id": "s0_4_0", "md": "Most tenants pay around two hundred a month, a bit more if you run the air con all night.", "zh": "大部分租客每月两百左右，要是空调整晚开会多一点。", "sp": "B", "gap": false, "start": 22.68, "end": 29.472, "words": [[22.783, 23.059], [23.098, 23.506], [23.572, 23.796], [23.888, 24.217], [24.23, 24.467], [24.519, 24.862], [24.862, 24.927], [24.927, 25.296], [25.572, 25.914], [25.98, 26.191], [26.217, 26.519], [26.559, 26.717], [26.717, 26.901], [26.901, 27.112], [27.125, 27.23], [27.309, 27.414], [27.506, 27.73], [27.769, 28.019], [28.019, 28.362]]}, {"kind": "s", "id": "s0_5_0", "md": "And what's the minimum ==lease== period?", "zh": "最短租期是多久？", "sp": "A", "gap": false, "start": 29.472, "end": 31.656, "words": [[29.59, 29.722], [29.735, 29.972], [29.985, 30.09], [30.104, 30.525], [30.538, 30.748], [30.761, 31.261]]}, {"kind": "s", "id": "s0_6_0", "md": "Two years ideally, but the landlord might consider one year at a slightly higher rent.", "zh": "最好两年，不过一年的话房东可能也会考虑，只是租金稍高。", "sp": "B", "gap": false, "start": 31.656, "end": 38.064, "words": [[31.759, 31.93], [31.969, 32.167], [32.18, 32.772], [33.101, 33.417], [33.417, 33.522], [33.535, 34.048], [34.101, 34.364], [34.403, 34.851], [34.864, 35.101], [35.153, 35.324], [35.456, 35.653], [35.653, 35.745], [35.745, 36.219], [36.272, 36.614], [36.64, 36.982]]}, {"kind": "s", "id": "s0_7_0", "md": "We have a toddler. Is there a playground in the condo, and any preschools __within walking distance__?", "zh": "我们有个小娃。公寓里有游乐场吗？走路能到的幼儿园有吗？", "sp": "A", "gap": false, "start": 38.064, "end": 44.04, "words": [[38.169, 38.248], [38.261, 38.353], [38.367, 38.419], [38.432, 38.959], [39.393, 39.498], [39.511, 39.656], [39.669, 39.722], [39.735, 40.261], [40.275, 40.327], [40.34, 40.419], [40.432, 40.972], [41.248, 41.38], [41.498, 41.682], [41.696, 42.353], [42.367, 42.682], [42.696, 43.077], [43.09, 43.643]]}, {"kind": "s", "id": "s0_8_0", "md": "There's a playground next to the pool, and two preschools about five minutes away.", "zh": "泳池旁边有个游乐场，五分钟路程有两家幼儿园。", "sp": "B", "gap": false, "start": 44.04, "end": 50.064, "words": [[44.143, 44.379], [44.379, 44.472], [44.472, 45.103], [45.169, 45.472], [45.485, 45.59], [45.59, 45.695], [45.695, 46.09], [46.301, 46.59], [46.629, 46.84], [46.906, 47.537], [47.564, 47.893], [47.919, 48.248], [48.261, 48.577], [48.603, 48.945]]}, {"kind": "s", "id": "s0_9_0", "md": "Good. I noticed some ==mould== on the bathroom ceiling. Would that be fixed before we move in?", "zh": "好的。我看到浴室天花板有点发霉。入住前能处理好吗？", "sp": "A", "gap": false, "start": 50.064, "end": 55.392, "words": [[50.169, 50.432], [50.867, 50.919], [50.932, 51.314], [51.327, 51.498], [51.511, 51.853], [51.867, 51.946], [51.959, 52.038], [52.051, 52.498], [52.511, 52.959], [53.393, 53.498], [53.511, 53.643], [53.656, 53.775], [53.788, 54.117], [54.13, 54.419], [54.432, 54.538], [54.551, 54.788], [54.801, 55.011]]}, {"kind": "s", "id": "s0_10_0", "md": "I'll raise it with the landlord. I'm sure he'd be happy to __sort it out__.", "zh": "我跟房东提一下。他应该很乐意处理。", "sp": "B", "gap": false, "start": 55.392, "end": 61.272, "words": [[55.495, 55.666], [55.705, 56.034], [56.06, 56.153], [56.179, 56.297], [56.297, 56.416], [56.429, 57.047], [58.116, 58.274], [58.339, 58.589], [58.681, 58.879], [58.892, 59.01], [59.05, 59.379], [59.445, 59.55], [59.55, 59.8], [59.8, 59.879], [59.892, 60.181]]}, {"kind": "h", "id": "h1", "md": "2. Making an Offer", "zh": "2. 出价", "start": 61.272, "end": 63.216, "words": [[61.377, 61.601], [62.035, 62.285], [62.298, 62.377], [62.39, 62.825]]}, {"kind": "s", "id": "s1_0_0", "md": "We really like the place, and we'd like to make an offer.", "zh": "我们很喜欢这套房，想出个价。", "sp": "A", "gap": false, "start": 63.216, "end": 66.36, "words": [[63.321, 63.453], [63.466, 63.703], [63.716, 63.927], [63.94, 64.019], [64.032, 64.545], [64.795, 64.887], [64.9, 65.019], [65.032, 65.163], [65.177, 65.242], [65.255, 65.44], [65.453, 65.532], [65.545, 65.966]]}, {"kind": "s", "id": "s1_1_0", "md": "**Would the landlord consider four thousand if we sign for two years?**", "zh": "如果签两年，房东能接受四千吗？", "sp": "A", "gap": false, "start": 66.36, "end": 70.248, "words": [[66.465, 66.584], [66.597, 66.676], [66.689, 67.149], [67.163, 67.61], [67.623, 67.886], [67.899, 68.386], [68.584, 68.676], [68.689, 68.794], [68.807, 69.084], [69.097, 69.202], [69.215, 69.386], [69.399, 69.86]]}, {"kind": "s", "id": "s1_2_0", "md": "That's a fair bit lower. I can __put it to him__, but he's had a few other viewings this week.", "zh": "这低了不少。我可以帮你转达，不过这周还有别人来看过。", "sp": "B", "gap": false, "start": 70.248, "end": 77.304, "words": [[70.351, 70.64], [70.666, 70.772], [70.785, 71.022], [71.087, 71.272], [71.298, 71.653], [72.761, 72.787], [72.893, 73.024], [73.077, 73.248], [73.248, 73.353], [73.353, 73.498], [73.498, 73.709], [73.972, 74.301], [74.301, 74.445], [74.459, 74.643], [74.643, 74.709], [74.722, 74.958], [75.011, 75.235], [75.235, 75.643], [75.682, 75.84], [75.893, 76.222]]}, {"kind": "s", "id": "s1_3_0", "md": "I understand. We can move in on the first of next month, and we don't have any pets.", "zh": "理解。我们下个月一号就能入住，而且没养宠物。", "sp": "A", "gap": false, "start": 77.304, "end": 82.44, "words": [[77.422, 77.515], [77.528, 78.12], [78.554, 78.659], [78.672, 78.791], [78.804, 79.015], [79.028, 79.159], [79.172, 79.251], [79.265, 79.33], [79.343, 79.712], [79.725, 79.778], [79.791, 80.054], [80.067, 80.422], [80.699, 80.791], [80.804, 80.896], [80.909, 81.12], [81.133, 81.317], [81.33, 81.462], [81.475, 82.041]]}, {"kind": "s", "id": "s1_4_0", "md": "That helps. Is there anything else you'd want in the ==tenancy agreement==?", "zh": "这是加分项。租约里你们还想加什么条款吗？", "sp": "B", "gap": false, "start": 82.44, "end": 88.392, "words": [[82.543, 82.753], [82.766, 83.174], [84.308, 84.414], [84.44, 84.598], [84.598, 85.058], [85.137, 85.414], [85.466, 85.729], [85.756, 86.019], [86.032, 86.124], [86.124, 86.229], [86.229, 86.729], [86.795, 87.335]]}, {"kind": "s", "id": "s1_5_0", "md": "Yes, I'd like a ==diplomatic clause==, in case my company ==relocates== me.", "zh": "有，我想加一个外交条款，以防公司把我调走。", "sp": "A", "gap": false, "start": 88.392, "end": 93.24, "words": [[88.497, 88.945], [89.247, 89.352], [89.366, 89.51], [89.524, 89.603], [89.616, 90.195], [90.208, 90.774], [90.984, 91.103], [91.116, 91.379], [91.392, 91.537], [91.55, 91.945], [91.958, 92.629], [92.642, 92.839]]}, {"kind": "s", "id": "s1_6_0", "md": "That's pretty standard. It usually lets you __break the lease__ after twelve months with two months' notice.", "zh": "这挺常见的。一般是满十二个月后，提前两个月通知就能提前解约。", "sp": "B", "gap": false, "start": 93.24, "end": 101.232, "words": [[93.343, 93.632], [93.685, 93.987], [94.04, 94.553], [95.648, 95.74], [95.766, 96.214], [96.266, 96.49], [96.529, 96.674], [96.674, 96.964], [96.977, 97.069], [97.082, 97.345], [97.385, 97.766], [97.766, 98.108], [98.135, 98.503], [98.674, 98.872], [98.898, 99.135], [99.201, 99.49], [99.569, 99.977]]}, {"kind": "s", "id": "s1_7_0", "md": "Perfect. And could the old sofa be removed? We're bringing our own.", "zh": "太好了。另外能把那个旧沙发搬走吗？我们自己有。", "sp": "A", "gap": false, "start": 101.232, "end": 105.648, "words": [[101.35, 101.785], [102.219, 102.298], [102.311, 102.456], [102.469, 102.574], [102.587, 102.824], [102.837, 103.179], [103.193, 103.311], [103.324, 103.929], [104.364, 104.469], [104.482, 104.811], [104.824, 104.969], [104.982, 105.258]]}, {"kind": "s", "id": "s1_8_0", "md": "Let me give him a call. Okay, he'll do four thousand one hundred, with the sofa removed and the mould fixed.", "zh": "我给他打个电话。好，他同意四千一，搬走沙发，把霉处理掉。", "sp": "B", "gap": false, "start": 105.648, "end": 114.264, "words": [[105.751, 105.948], [106.014, 106.132], [106.159, 106.356], [106.369, 106.487], [106.54, 106.58], [106.593, 106.961], [108.056, 108.411], [108.687, 109.069], [109.095, 109.293], [109.359, 109.543], [109.582, 110.003], [110.016, 110.24], [110.28, 110.727], [110.924, 111.187], [111.187, 111.332], [111.332, 111.701], [111.701, 112.214], [112.28, 112.398], [112.411, 112.503], [112.503, 112.806], [112.845, 113.24]]}, {"kind": "s", "id": "s1_9_0", "md": "**That works for us. What's the next step?**", "zh": "我们可以接受。下一步怎么走？", "sp": "A", "gap": false, "start": 114.264, "end": 116.904, "words": [[114.382, 114.501], [114.514, 114.725], [114.738, 114.896], [114.909, 115.225], [115.659, 115.817], [115.83, 115.909], [115.922, 116.146], [116.159, 116.514]]}, {"kind": "s", "id": "s1_10_0", "md": "I'll send you a ==letter of intent==. You'd pay a ==good faith deposit== of one month's rent to secure it.", "zh": "我把意向书发给你。你付一个月租金作为诚意金，把房子定下来。", "sp": "B", "gap": false, "start": 116.904, "end": 124.536, "words": [[117.007, 117.164], [117.243, 117.493], [117.546, 117.651], [117.691, 117.717], [117.743, 118.046], [118.086, 118.178], [118.191, 118.73], [119.878, 120.114], [120.154, 120.378], [120.47, 120.483], [120.509, 120.746], [120.799, 121.115], [121.193, 121.641], [121.654, 121.746], [121.786, 122.036], [122.075, 122.391], [122.47, 122.72], [122.759, 122.878], [122.878, 123.259], [123.325, 123.43]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

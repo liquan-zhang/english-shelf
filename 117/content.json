@@ -1,0 +1,85 @@
+{
+  "id": "117",
+  "type": "dialogue",
+  "title": "Reporting a Lost Card",
+  "meta": "B2 · 约 280 词 · 场景：电话挂失信用卡与可疑交易",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Card Services", "name_zh": "信用卡客服", "voice": "en-SG-LunaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Blocking the Card",
+      "heading_zh": "1. 冻结卡片",
+      "lines": [
+        {"sp": "B", "en": "Thank you for calling Card Services. This is Michelle. How can I help?", "zh": "感谢致电信用卡服务中心，我是 Michelle。有什么可以帮您？"},
+        {"sp": "A", "en": "**Hi, I think I've lost my credit card. I need to block it right away.**", "zh": "你好，我的信用卡好像丢了。需要马上冻结。"},
+        {"sp": "B", "en": "I can help with that. First, I need to ==verify== your identity. Could I have your full name and date of birth?", "zh": "我来帮您处理。首先需要核实身份。请告诉我您的全名和出生日期。"},
+        {"sp": "A", "en": "It's Lee Wei, born on the fourth of March, nineteen eighty-eight.", "zh": "Lee Wei，一九八八年三月四日出生。"},
+        {"sp": "B", "en": "Thank you. I've just sent a ==one-time password== to your mobile. Could you read it out?", "zh": "谢谢。我刚往您手机发了一个一次性验证码，请念一下。"},
+        {"sp": "A", "en": "Sure, it's seven, four, one, nine, zero, two.", "zh": "好的，是七四一九零二。"},
+        {"sp": "B", "en": "That's verified. When did you last use the card?", "zh": "核实成功。您最后一次用这张卡是什么时候？"},
+        {"sp": "A", "en": "Last night at a restaurant in Tanjong Pagar. I think I __left it behind__ there.", "zh": "昨晚在丹戎巴葛的一家餐厅。我估计是落在那儿了。"},
+        {"sp": "B", "en": "Okay, I've ==blocked== the card now. Nobody can use it from this point on.", "zh": "好的，卡已经冻结了。从现在起没人能用这张卡。"}
+      ]
+    },
+    {
+      "heading": "2. Charges You Didn't Make",
+      "heading_zh": "2. 不是你刷的交易",
+      "lines": [
+        {"sp": "B", "en": "I do see two ==transactions== this morning, both online. Did you make those?", "zh": "我看到今天早上有两笔交易，都是网上的。是您本人消费的吗？"},
+        {"sp": "A", "en": "What are they? I haven't used the card since last night.", "zh": "是什么交易？我从昨晚起就没用过这张卡。"},
+        {"sp": "B", "en": "One for two hundred and forty dollars at an electronics store, and one for eighteen dollars at a food delivery app.", "zh": "一笔是电器店的二百四十元，一笔是外卖平台的十八元。"},
+        {"sp": "A", "en": "**Neither of those was me. Can I dispute them?**", "zh": "这两笔都不是我。我能申诉吗？"},
+        {"sp": "B", "en": "Yes. I'll __raise a dispute__ for both and flag them as ==fraud==. You won't be charged while we ==investigate==.", "zh": "可以。我给这两笔都提交争议，标记为盗刷。调查期间不会向您收费。"},
+        {"sp": "A", "en": "Thank you. __How long__ does the investigation usually take?", "zh": "谢谢。调查一般要多久？"},
+        {"sp": "B", "en": "Usually two to four weeks. We'll update you by email.", "zh": "一般两到四周，我们会邮件通知您进展。"},
+        {"sp": "A", "en": "**And can you send me a replacement card? My phone bill is paid with this one.**", "zh": "能给我补一张新卡吗？我的手机话费是用这张卡扣的。"},
+        {"sp": "B", "en": "A new card will arrive in five to seven working days, with a new number. You'll need to __update__ your recurring payments.", "zh": "新卡五到七个工作日寄到，卡号会变。您需要更新自动扣款的卡号。"},
+        {"sp": "A", "en": "Got it. Could I also get a reference number for this call?", "zh": "明白了。能给我这次来电的参考编号吗？"},
+        {"sp": "B", "en": "Of course. I'll send it to you by text right after this call.", "zh": "当然。挂电话后我马上短信发给您。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "客服是怎么核实「你」的身份的？", "a": "先问全名和出生日期，再发一次性验证码让你念出来。"},
+    {"q": "卡被冻结后发现了什么？", "a": "早上有两笔网上交易不是本人：电器店二百四十元、外卖平台十八元。"},
+    {"q": "客服后续做了哪些处理？", "a": "两笔交易提交争议并标记盗刷，调查期间不收费；补寄新卡，提醒更新自动扣款；短信发参考编号。"}
+  ],
+  "dictation": [
+    "Hi, I think I've lost my credit card. I need to block it right away.",
+    "Neither of those was me. Can I dispute them?",
+    "And can you send me a replacement card? My phone bill is paid with this one.",
+    "Got it. Could I also get a reference number for this call?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Last night at a restaurant in Tanjong Pagar. I think I left it behind there.",
+    "marked": "<b>Last night</b> / at a <b>restaurant</b> in Tanjong <b>Pagar</b>. //<br>I think I <b>left it behind</b> there. //"
+  },
+  "prompts": [
+    {
+      "q": "你在手机银行里收到一条你没做过的扣款提醒，但卡还在你手上。打电话给银行，说明情况并要求处理。",
+      "ref": "Hi, I just got an alert for a charge of about ninety dollars on my credit card, but I didn't make it. The card is still with me, so I think the details might have been stolen online. Could you block this card, dispute the charge, and send me a new one? I'd also like to know if there were any other strange payments.",
+      "ref_zh": "你好，我刚收到信用卡一笔大约九十元的扣款提醒，但不是我刷的。卡还在我身上，所以我怀疑卡信息在网上被盗了。能帮我冻结这张卡、对这笔扣款提出争议、再寄一张新卡吗？我也想知道还有没有别的异常付款。"
+    },
+    {
+      "q": "冻结卡片后你发现卡其实在外套口袋里。打电话问能不能解冻，以及之前的争议还会不会继续处理。",
+      "ref": "Hi, I called this morning to block my card, but I've just found it in my jacket pocket. Is it possible to unblock it instead of getting a replacement? Also, I reported a charge I didn't recognise. I still don't think that one was me, so I'd like the dispute to carry on. Is that okay?",
+      "ref_zh": "你好，我今天早上打电话冻结了卡，结果刚在外套口袋里找到了。能不能直接解冻，不用补新卡？另外我之前报了一笔不认识的扣款，我仍然觉得那笔不是我刷的，希望争议继续处理，可以吗？"
+    }
+  ],
+  "words": [
+    {"w": "verify", "ipa": "/ˈverɪfaɪ/", "zh": "核实", "ex": "We need to verify your phone number first."},
+    {"w": "one-time password", "ipa": "/ˌwʌn taɪm ˈpæswɜːrd/", "zh": "一次性验证码", "ex": "Never share your one-time password with anyone."},
+    {"w": "block (v.)", "ipa": "/blɑːk/", "zh": "冻结（卡）", "ex": "You can block your card in the app in seconds.", "tts_w": "block"},
+    {"w": "transaction", "ipa": "/trænˈzækʃən/", "zh": "交易", "ex": "Every transaction shows up in the app straight away."},
+    {"w": "fraud", "ipa": "/frɔːd/", "zh": "诈骗，盗刷", "ex": "The bank called me about possible fraud on my account."},
+    {"w": "investigate", "ipa": "/ɪnˈvestɪɡeɪt/", "zh": "调查", "ex": "The landlord promised to investigate the leak."},
+    {"w": "dispute (v.)", "ipa": "/dɪˈspjuːt/", "zh": "对（扣款）提出异议", "ex": "You can dispute the charge within sixty days.", "tts_w": "dispute"},
+    {"w": "replacement card", "ipa": "/rɪˈpleɪsmənt kɑːrd/", "zh": "补发的卡", "ex": "My replacement card came in the post yesterday."},
+    {"w": "recurring payment", "ipa": "/rɪˈkɜːrɪŋ ˈpeɪmənt/", "zh": "定期自动扣款", "ex": "My gym fee is a recurring payment on my card."}
+  ]
+}

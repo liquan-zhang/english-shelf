@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Checking Understanding Without Sounding Rude · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "097", "title": "Checking Understanding Without Sounding Rude", "meta": "B2 · 约 280 词 · 场景：确认对方理解", "voice": "en-AU-WilliamMultilingualNeural", "rate": "-5%", "sections": [{"heading": "1. The Trouble with \"Does That Make Sense?\"", "heading_zh": "1. 「这样说清楚吗？」的问题", "rows": [[{"id": "s0_0_0", "md": "At the end of a briefing, most managers ask, \"Does that make sense?\"", "text": "At the end of a briefing, most managers ask, \"Does that make sense?\"", "zh": "讲完一件事，大多数经理都会问一句：「这样说清楚吗？」", "sp": null}, {"id": "s0_0_1", "md": "Almost everyone says yes.", "text": "Almost everyone says yes.", "zh": "几乎所有人都会说清楚。", "sp": null}, {"id": "s0_0_2", "md": "A week later, half the team has built something ==subtly== different from what you asked for.", "text": "A week later, half the team has built something subtly different from what you asked for.", "zh": "一周后，一半的人做出来的东西都和你要的有点微妙的不一样。", "sp": null}], [{"id": "s0_1_0", "md": "The question is the problem.", "text": "The question is the problem.", "zh": "问题出在这个问法上。", "sp": null}, {"id": "s0_1_1", "md": "Answering no in front of colleagues can make people ==lose face==, especially someone new or someone working in a second language.", "text": "Answering no in front of colleagues can make people lose face, especially someone new or someone working in a second language.", "zh": "当着同事的面说「不清楚」，会让人觉得丢面子，尤其是新人或者用第二语言工作的人。", "sp": null}, {"id": "s0_1_2", "md": "\"Do you understand?\" is even worse, because it can sound ==condescending==, as if you doubt their ability.", "text": "\"Do you understand?\" is even worse, because it can sound condescending, as if you doubt their ability.", "zh": "「你听懂了吗？」就更糟了，因为听起来有点居高临下，好像你在怀疑他们的能力。", "sp": null}], [{"id": "s0_2_0", "md": "**A yes to \"Does that make sense?\" usually means \"I heard you,\" not \"I can do it.\"**", "text": "A yes to \"Does that make sense?\" usually means \"I heard you,\" not \"I can do it.\"", "zh": "对「这样说清楚吗？」回答「清楚」，通常意思是「我听到了」，而不是「我能做」。", "sp": null}, {"id": "s0_2_1", "md": "To check real understanding, you need questions that ask people to use the information, not just agree with it.", "text": "To check real understanding, you need questions that ask people to use the information, not just agree with it.", "zh": "要确认对方真的理解了，你需要问那种让人用上这些信息的问题，而不只是让人点头同意。", "sp": null}, {"id": "s0_2_2", "md": "That is a much better test of what has actually landed.", "text": "That is a much better test of what has actually landed.", "zh": "这才能更好地检验信息到底有没有传到位。", "sp": null}]]}, {"heading": "2. Put the Burden on Yourself", "heading_zh": "2. 把责任揽到自己身上", "rows": [[{"id": "s1_0_0", "md": "First, take ==ownership== of the explanation.", "text": "First, take ownership of the explanation.", "zh": "第一，把讲解的责任揽到自己身上。", "sp": null}, {"id": "s1_0_1", "md": "\"I went through that quickly, so let me check I explained it well\" sounds very different from \"Did you get that?\"", "text": "\"I went through that quickly, so let me check I explained it well\" sounds very different from \"Did you get that?\"", "zh": "「刚才我讲得有点快，我确认一下自己有没有讲清楚」，听起来和「你听懂了吗？」完全不一样。", "sp": null}, {"id": "s1_0_2", "md": "Now any gap is your fault, not theirs, and people feel free to __speak up__.", "text": "Now any gap is your fault, not theirs, and people feel free to speak up.", "zh": "这样一来，有任何没对齐的地方都是你的问题，不是他们的，大家也就敢开口了。", "sp": null}], [{"id": "s1_1_0", "md": "Second, ask about the first step.", "text": "Second, ask about the first step.", "zh": "第二，问第一步打算做什么。", "sp": null}, {"id": "s1_1_1", "md": "\"So what's the first thing you'll do on Monday?\" tells you much more than a yes or a no.", "text": "\"So what's the first thing you'll do on Monday?\" tells you much more than a yes or a no.", "zh": "「那你周一第一件事打算做什么？」能告诉你的东西，比一个「是」或「不是」多得多。", "sp": null}, {"id": "s1_1_2", "md": "If the answer is ==off track==, you can correct it gently right away, before anyone has written a line of code.", "text": "If the answer is off track, you can correct it gently right away, before anyone has written a line of code.", "zh": "如果回答跑偏了，你可以当场温和地纠正，赶在任何人写下一行代码之前。", "sp": null}], [{"id": "s1_2_0", "md": "Third, invite a ==recap==, but make it ==collaborative==.", "text": "Third, invite a recap, but make it collaborative.", "zh": "第三，请大家一起复述，但要做成协作的样子。", "sp": null}, {"id": "s1_2_1", "md": "\"Can we quickly __sum up__ the next steps together, so I can put them in the notes?\"", "text": "\"Can we quickly sum up the next steps together, so I can put them in the notes?\"", "zh": "「我们快速一起过一下下一步，我好记到纪要里？」", "sp": null}, {"id": "s1_2_2", "md": "**When the recap has a practical purpose, nobody feels tested.**", "text": "When the recap has a practical purpose, nobody feels tested.", "zh": "复述有了实际用途，就没人会觉得自己在被考。", "sp": null}], [{"id": "s1_3_0", "md": "These questions take an extra minute.", "text": "These questions take an extra minute.", "zh": "这些问题会多花一分钟。", "sp": null}, {"id": "s1_3_1", "md": "But they turn a polite yes into a real check, and they __save everyone from__ a painful surprise later.", "text": "But they turn a polite yes into a real check, and they save everyone from a painful surprise later.", "zh": "但它们能把一句客气的「清楚」变成一次真正的确认，也能让大家免于之后一个难受的意外。", "sp": null}, {"id": "s1_3_2", "md": "Over a quarter, that minute pays for itself many times over.", "text": "Over a quarter, that minute pays for itself many times over.", "zh": "放到一个季度来看，这一分钟能回本好多倍。", "sp": null}]]}], "gist": [{"q": "为什么问 \"Does that make sense?\" 往往得不到真实答案？", "a": "当众说不懂会觉得丢面子，尤其是新人或用第二语言工作的人；这里的 yes 通常只代表“听到了”，不代表“能做到”。"}, {"q": "作者说要“把负担放在自己身上”，具体怎么说？", "a": "说“我讲得有点快，确认一下我讲清楚没有”，把没懂归为自己没讲好，而不是对方没听懂。"}, {"q": "除此之外还有哪两个确认方法？", "a": "问对方第一步要做什么；邀请一起总结下一步，并给出实际用途（写进会议记录），这样没人觉得被考。"}], "dictation": [{"id": "s0_1_0", "text": "The question is the problem."}, {"id": "s1_0_0", "text": "First, take ownership of the explanation."}, {"id": "s1_1_0", "text": "Second, ask about the first step."}, {"id": "s1_2_2", "text": "When the recap has a practical purpose, nobody feels tested."}], "shadow": {"text": "First, take ownership of the explanation. \"I went through that quickly, so let me check I explained it well\" sounds very different from \"Did you get that?\" Now any gap is your fault, not theirs, and people feel free to speak up.", "marked": "First, take <b>ownership</b> / of the <b>explanation</b>. //<br>\"I went through that <b>quickly</b>, / so let me check / I explained it <b>well</b>\" / sounds very <b>different</b> / from \"Did you <b>get</b> that?\" //<br>Now any gap is <b>your</b> fault, / not <b>theirs</b>, / and people feel free to speak <b>up</b>. //"}, "prompts": [{"q": "你刚给新加坡的外包团队讲完一个复杂的接口变更。不问 Does that make sense，而是确认他们真的理解了，30 秒。", "ref": "Okay, I covered a lot there, and I went through the last part quite fast, so let me check I explained it clearly. Siti, if you were starting on this tomorrow, what would be the first change you'd make? Great, that's exactly right. And Ken, which endpoint do you think will need the most testing? Let's put both answers in the notes.", "ref_zh": "好，刚才讲的内容挺多，最后一部分我讲得也比较快，我确认一下自己有没有讲清楚。Siti，如果你明天开始做这个，第一个要改的是什么？很好，完全正确。Ken，你觉得哪个接口最需要重点测试？我们把这两个回答都记到纪要里。", "id": "ref0"}, {"q": "一对一时你给下属布置了一个跨团队任务，想确认他理解了优先级，但不想显得不信任他。", "ref": "Before we wrap up, can we sum up the plan together? I want to make sure my notes are right. What do you see as the top priority this week, and who do you need to talk to first? Perfect. One small thing, the payments team is busy until Wednesday, so maybe start with the data team instead.", "ref_zh": "结束之前，我们一起过一下计划？我想确认我的笔记没记错。你觉得这周最高优先级是什么，第一个要找谁聊？完美。还有个小事，支付团队周三之前都很忙，所以可以先从数据团队那边开始。", "id": "ref1"}], "words": [{"w": "subtly", "ipa": "/ˈsʌtli/", "zh": "微妙地、细微地", "ex": "The two specs are subtly different, which caused the bug.", "id": "w0"}, {"w": "lose face", "ipa": "/luːz feɪs/", "zh": "丢面子", "ex": "He didn't want to lose face by admitting the estimate was wrong.", "id": "w1"}, {"w": "condescending", "ipa": "/ˌkɑːndɪˈsendɪŋ/", "zh": "居高临下的、高人一等的", "ex": "Explaining basics to a senior engineer can sound condescending.", "id": "w2"}, {"w": "ownership", "ipa": "/ˈoʊnərˌʃɪp/", "zh": "主人翁意识、负责", "ex": "She took ownership of the incident and wrote the review herself.", "id": "w3"}, {"w": "off track", "ipa": "/ɔːf træk/", "zh": "偏离方向", "ex": "The project went off track when the requirements changed.", "id": "w4"}, {"w": "recap", "ipa": "/ˈriːˌkæp/", "zh": "简要回顾、总结", "ex": "Let me do a quick recap of what we agreed.", "id": "w5"}, {"w": "collaborative", "ipa": "/kəˈlæbəˌreɪtɪv/", "zh": "协作的", "ex": "Planning works better as a collaborative session than a lecture.", "id": "w6"}, {"w": "sum up", "ipa": "/sʌm ʌp/", "zh": "总结、概括", "ex": "To sum up, we ship on Friday and fix the rest next sprint.", "id": "w7"}, {"w": "briefing", "ipa": "/ˈbriːfɪŋ/", "zh": "情况介绍、简报会", "ex": "We'll hold a short briefing before the on-call shift starts.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Trouble with \"Does That Make Sense?\"", "zh": "1. 「这样说清楚吗？」的问题", "start": 0.0, "end": 3.624, "words": [[0.05, 0.655], [0.984, 1.103], [1.103, 1.484], [1.484, 1.734], [1.734, 1.971], [1.971, 2.182], [2.182, 2.392], [2.392, 2.918]]}, {"kind": "s", "id": "s0_0_0", "md": "At the end of a briefing, most managers ask, \"Does that make sense?\"", "zh": "讲完一件事，大多数经理都会问一句：「这样说清楚吗？」", "sp": null, "gap": false, "start": 3.624, "end": 8.52, "words": [[3.674, 3.871], [3.871, 4.042], [4.042, 4.187], [4.187, 4.266], [4.266, 4.319], [4.319, 4.924], [5.108, 5.477], [5.477, 5.911], [5.911, 6.384], [6.7, 6.871], [6.871, 7.069], [7.069, 7.266], [7.266, 7.792]]}, {"kind": "s", "id": "s0_0_1", "md": "Almost everyone says yes.", "zh": "几乎所有人都会说清楚。", "sp": null, "gap": false, "start": 8.52, "end": 10.8, "words": [[8.57, 9.109], [9.109, 9.623], [9.623, 9.925], [9.925, 10.425]]}, {"kind": "s", "id": "s0_0_2", "md": "A week later, half the team has built something ==subtly== different from what you asked for.", "zh": "一周后，一半的人做出来的东西都和你要的有点微妙的不一样。", "sp": null, "gap": false, "start": 10.8, "end": 15.864, "words": [[10.85, 11.008], [11.008, 11.271], [11.271, 11.705], [11.968, 12.297], [12.297, 12.389], [12.389, 12.705], [12.705, 12.863], [12.863, 13.1], [13.1, 13.482], [13.482, 13.903], [13.903, 14.337], [14.337, 14.521], [14.521, 14.692], [14.692, 14.811], [14.811, 15.074], [15.074, 15.495]]}, {"kind": "s", "id": "s0_1_0", "md": "The question is the problem.", "zh": "问题出在这个问法上。", "sp": null, "gap": true, "start": 15.864, "end": 17.88, "words": [[15.914, 16.085], [16.085, 16.611], [16.611, 16.822], [16.822, 16.914], [16.914, 17.506]]}, {"kind": "s", "id": "s0_1_1", "md": "Answering no in front of colleagues can make people ==lose face==, especially someone new or someone working in a second language.", "zh": "当着同事的面说「不清楚」，会让人觉得丢面子，尤其是新人或者用第二语言工作的人。", "sp": null, "gap": false, "start": 17.88, "end": 25.248, "words": [[17.93, 18.456], [18.456, 18.798], [18.798, 18.956], [18.956, 19.18], [19.18, 19.259], [19.259, 19.759], [19.759, 19.93], [19.93, 20.167], [20.167, 20.496], [20.496, 20.759], [20.759, 21.259], [21.575, 22.154], [22.154, 22.483], [22.483, 22.838], [22.838, 22.996], [22.996, 23.417], [23.417, 23.812], [23.812, 23.93], [23.93, 23.969], [23.969, 24.325], [24.325, 24.877]]}, {"kind": "s", "id": "s0_1_2", "md": "\"Do you understand?\" is even worse, because it can sound ==condescending==, as if you doubt their ability.", "zh": "「你听懂了吗？」就更糟了，因为听起来有点居高临下，好像你在怀疑他们的能力。", "sp": null, "gap": false, "start": 25.248, "end": 31.752, "words": [[25.337, 25.39], [25.43, 25.653], [25.653, 26.377], [26.903, 27.061], [27.061, 27.377], [27.377, 27.864], [28.087, 28.364], [28.364, 28.443], [28.443, 28.587], [28.587, 28.93], [28.93, 29.745], [29.982, 30.153], [30.153, 30.272], [30.272, 30.364], [30.364, 30.666], [30.666, 30.811], [30.811, 31.377]]}, {"kind": "s", "id": "s0_2_0", "md": "**A yes to \"Does that make sense?\" usually means \"I heard you,\" not \"I can do it.\"**", "zh": "对「这样说清楚吗？」回答「清楚」，通常意思是「我听到了」，而不是「我能做」。", "sp": null, "gap": true, "start": 31.752, "end": 37.656, "words": [[31.802, 31.92], [31.92, 32.249], [32.249, 32.486], [32.486, 32.684], [32.684, 32.841], [32.841, 33.026], [33.026, 33.539], [34.078, 34.539], [34.539, 34.947], [34.947, 35.039], [35.039, 35.328], [35.328, 35.618], [35.802, 36.184], [36.184, 36.341], [36.341, 36.512], [36.513, 36.71], [36.71, 36.92]]}, {"kind": "s", "id": "s0_2_1", "md": "To check real understanding, you need questions that ask people to use the information, not just agree with it.", "zh": "要确认对方真的理解了，你需要问那种让人用上这些信息的问题，而不只是让人点头同意。", "sp": null, "gap": false, "start": 37.656, "end": 44.304, "words": [[37.706, 37.89], [37.89, 38.18], [38.18, 38.509], [38.509, 39.285], [39.548, 39.693], [39.693, 39.903], [39.903, 40.456], [40.456, 40.68], [40.68, 40.943], [40.943, 41.259], [41.259, 41.364], [41.364, 41.64], [41.64, 41.772], [41.772, 42.495], [42.706, 42.995], [42.995, 43.259], [43.259, 43.535], [43.535, 43.693], [43.693, 43.943]]}, {"kind": "s", "id": "s0_2_2", "md": "That is a much better test of what has actually landed.", "zh": "这才能更好地检验信息到底有没有传到位。", "sp": null, "gap": false, "start": 44.304, "end": 47.736, "words": [[44.354, 44.617], [44.617, 44.749], [44.749, 44.788], [44.788, 45.117], [45.117, 45.393], [45.393, 45.814], [45.815, 45.959], [45.959, 46.143], [46.143, 46.341], [46.341, 46.814], [46.815, 47.38]]}, {"kind": "h", "id": "h1", "md": "2. Put the Burden on Yourself", "zh": "2. 把责任揽到自己身上", "start": 47.736, "end": 50.664, "words": [[47.786, 48.325], [48.773, 48.996], [48.997, 49.089], [49.089, 49.536], [49.536, 49.681], [49.681, 50.299]]}, {"kind": "s", "id": "s1_0_0", "md": "First, take ==ownership== of the explanation.", "zh": "第一，把讲解的责任揽到自己身上。", "sp": null, "gap": false, "start": 50.664, "end": 54.024, "words": [[50.714, 51.398], [51.701, 52.069], [52.069, 52.569], [52.569, 52.675], [52.675, 52.819], [52.819, 53.661]]}, {"kind": "s", "id": "s1_0_1", "md": "\"I went through that quickly, so let me check I explained it well\" sounds very different from \"Did you get that?\"", "zh": "「刚才我讲得有点快，我确认一下自己有没有讲清楚」，听起来和「你听懂了吗？」完全不一样。", "sp": null, "gap": false, "start": 54.024, "end": 60.408, "words": [[54.153, 54.192], [54.271, 54.495], [54.495, 54.719], [54.719, 54.89], [54.89, 55.403], [55.627, 55.811], [55.811, 56.008], [56.008, 56.1], [56.1, 56.363], [56.363, 56.469], [56.469, 56.916], [56.916, 56.995], [56.995, 57.35], [57.35, 57.745], [57.745, 58.021], [58.021, 58.429], [58.429, 58.798], [58.811, 59.008], [59.008, 59.087], [59.087, 59.285], [59.285, 59.653]]}, {"kind": "s", "id": "s1_0_2", "md": "Now any gap is your fault, not theirs, and people feel free to __speak up__.", "zh": "这样一来，有任何没对齐的地方都是你的问题，不是他们的，大家也就敢开口了。", "sp": null, "gap": false, "start": 60.408, "end": 65.448, "words": [[60.458, 60.892], [60.892, 61.142], [61.142, 61.392], [61.392, 61.497], [61.497, 61.59], [61.59, 62.063], [62.287, 62.576], [62.576, 63.09], [63.326, 63.484], [63.484, 63.84], [63.84, 64.09], [64.09, 64.405], [64.405, 64.484], [64.484, 64.774], [64.774, 65.09]]}, {"kind": "s", "id": "s1_1_0", "md": "Second, ask about the first step.", "zh": "第二，问第一步打算做什么。", "sp": null, "gap": true, "start": 65.448, "end": 68.328, "words": [[65.498, 66.209], [66.445, 66.748], [66.748, 67.024], [67.024, 67.103], [67.103, 67.498], [67.498, 67.959]]}, {"kind": "s", "id": "s1_1_1", "md": "\"So what's the first thing you'll do on Monday?\" tells you much more than a yes or a no.", "zh": "「那你周一第一件事打算做什么？」能告诉你的东西，比一个「是」或「不是」多得多。", "sp": null, "gap": false, "start": 68.328, "end": 73.488, "words": [[68.417, 68.602], [68.641, 68.917], [68.917, 69.01], [69.01, 69.352], [69.352, 69.536], [69.536, 69.654], [69.654, 69.852], [69.852, 69.957], [69.957, 70.47], [70.944, 71.26], [71.26, 71.339], [71.339, 71.628], [71.628, 71.839], [71.839, 71.97], [71.97, 72.01], [72.01, 72.47], [72.47, 72.641], [72.641, 72.681], [72.681, 73.115]]}, {"kind": "s", "id": "s1_1_2", "md": "If the answer is ==off track==, you can correct it gently right away, before anyone has written a line of code.", "zh": "如果回答跑偏了，你可以当场温和地纠正，赶在任何人写下一行代码之前。", "sp": null, "gap": false, "start": 73.488, "end": 79.92, "words": [[73.538, 73.735], [73.735, 73.893], [73.893, 74.248], [74.249, 74.354], [74.354, 74.499], [74.499, 74.985], [75.249, 75.393], [75.393, 75.538], [75.538, 75.893], [75.893, 76.012], [76.012, 76.367], [76.367, 76.564], [76.564, 77.038], [77.314, 77.749], [77.749, 78.196], [78.196, 78.38], [78.38, 78.67], [78.67, 78.696], [78.696, 78.959], [78.959, 79.051], [79.051, 79.551]]}, {"kind": "s", "id": "s1_2_0", "md": "Third, invite a ==recap==, but make it ==collaborative==.", "zh": "第三，请大家一起复述，但要做成协作的样子。", "sp": null, "gap": true, "start": 79.92, "end": 83.688, "words": [[79.97, 80.615], [80.773, 81.18], [81.181, 81.233], [81.233, 81.799], [82.036, 82.22], [82.22, 82.483], [82.483, 82.588], [82.588, 83.312]]}, {"kind": "s", "id": "s1_2_1", "md": "\"Can we quickly __sum up__ the next steps together, so I can put them in the notes?\"", "zh": "「我们快速一起过一下下一步，我好记到纪要里？」", "sp": null, "gap": false, "start": 83.688, "end": 88.56, "words": [[83.777, 83.909], [83.949, 84.093], [84.093, 84.501], [84.501, 84.712], [84.712, 84.87], [84.87, 84.935], [84.935, 85.225], [85.225, 85.501], [85.501, 85.988], [86.238, 86.541], [86.541, 86.633], [86.633, 86.804], [86.804, 87.027], [87.027, 87.159], [87.159, 87.238], [87.238, 87.304], [87.304, 87.817]]}, {"kind": "s", "id": "s1_2_2", "md": "**When the recap has a practical purpose, nobody feels tested.**", "zh": "复述有了实际用途，就没人会觉得自己在被考。", "sp": null, "gap": false, "start": 88.56, "end": 92.808, "words": [[88.61, 88.899], [88.899, 88.978], [88.978, 89.465], [89.465, 89.636], [89.636, 89.689], [89.689, 90.176], [90.176, 90.781], [91.057, 91.531], [91.531, 91.913], [91.913, 92.452]]}, {"kind": "s", "id": "s1_3_0", "md": "These questions take an extra minute.", "zh": "这些问题会多花一分钟。", "sp": null, "gap": true, "start": 92.808, "end": 95.424, "words": [[92.858, 93.2], [93.2, 93.805], [93.805, 94.055], [94.055, 94.266], [94.266, 94.608], [94.608, 95.055]]}, {"kind": "s", "id": "s1_3_1", "md": "But they turn a polite yes into a real check, and they __save everyone from__ a painful surprise later.", "zh": "但它们能把一句客气的「清楚」变成一次真正的确认，也能让大家免于之后一个难受的意外。", "sp": null, "gap": false, "start": 95.424, "end": 101.352, "words": [[95.474, 95.658], [95.658, 95.79], [95.79, 96.066], [96.066, 96.106], [96.106, 96.513], [96.513, 96.856], [96.856, 97.145], [97.145, 97.198], [97.198, 97.474], [97.474, 97.908], [98.25, 98.395], [98.395, 98.5], [98.5, 98.921], [98.921, 99.421], [99.421, 99.566], [99.566, 99.619], [99.619, 100.066], [100.066, 100.54], [100.54, 100.974]]}, {"kind": "s", "id": "s1_3_2", "md": "Over a quarter, that minute pays for itself many times over.", "zh": "放到一个季度来看，这一分钟能回本好多倍。", "sp": null, "gap": false, "start": 101.352, "end": 105.48, "words": [[101.402, 101.797], [101.797, 101.836], [101.836, 102.363], [102.652, 102.889], [102.889, 103.165], [103.165, 103.507], [103.507, 103.665], [103.665, 104.06], [104.06, 104.389], [104.389, 104.718], [104.718, 105.126]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

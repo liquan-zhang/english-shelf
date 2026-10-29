@@ -1,0 +1,182 @@
+{
+  "id": "094",
+  "title": "Async First: When Not to Have a Meeting",
+  "meta": "B2 · 约 270 词 · 场景：异步协作",
+  "voice": "en-IN-NeerjaNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Meetings Are the Most Expensive Default",
+      "paragraphs": [
+        [
+          "In a global team, a one-hour meeting with eight people is not one hour.",
+          "It is eight hours of work, and for someone in another time zone, it might also cost them dinner with their family or an hour of sleep.",
+          "Yet we schedule meetings almost by ==reflex==."
+        ],
+        [
+          "Async first means the default is written, and a meeting has to ==earn== its place.",
+          "Status updates, simple decisions and information sharing can almost always happen in a document or a thread.",
+          "**If a meeting could be replaced by a well-written message, it should be.**"
+        ],
+        [
+          "Async work also helps people who think better in writing, including many colleagues working in a second language.",
+          "They get time to read, ==reflect== and reply with their best ideas instead of their fastest ones.",
+          "In a live call, the quickest speaker often wins, even when the quietest person had the better idea."
+        ]
+      ],
+      "heading_zh": "1. 开会是最贵的默认选项",
+      "paragraphs_zh": [
+        [
+          "在全球化团队里，八个人开一小时的会，不是一小时。",
+          "而是八个小时的工作量，对另一个时区的人来说，可能还要搭上和家人吃的一顿晚饭，或者一小时的睡眠。",
+          "可我们约会几乎是条件反射。"
+        ],
+        [
+          "异步优先的意思是，默认用文字沟通，会议得证明自己值得开。",
+          "进度同步、简单决策和信息共享，几乎都可以在文档或者消息串里完成。",
+          "如果一个会能用一条写得好的消息替代，那就该替代。"
+        ],
+        [
+          "异步工作也能帮到那些写下来想得更清楚的人，包括很多用第二语言工作的同事。",
+          "他们有时间读、想，然后回复自己最好的想法，而不是最快的想法。",
+          "在实时会议上，往往是嘴最快的人赢，哪怕最安静的那个人想法更好。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Three Reasons to Meet Anyway",
+      "paragraphs": [
+        [
+          "Async is not always the answer.",
+          "Before booking a call, ask yourself whether at least one of these three things is true."
+        ],
+        [
+          "First, there is a ==conflict== that has gone back and forth in comments more than twice.",
+          "Long threads harden positions, and ten minutes of talking often __clears the air__."
+        ],
+        [
+          "Second, the problem is still ==fuzzy==.",
+          "When nobody can describe the question clearly yet, a quick ==brainstorm== is faster than a document that nobody knows how to start."
+        ],
+        [
+          "Third, the topic is ==delicate==, such as feedback, a reorganization, or bad news.",
+          "**Hard conversations deserve a human voice, not a block of text.**",
+          "If none of these apply, __write it up__, __set a deadline__ for comments, and give people their hour back."
+        ]
+      ],
+      "heading_zh": "2. 还是值得开会的三种情况",
+      "paragraphs_zh": [
+        [
+          "异步也不是万能的。",
+          "约会之前，先问问自己，下面三条里是不是至少有一条成立。"
+        ],
+        [
+          "第一，有个分歧在评论里已经来回拉扯了不止两轮。",
+          "消息串越长，各自的立场就越固化，聊上十分钟往往就能把话说开。"
+        ],
+        [
+          "第二，问题本身还很模糊。",
+          "当谁都还说不清问题是什么的时候，快速脑暴一下，比写一份没人知道从哪下笔的文档要快。"
+        ],
+        [
+          "第三，话题比较敏感，比如给反馈、组织调整，或者坏消息。",
+          "难开口的谈话，值得用人的声音来讲，而不是一大段文字。",
+          "如果这三条都不沾边，那就写下来，定一个评论截止时间，把这一小时还给大家。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么作者说会议是“最贵的默认选项”？",
+      "a": "八个人开一小时会就是八小时工作量，对其他时区的人还可能占用晚饭或睡眠，而我们却习惯性地约会。"
+    },
+    {
+      "q": "异步优先对哪些人特别有帮助？",
+      "a": "擅长书面思考的人，包括用第二语言工作的同事，他们有时间阅读、思考，给出最好而不是最快的想法。"
+    },
+    {
+      "q": "什么情况下仍然应该开会？",
+      "a": "评论区来回超过两轮的分歧；问题还很模糊、需要头脑风暴；话题敏感（反馈、组织调整、坏消息）。否则写下来、设评论截止时间。"
+    }
+  ],
+  "dictation": [
+    "If a meeting could be replaced by a well-written message, it should be.",
+    "Async first means the default is written, and a meeting has to earn its place.",
+    "Second, the problem is still fuzzy.",
+    "Hard conversations deserve a human voice, not a block of text."
+  ],
+  "shadow": {
+    "text": "Async first means the default is written, and a meeting has to earn its place. Status updates, simple decisions and information sharing can almost always happen in a document or a thread. If a meeting could be replaced by a well-written message, it should be.",
+    "marked": "Async <b>first</b> means / the default is <b>written</b>, / and a meeting has to <b>earn</b> its place. //<br><b>Status</b> updates, / simple <b>decisions</b> / and information sharing / can almost <b>always</b> happen / in a document or a <b>thread</b>. //<br>If a meeting could be <b>replaced</b> / by a well-written <b>message</b>, / it <b>should</b> be. //"
+  },
+  "prompts": [
+    {
+      "q": "老板要求每周一开一小时的全员同步会，参会者分布在四个时区。你提议改成异步更新，30 秒说服他。",
+      "ref": "I'd like to suggest a change to the Monday sync. Most of that hour is status updates, which people could write in a shared doc by Monday noon their time. That saves about eight hours of team time every week, and our Sydney colleagues get their evenings back. We could keep a short call once a month for planning and real discussion.",
+      "ref_zh": "关于周一的同步会，我想提个调整。那一小时大部分都是进度更新，大家完全可以在各自时区的周一中午前写进一个共享文档。这样每周能省下团队大约八个小时，悉尼的同事也能把晚上拿回来。我们可以每月保留一次短会，用来做规划和真正需要讨论的事。"
+    },
+    {
+      "q": "一个设计方案在评论区来回吵了三轮仍无结论。你提议开一个短会。",
+      "ref": "I think this thread has reached the point where writing is slowing us down. We've gone back and forth three times, and I'm not sure we're even disagreeing about the same thing. Can we jump on a fifteen-minute call tomorrow at four Singapore time? I'll summarize both options at the top of the doc first, so we start from the same page.",
+      "ref_zh": "我觉得这个讨论串已经到了文字反而在拖慢我们的地步。我们来回了三轮，我都不确定我们争的是不是同一件事。明天新加坡时间四点开个十五分钟的短会行吗？我先在文档顶部把两个方案总结一下，这样我们从同一个起点开始。"
+    }
+  ],
+  "words": [
+    {
+      "w": "reflex",
+      "ipa": "/ˈriːfleks/",
+      "zh": "条件反射、本能反应",
+      "ex": "Don't book a meeting by reflex, check if a message would work."
+    },
+    {
+      "w": "earn (v.)",
+      "ipa": "/ɜːrn/",
+      "zh": "赢得、挣得",
+      "ex": "A recurring meeting has to earn its place on the calendar.",
+      "tts_w": "earn"
+    },
+    {
+      "w": "reflect",
+      "ipa": "/rɪˈflekt/",
+      "zh": "思考、反思",
+      "ex": "Give people a day to reflect before you ask for a decision."
+    },
+    {
+      "w": "conflict",
+      "ipa": "/ˈkɑːnflɪkt/",
+      "zh": "冲突、分歧",
+      "ex": "There's a conflict between the two teams' roadmaps."
+    },
+    {
+      "w": "fuzzy",
+      "ipa": "/ˈfʌzi/",
+      "zh": "模糊的、不清楚的",
+      "ex": "The scope is still fuzzy, so let's not estimate yet."
+    },
+    {
+      "w": "brainstorm",
+      "ipa": "/ˈbreɪnˌstɔːrm/",
+      "zh": "头脑风暴",
+      "ex": "Let's do a quick brainstorm before anyone writes a proposal."
+    },
+    {
+      "w": "delicate",
+      "ipa": "/ˈdelɪkət/",
+      "zh": "微妙的、需小心处理的",
+      "ex": "Headcount changes are a delicate topic, I'll tell them in person."
+    },
+    {
+      "w": "async",
+      "ipa": "/ˈeɪsɪŋk/",
+      "zh": "异步（的）",
+      "ex": "We run most of our planning async now, in a shared document."
+    },
+    {
+      "w": "clear the air",
+      "ipa": "/klɪr ði er/",
+      "zh": "消除误会、缓和气氛",
+      "ex": "A short call cleared the air after that tense email thread."
+    }
+  ]
+}

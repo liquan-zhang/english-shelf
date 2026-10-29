@@ -1,0 +1,194 @@
+{
+  "id": "019",
+  "title": "Demoing Work That Is Not Finished",
+  "meta": "B2 · 约 290 词 · 场景：半成品演示",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Two Ways an Early Demo Goes Wrong",
+      "paragraphs": [
+        [
+          "Showing unfinished work is one of the best habits a team can have.",
+          "You get feedback while changes are still cheap, instead of after three months of building the wrong thing.",
+          "But early demos tend to fail in one of two opposite ways."
+        ],
+        [
+          "In the first, the audience focuses on the ==rough== parts.",
+          "Someone spends ten minutes on a button color, and nobody comments on the workflow you actually wanted to test."
+        ],
+        [
+          "In the second, the demo looks too good.",
+          "The screens are ==polished==, the data is fake but realistic, and a senior stakeholder says, \"Great, so we can launch next month?\"",
+          "Now you have a ==deadline== based on a prototype held together with tape.",
+          "**The more finished a demo looks, the more finished people assume it is.**"
+        ]
+      ],
+      "heading_zh": "1. 早期 demo 翻车的两种方式",
+      "paragraphs_zh": [
+        [
+          "展示没做完的东西，是一个团队能有的最好的习惯之一。",
+          "你能在改动成本还低的时候拿到反馈，而不是闷头做了三个月才发现方向错了。",
+          "但早期 demo 往往会以两种截然相反的方式翻车。"
+        ],
+        [
+          "第一种，听众盯着粗糙的地方不放。",
+          "有人花十分钟纠结一个按钮的颜色，你真正想验证的流程却没人评论。"
+        ],
+        [
+          "第二种，demo 看起来太完美了。",
+          "页面很精致，数据是假的但很逼真，然后一位高层干系人说：「太好了，那下个月就能上线了？」",
+          "现在你手上有了一个 deadline，依据却是一个用胶带勉强粘起来的原型。",
+          "demo 看起来越完整，大家就越以为它真的快做完了。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Frame It Before You Show It",
+      "paragraphs": [
+        [
+          "Both problems have the same cure, which is to set the frame before anyone sees a screen.",
+          "Spend the first thirty seconds saying what is real, what is ==mocked==, and what kind of feedback you want."
+        ],
+        [
+          "\"The search results are real, but the payment step is just a static page.\"",
+          "\"Please ignore the styling today; I'd love your view on whether these three steps make sense.\"",
+          "This ==steers== their attention to where you need it."
+        ],
+        [
+          "During the demo, name rough edges before anyone else does.",
+          "\"You'll see this loads slowly; that's a known issue we're fixing next sprint.\"",
+          "When you __call it out__ first, it sounds like control, not a mistake."
+        ],
+        [
+          "Finally, close with a clear ==status== line.",
+          "\"We're about forty percent done, and the earliest realistic launch is the end of next quarter.\"",
+          "**Say the date yourself, or someone in the room will say a worse one for you.**",
+          "That way, the meeting __ends with__ useful feedback and a shared, honest timeline."
+        ]
+      ],
+      "heading_zh": "2. 先定调，再展示",
+      "paragraphs_zh": [
+        [
+          "这两个问题的解法是一样的：在任何人看到画面之前，先把基调定好。",
+          "用开头三十秒讲清楚哪些是真的、哪些是 mock 的，以及你想要什么样的反馈。"
+        ],
+        [
+          "「搜索结果是真实的，但支付这一步只是个静态页面。」",
+          "「今天的样式请先忽略；我很想听听你们觉得这三个步骤是否合理。」",
+          "这样就把大家的注意力引到了你需要的地方。"
+        ],
+        [
+          "demo 过程中，在别人指出之前先点明粗糙的地方。",
+          "「你们会看到这里加载得很慢，这是已知问题，下个迭代修。」",
+          "你自己先说出来，听起来就是一切尽在掌握，而不是出了错。"
+        ],
+        [
+          "最后，用一句清晰的进度说明收尾。",
+          "「我们大概完成了百分之四十，最早比较现实的上线时间是下季度末。」",
+          "日期要你自己说出来，不然屋里就会有人替你说一个更糟的。",
+          "这样，会议结束时大家既拿到了有用的反馈，又有了一个共同认可的、实事求是的时间线。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "演示半成品通常会以哪两种相反的方式出问题？",
+      "a": "要么观众盯着粗糙的细节，没反馈真正想测的流程；要么演示看起来太完善，被误认为快做完了，被定下不现实的上线时间。"
+    },
+    {
+      "q": "作者给出的统一解法是什么？",
+      "a": "在展示任何画面之前先定框架：说明哪些是真的、哪些是模拟的，以及想要什么样的反馈。"
+    },
+    {
+      "q": "为什么结尾要由自己说出时间？",
+      "a": "如果自己不说，会有人替你说一个更糟、更不现实的日期。"
+    }
+  ],
+  "dictation": [
+    "The more finished a demo looks, the more finished people assume it is.",
+    "Say the date yourself, or someone in the room will say a worse one for you.",
+    "During the demo, name rough edges before anyone else does.",
+    "When you call it out first, it sounds like control, not a mistake."
+  ],
+  "shadow": {
+    "text": "During the demo, name rough edges before anyone else does. \"You'll see this loads slowly; that's a known issue we're fixing next sprint.\" When you call it out first, it sounds like control, not a mistake.",
+    "marked": "During the demo, / name <b>rough</b> edges / <b>before</b> anyone else does. //<br>\"You'll see this loads <b>slowly</b>; / that's a <b>known</b> issue / we're fixing <b>next</b> sprint.\" //<br>When you call it out <b>first</b>, / it sounds like <b>control</b>, / <b>not</b> a mistake. //"
+  },
+  "prompts": [
+    {
+      "q": "你要给业务方演示一个只做了一半的新客服后台原型。用 30 秒开场设定框架：哪些是真的、哪些是假的、你想要什么反馈。",
+      "ref": "Before I share my screen, a quick note on what you're about to see. This is an early prototype. The ticket list and search are working with real data, but the reply templates and reporting pages are just mock-ups. Please don't worry about colors or spacing yet. What I really want to know is whether this flow matches how your agents work day to day.",
+      "ref_zh": "共享屏幕之前，先简单说一下大家马上要看到的东西。这是一个早期原型。工单列表和搜索用的是真实数据，但回复模板和报表页面只是 mock 稿。颜色和间距先不用在意。我最想知道的是，这个流程跟你们客服同学的日常工作方式对不对得上。"
+    },
+    {
+      "q": "演示结束后，一位高层兴奋地说：“看起来差不多了，下个月上线吧？”用 30 秒管理预期，给出真实进度和时间。",
+      "ref": "I'm really glad it looks promising. I should be clear, though, that what you saw is mostly the front end. The integration with billing and all the error handling still need to be built, so we're about a third of the way there. Realistically, we could start a small beta in two months and launch fully at the end of next quarter. I'll share a written plan this week.",
+      "ref_zh": "很高兴大家觉得有前景。不过我得说清楚，刚才看到的主要是前端。和计费系统的对接以及所有的异常处理都还没做，所以我们大概只完成了三分之一。实事求是地说，两个月后可以开始小范围 beta，下季度末全量上线。这周我会发一份书面计划。"
+    }
+  ],
+  "words": [
+    {
+      "w": "rough",
+      "ipa": "/rʌf/",
+      "zh": "粗糙的、未打磨的",
+      "ex": "This is a rough draft of the design doc, so feedback is welcome."
+    },
+    {
+      "w": "polished",
+      "ipa": "/ˈpɑːlɪʃt/",
+      "zh": "精致的、打磨过的",
+      "ex": "The demo looked polished, but the backend was still hard-coded."
+    },
+    {
+      "w": "deadline",
+      "ipa": "/ˈdedlaɪn/",
+      "zh": "截止日期",
+      "ex": "We can't move the deadline because of the partner contract."
+    },
+    {
+      "w": "mock (v.)",
+      "ipa": "/mɑːk/",
+      "zh": "模拟、做假数据",
+      "ex": "We mocked the payment service so the frontend team isn't blocked.",
+      "tts_w": "mock"
+    },
+    {
+      "w": "status",
+      "ipa": "/ˈsteɪtəs/",
+      "zh": "状态、进度",
+      "ex": "Can you post a status update in the channel by end of day?"
+    },
+    {
+      "w": "prototype",
+      "ipa": "/ˈproʊtəˌtaɪp/",
+      "zh": "原型",
+      "ex": "We built a quick prototype to test the idea with five users."
+    },
+    {
+      "w": "stakeholder",
+      "ipa": "/ˈsteɪkˌhoʊldər/",
+      "zh": "利益相关方",
+      "ex": "Let's get all the stakeholders aligned before the kickoff."
+    },
+    {
+      "w": "call out",
+      "ipa": "/kɔːl aʊt/",
+      "zh": "指出、点明",
+      "ex": "I want to call out a risk with the third-party SDK."
+    },
+    {
+      "w": "realistic",
+      "ipa": "/ˌriːəˈlɪstɪk/",
+      "zh": "现实可行的",
+      "ex": "Is a two-week timeline realistic with only one backend engineer?"
+    },
+    {
+      "w": "steer",
+      "ipa": "/stɪr/",
+      "zh": "引导、带向",
+      "ex": "Try to steer the discussion back to the launch criteria."
+    }
+  ]
+}

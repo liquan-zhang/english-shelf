@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>The First One-on-One with a New Report · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "052", "title": "The First One-on-One with a New Report", "meta": "B2 · 约 280 词 · 场景：一对一", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. What This Meeting Is Really For", "heading_zh": "1. 这个会真正是为了什么", "rows": [[{"id": "s0_0_0", "md": "Your new engineer joined on Monday, and your first one-on-one is on Thursday.", "text": "Your new engineer joined on Monday, and your first one-on-one is on Thursday.", "zh": "你的新工程师周一入职，你们的第一次 1:1 定在周四。", "sp": null}, {"id": "s0_0_1", "md": "It is tempting to fill the half hour with a project overview, the team's ==conventions==, and a list of tickets.", "text": "It is tempting to fill the half hour with a project overview, the team's conventions, and a list of tickets.", "zh": "很容易就想把这半小时塞满：项目介绍、团队规范，再加一串工单。", "sp": null}, {"id": "s0_0_2", "md": "That information matters, but a document can deliver it.", "text": "That information matters, but a document can deliver it.", "zh": "这些信息很重要，但一份文档就能传达。", "sp": null}], [{"id": "s0_1_0", "md": "The first one-on-one has a different job.", "text": "The first one-on-one has a different job.", "zh": "第一次 1:1 有不一样的任务。", "sp": null}, {"id": "s0_1_1", "md": "It sets the tone for every conversation you will have with this person for the next few years.", "text": "It sets the tone for every conversation you will have with this person for the next few years.", "zh": "它为你接下来几年和这个人的每一次谈话定下基调。", "sp": null}, {"id": "s0_1_2", "md": "**If the first meeting is a status update, every meeting after it will be one too.**", "text": "If the first meeting is a status update, every meeting after it will be one too.", "zh": "如果第一次会是同步进度，之后的每一次也都会是。", "sp": null}], [{"id": "s0_2_0", "md": "What you want to learn is how this person works best.", "text": "What you want to learn is how this person works best.", "zh": "你想了解的是这个人怎样工作状态最好。", "sp": null}, {"id": "s0_2_1", "md": "What motivates them, what ==drains== them, and how they like to hear bad news.", "text": "What motivates them, what drains them, and how they like to hear bad news.", "zh": "什么能激励他，什么会消耗他，他喜欢怎么听坏消息。", "sp": null}, {"id": "s0_2_2", "md": "Those answers are hard to get later, once habits have __settled in__ and both of you are ==guarded==.", "text": "Those answers are hard to get later, once habits have settled in and both of you are guarded.", "zh": "这些答案以后就很难问出来了，因为那时习惯已经定型，双方也都有了戒备。", "sp": null}]]}, {"heading": "2. Questions Worth Asking", "heading_zh": "2. 值得问的问题", "rows": [[{"id": "s1_0_0", "md": "Start with their past, not your plans.", "text": "Start with their past, not your plans.", "zh": "从他的过去聊起，而不是你的计划。", "sp": null}, {"id": "s1_0_1", "md": "\"Tell me about the best manager you ever had. What did they do?\"", "text": "\"Tell me about the best manager you ever had. What did they do?\"", "zh": "「讲讲你遇到过的最好的老板吧。他做了些什么？」", "sp": null}, {"id": "s1_0_2", "md": "Then ask the ==mirror== question: \"What did a bad manager do that you never want to see again?\"", "text": "Then ask the mirror question: \"What did a bad manager do that you never want to see again?\"", "zh": "然后问反过来的问题：「有哪个糟糕的老板做过什么，是你再也不想遇到的？」", "sp": null}], [{"id": "s1_1_0", "md": "Next, ask how they want to receive feedback.", "text": "Next, ask how they want to receive feedback.", "zh": "接着，问他希望怎样接收反馈。", "sp": null}, {"id": "s1_1_1", "md": "Some people prefer it in writing, so they can think before replying.", "text": "Some people prefer it in writing, so they can think before replying.", "zh": "有些人喜欢书面的，这样回复前可以先想一想。", "sp": null}, {"id": "s1_1_2", "md": "Others want it __on the spot__, in a quick chat after the meeting.", "text": "Others want it on the spot, in a quick chat after the meeting.", "zh": "另一些人希望当场说，会后简单聊几句。", "sp": null}, {"id": "s1_1_3", "md": "Asking now means your first piece of critical feedback will not __come as a shock__.", "text": "Asking now means your first piece of critical feedback will not come as a shock.", "zh": "现在问清楚，意味着你第一次给出批评性反馈时，不会让对方觉得突然。", "sp": null}], [{"id": "s1_2_0", "md": "Then talk about the ==rhythm== of your meetings.", "text": "Then talk about the rhythm of your meetings.", "zh": "然后聊聊你们开会的节奏。", "sp": null}, {"id": "s1_2_1", "md": "Agree on how often you meet, and make it clear that this time belongs to them, not to project updates.", "text": "Agree on how often you meet, and make it clear that this time belongs to them, not to project updates.", "zh": "约定多久见一次，并且说清楚这段时间是属于他的，不是用来同步项目的。", "sp": null}, {"id": "s1_2_2", "md": "**Tell them they can bring anything, including complaints about you.**", "text": "Tell them they can bring anything, including complaints about you.", "zh": "告诉他什么都可以拿来聊，包括对你的抱怨。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, talk less than you want to.", "text": "Finally, talk less than you want to.", "zh": "最后，少说话，比你想说的还要少。", "sp": null}, {"id": "s1_3_1", "md": "Write down what you hear, and repeat it back in the next meeting.", "text": "Write down what you hear, and repeat it back in the next meeting.", "zh": "把听到的记下来，下次见面时复述一遍。", "sp": null}, {"id": "s1_3_2", "md": "Nothing builds early trust faster than showing someone that you actually remembered what they ==revealed==.", "text": "Nothing builds early trust faster than showing someone that you actually remembered what they revealed.", "zh": "没有什么比让对方看到你真的记住了他说过的话，更能快速建立早期信任了。", "sp": null}]]}], "gist": [{"q": "作者认为第一次一对一的真正目的是什么？", "a": "定下以后所有谈话的基调，了解对方怎样工作最好：什么激励他、什么消耗他、他希望怎样听坏消息；项目信息可以靠文档。"}, {"q": "作者建议问哪些问题？", "a": "你遇到过最好的经理做了什么、最差的经理做了什么；你希望怎样接收反馈（书面还是当面即时）。"}, {"q": "关于一对一的节奏和你自己的表现，作者有什么建议？", "a": "约定频率，说明这段时间属于对方不是汇报进度，可以聊任何事包括对你的抱怨；自己少说，记下来，下次复述给对方听。"}], "dictation": [{"id": "s0_1_2", "text": "If the first meeting is a status update, every meeting after it will be one too."}, {"id": "s1_0_0", "text": "Start with their past, not your plans."}, {"id": "s1_2_2", "text": "Tell them they can bring anything, including complaints about you."}, {"id": "s1_3_1", "text": "Write down what you hear, and repeat it back in the next meeting."}], "shadow": {"text": "Next, ask how they want to receive feedback. Some people prefer it in writing, so they can think before replying. Others want it on the spot, in a quick chat after the meeting.", "marked": "Next, / ask <b>how</b> they want to <b>receive</b> feedback. //<br>Some people prefer it in <b>writing</b>, / so they can <b>think</b> before replying. //<br><b>Others</b> want it <b>on the spot</b>, / in a <b>quick</b> chat / after the meeting. //"}, "prompts": [{"q": "和新下属的第一次一对一刚开始。用 30 秒开场：说明这次会面的目的，不谈项目，然后抛出第一个问题。", "ref": "Welcome again, I'm really glad you're here. I want to use today a bit differently. We'll have plenty of time for projects and tickets, and most of that is in the onboarding doc anyway. Today I'd like to understand how you work best. So let me start with an easy one. Tell me about the best manager you've had. What did they do that worked for you?", "ref_zh": "再次欢迎，真的很高兴你能加入。今天我想换个方式来用这段时间。项目和工单以后有的是时间聊，而且大部分都在入职文档里了。今天我想了解一下你怎样工作状态最好。那我先问个简单的。讲讲你遇到过的最好的老板吧。他做了什么让你觉得很受用？", "id": "ref0"}, {"q": "继续这次一对一。用 30 秒问对方希望怎样接收反馈，并说明一对一的频率和规则。", "ref": "One more thing I'd like to get right early. When I have feedback for you, how do you prefer to get it? Some people like a written note, others want a quick chat right after the meeting. Also, I'd suggest we meet every week for thirty minutes. This time is yours, so bring anything, including things I'm doing that bother you.", "ref_zh": "还有一件事我想早点弄对。我有反馈要给你的时候，你更喜欢什么方式？有些人喜欢书面留言，有些人希望会后马上简单聊一下。另外，我建议我们每周见一次，每次三十分钟。这段时间是你的，所以什么都可以聊，包括我做的让你不舒服的事。", "id": "ref1"}], "words": [{"w": "convention", "ipa": "/kənˈvenʃən/", "zh": "惯例、约定", "ex": "Our naming convention for feature flags is in the wiki.", "id": "w0"}, {"w": "drain (v.)", "ipa": "/dreɪn/", "zh": "消耗（精力）", "ex": "Back-to-back on-call weeks really drain the team.", "tts_w": "drain", "id": "w1"}, {"w": "guarded", "ipa": "/ˈɡɑːrdɪd/", "zh": "有戒心的、保留的", "ex": "He was a bit guarded when I asked about his last project.", "id": "w2"}, {"w": "mirror (adj.)", "ipa": "/ˈmɪrər/", "zh": "镜像的、反向对应的", "ex": "Let's run the mirror test: what if traffic drops instead?", "tts_w": "mirror", "id": "w3"}, {"w": "rhythm", "ipa": "/ˈrɪðəm/", "zh": "节奏", "ex": "Weekly demos gave the team a good rhythm.", "id": "w4"}, {"w": "reveal", "ipa": "/rɪˈviːl/", "zh": "透露、揭示", "ex": "The trace revealed a slow call to the auth service.", "id": "w5"}, {"w": "motivate", "ipa": "/ˈmoʊtɪveɪt/", "zh": "激励", "ex": "Seeing real user impact really motivates her.", "id": "w6"}, {"w": "critical", "ipa": "/ˈkrɪtɪkl/", "zh": "批评性的", "ex": "I have some critical feedback on the design, but it's fixable.", "id": "w7"}, {"w": "settle in", "ipa": "/ˈsetl ɪn/", "zh": "安顿下来、适应", "ex": "Give him two weeks to settle in before assigning on-call.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. What This Meeting Is Really For", "zh": "1. 这个会真正是为了什么", "start": 0.0, "end": 2.832, "words": [[0.105, 0.329], [0.776, 0.947], [0.961, 1.145], [1.158, 1.513], [1.526, 1.645], [1.658, 1.96], [1.974, 2.434]]}, {"kind": "s", "id": "s0_0_0", "md": "Your new engineer joined on Monday, and your first one-on-one is on Thursday.", "zh": "你的新工程师周一入职，你们的第一次 1:1 定在周四。", "sp": null, "gap": false, "start": 2.832, "end": 7.872, "words": [[2.937, 3.082], [3.095, 3.293], [3.306, 3.819], [3.832, 4.174], [4.187, 4.319], [4.332, 4.806], [5.121, 5.227], [5.24, 5.371], [5.385, 5.753], [5.766, 6.45], [6.595, 6.714], [6.727, 6.872], [6.885, 7.477]]}, {"kind": "s", "id": "s0_0_1", "md": "It is tempting to fill the half hour with a project overview, the team's ==conventions==, and a list of tickets.", "zh": "很容易就想把这半小时塞满：项目介绍、团队规范，再加一串工单。", "sp": null, "gap": false, "start": 7.872, "end": 14.424, "words": [[7.977, 8.056], [8.069, 8.214], [8.227, 8.622], [8.635, 8.727], [8.74, 9.069], [9.083, 9.175], [9.188, 9.49], [9.504, 9.819], [9.833, 9.977], [9.99, 10.03], [10.043, 10.648], [10.661, 11.188], [11.49, 11.583], [11.596, 11.911], [11.925, 12.688], [12.911, 13.03], [13.043, 13.082], [13.096, 13.372], [13.385, 13.464], [13.477, 14.03]]}, {"kind": "s", "id": "s0_0_2", "md": "That information matters, but a document can deliver it.", "zh": "这些信息很重要，但一份文档就能传达。", "sp": null, "gap": false, "start": 14.424, "end": 18.144, "words": [[14.542, 14.661], [14.674, 15.306], [15.319, 15.898], [16.108, 16.24], [16.253, 16.306], [16.319, 16.911], [17.003, 17.135], [17.148, 17.582], [17.595, 17.753]]}, {"kind": "s", "id": "s0_1_0", "md": "The first one-on-one has a different job.", "zh": "第一次 1:1 有不一样的任务。", "sp": null, "gap": true, "start": 18.144, "end": 20.592, "words": [[18.262, 18.328], [18.341, 18.67], [18.683, 19.276], [19.289, 19.486], [19.499, 19.552], [19.565, 19.854], [19.868, 20.21]]}, {"kind": "s", "id": "s0_1_1", "md": "It sets the tone for every conversation you will have with this person for the next few years.", "zh": "它为你接下来几年和这个人的每一次谈话定下基调。", "sp": null, "gap": false, "start": 20.592, "end": 25.992, "words": [[20.697, 20.789], [20.803, 21.092], [21.105, 21.21], [21.224, 21.526], [21.539, 21.763], [21.895, 22.171], [22.184, 22.96], [22.974, 23.066], [23.079, 23.21], [23.224, 23.539], [23.553, 23.71], [23.724, 23.908], [23.921, 24.381], [24.395, 24.526], [24.539, 24.618], [24.631, 24.908], [24.921, 25.079], [25.092, 25.605]]}, {"kind": "s", "id": "s0_1_2", "md": "**If the first meeting is a status update, every meeting after it will be one too.**", "zh": "如果第一次会是同步进度，之后的每一次也都会是。", "sp": null, "gap": false, "start": 25.992, "end": 30.864, "words": [[26.097, 26.203], [26.216, 26.295], [26.308, 26.637], [26.65, 27.045], [27.058, 27.163], [27.176, 27.229], [27.242, 27.716], [27.729, 28.176], [28.571, 28.808], [28.821, 29.189], [29.203, 29.531], [29.545, 29.61], [29.624, 29.716], [29.729, 29.834], [29.847, 30.11], [30.124, 30.479]]}, {"kind": "s", "id": "s0_2_0", "md": "What you want to learn is how this person works best.", "zh": "你想了解的是这个人怎样工作状态最好。", "sp": null, "gap": true, "start": 30.864, "end": 33.648, "words": [[30.969, 31.035], [31.048, 31.114], [31.127, 31.246], [31.259, 31.311], [31.325, 31.614], [31.627, 31.732], [31.746, 31.89], [31.903, 32.088], [32.101, 32.496], [32.509, 32.772], [32.785, 33.259]]}, {"kind": "s", "id": "s0_2_1", "md": "What motivates them, what ==drains== them, and how they like to hear bad news.", "zh": "什么能激励他，什么会消耗他，他喜欢怎么听坏消息。", "sp": null, "gap": false, "start": 33.648, "end": 38.448, "words": [[33.753, 33.898], [33.911, 34.464], [34.477, 34.674], [35.056, 35.187], [35.201, 35.635], [35.648, 35.872], [36.293, 36.359], [36.372, 36.53], [36.543, 36.661], [36.674, 36.885], [36.898, 36.977], [36.99, 37.227], [37.24, 37.53], [37.543, 38.056]]}, {"kind": "s", "id": "s0_2_2", "md": "Those answers are hard to get later, once habits have __settled in__ and both of you are ==guarded==.", "zh": "这些答案以后就很难问出来了，因为那时习惯已经定型，双方也都有了戒备。", "sp": null, "gap": false, "start": 38.448, "end": 43.92, "words": [[38.553, 38.79], [38.803, 39.211], [39.224, 39.316], [39.33, 39.645], [39.659, 39.724], [39.737, 39.948], [39.961, 40.303], [40.724, 40.922], [40.935, 41.343], [41.356, 41.487], [41.501, 41.922], [41.935, 42.158], [42.382, 42.487], [42.501, 42.803], [42.816, 42.869], [42.882, 42.987], [43.001, 43.106], [43.119, 43.54]]}, {"kind": "h", "id": "h1", "md": "2. Questions Worth Asking", "zh": "2. 值得问的问题", "start": 43.92, "end": 46.104, "words": [[44.038, 44.249], [44.552, 45.012], [45.025, 45.262], [45.275, 45.709]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with their past, not your plans.", "zh": "从他的过去聊起，而不是你的计划。", "sp": null, "gap": false, "start": 46.104, "end": 48.84, "words": [[46.209, 46.499], [46.512, 46.643], [46.657, 46.815], [46.828, 47.354], [47.578, 47.736], [47.749, 47.854], [47.867, 48.446]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Tell me about the best manager you ever had. What did they do?\"", "zh": "「讲讲你遇到过的最好的老板吧。他做了些什么？」", "sp": null, "gap": false, "start": 48.84, "end": 52.584, "words": [[49.024, 49.09], [49.09, 49.195], [49.208, 49.445], [49.458, 49.564], [49.577, 49.919], [49.932, 50.353], [50.366, 50.498], [50.511, 50.761], [50.774, 51.156], [51.59, 51.656], [51.669, 51.774], [51.787, 51.906], [51.919, 52.195]]}, {"kind": "s", "id": "s1_0_2", "md": "Then ask the ==mirror== question: \"What did a bad manager do that you never want to see again?\"", "zh": "然后问反过来的问题：「有哪个糟糕的老板做过什么，是你再也不想遇到的？」", "sp": null, "gap": false, "start": 52.584, "end": 58.128, "words": [[52.689, 52.926], [52.939, 53.202], [53.216, 53.295], [53.308, 53.597], [53.61, 54.097], [54.571, 54.663], [54.676, 54.795], [54.808, 54.9], [54.979, 55.321], [55.334, 55.795], [55.808, 56.11], [56.123, 56.255], [56.268, 56.373], [56.387, 56.808], [56.821, 56.966], [56.979, 57.018], [57.031, 57.255], [57.268, 57.716]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, ask how they want to receive feedback.", "zh": "接着，问他希望怎样接收反馈。", "sp": null, "gap": true, "start": 58.128, "end": 61.176, "words": [[58.233, 58.628], [59.036, 59.246], [59.26, 59.352], [59.365, 59.47], [59.483, 59.654], [59.667, 59.733], [59.746, 60.128], [60.141, 60.786]]}, {"kind": "s", "id": "s1_1_1", "md": "Some people prefer it in writing, so they can think before replying.", "zh": "有些人喜欢书面的，这样回复前可以先想一想。", "sp": null, "gap": false, "start": 61.176, "end": 65.16, "words": [[61.281, 61.465], [61.479, 61.794], [61.808, 62.215], [62.229, 62.294], [62.308, 62.426], [62.439, 62.821], [63.15, 63.268], [63.281, 63.4], [63.413, 63.571], [63.584, 63.873], [63.887, 64.229], [64.242, 64.768]]}, {"kind": "s", "id": "s1_1_2", "md": "Others want it __on the spot__, in a quick chat after the meeting.", "zh": "另一些人希望当场说，会后简单聊几句。", "sp": null, "gap": false, "start": 65.16, "end": 68.88, "words": [[65.265, 65.542], [65.555, 65.752], [65.765, 65.844], [65.857, 65.963], [65.976, 66.042], [66.055, 66.568], [66.884, 66.976], [66.989, 67.042], [67.055, 67.331], [67.344, 67.765], [67.778, 68.015], [68.028, 68.094], [68.107, 68.476]]}, {"kind": "s", "id": "s1_1_3", "md": "Asking now means your first piece of critical feedback will not __come as a shock__.", "zh": "现在问清楚，意味着你第一次给出批评性反馈时，不会让对方觉得突然。", "sp": null, "gap": false, "start": 68.88, "end": 73.632, "words": [[68.985, 69.393], [69.406, 69.669], [69.683, 69.933], [69.946, 70.064], [70.077, 70.485], [70.498, 70.801], [70.814, 70.893], [70.906, 71.301], [71.314, 71.906], [72.025, 72.156], [72.169, 72.393], [72.406, 72.591], [72.604, 72.696], [72.709, 72.748], [72.762, 73.235]]}, {"kind": "s", "id": "s1_2_0", "md": "Then talk about the ==rhythm== of your meetings.", "zh": "然后聊聊你们开会的节奏。", "sp": null, "gap": true, "start": 73.632, "end": 76.008, "words": [[73.75, 73.856], [73.869, 74.106], [74.119, 74.356], [74.369, 74.461], [74.474, 74.816], [74.829, 74.908], [74.921, 75.04], [75.053, 75.619]]}, {"kind": "s", "id": "s1_2_1", "md": "Agree on how often you meet, and make it clear that this time belongs to them, not to project updates.", "zh": "约定多久见一次，并且说清楚这段时间是属于他的，不是用来同步项目的。", "sp": null, "gap": false, "start": 76.008, "end": 82.464, "words": [[76.113, 76.495], [76.508, 76.626], [76.64, 76.903], [76.916, 77.271], [77.284, 77.403], [77.416, 77.771], [78.166, 78.232], [78.245, 78.429], [78.442, 78.534], [78.547, 78.863], [78.876, 79.061], [79.074, 79.271], [79.284, 79.534], [79.547, 80.021], [80.034, 80.126], [80.14, 80.376], [80.784, 80.942], [80.955, 81.021], [81.034, 81.482], [81.495, 82.074]]}, {"kind": "s", "id": "s1_2_2", "md": "**Tell them they can bring anything, including complaints about you.**", "zh": "告诉他什么都可以拿来聊，包括对你的抱怨。", "sp": null, "gap": false, "start": 82.464, "end": 86.664, "words": [[82.582, 82.753], [82.767, 83.017], [83.188, 83.306], [83.319, 83.464], [83.477, 83.793], [83.951, 84.49], [84.885, 85.28], [85.293, 85.767], [85.78, 86.069], [86.082, 86.28]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, talk less than you want to.", "zh": "最后，少说话，比你想说的还要少。", "sp": null, "gap": true, "start": 86.664, "end": 88.992, "words": [[86.822, 87.23], [87.493, 87.756], [87.769, 87.967], [87.98, 88.098], [88.111, 88.217], [88.23, 88.453], [88.467, 88.598]]}, {"kind": "s", "id": "s1_3_1", "md": "Write down what you hear, and repeat it back in the next meeting.", "zh": "把听到的记下来，下次见面时复述一遍。", "sp": null, "gap": false, "start": 88.992, "end": 92.472, "words": [[89.097, 89.268], [89.281, 89.505], [89.518, 89.65], [89.663, 89.755], [89.768, 90.137], [90.453, 90.518], [90.531, 90.887], [90.9, 90.992], [91.005, 91.321], [91.334, 91.4], [91.413, 91.479], [91.492, 91.768], [91.781, 92.084]]}, {"kind": "s", "id": "s1_3_2", "md": "Nothing builds early trust faster than showing someone that you actually remembered what they ==revealed==.", "zh": "没有什么比让对方看到你真的记住了他说过的话，更能快速建立早期信任了。", "sp": null, "gap": false, "start": 92.472, "end": 98.184, "words": [[92.577, 92.893], [92.906, 93.327], [93.34, 93.669], [93.683, 94.104], [94.117, 94.683], [94.696, 94.827], [94.84, 95.235], [95.248, 95.617], [95.735, 95.867], [95.88, 96.011], [96.025, 96.511], [96.525, 96.998], [97.011, 97.143], [97.156, 97.261], [97.275, 97.801]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

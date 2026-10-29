@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Delegating Without Disappearing · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "055", "title": "Delegating Without Disappearing", "meta": "B2 · 约 260 词 · 场景：授权与跟进", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Two Ways to Get It Wrong", "heading_zh": "1. 两种搞砸的方式", "rows": [[{"id": "s0_0_0", "md": "There are two classic delegation mistakes, and most new leads make both.", "text": "There are two classic delegation mistakes, and most new leads make both.", "zh": "授权有两种经典的错误，大多数新 lead 两种都会犯。", "sp": null}, {"id": "s0_0_1", "md": "The first is ==micromanaging==: you hand over a task, then check every commit and rewrite the design doc at midnight.", "text": "The first is micromanaging: you hand over a task, then check every commit and rewrite the design doc at midnight.", "zh": "第一种是微观管理：你把任务交出去，然后每个 commit 都要看，半夜还把设计文档重写一遍。", "sp": null}, {"id": "s0_0_2", "md": "The engineer learns that the work was never really theirs.", "text": "The engineer learns that the work was never really theirs.", "zh": "工程师从中学到的是：这活从来就不真正属于他。", "sp": null}], [{"id": "s0_1_0", "md": "The second mistake is the opposite.", "text": "The second mistake is the opposite.", "zh": "第二种错误正好相反。", "sp": null}, {"id": "s0_1_1", "md": "You hand over the project, say \"Let me know if you need anything,\" and disappear for a month.", "text": "You hand over the project, say \"Let me know if you need anything,\" and disappear for a month.", "zh": "你把项目交出去，说一句「有需要随时找我」，然后消失一个月。", "sp": null}, {"id": "s0_1_2", "md": "Then, a week before launch, you discover the plan has drifted far from what the business needed.", "text": "Then, a week before launch, you discover the plan has drifted far from what the business needed.", "zh": "结果上线前一周，你发现方案已经偏离业务需要的东西很远了。", "sp": null}, {"id": "s0_1_3", "md": "That is not ==trust==; it is ==abdication==.", "text": "That is not trust; it is abdication.", "zh": "那不是信任；那是撒手不管。", "sp": null}], [{"id": "s0_2_0", "md": "**Good delegation means giving away the work, but not your attention.**", "text": "Good delegation means giving away the work, but not your attention.", "zh": "好的授权意味着把活交出去，但不把你的关注也交出去。", "sp": null}, {"id": "s0_2_1", "md": "The skill is choosing where your attention goes.", "text": "The skill is choosing where your attention goes.", "zh": "真正的功夫在于选择把关注放在哪里。", "sp": null}]]}, {"heading": "2. Delegate Outcomes, Agree on Checkpoints", "heading_zh": "2. 交出结果，约定检查点", "rows": [[{"id": "s1_0_0", "md": "Start with the outcome, not the steps.", "text": "Start with the outcome, not the steps.", "zh": "从结果讲起，而不是步骤。", "sp": null}, {"id": "s1_0_1", "md": "\"We need search ==latency== under two hundred milliseconds before the sale event\" leaves room for the engineer to choose the approach.", "text": "\"We need search latency under two hundred milliseconds before the sale event\" leaves room for the engineer to choose the approach.", "zh": "「大促之前，搜索延迟要降到两百毫秒以内」，这给工程师留出了自己选方案的空间。", "sp": null}, {"id": "s1_0_2", "md": "A list of instructions leaves no room at all.", "text": "A list of instructions leaves no room at all.", "zh": "一串操作指令则一点空间都不留。", "sp": null}], [{"id": "s1_1_0", "md": "Next, be ==explicit== about decision rights.", "text": "Next, be explicit about decision rights.", "zh": "接着，把决策权讲明白。", "sp": null}, {"id": "s1_1_1", "md": "Which choices can they make alone, and which ones need a quick chat with you first?", "text": "Which choices can they make alone, and which ones need a quick chat with you first?", "zh": "哪些事他可以自己定，哪些需要先跟你简单聊一下？", "sp": null}, {"id": "s1_1_2", "md": "Changing a library is fine; changing the public API might not be.", "text": "Changing a library is fine; changing the public API might not be.", "zh": "换个库没问题；改对外 API 可能就不行了。", "sp": null}], [{"id": "s1_2_0", "md": "Then agree on ==checkpoints== in advance.", "text": "Then agree on checkpoints in advance.", "zh": "然后，提前约定好检查点。", "sp": null}, {"id": "s1_2_1", "md": "A design review in week one, a demo in week three, and a go or no-go meeting before launch.", "text": "A design review in week one, a demo in week three, and a go or no-go meeting before launch.", "zh": "第一周做设计评审，第三周做 demo，上线前开一次 go/no-go 会。", "sp": null}, {"id": "s1_2_2", "md": "Because the checkpoints are planned, your questions feel like part of the process, not like ==suspicion==.", "text": "Because the checkpoints are planned, your questions feel like part of the process, not like suspicion.", "zh": "因为检查点是事先定好的，你的提问就像是流程的一部分，而不是不信任。", "sp": null}], [{"id": "s1_3_0", "md": "Between checkpoints, __stay reachable but quiet__.", "text": "Between checkpoints, stay reachable but quiet.", "zh": "在检查点之间，保持随时能找到你，但别出声。", "sp": null}, {"id": "s1_3_1", "md": "If you see a problem, ask a question instead of quietly fixing it yourself.", "text": "If you see a problem, ask a question instead of quietly fixing it yourself.", "zh": "如果你发现了问题，就提个问题，而不是自己悄悄修掉。", "sp": null}, {"id": "s1_3_2", "md": "**The goal is a person who can run the next project without you, not a project that ran without mistakes.**", "text": "The goal is a person who can run the next project without you, not a project that ran without mistakes.", "zh": "目标是培养出一个不需要你也能带下一个项目的人，而不是做成一个没出过错的项目。", "sp": null}]]}], "gist": [{"q": "作者说新 lead 常犯的两种授权错误是什么？", "a": "一是事无巨细地管（盯每次提交、半夜重写设计文档）；二是交出去后消失一个月，上线前才发现方向跑偏，这叫甩手不叫信任。"}, {"q": "授权时应该交代什么？", "a": "交代结果而不是步骤；明确决策权：哪些可以自己定，哪些要先和你聊。"}, {"q": "检查点有什么作用？授权的最终目标是什么？", "a": "事先约定的检查点让你的提问成为流程的一部分而不像怀疑；最终目标是培养出能独立做下个项目的人，而不是一个没犯错的项目。"}], "dictation": [{"id": "s0_2_0", "text": "Good delegation means giving away the work, but not your attention."}, {"id": "s1_0_0", "text": "Start with the outcome, not the steps."}, {"id": "s1_3_1", "text": "If you see a problem, ask a question instead of quietly fixing it yourself."}, {"id": "s1_3_2", "text": "The goal is a person who can run the next project without you, not a project that ran without mistakes."}], "shadow": {"text": "Then agree on checkpoints in advance. A design review in week one, a demo in week three, and a go or no-go meeting before launch.", "marked": "Then agree on <b>checkpoints</b> / in <b>advance</b>. //<br>A <b>design</b> review in week <b>one</b>, / a <b>demo</b> in week <b>three</b>, / and a <b>go</b> or <b>no-go</b> meeting / before launch. //"}, "prompts": [{"q": "你要把一次数据库迁移交给一位资深工程师主导。用 30 秒交代：目标结果、他可以自己决定的范围、需要找你的情况和检查点。", "ref": "I'd like you to own the database migration end to end. The outcome we need is zero data loss and less than five minutes of downtime, finished before the end of the quarter. How you get there is your call, including tools and the order of tables. If you want to change the schema that other teams read, let's talk first. Can we do a design review next Friday and a dry-run demo two weeks after that?", "ref_zh": "我希望你端到端负责这次数据库迁移。我们要的结果是零数据丢失、停机不超过五分钟，在季度末之前完成。怎么做由你决定，包括用什么工具、表的迁移顺序。如果你想改其他团队在读的 schema，我们先聊一下。下周五我们做一次设计评审，再过两周做一次演练 demo，可以吗？", "id": "ref0"}, {"q": "检查点时你发现下属的方案有一个风险，但他还没意识到。用 30 秒用提问引导他，而不是直接接手修改。", "ref": "This looks solid overall, and I like how you've staged the rollout. One thing I'm curious about. What happens to the writes that come in while the old and new tables are both live? Walk me through that part. If you've already thought about it, great. If not, it might be worth an hour before the next checkpoint.", "ref_zh": "整体看下来很扎实，我很喜欢你分阶段灰度的安排。有一点我比较好奇。新旧表同时在线的时候，进来的写请求会怎么处理？给我讲讲这部分。如果你已经考虑过了，那很好。如果还没有，在下一个检查点之前花一个小时想想可能会很值。", "id": "ref1"}], "words": [{"w": "micromanage", "ipa": "/ˌmaɪkroʊˈmænɪdʒ/", "zh": "事无巨细地管", "ex": "I don't want to micromanage, so I'll only join the design review.", "id": "w0"}, {"w": "trust", "ipa": "/trʌst/", "zh": "信任", "ex": "Giving her the launch decision showed real trust.", "id": "w1"}, {"w": "abdication", "ipa": "/ˌæbdɪˈkeɪʃən/", "zh": "放弃（责任）、甩手", "ex": "Leaving the team alone during the incident felt like abdication.", "id": "w2"}, {"w": "latency", "ipa": "/ˈleɪtənsi/", "zh": "延迟", "ex": "Latency doubled after the cache was disabled.", "id": "w3"}, {"w": "explicit", "ipa": "/ɪkˈsplɪsɪt/", "zh": "明确的", "ex": "Let's be explicit about who can approve a rollback.", "id": "w4"}, {"w": "checkpoint", "ipa": "/ˈtʃekpɔɪnt/", "zh": "检查点、节点", "ex": "Our next checkpoint is the demo on Wednesday.", "id": "w5"}, {"w": "suspicion", "ipa": "/səˈspɪʃən/", "zh": "怀疑", "ex": "Too many status pings can feel like suspicion.", "id": "w6"}, {"w": "drift (v.)", "ipa": "/drɪft/", "zh": "偏离、漂移", "ex": "Without a weekly sync, the scope started to drift.", "tts_w": "drift", "id": "w7"}, {"w": "reachable", "ipa": "/ˈriːtʃəbl/", "zh": "联系得上的", "ex": "I'll be reachable on chat during the rollout if you need me.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Two Ways to Get It Wrong", "zh": "1. 两种搞砸的方式", "start": 0.0, "end": 2.256, "words": [[0.105, 0.342], [0.711, 0.908], [0.921, 1.184], [1.197, 1.276], [1.289, 1.421], [1.434, 1.539], [1.553, 1.868]]}, {"kind": "s", "id": "s0_0_0", "md": "There are two classic delegation mistakes, and most new leads make both.", "zh": "授权有两种经典的错误，大多数新 lead 两种都会犯。", "sp": null, "gap": false, "start": 2.256, "end": 7.032, "words": [[2.374, 2.493], [2.506, 2.624], [2.638, 2.914], [2.927, 3.466], [3.48, 4.045], [4.059, 4.664], [4.94, 5.085], [5.098, 5.401], [5.414, 5.651], [5.664, 5.94], [5.953, 6.177], [6.19, 6.651]]}, {"kind": "s", "id": "s0_0_1", "md": "The first is ==micromanaging==: you hand over a task, then check every commit and rewrite the design doc at midnight.", "zh": "第一种是微观管理：你把任务交出去，然后每个 commit 都要看，半夜还把设计文档重写一遍。", "sp": null, "gap": false, "start": 7.032, "end": 14.736, "words": [[7.15, 7.216], [7.229, 7.624], [7.756, 7.861], [7.874, 8.756], [9.243, 9.321], [9.335, 9.571], [9.585, 9.808], [9.821, 9.874], [9.887, 10.44], [10.729, 10.861], [10.874, 11.111], [11.256, 11.519], [11.532, 11.979], [12.243, 12.4], [12.414, 12.874], [12.887, 12.966], [12.979, 13.4], [13.414, 13.69], [13.703, 13.782], [13.795, 14.335]]}, {"kind": "s", "id": "s0_0_2", "md": "The engineer learns that the work was never really theirs.", "zh": "工程师从中学到的是：这活从来就不真正属于他。", "sp": null, "gap": false, "start": 14.736, "end": 18.144, "words": [[14.841, 14.894], [14.907, 15.42], [15.433, 15.762], [15.775, 15.907], [15.92, 16.012], [16.025, 16.328], [16.394, 16.565], [16.578, 16.973], [16.986, 17.249], [17.262, 17.762]]}, {"kind": "s", "id": "s0_1_0", "md": "The second mistake is the opposite.", "zh": "第二种错误正好相反。", "sp": null, "gap": true, "start": 18.144, "end": 20.496, "words": [[18.262, 18.315], [18.328, 18.683], [18.697, 19.183], [19.302, 19.407], [19.42, 19.539], [19.552, 20.118]]}, {"kind": "s", "id": "s0_1_1", "md": "You hand over the project, say \"Let me know if you need anything,\" and disappear for a month.", "zh": "你把项目交出去，说一句「有需要随时找我」，然后消失一个月。", "sp": null, "gap": false, "start": 20.496, "end": 26.136, "words": [[20.601, 20.693], [20.707, 20.957], [20.97, 21.114], [21.128, 21.207], [21.22, 21.785], [22.075, 22.364], [22.614, 22.746], [22.759, 22.838], [22.851, 23.062], [23.075, 23.193], [23.207, 23.299], [23.312, 23.535], [23.549, 23.996], [24.47, 24.549], [24.562, 25.101], [25.114, 25.285], [25.299, 25.338], [25.351, 25.746]]}, {"kind": "s", "id": "s0_1_2", "md": "Then, a week before launch, you discover the plan has drifted far from what the business needed.", "zh": "结果上线前一周，你发现方案已经偏离业务需要的东西很远了。", "sp": null, "gap": false, "start": 26.136, "end": 32.088, "words": [[26.241, 26.596], [26.912, 26.978], [26.991, 27.241], [27.254, 27.597], [27.61, 28.096], [28.36, 28.439], [28.452, 28.899], [28.912, 29.018], [29.031, 29.399], [29.412, 29.61], [29.623, 30.11], [30.123, 30.504], [30.518, 30.675], [30.689, 30.82], [30.833, 30.925], [30.939, 31.333], [31.347, 31.702]]}, {"kind": "s", "id": "s0_1_3", "md": "That is not ==trust==; it is ==abdication==.", "zh": "那不是信任；那是撒手不管。", "sp": null, "gap": false, "start": 32.088, "end": 34.848, "words": [[32.206, 32.299], [32.312, 32.404], [32.417, 32.654], [32.667, 33.22], [33.535, 33.588], [33.601, 33.733], [33.746, 34.456]]}, {"kind": "s", "id": "s0_2_0", "md": "**Good delegation means giving away the work, but not your attention.**", "zh": "好的授权意味着把活交出去，但不把你的关注也交出去。", "sp": null, "gap": true, "start": 34.848, "end": 39.312, "words": [[34.953, 35.164], [35.177, 35.874], [36.137, 36.387], [36.401, 36.716], [36.73, 36.993], [37.006, 37.137], [37.151, 37.559], [37.795, 37.966], [37.98, 38.256], [38.269, 38.387], [38.401, 38.914]]}, {"kind": "s", "id": "s0_2_1", "md": "The skill is choosing where your attention goes.", "zh": "真正的功夫在于选择把关注放在哪里。", "sp": null, "gap": false, "start": 39.312, "end": 42.168, "words": [[39.43, 39.483], [39.496, 39.838], [39.851, 39.97], [39.983, 40.483], [40.496, 40.654], [40.667, 40.799], [40.812, 41.286], [41.299, 41.772]]}, {"kind": "h", "id": "h1", "md": "2. Delegate Outcomes, Agree on Checkpoints", "zh": "2. 交出结果，约定检查点", "start": 42.168, "end": 45.84, "words": [[42.273, 42.602], [42.892, 43.339], [43.352, 43.997], [44.181, 44.536], [44.55, 44.668], [44.681, 45.457]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with the outcome, not the steps.", "zh": "从结果讲起，而不是步骤。", "sp": null, "gap": false, "start": 45.84, "end": 48.504, "words": [[45.945, 46.222], [46.235, 46.366], [46.379, 46.511], [46.524, 46.998], [47.287, 47.458], [47.472, 47.537], [47.551, 48.116]]}, {"kind": "s", "id": "s1_0_1", "md": "\"We need search ==latency== under two hundred milliseconds before the sale event\" leaves room for the engineer to choose the approach.", "zh": "「大促之前，搜索延迟要降到两百毫秒以内」，这给工程师留出了自己选方案的空间。", "sp": null, "gap": false, "start": 48.504, "end": 56.352, "words": [[48.688, 48.741], [48.741, 48.951], [48.965, 49.28], [49.293, 49.925], [49.938, 50.201], [50.215, 50.478], [50.491, 50.82], [50.833, 51.504], [51.517, 51.925], [51.938, 52.017], [52.03, 52.346], [52.359, 52.715], [53.136, 53.465], [53.478, 53.714], [53.728, 53.846], [53.859, 53.938], [53.951, 54.622], [54.767, 54.859], [54.872, 55.241], [55.254, 55.346], [55.359, 55.965]]}, {"kind": "s", "id": "s1_0_2", "md": "A list of instructions leaves no room at all.", "zh": "一串操作指令则一点空间都不留。", "sp": null, "gap": false, "start": 56.352, "end": 59.4, "words": [[56.444, 56.497], [56.51, 56.799], [56.813, 56.891], [56.905, 57.628], [57.641, 57.97], [57.984, 58.299], [58.313, 58.589], [58.602, 58.694], [58.707, 58.997]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, be ==explicit== about decision rights.", "zh": "接着，把决策权讲明白。", "sp": null, "gap": true, "start": 59.4, "end": 62.496, "words": [[59.505, 59.953], [60.15, 60.268], [60.282, 60.834], [60.847, 61.111], [61.124, 61.584], [61.597, 62.111]]}, {"kind": "s", "id": "s1_1_1", "md": "Which choices can they make alone, and which ones need a quick chat with you first?", "zh": "哪些事他可以自己定，哪些需要先跟你简单聊一下？", "sp": null, "gap": false, "start": 62.496, "end": 67.128, "words": [[62.614, 62.759], [62.772, 63.285], [63.299, 63.457], [63.47, 63.575], [63.588, 63.799], [63.812, 64.272], [64.667, 64.746], [64.759, 64.943], [64.957, 65.18], [65.193, 65.338], [65.351, 65.404], [65.417, 65.667], [65.68, 65.917], [65.93, 66.062], [66.075, 66.167], [66.18, 66.733]]}, {"kind": "s", "id": "s1_1_2", "md": "Changing a library is fine; changing the public API might not be.", "zh": "换个库没问题；改对外 API 可能就不行了。", "sp": null, "gap": false, "start": 67.128, "end": 72.096, "words": [[67.233, 67.562], [67.575, 67.615], [67.628, 68.167], [68.181, 68.312], [68.325, 68.746], [69.181, 69.549], [69.562, 69.641], [69.654, 70.049], [70.154, 70.72], [70.917, 71.181], [71.194, 71.444], [71.457, 71.707]]}, {"kind": "s", "id": "s1_2_0", "md": "Then agree on ==checkpoints== in advance.", "zh": "然后，提前约定好检查点。", "sp": null, "gap": true, "start": 72.096, "end": 74.52, "words": [[72.201, 72.293], [72.307, 72.675], [72.688, 72.82], [72.833, 73.385], [73.399, 73.491], [73.504, 74.122]]}, {"kind": "s", "id": "s1_2_1", "md": "A design review in week one, a demo in week three, and a go or no-go meeting before launch.", "zh": "第一周做设计评审，第三周做 demo，上线前开一次 go/no-go 会。", "sp": null, "gap": false, "start": 74.52, "end": 81.144, "words": [[74.625, 74.678], [74.691, 75.046], [75.059, 75.454], [75.467, 75.599], [75.612, 75.862], [75.875, 76.191], [76.599, 76.665], [76.678, 77.059], [77.073, 77.191], [77.204, 77.428], [77.441, 77.915], [78.231, 78.349], [78.362, 78.428], [78.441, 78.849], [78.941, 79.046], [79.059, 79.533], [79.546, 79.875], [79.888, 80.231], [80.244, 80.757]]}, {"kind": "s", "id": "s1_2_2", "md": "Because the checkpoints are planned, your questions feel like part of the process, not like ==suspicion==.", "zh": "因为检查点是事先定好的，你的提问就像是流程的一部分，而不是不信任。", "sp": null, "gap": false, "start": 81.144, "end": 87.192, "words": [[81.249, 81.526], [81.539, 81.644], [81.657, 82.223], [82.236, 82.341], [82.355, 82.855], [83.236, 83.341], [83.355, 83.881], [83.894, 84.183], [84.197, 84.394], [84.407, 84.631], [84.644, 84.71], [84.723, 84.789], [84.802, 85.486], [85.776, 85.986], [85.999, 86.17], [86.183, 86.802]]}, {"kind": "s", "id": "s1_3_0", "md": "Between checkpoints, __stay reachable but quiet__.", "zh": "在检查点之间，保持随时能找到你，但别出声。", "sp": null, "gap": true, "start": 87.192, "end": 90.48, "words": [[87.297, 87.626], [87.639, 88.324], [88.56, 88.797], [88.81, 89.324], [89.403, 89.547], [89.56, 90.1]]}, {"kind": "s", "id": "s1_3_1", "md": "If you see a problem, ask a question instead of quietly fixing it yourself.", "zh": "如果你发现了问题，就提个问题，而不是自己悄悄修掉。", "sp": null, "gap": false, "start": 90.48, "end": 95.328, "words": [[90.585, 90.691], [90.704, 90.783], [90.796, 90.993], [91.006, 91.059], [91.072, 91.533], [91.941, 92.138], [92.151, 92.204], [92.217, 92.73], [92.783, 93.177], [93.191, 93.296], [93.309, 93.835], [93.848, 94.269], [94.283, 94.362], [94.375, 94.941]]}, {"kind": "s", "id": "s1_3_2", "md": "**The goal is a person who can run the next project without you, not a project that ran without mistakes.**", "zh": "目标是培养出一个不需要你也能带下一个项目的人，而不是做成一个没出过错的项目。", "sp": null, "gap": false, "start": 95.328, "end": 101.856, "words": [[95.446, 95.512], [95.525, 95.854], [95.867, 95.973], [95.986, 96.052], [96.065, 96.512], [96.525, 96.657], [96.67, 96.868], [96.881, 97.117], [97.131, 97.223], [97.236, 97.552], [97.565, 98.065], [98.078, 98.486], [98.499, 98.683], [99.117, 99.249], [99.262, 99.302], [99.315, 99.867], [99.881, 100.131], [100.144, 100.446], [100.46, 100.802], [100.815, 101.46]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

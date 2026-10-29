@@ -1,0 +1,187 @@
+{
+  "id": "097",
+  "title": "Checking Understanding Without Sounding Rude",
+  "meta": "B2 · 约 280 词 · 场景：确认对方理解",
+  "voice": "en-AU-WilliamMultilingualNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Trouble with \"Does That Make Sense?\"",
+      "paragraphs": [
+        [
+          "At the end of a briefing, most managers ask, \"Does that make sense?\"",
+          "Almost everyone says yes.",
+          "A week later, half the team has built something ==subtly== different from what you asked for."
+        ],
+        [
+          "The question is the problem.",
+          "Answering no in front of colleagues can make people ==lose face==, especially someone new or someone working in a second language.",
+          "\"Do you understand?\" is even worse, because it can sound ==condescending==, as if you doubt their ability."
+        ],
+        [
+          "**A yes to \"Does that make sense?\" usually means \"I heard you,\" not \"I can do it.\"**",
+          "To check real understanding, you need questions that ask people to use the information, not just agree with it.",
+          "That is a much better test of what has actually landed."
+        ]
+      ],
+      "heading_zh": "1. 「这样说清楚吗？」的问题",
+      "paragraphs_zh": [
+        [
+          "讲完一件事，大多数经理都会问一句：「这样说清楚吗？」",
+          "几乎所有人都会说清楚。",
+          "一周后，一半的人做出来的东西都和你要的有点微妙的不一样。"
+        ],
+        [
+          "问题出在这个问法上。",
+          "当着同事的面说「不清楚」，会让人觉得丢面子，尤其是新人或者用第二语言工作的人。",
+          "「你听懂了吗？」就更糟了，因为听起来有点居高临下，好像你在怀疑他们的能力。"
+        ],
+        [
+          "对「这样说清楚吗？」回答「清楚」，通常意思是「我听到了」，而不是「我能做」。",
+          "要确认对方真的理解了，你需要问那种让人用上这些信息的问题，而不只是让人点头同意。",
+          "这才能更好地检验信息到底有没有传到位。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Put the Burden on Yourself",
+      "paragraphs": [
+        [
+          "First, take ==ownership== of the explanation.",
+          "\"I went through that quickly, so let me check I explained it well\" sounds very different from \"Did you get that?\"",
+          "Now any gap is your fault, not theirs, and people feel free to __speak up__."
+        ],
+        [
+          "Second, ask about the first step.",
+          "\"So what's the first thing you'll do on Monday?\" tells you much more than a yes or a no.",
+          "If the answer is ==off track==, you can correct it gently right away, before anyone has written a line of code."
+        ],
+        [
+          "Third, invite a ==recap==, but make it ==collaborative==.",
+          "\"Can we quickly __sum up__ the next steps together, so I can put them in the notes?\"",
+          "**When the recap has a practical purpose, nobody feels tested.**"
+        ],
+        [
+          "These questions take an extra minute.",
+          "But they turn a polite yes into a real check, and they __save everyone from__ a painful surprise later.",
+          "Over a quarter, that minute pays for itself many times over."
+        ]
+      ],
+      "heading_zh": "2. 把责任揽到自己身上",
+      "paragraphs_zh": [
+        [
+          "第一，把讲解的责任揽到自己身上。",
+          "「刚才我讲得有点快，我确认一下自己有没有讲清楚」，听起来和「你听懂了吗？」完全不一样。",
+          "这样一来，有任何没对齐的地方都是你的问题，不是他们的，大家也就敢开口了。"
+        ],
+        [
+          "第二，问第一步打算做什么。",
+          "「那你周一第一件事打算做什么？」能告诉你的东西，比一个「是」或「不是」多得多。",
+          "如果回答跑偏了，你可以当场温和地纠正，赶在任何人写下一行代码之前。"
+        ],
+        [
+          "第三，请大家一起复述，但要做成协作的样子。",
+          "「我们快速一起过一下下一步，我好记到纪要里？」",
+          "复述有了实际用途，就没人会觉得自己在被考。"
+        ],
+        [
+          "这些问题会多花一分钟。",
+          "但它们能把一句客气的「清楚」变成一次真正的确认，也能让大家免于之后一个难受的意外。",
+          "放到一个季度来看，这一分钟能回本好多倍。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么问 \"Does that make sense?\" 往往得不到真实答案？",
+      "a": "当众说不懂会觉得丢面子，尤其是新人或用第二语言工作的人；这里的 yes 通常只代表“听到了”，不代表“能做到”。"
+    },
+    {
+      "q": "作者说要“把负担放在自己身上”，具体怎么说？",
+      "a": "说“我讲得有点快，确认一下我讲清楚没有”，把没懂归为自己没讲好，而不是对方没听懂。"
+    },
+    {
+      "q": "除此之外还有哪两个确认方法？",
+      "a": "问对方第一步要做什么；邀请一起总结下一步，并给出实际用途（写进会议记录），这样没人觉得被考。"
+    }
+  ],
+  "dictation": [
+    "The question is the problem.",
+    "First, take ownership of the explanation.",
+    "Second, ask about the first step.",
+    "When the recap has a practical purpose, nobody feels tested."
+  ],
+  "shadow": {
+    "text": "First, take ownership of the explanation. \"I went through that quickly, so let me check I explained it well\" sounds very different from \"Did you get that?\" Now any gap is your fault, not theirs, and people feel free to speak up.",
+    "marked": "First, take <b>ownership</b> / of the <b>explanation</b>. //<br>\"I went through that <b>quickly</b>, / so let me check / I explained it <b>well</b>\" / sounds very <b>different</b> / from \"Did you <b>get</b> that?\" //<br>Now any gap is <b>your</b> fault, / not <b>theirs</b>, / and people feel free to speak <b>up</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你刚给新加坡的外包团队讲完一个复杂的接口变更。不问 Does that make sense，而是确认他们真的理解了，30 秒。",
+      "ref": "Okay, I covered a lot there, and I went through the last part quite fast, so let me check I explained it clearly. Siti, if you were starting on this tomorrow, what would be the first change you'd make? Great, that's exactly right. And Ken, which endpoint do you think will need the most testing? Let's put both answers in the notes.",
+      "ref_zh": "好，刚才讲的内容挺多，最后一部分我讲得也比较快，我确认一下自己有没有讲清楚。Siti，如果你明天开始做这个，第一个要改的是什么？很好，完全正确。Ken，你觉得哪个接口最需要重点测试？我们把这两个回答都记到纪要里。"
+    },
+    {
+      "q": "一对一时你给下属布置了一个跨团队任务，想确认他理解了优先级，但不想显得不信任他。",
+      "ref": "Before we wrap up, can we sum up the plan together? I want to make sure my notes are right. What do you see as the top priority this week, and who do you need to talk to first? Perfect. One small thing, the payments team is busy until Wednesday, so maybe start with the data team instead.",
+      "ref_zh": "结束之前，我们一起过一下计划？我想确认我的笔记没记错。你觉得这周最高优先级是什么，第一个要找谁聊？完美。还有个小事，支付团队周三之前都很忙，所以可以先从数据团队那边开始。"
+    }
+  ],
+  "words": [
+    {
+      "w": "subtly",
+      "ipa": "/ˈsʌtli/",
+      "zh": "微妙地、细微地",
+      "ex": "The two specs are subtly different, which caused the bug."
+    },
+    {
+      "w": "lose face",
+      "ipa": "/luːz feɪs/",
+      "zh": "丢面子",
+      "ex": "He didn't want to lose face by admitting the estimate was wrong."
+    },
+    {
+      "w": "condescending",
+      "ipa": "/ˌkɑːndɪˈsendɪŋ/",
+      "zh": "居高临下的、高人一等的",
+      "ex": "Explaining basics to a senior engineer can sound condescending."
+    },
+    {
+      "w": "ownership",
+      "ipa": "/ˈoʊnərˌʃɪp/",
+      "zh": "主人翁意识、负责",
+      "ex": "She took ownership of the incident and wrote the review herself."
+    },
+    {
+      "w": "off track",
+      "ipa": "/ɔːf træk/",
+      "zh": "偏离方向",
+      "ex": "The project went off track when the requirements changed."
+    },
+    {
+      "w": "recap",
+      "ipa": "/ˈriːˌkæp/",
+      "zh": "简要回顾、总结",
+      "ex": "Let me do a quick recap of what we agreed."
+    },
+    {
+      "w": "collaborative",
+      "ipa": "/kəˈlæbəˌreɪtɪv/",
+      "zh": "协作的",
+      "ex": "Planning works better as a collaborative session than a lecture."
+    },
+    {
+      "w": "sum up",
+      "ipa": "/sʌm ʌp/",
+      "zh": "总结、概括",
+      "ex": "To sum up, we ship on Friday and fix the rest next sprint."
+    },
+    {
+      "w": "briefing",
+      "ipa": "/ˈbriːfɪŋ/",
+      "zh": "情况介绍、简报会",
+      "ex": "We'll hold a short briefing before the on-call shift starts."
+    }
+  ]
+}

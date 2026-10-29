@@ -1,0 +1,85 @@
+{
+  "id": "140",
+  "type": "dialogue",
+  "title": "Signing Up for Kids' Swimming Lessons",
+  "meta": "B2 · 约 310 词 · 场景：报名儿童游泳课与试课后续",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Swim Coach", "name_zh": "游泳教练", "voice": "en-AU-WilliamMultilingualNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Asking About Classes",
+      "heading_zh": "1. 咨询课程",
+      "lines": [
+        {"sp": "A", "en": "Hi, I'd like to __sign my son up for__ swimming lessons. He's four.", "zh": "你好，我想给儿子报游泳课，他四岁。"},
+        {"sp": "B", "en": "Great age to start. Has he had lessons before, or is he a complete ==beginner==?", "zh": "这个年纪开始学正好。他以前上过课吗，还是完全零基础？"},
+        {"sp": "A", "en": "Complete beginner. He loves splashing around, but he won't put his face in the water.", "zh": "完全零基础。他喜欢在水里扑腾，但不肯把脸放进水里。"},
+        {"sp": "B", "en": "That's really common. He'd start in our Starfish level. It's all about ==water confidence==.", "zh": "这很常见。他会从我们的海星级开始，重点是让孩子不怕水。"},
+        {"sp": "A", "en": "**How many kids are in each class, and how long are the lessons?**", "zh": "每个班有几个孩子？每节课多长时间？"},
+        {"sp": "B", "en": "Four kids per coach at most, and thirty minutes each. We run weekday afternoons and Saturday mornings.", "zh": "一个教练最多带四个孩子，每节三十分钟。工作日下午和周六上午都有课。"},
+        {"sp": "A", "en": "Saturday mornings would suit us best. Do parents need to get in the pool?", "zh": "周六上午最适合我们。家长需要下水吗？"},
+        {"sp": "B", "en": "Not at his level. You can watch from the ==viewing gallery== upstairs.", "zh": "他这个级别不用。您可以在楼上的观看区看。"},
+        {"sp": "A", "en": "And is there a trial lesson __before we commit to__ a full term?", "zh": "在报整期之前，有试听课吗？"},
+        {"sp": "B", "en": "Yes. A trial is twenty-five dollars, and it's ==deducted== from the term fee if you sign up.", "zh": "有。试课二十五块，如果报名，会从学期费里扣掉。"}
+      ]
+    },
+    {
+      "heading": "2. After the Trial",
+      "heading_zh": "2. 试课之后",
+      "lines": [
+        {"sp": "B", "en": "Hi, it's Coach Ben from the swim school. How did your son find the trial on Saturday?", "zh": "您好，我是游泳学校的 Ben 教练。您儿子觉得周六的试课怎么样？"},
+        {"sp": "A", "en": "Honestly, he was a bit scared. He cried for the first ten minutes, but he was smiling by the end.", "zh": "说实话，他有点害怕。前十分钟一直哭，不过到最后笑了。"},
+        {"sp": "B", "en": "That's a good sign. Most kids need two or three lessons to ==warm up==.", "zh": "这是好兆头。大部分孩子需要两三节课才能放开。"},
+        {"sp": "A", "en": "**Good to know. We'd like to go ahead with the Saturday class. Is there still a spot at nine?**", "zh": "那就好。我们想报周六的班。九点那节还有位置吗？"},
+        {"sp": "B", "en": "Nine is full, I'm afraid. We have ten thirty, or I can put you on the ==waitlist== for nine.", "zh": "恐怕九点满了。十点半有，或者我把您排进九点的候补名单。"},
+        {"sp": "A", "en": "Let's take ten thirty for now, but please __keep us on__ the list for nine.", "zh": "那先报十点半，不过请把我们留在九点的候补名单上。"},
+        {"sp": "B", "en": "Will do. The term is ten lessons, and it's three hundred and twenty dollars after the trial is deducted.", "zh": "好的。一期十节课，扣掉试课费后是三百二十块。"},
+        {"sp": "A", "en": "What happens if he's sick and misses a class? Can he make it up?", "zh": "如果他生病缺了一节课怎么办？能补课吗？"},
+        {"sp": "B", "en": "You can book one ==make-up== class per term, as long as you tell us a day ahead.", "zh": "每期可以约一节补课，只要提前一天告诉我们就行。"},
+        {"sp": "A", "en": "**Fair enough. I'll pay online tonight. Thanks for checking in.**", "zh": "挺合理的。我今晚在网上付款。谢谢你打电话来问。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "孩子目前的游泳基础怎样？会从哪个级别开始？", "a": "完全零基础，喜欢玩水但不肯把脸放进水里；从重点培养不怕水的海星级开始。"},
+    {"q": "这门课的班级规模、时长和试课规则是什么？", "a": "一个教练最多带四个孩子，每节三十分钟；试课二十五块，报名后从学期费里扣。"},
+    {"q": "试课后报名时遇到了什么情况？怎么解决的？", "a": "周六九点的班已满；先报十点半，同时留在九点的候补名单上；一期十节三百二十块，每期可补一节课。"}
+  ],
+  "dictation": [
+    "How many kids are in each class, and how long are the lessons?",
+    "Saturday mornings would suit us best. Do parents need to get in the pool?",
+    "Good to know. We'd like to go ahead with the Saturday class. Is there still a spot at nine?",
+    "What happens if he's sick and misses a class? Can he make it up?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Complete beginner. He loves splashing around, but he won't put his face in the water.",
+    "marked": "<b>Complete</b> beginner. //<br>He <b>loves</b> splashing around, / but he <b>won't</b> put his <b>face</b> / in the water. //"
+  },
+  "prompts": [
+    {
+      "q": "上了三节课，孩子还是每次都哭，你想问问能不能换成一对一私教，以及费用怎么算。",
+      "ref": "Hi, my son is in the Saturday ten thirty Starfish class. He's had three lessons now, but he still cries every time and doesn't really join in. I'm wondering if private lessons would suit him better for a while. How much would that cost? And could the remaining group lessons be moved to private ones?",
+      "ref_zh": "你好，我儿子在周六十点半的海星班。他已经上了三节课，但每次还是哭，也不怎么参与。我在想先上一段时间一对一会不会更适合他。私教怎么收费？剩下的小班课能转成私教课吗？"
+    },
+    {
+      "q": "孩子发烧要缺下周六的课。打电话给游泳学校请假，并约一节补课。",
+      "ref": "Hi, I'm calling about my son in the Saturday morning class. He's had a fever since yesterday, so he won't make it this Saturday. I know we need to tell you a day ahead, so I'm calling now. Could we book a make-up class instead? A weekday afternoon after four would be best for us.",
+      "ref_zh": "你好，我打来是关于周六上午班我儿子的事。他从昨天开始发烧，所以这周六来不了。我知道要提前一天通知，所以现在打过来。能帮我们约一节补课吗？工作日下午四点以后对我们最方便。"
+    }
+  ],
+  "words": [
+    {"w": "beginner", "ipa": "/bɪˈɡɪnər/", "zh": "初学者", "ex": "This yoga class is perfect for beginners."},
+    {"w": "water confidence", "ipa": "/ˈwɔːtər ˈkɑːnfɪdəns/", "zh": "（孩子）不怕水、在水中的自信", "ex": "The first term focuses on water confidence, not strokes."},
+    {"w": "viewing gallery", "ipa": "/ˈvjuːɪŋ ˈɡæləri/", "zh": "观看区", "ex": "Parents can wait in the viewing gallery with a coffee."},
+    {"w": "commit to", "ipa": "/kəˈmɪt tuː/", "zh": "承诺；确定参加", "ex": "I don't want to commit to a whole year at the gym."},
+    {"w": "deduct", "ipa": "/dɪˈdʌkt/", "zh": "扣除", "ex": "The deposit will be deducted from your final bill."},
+    {"w": "warm up", "ipa": "/wɔːrm ʌp/", "zh": "（对人或环境）熟悉、放开", "ex": "She's quiet at first, but she warms up after a while."},
+    {"w": "waitlist", "ipa": "/ˈweɪtlɪst/", "zh": "候补名单", "ex": "The class is full, but you can join the waitlist."},
+    {"w": "make-up class", "ipa": "/ˈmeɪk ʌp klæs/", "zh": "补课", "ex": "Can we book a make-up class for next Wednesday?"},
+    {"w": "term", "ipa": "/tɜːrm/", "zh": "一期课程；学期", "ex": "The art class runs for ten weeks each term."}
+  ]
+}

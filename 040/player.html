@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Bringing Solutions, Not Just Problems · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "040", "title": "Bringing Solutions, Not Just Problems", "meta": "B2 · 约 280 词 · 场景：向上汇报问题", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Rule Has a Catch", "heading_zh": "1. 这条规则有个坑", "rows": [[{"id": "s0_0_0", "md": "Many managers like to say, \"Don't bring me problems, bring me solutions.\"", "text": "Many managers like to say, \"Don't bring me problems, bring me solutions.\"", "zh": "很多经理喜欢说：「别光给我带问题来，要带解决方案来。」", "sp": null}, {"id": "s0_0_1", "md": "The idea is good: people who arrive with a plan save everyone time.", "text": "The idea is good: people who arrive with a plan save everyone time.", "zh": "出发点是好的：带着方案来的人能给大家省时间。", "sp": null}, {"id": "s0_0_2", "md": "But taken too far, the rule has a dangerous ==side effect==.", "text": "But taken too far, the rule has a dangerous side effect.", "zh": "但如果执行过了头，这条规则会有一个危险的副作用。", "sp": null}], [{"id": "s0_1_0", "md": "Engineers start hiding problems until they have a fix.", "text": "Engineers start hiding problems until they have a fix.", "zh": "工程师会开始把问题捂着，直到想出办法为止。", "sp": null}, {"id": "s0_1_1", "md": "A storage issue that could have been handled in a week __stays quiet__ for a month, until it becomes an ==outage==.", "text": "A storage issue that could have been handled in a week stays quiet for a month, until it becomes an outage.", "zh": "一个本来一周就能处理掉的存储问题，被闷了一个月，直到变成一次线上故障。", "sp": null}, {"id": "s0_1_2", "md": "By then, the cheap options are gone.", "text": "By then, the cheap options are gone.", "zh": "到那时，低成本的选项都已经没了。", "sp": null}, {"id": "s0_1_3", "md": "**Raise problems early, and bring your best thinking, even if it is not a finished solution.**", "text": "Raise problems early, and bring your best thinking, even if it is not a finished solution.", "zh": "问题要早点提，带上你最好的思考，哪怕还不是一个完整的方案。", "sp": null}], [{"id": "s0_2_0", "md": "Your manager doesn't need a perfect answer from you.", "text": "Your manager doesn't need a perfect answer from you.", "zh": "你的经理不需要你给出完美的答案。", "sp": null}, {"id": "s0_2_1", "md": "They need to know you have __thought it through__ and that you are not just handing them a ==burden== without context.", "text": "They need to know you have thought it through and that you are not just handing them a burden without context.", "zh": "他需要知道你已经认真想过了，而不是没头没尾地把一个包袱甩给他。", "sp": null}, {"id": "s0_2_2", "md": "Half a plan delivered on Monday is worth more than a full plan delivered after the damage.", "text": "Half a plan delivered on Monday is worth more than a full plan delivered after the damage.", "zh": "周一交上来的半个方案，比损失造成之后才交的完整方案更有价值。", "sp": null}]]}, {"heading": "2. A Simple Four-Part Message", "heading_zh": "2. 简单的四段式消息", "rows": [[{"id": "s1_0_0", "md": "Start with the problem and its ==severity== in one sentence.", "text": "Start with the problem and its severity in one sentence.", "zh": "先用一句话讲清楚问题和它的严重程度。", "sp": null}, {"id": "s1_0_1", "md": "\"Our storage will be full in about three weeks, and writes will start failing.\"", "text": "\"Our storage will be full in about three weeks, and writes will start failing.\"", "zh": "「我们的存储大概三周后就会满，到时候写入会开始失败。」", "sp": null}, {"id": "s1_0_2", "md": "Your manager now knows how urgent this is before you say anything else.", "text": "Your manager now knows how urgent this is before you say anything else.", "zh": "这样你还没往下说，经理就已经知道这事有多急了。", "sp": null}], [{"id": "s1_1_0", "md": "Next, offer two or three options with their costs.", "text": "Next, offer two or three options with their costs.", "zh": "接下来，给出两三个选项，以及各自的代价。", "sp": null}, {"id": "s1_1_1", "md": "\"We can clean up old logs, which __buys us__ a month, or add capacity, which costs budget but solves it for a year.\"", "text": "\"We can clean up old logs, which buys us a month, or add capacity, which costs budget but solves it for a year.\"", "zh": "「我们可以清理旧日志，这能多撑一个月；或者扩容，要花预算，但能管一年。」", "sp": null}, {"id": "s1_1_2", "md": "Options show your manager the ==landscape==, not just one path.", "text": "Options show your manager the landscape, not just one path.", "zh": "选项能让经理看到全局，而不只是一条路。", "sp": null}], [{"id": "s1_2_0", "md": "Then give your ==recommendation== and the reason behind it.", "text": "Then give your recommendation and the reason behind it.", "zh": "然后给出你的建议，以及背后的理由。", "sp": null}, {"id": "s1_2_1", "md": "\"I suggest cleaning up now and requesting capacity for next quarter.\"", "text": "\"I suggest cleaning up now and requesting capacity for next quarter.\"", "zh": "「我建议现在先清理，同时为下个季度申请扩容。」", "sp": null}, {"id": "s1_2_2", "md": "**Having a recommendation is what turns you from a messenger into an owner.**", "text": "Having a recommendation is what turns you from a messenger into an owner.", "zh": "有了自己的建议，你就从一个传话的人变成了一个负责的人。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, say what you need from them: approval, budget, or simply ==awareness==.", "text": "Finally, say what you need from them: approval, budget, or simply awareness.", "zh": "最后，说明你需要他做什么：批准、预算，或者只是知会一声。", "sp": null}, {"id": "s1_3_1", "md": "If you truly have no solution yet, __say so plainly__ and bring the exact question you are stuck on instead.", "text": "If you truly have no solution yet, say so plainly and bring the exact question you are stuck on instead.", "zh": "如果你确实还没有方案，就直说，然后把你卡住的那个具体问题带过来。", "sp": null}]]}], "gist": [{"q": "「别带问题来，带方案来」这条规则有什么副作用？", "a": "工程师会在想出解决办法之前一直藏着问题，小问题拖成事故，便宜的选项也没了。"}, {"q": "作者认为经理真正需要的是什么？", "a": "不是完美答案，而是早点知道问题，并且看到你认真想过、带着背景和思路来，而不是把包袱直接甩给他。"}, {"q": "推荐的四段式汇报是什么？", "a": "一句话讲清问题和严重程度；给两三个带成本的选项；给出你的推荐和理由；说明需要经理做什么（批准、预算或只是知情）。"}], "dictation": [{"id": "s0_1_3", "text": "Raise problems early, and bring your best thinking, even if it is not a finished solution."}, {"id": "s1_2_2", "text": "Having a recommendation is what turns you from a messenger into an owner."}, {"id": "s0_1_0", "text": "Engineers start hiding problems until they have a fix."}, {"id": "s1_1_2", "text": "Options show your manager the landscape, not just one path."}], "shadow": {"text": "Then give your recommendation and the reason behind it. \"I suggest cleaning up now and requesting capacity for next quarter.\" Having a recommendation is what turns you from a messenger into an owner.", "marked": "Then give your <b>recommendation</b> / and the <b>reason</b> behind it. //<br>\"I suggest <b>cleaning up</b> now / and requesting <b>capacity</b> / for <b>next</b> quarter.\" //<br>Having a recommendation / is what turns you / from a <b>messenger</b> / into an <b>owner</b>. //"}, "prompts": [{"q": "你发现一个第三方 SDK 下个月停止支持，影响你们的推送功能。用 30 秒按「问题和严重程度、选项、推荐、需要什么」向经理汇报。", "ref": "Quick heads-up on a risk. The push notification library we use stops being supported next month, and after that, new phones may not receive our notifications. I see two options: upgrade to the vendor's new version, which takes about a week, or switch to a different provider, which takes a month but cuts cost. I recommend the upgrade now. I just need your approval to pause one small feature this sprint.", "ref_zh": "提前跟你同步一个风险。我们用的推送通知库下个月就停止维护了，之后新手机可能收不到我们的通知。我看有两个选项：升级到厂商的新版本，大概要一周；或者换一家服务商，要一个月，但能降成本。我建议现在就升级。我只需要你批准这个 sprint 先暂停一个小功能。", "id": "ref0"}, {"q": "你发现了一个性能问题但还没想到解决方案。用 30 秒向经理提出，说明你目前的判断和卡在哪里。", "ref": "I want to flag something early, even though I don't have a fix yet. Checkout latency has been creeping up about ten percent a week for the past month. It's not urgent today, but at this rate we'll feel it during the holiday sale. My best guess is the new recommendation call, but I can't confirm it. What I'm stuck on is getting tracing access to that service. Could you help me get it?", "ref_zh": "有件事我想早点提出来，虽然我还没有解决办法。过去一个月，结账延迟每周大约上涨百分之十。今天还不算紧急，但照这个速度，到假期大促的时候就会有明显感觉。我最大的怀疑是新加的推荐接口调用，但还没法确认。我卡在拿不到那个服务的 tracing 权限上。你能帮我申请一下吗？", "id": "ref1"}], "words": [{"w": "side effect", "ipa": "/ˈsaɪd ɪˌfekt/", "zh": "副作用", "ex": "One side effect of the new cache is slightly stale prices.", "id": "w0"}, {"w": "outage", "ipa": "/ˈaʊtɪdʒ/", "zh": "（服务）中断、故障", "ex": "The outage lasted forty minutes and affected two regions.", "id": "w1"}, {"w": "burden", "ipa": "/ˈbɜːrdn/", "zh": "负担、包袱", "ex": "I don't want to put the burden of the migration on the new hires.", "id": "w2"}, {"w": "severity", "ipa": "/səˈverəti/", "zh": "严重程度", "ex": "We classified the bug as high severity because payments were affected.", "id": "w3"}, {"w": "landscape", "ipa": "/ˈlændskeɪp/", "zh": "全貌、整体局面", "ex": "Before we choose a vendor, let's map out the landscape.", "id": "w4"}, {"w": "recommendation", "ipa": "/ˌrekəmenˈdeɪʃən/", "zh": "建议、推荐方案", "ex": "My recommendation is to delay the launch by one week.", "id": "w5"}, {"w": "awareness", "ipa": "/əˈwernəs/", "zh": "知情、意识", "ex": "No action needed, this is just for awareness.", "id": "w6"}, {"w": "messenger", "ipa": "/ˈmesɪndʒər/", "zh": "传话的人", "ex": "I don't want to be just the messenger; here's what I suggest.", "id": "w7"}, {"w": "capacity", "ipa": "/kəˈpæsəti/", "zh": "容量、产能", "ex": "We need more storage capacity before the holiday peak.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Rule Has a Catch", "zh": "1. 这条规则有个坑", "start": 0.0, "end": 2.304, "words": [[0.105, 0.316], [0.724, 0.803], [0.816, 1.118], [1.132, 1.316], [1.329, 1.368], [1.382, 1.908]]}, {"kind": "s", "id": "s0_0_0", "md": "Many managers like to say, \"Don't bring me problems, bring me solutions.\"", "zh": "很多经理喜欢说：「别光给我带问题来，要带解决方案来。」", "sp": null, "gap": false, "start": 2.304, "end": 7.296, "words": [[2.409, 2.646], [2.659, 3.186], [3.199, 3.383], [3.396, 3.475], [3.488, 3.922], [4.225, 4.436], [4.449, 4.633], [4.646, 4.751], [4.765, 5.488], [5.686, 5.909], [5.922, 6.054], [6.067, 6.883]]}, {"kind": "s", "id": "s0_0_1", "md": "The idea is good: people who arrive with a plan save everyone time.", "zh": "出发点是好的：带着方案来的人能给大家省时间。", "sp": null, "gap": false, "start": 7.296, "end": 12.288, "words": [[7.414, 7.507], [7.52, 8.046], [8.059, 8.217], [8.23, 8.559], [9.046, 9.335], [9.349, 9.467], [9.48, 9.954], [9.967, 10.099], [10.112, 10.164], [10.178, 10.533], [10.546, 10.928], [11.138, 11.52], [11.533, 11.888]]}, {"kind": "s", "id": "s0_0_2", "md": "But taken too far, the rule has a dangerous ==side effect==.", "zh": "但如果执行过了头，这条规则会有一个危险的副作用。", "sp": null, "gap": false, "start": 12.288, "end": 16.224, "words": [[12.406, 12.512], [12.525, 12.841], [12.854, 13.051], [13.064, 13.499], [13.893, 13.972], [13.985, 14.288], [14.301, 14.472], [14.485, 14.591], [14.604, 15.117], [15.13, 15.341], [15.354, 15.827]]}, {"kind": "s", "id": "s0_1_0", "md": "Engineers start hiding problems until they have a fix.", "zh": "工程师会开始把问题捂着，直到想出办法为止。", "sp": null, "gap": true, "start": 16.224, "end": 19.872, "words": [[16.329, 16.869], [16.882, 17.224], [17.237, 17.579], [17.592, 18.198], [18.329, 18.566], [18.579, 18.684], [18.698, 18.829], [18.842, 18.895], [18.908, 19.487]]}, {"kind": "s", "id": "s0_1_1", "md": "A storage issue that could have been handled in a week __stays quiet__ for a month, until it becomes an ==outage==.", "zh": "一个本来一周就能处理掉的存储问题，被闷了一个月，直到变成一次线上故障。", "sp": null, "gap": false, "start": 19.872, "end": 26.256, "words": [[19.977, 20.043], [20.056, 20.556], [20.569, 20.885], [20.898, 21.069], [21.083, 21.254], [21.267, 21.372], [21.385, 21.53], [21.543, 22.082], [22.096, 22.254], [22.267, 22.359], [22.372, 22.648], [22.661, 23.056], [23.069, 23.464], [23.477, 23.661], [23.675, 23.714], [23.727, 24.122], [24.556, 24.793], [24.806, 24.885], [24.898, 25.267], [25.28, 25.359], [25.372, 25.859]]}, {"kind": "s", "id": "s0_1_2", "md": "By then, the cheap options are gone.", "zh": "到那时，低成本的选项都已经没了。", "sp": null, "gap": false, "start": 26.256, "end": 28.68, "words": [[26.374, 26.493], [26.506, 26.835], [27.085, 27.177], [27.19, 27.427], [27.44, 27.861], [27.874, 27.967], [27.98, 28.295]]}, {"kind": "s", "id": "s0_1_3", "md": "**Raise problems early, and bring your best thinking, even if it is not a finished solution.**", "zh": "问题要早点提，带上你最好的思考，哪怕还不是一个完整的方案。", "sp": null, "gap": false, "start": 28.68, "end": 34.368, "words": [[28.785, 29.088], [29.101, 29.693], [29.706, 30.127], [30.391, 30.509], [30.522, 30.812], [30.825, 30.956], [30.969, 31.298], [31.312, 31.719], [32.154, 32.351], [32.364, 32.509], [32.522, 32.588], [32.601, 32.719], [32.733, 33.022], [33.035, 33.075], [33.088, 33.443], [33.456, 33.983]]}, {"kind": "s", "id": "s0_2_0", "md": "Your manager doesn't need a perfect answer from you.", "zh": "你的经理不需要你给出完美的答案。", "sp": null, "gap": true, "start": 34.368, "end": 37.392, "words": [[34.473, 34.552], [34.565, 35.079], [35.21, 35.539], [35.552, 35.697], [35.71, 35.763], [35.776, 36.276], [36.289, 36.592], [36.605, 36.802], [36.815, 37.013]]}, {"kind": "s", "id": "s0_2_1", "md": "They need to know you have __thought it through__ and that you are not just handing them a ==burden== without context.", "zh": "他需要知道你已经认真想过了，而不是没头没尾地把一个包袱甩给他。", "sp": null, "gap": false, "start": 37.392, "end": 42.984, "words": [[37.51, 37.589], [37.603, 37.774], [37.787, 37.853], [37.866, 38.05], [38.063, 38.195], [38.208, 38.3], [38.313, 38.602], [38.616, 38.695], [38.708, 39.063], [39.287, 39.392], [39.405, 39.55], [39.563, 39.668], [39.681, 39.76], [39.774, 40.076], [40.089, 40.353], [40.366, 40.747], [40.76, 40.892], [40.905, 40.971], [40.984, 41.405], [41.51, 41.866], [41.879, 42.589]]}, {"kind": "s", "id": "s0_2_2", "md": "Half a plan delivered on Monday is worth more than a full plan delivered after the damage.", "zh": "周一交上来的半个方案，比损失造成之后才交的完整方案更有价值。", "sp": null, "gap": false, "start": 42.984, "end": 48.48, "words": [[43.089, 43.26], [43.273, 43.339], [43.352, 43.668], [43.681, 44.089], [44.102, 44.234], [44.247, 44.787], [44.931, 45.076], [45.089, 45.418], [45.431, 45.773], [45.787, 45.918], [45.931, 45.984], [45.997, 46.326], [46.339, 46.655], [46.668, 47.168], [47.181, 47.431], [47.445, 47.523], [47.537, 48.089]]}, {"kind": "h", "id": "h1", "md": "2. A Simple Four-Part Message", "zh": "2. 简单的四段式消息", "start": 48.48, "end": 51.216, "words": [[48.585, 48.901], [49.269, 49.335], [49.348, 49.756], [49.769, 50.322], [50.335, 50.835]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with the problem and its ==severity== in one sentence.", "zh": "先用一句话讲清楚问题和它的严重程度。", "sp": null, "gap": false, "start": 51.216, "end": 55.056, "words": [[51.334, 51.637], [51.65, 51.769], [51.782, 51.861], [51.874, 52.413], [52.584, 52.69], [52.703, 52.834], [52.848, 53.532], [53.677, 53.808], [53.821, 54.045], [54.058, 54.663]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Our storage will be full in about three weeks, and writes will start failing.\"", "zh": "「我们的存储大概三周后就会满，到时候写入会开始失败。」", "sp": null, "gap": false, "start": 55.056, "end": 59.808, "words": [[55.24, 55.24], [55.319, 55.753], [55.767, 55.872], [55.885, 56.003], [56.017, 56.332], [56.345, 56.477], [56.49, 56.793], [56.806, 57.148], [57.161, 57.74], [57.99, 58.148], [58.161, 58.411], [58.424, 58.53], [58.543, 58.845], [58.859, 59.306]]}, {"kind": "s", "id": "s1_0_2", "md": "Your manager now knows how urgent this is before you say anything else.", "zh": "这样你还没往下说，经理就已经知道这事有多急了。", "sp": null, "gap": false, "start": 59.808, "end": 64.32, "words": [[59.913, 60.005], [60.019, 60.453], [60.466, 60.676], [60.69, 61.045], [61.058, 61.216], [61.229, 61.65], [61.663, 61.953], [62.045, 62.15], [62.163, 62.584], [62.597, 62.703], [62.716, 63.032], [63.111, 63.466], [63.479, 63.926]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, offer two or three options with their costs.", "zh": "接下来，给出两三个选项，以及各自的代价。", "sp": null, "gap": true, "start": 64.32, "end": 67.968, "words": [[64.425, 64.859], [65.123, 65.438], [65.452, 65.794], [65.807, 65.938], [65.952, 66.241], [66.254, 66.675], [66.688, 66.82], [66.833, 66.952], [66.965, 67.583]]}, {"kind": "s", "id": "s1_1_1", "md": "\"We can clean up old logs, which __buys us__ a month, or add capacity, which costs budget but solves it for a year.\"", "zh": "「我们可以清理旧日志，这能多撑一个月；或者扩容，要花预算，但能管一年。」", "sp": null, "gap": false, "start": 67.968, "end": 76.104, "words": [[68.152, 68.205], [68.205, 68.35], [68.363, 68.639], [68.652, 68.797], [68.902, 69.1], [69.113, 69.692], [69.902, 70.1], [70.113, 70.468], [70.481, 70.626], [70.639, 70.678], [70.692, 71.139], [71.507, 71.744], [71.757, 71.942], [71.955, 72.718], [73.086, 73.244], [73.257, 73.626], [73.639, 74.113], [74.244, 74.376], [74.389, 74.823], [74.836, 74.929], [74.942, 75.126], [75.139, 75.165], [75.179, 75.586]]}, {"kind": "s", "id": "s1_1_2", "md": "Options show your manager the ==landscape==, not just one path.", "zh": "选项能让经理看到全局，而不只是一条路。", "sp": null, "gap": false, "start": 76.104, "end": 80.04, "words": [[76.209, 76.643], [76.657, 76.841], [76.854, 76.986], [76.999, 77.407], [77.42, 77.499], [77.512, 78.117], [78.499, 78.683], [78.696, 78.933], [78.946, 79.117], [79.13, 79.643]]}, {"kind": "s", "id": "s1_2_0", "md": "Then give your ==recommendation== and the reason behind it.", "zh": "然后给出你的建议，以及背后的理由。", "sp": null, "gap": true, "start": 80.04, "end": 83.208, "words": [[80.158, 80.303], [80.316, 80.514], [80.527, 80.658], [80.672, 81.514], [81.658, 81.737], [81.751, 81.843], [81.856, 82.224], [82.237, 82.632], [82.645, 82.829]]}, {"kind": "s", "id": "s1_2_1", "md": "\"I suggest cleaning up now and requesting capacity for next quarter.\"", "zh": "「我建议现在先清理，同时为下个季度申请扩容。」", "sp": null, "gap": false, "start": 83.208, "end": 87.744, "words": [[83.392, 83.432], [83.432, 83.945], [83.958, 84.34], [84.353, 84.484], [84.497, 84.971], [85.103, 85.195], [85.208, 85.761], [85.774, 86.405], [86.419, 86.576], [86.59, 86.879], [86.892, 87.313]]}, {"kind": "s", "id": "s1_2_2", "md": "**Having a recommendation is what turns you from a messenger into an owner.**", "zh": "有了自己的建议，你就从一个传话的人变成了一个负责的人。", "sp": null, "gap": false, "start": 87.744, "end": 92.112, "words": [[87.849, 88.099], [88.112, 88.152], [88.165, 89.02], [89.165, 89.27], [89.283, 89.468], [89.481, 89.836], [89.849, 89.981], [89.994, 90.152], [90.165, 90.204], [90.218, 90.862], [90.941, 91.257], [91.27, 91.362], [91.376, 91.731]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, say what you need from them: approval, budget, or simply ==awareness==.", "zh": "最后，说明你需要他做什么：批准、预算，或者只是知会一声。", "sp": null, "gap": true, "start": 92.112, "end": 97.608, "words": [[92.283, 92.744], [93.046, 93.191], [93.204, 93.349], [93.362, 93.467], [93.48, 93.73], [93.744, 93.954], [93.967, 94.151], [94.533, 95.099], [95.401, 95.822], [96.125, 96.204], [96.217, 96.572], [96.586, 97.217]]}, {"kind": "s", "id": "s1_3_1", "md": "If you truly have no solution yet, __say so plainly__ and bring the exact question you are stuck on instead.", "zh": "如果你确实还没有方案，就直说，然后把你卡住的那个具体问题带过来。", "sp": null, "gap": false, "start": 97.608, "end": 104.496, "words": [[97.713, 97.819], [97.832, 97.937], [97.95, 98.371], [98.384, 98.555], [98.569, 98.726], [98.74, 99.292], [99.305, 99.542], [99.937, 100.161], [100.174, 100.437], [100.45, 101.095], [101.358, 101.463], [101.476, 101.792], [101.805, 101.871], [101.884, 102.424], [102.437, 102.911], [102.924, 103.029], [103.042, 103.134], [103.147, 103.45], [103.463, 103.608], [103.621, 104.108]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

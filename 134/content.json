@@ -1,0 +1,85 @@
+{
+  "id": "134",
+  "type": "dialogue",
+  "title": "Getting a Haircut",
+  "meta": "B2 · 约 240 词 · 场景：理发时说清发型与修正",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Barber", "name_zh": "理发师", "voice": "en-IN-PrabhatNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. In the Chair",
+      "heading_zh": "1. 坐上理发椅",
+      "lines": [
+        {"sp": "B", "en": "Good afternoon, sir. What are we doing today?", "zh": "下午好，先生。今天想怎么剪？"},
+        {"sp": "A", "en": "Just a ==trim==, please. It's getting a bit long, but I don't want it too short.", "zh": "稍微修一下就行。头发有点长了，但别剪太短。"},
+        {"sp": "B", "en": "Sure. What about the sides? Do you want a ==fade==, or just scissors?", "zh": "好的。两边呢？要推渐变，还是只用剪刀？"},
+        {"sp": "A", "en": "**Scissors, please. Take about two centimetres off the top, and keep the sides fairly natural.**", "zh": "用剪刀吧。顶上剪掉大概两厘米，两边保持自然一点。"},
+        {"sp": "B", "en": "Got it. And the back? Square, or ==tapered==?", "zh": "明白。后面呢？剪平，还是逐渐收短？"},
+        {"sp": "A", "en": "Tapered, I think. And could you __thin it out__ a little? My hair gets quite thick.", "zh": "收短吧。另外能稍微打薄一点吗？我头发挺厚的。"},
+        {"sp": "B", "en": "No problem. Do you usually __part it__ on the left?", "zh": "没问题。您平时是左分吗？"},
+        {"sp": "A", "en": "Yes, on the left. Basically __the same as__ now, just tidier.", "zh": "对，左分。基本跟现在一样，就是清爽一点。"},
+        {"sp": "B", "en": "Understood. Would you like some wax or gel at the end?", "zh": "明白。最后要上点发蜡或者啫喱吗？"},
+        {"sp": "A", "en": "No ==product==, thanks. I prefer it natural.", "zh": "什么都不用上，谢谢。我喜欢自然一点。"}
+      ]
+    },
+    {
+      "heading": "2. Not Quite Right",
+      "heading_zh": "2. 不太对劲",
+      "lines": [
+        {"sp": "B", "en": "All done. Here's a mirror so you can see the back. What do you think?", "zh": "剪好了。给您镜子看看后面。觉得怎么样？"},
+        {"sp": "A", "en": "It looks good overall, but the left side seems a bit shorter than the right.", "zh": "整体挺好，不过左边好像比右边短一点。"},
+        {"sp": "B", "en": "Let me see. Ah, you're right, they're not quite ==even==. I'll __even it out__ for you.", "zh": "我看看。啊，您说得对，两边不太齐。我帮您修平。"},
+        {"sp": "A", "en": "**Thanks. Just be careful not to go any shorter on top, please.**", "zh": "谢谢。顶上千万别再剪短了。"},
+        {"sp": "B", "en": "Of course, I'll only touch the sides. How's that now?", "zh": "当然，我只动两边。现在怎么样？"},
+        {"sp": "A", "en": "Much better, thank you. How much do I ==owe== you?", "zh": "好多了，谢谢。我该付多少钱？"},
+        {"sp": "B", "en": "Twenty-five dollars for the cut. We take cash, card or PayNow.", "zh": "剪发二十五块。可以付现金、刷卡或者用 PayNow。"},
+        {"sp": "A", "en": "PayNow is fine. Could I book the same ==slot== next month? Saturdays __get busy__.", "zh": "PayNow 就行。下个月能约同一个时段吗？周六人多。"},
+        {"sp": "B", "en": "Sure. Four weeks from today at three. Shall I send you a ==reminder== the day before?", "zh": "可以，四周后的今天三点。要不要前一天发个提醒给您？"},
+        {"sp": "A", "en": "**Yes, please. See you next month.**", "zh": "好的，麻烦了。下个月见。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」对发型提了哪些具体要求？", "a": "只修一下；用剪刀不推渐变；顶上剪掉约两厘米，两边保持自然，后面收短，稍微打薄，左分，不上发蜡。"},
+    {"q": "剪完后出了什么问题？怎么解决的？", "a": "左边比右边短一点；理发师只修两边把它们弄齐，没再动顶上。"},
+    {"q": "最后「你」怎么付款、怎么预约的？", "a": "用 PayNow 付了二十五块；约了四周后同一天三点，并让理发师前一天发提醒。"}
+  ],
+  "dictation": [
+    "Just a trim, please. It's getting a bit long, but I don't want it too short.",
+    "Scissors, please. Take about two centimetres off the top, and keep the sides fairly natural.",
+    "It looks good overall, but the left side seems a bit shorter than the right.",
+    "Thanks. Just be careful not to go any shorter on top, please."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Tapered, I think. And could you thin it out a little? My hair gets quite thick.",
+    "marked": "<b>Tapered</b>, / I think. //<br>And could you <b>thin</b> it out / a <b>little</b>? //<br>My hair gets / quite <b>thick</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "带三岁的孩子去剪头发，孩子坐不住。跟理发师说清楚要的样子，并请对方尽量快一点。",
+      "ref": "Hi, it's for my son. He's three, and he doesn't sit still for long, so the quicker the better. Could you just tidy it up? Keep the fringe above his eyebrows and make the sides a bit shorter. No clippers near his ears, please, they scare him. I'll hold him on my lap if that helps.",
+      "ref_zh": "你好，是给我儿子剪。他三岁，坐不住太久，越快越好。能简单修一下吗？刘海剪到眉毛上面，两边稍微短一点。耳朵附近请别用电推子，他会害怕。如果方便的话，我可以抱着他坐。"
+    },
+    {
+      "q": "上次在这家店剪得太短了。这次一坐下就先把话说在前头，礼貌但明确。",
+      "ref": "Before we start, last time I was here it came out much shorter than I wanted, so I'd like to be careful today. Please take off only about one centimetre all over. If you're not sure, leave it longer, and I'll tell you if I want more off. And please check with me before you use the clippers.",
+      "ref_zh": "开始之前说一下，上次在这儿剪得比我想要的短很多，所以今天想小心一点。整体只剪掉大概一厘米。如果拿不准，就留长一点，要再短我会跟你说。还有，用电推子之前请先问我一下。"
+    }
+  ],
+  "words": [
+    {"w": "trim (n.)", "ipa": "/trɪm/", "zh": "修剪", "ex": "I don't need a new style, just a trim.", "tts_w": "trim"},
+    {"w": "fade", "ipa": "/feɪd/", "zh": "渐变推剪（两侧由短到长）", "ex": "He asked for a low fade on the sides."},
+    {"w": "tapered", "ipa": "/ˈteɪpərd/", "zh": "逐渐收短的", "ex": "A tapered neckline looks neater as it grows out."},
+    {"w": "thin out", "ipa": "/θɪn aʊt/", "zh": "打薄", "ex": "Could you thin out the back? It feels heavy."},
+    {"w": "product", "ipa": "/ˈprɑːdʌkt/", "zh": "（发蜡等）造型产品", "ex": "I don't use much product, just a bit of wax."},
+    {"w": "even (adj.)", "ipa": "/ˈiːvən/", "zh": "齐的；一样长的", "ex": "Make sure both sides of the curtain are even.", "tts_w": "even"},
+    {"w": "owe", "ipa": "/oʊ/", "zh": "欠（钱）", "ex": "How much do I owe you for the taxi?"},
+    {"w": "slot", "ipa": "/slɑːt/", "zh": "时段；名额", "ex": "The only slot left this week is Thursday at four."},
+    {"w": "reminder", "ipa": "/rɪˈmaɪndər/", "zh": "提醒", "ex": "The clinic sends a reminder the day before your appointment."}
+  ]
+}

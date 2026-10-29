@@ -1,0 +1,185 @@
+{
+  "id": "098",
+  "title": "Building a Team Culture Across Offices",
+  "meta": "B2 · 约 270 词 · 场景：跨办公室团队文化",
+  "voice": "en-IN-PrabhatNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Main Office Problem",
+      "paragraphs": [
+        [
+          "Every ==distributed== team has a ==gravity== problem.",
+          "The office where the manager sits becomes the main office, and every other office slowly feels like a ==satellite==."
+        ],
+        [
+          "You can see it in small things.",
+          "Decisions happen in a corridor in Singapore, and the team in Hyderabad reads about them a day later.",
+          "Jokes, nicknames and stories are all local, so people in other offices always feel one step behind.",
+          "Nobody planned it that way, but nobody stopped it either."
+        ],
+        [
+          "**Culture is not what you write on a slide; it is what people in every office experience on an ordinary Tuesday.**",
+          "If that experience depends on which city you sit in, you do not have one team.",
+          "You have several teams sharing a name."
+        ]
+      ],
+      "heading_zh": "1. 主办公室问题",
+      "paragraphs_zh": [
+        [
+          "每个分布式团队都有一个「引力」问题。",
+          "经理坐的那个办公室会变成主办公室，其他办公室慢慢就觉得自己像卫星。"
+        ],
+        [
+          "从一些小事上就能看出来。",
+          "决定是在新加坡的走廊里定的，海得拉巴的团队一天后才从文字里看到。",
+          "玩笑、外号和故事都是本地的，所以其他办公室的人总觉得慢了半拍。",
+          "没人有意这样安排，但也没人去阻止。"
+        ],
+        [
+          "文化不是你写在 PPT 上的东西；而是每个办公室的人在一个普通周二的真实感受。",
+          "如果这种感受取决于你坐在哪个城市，那你们就不是一个团队。",
+          "而是几个共用一个名字的团队。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Small Rituals That Travel",
+      "paragraphs": [
+        [
+          "Start with decisions.",
+          "Make it a rule that nothing is final until it is written in the shared channel, even if it was agreed over lunch in one office.",
+          "This one habit removes most of the ==insider== advantage."
+        ],
+        [
+          "Next, create rituals that work across time zones.",
+          "Try a weekly thread where everyone posts one win, a monthly demo where each office presents, or a ==shout-out== at the start of every all-hands.",
+          "These small moments make people in other cities ==visible== to each other."
+        ],
+        [
+          "Be careful with language.",
+          "Saying \"the India team\" or \"the remote folks\" __draws lines__ you may not intend.",
+          "**Talk about the work and the people, not the locations.**"
+        ],
+        [
+          "Finally, when there is a travel budget, send engineers, not just managers.",
+          "Two days of working __side by side__ builds more trust than a year of video calls, and those engineers __bring the stories home__."
+        ]
+      ],
+      "heading_zh": "2. 能跨地域的小仪式",
+      "paragraphs_zh": [
+        [
+          "先从决策入手。",
+          "定一条规矩：任何事在写进共享频道之前都不算最终定下，哪怕是在某个办公室吃午饭时已经谈好的。",
+          "光这一个习惯，就能消掉大部分「自己人」的信息优势。"
+        ],
+        [
+          "然后，建立一些能跨时区的仪式。",
+          "可以试试每周开一个帖子让每人发一条成果，每月办一次各办公室轮流上台的 demo，或者每次全员会开场先点名表扬。",
+          "这些小时刻能让不同城市的人彼此被看见。"
+        ],
+        [
+          "说话用词要小心。",
+          "说「印度团队」或者「远程的那帮人」，会划出一些你可能并不想划的界线。",
+          "聊工作、聊人，别聊地点。"
+        ],
+        [
+          "最后，有差旅预算的时候，派工程师去，而不只是派经理。",
+          "并肩工作两天建立起来的信任，比一年的视频会议还多，而且这些工程师会把故事带回去。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "什么是分布式团队的“引力问题”？",
+      "a": "经理所在的办公室成了主办公室，其他办公室慢慢变成卫星，决策、笑话和故事都在本地发生，别处总慢一步。"
+    },
+    {
+      "q": "作者如何定义团队文化？",
+      "a": "不是写在幻灯片上的东西，而是每个办公室的人在普通周二的真实体验；体验取决于所在城市，就不算一个团队。"
+    },
+    {
+      "q": "文中提出了哪些具体做法？",
+      "a": "决定必须写进共享频道才算数；建立跨时区仪式（每周晒成果、月度各办公室演示、全员会点名表扬）；说人和事，不说地点；差旅预算让工程师也去面对面合作。"
+    }
+  ],
+  "dictation": [
+    "Culture is not what you write on a slide; it is what people in every office experience on an ordinary Tuesday.",
+    "This one habit removes most of the insider advantage.",
+    "These small moments make people in other cities visible to each other.",
+    "Talk about the work and the people, not the locations."
+  ],
+  "shadow": {
+    "text": "Start with decisions. Make it a rule that nothing is final until it is written in the shared channel, even if it was agreed over lunch in one office. This one habit removes most of the insider advantage.",
+    "marked": "Start with <b>decisions</b>. //<br>Make it a <b>rule</b> / that <b>nothing</b> is final / until it is <b>written</b> in the shared channel, / even if it was agreed over <b>lunch</b> / in <b>one</b> office. //<br>This one <b>habit</b> / removes most of the <b>insider</b> advantage. //"
+  },
+  "prompts": [
+    {
+      "q": "你注意到最近很多决定是在新加坡办公室午饭时定下的，海得拉巴的同事事后才知道。你在周会上提出新规则，30 秒。",
+      "ref": "I want to raise something I've noticed, and I'm part of the problem. A few recent decisions were made over lunch here in Singapore, and our colleagues in Hyderabad only heard about them later. From now on, let's agree that nothing is final until it's written in the team channel. If it's not in the channel, it hasn't been decided.",
+      "ref_zh": "我想提一件最近注意到的事，而且我自己也有份。最近有几个决定是在新加坡这边吃午饭时定下的，海得拉巴的同事事后才知道。从现在开始，我们约定：任何事在写进团队频道之前都不算最终定下。没进频道，就等于没定。"
+    },
+    {
+      "q": "你在月度全员会开场给班加罗尔的同事一个 shout-out。",
+      "ref": "Before we start, I want to give a big shout-out to Deepa and the Bangalore crew. Last week, while most of us were asleep, they found the memory leak that had been crashing our upload service for a month. They didn't just patch it, they wrote up exactly how they found it. Deepa, maybe you could share that story at the next demo?",
+      "ref_zh": "开始之前，我想大大表扬一下 Deepa 和班加罗尔的伙伴们。上周，在我们大多数人睡觉的时候，他们找到了那个让上传服务崩了一个月的内存泄漏。他们不只是打了补丁，还把排查过程原原本本写了下来。Deepa，下次 demo 的时候要不要给大家讲讲这个故事？"
+    }
+  ],
+  "words": [
+    {
+      "w": "distributed",
+      "ipa": "/dɪˈstrɪbjətɪd/",
+      "zh": "分布式的、分散在各地的",
+      "ex": "Running a distributed team means writing more and meeting less."
+    },
+    {
+      "w": "gravity",
+      "ipa": "/ˈɡrævəti/",
+      "zh": "引力、吸引力",
+      "ex": "Headquarters has a natural gravity, so we have to push decisions outward."
+    },
+    {
+      "w": "satellite",
+      "ipa": "/ˈsætəˌlaɪt/",
+      "zh": "卫星；附属的（办公室）",
+      "ex": "Nobody wants to work in a satellite office that only gets leftover tasks."
+    },
+    {
+      "w": "insider",
+      "ipa": "/ɪnˈsaɪdər/",
+      "zh": "内部人士、圈内人",
+      "ex": "Hallway decisions give insiders an unfair advantage."
+    },
+    {
+      "w": "shout-out",
+      "ipa": "/ˈʃaʊt aʊt/",
+      "zh": "公开点名表扬、致谢",
+      "ex": "Big shout-out to the Sydney team for fixing the alert overnight."
+    },
+    {
+      "w": "visible",
+      "ipa": "/ˈvɪzəbəl/",
+      "zh": "可见的、显眼的",
+      "ex": "Make the work of the support team more visible to leadership."
+    },
+    {
+      "w": "ritual",
+      "ipa": "/ˈrɪtʃuəl/",
+      "zh": "惯例、仪式",
+      "ex": "Our Friday demo has become a team ritual."
+    },
+    {
+      "w": "all-hands",
+      "ipa": "/ˈɔːl hændz/",
+      "zh": "全员大会",
+      "ex": "The new strategy will be announced at the all-hands."
+    },
+    {
+      "w": "side by side",
+      "ipa": "/saɪd baɪ saɪd/",
+      "zh": "并肩、一起",
+      "ex": "Working side by side for a week solved months of confusion."
+    }
+  ]
+}

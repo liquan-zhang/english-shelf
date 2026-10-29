@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Asking the Bartender for Something Non-Alcoholic · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "115", "type": "dialogue", "title": "Asking the Bartender for Something Non-Alcoholic", "meta": "B2 · 约 240 词 · 场景：点无酒精饮品与婉拒劝酒", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Bartender", "name_zh": "调酒师", "voice": "en-US-AvaNeural"}}, "gist": [{"q": "「你」想要什么样的饮品？", "a": "完全无酒精、不太甜、偏苦一点、有喝酒感觉的饮品。"}, {"q": "为什么「你」要再三确认没有酒精？调酒师发现了什么？", "a": "因为这周在吃药；调酒师说平时会加含酒精的苦精，这次不放。"}, {"q": "老板送酒时「你」是怎么处理的？", "a": "礼貌拒绝，请调酒师用同样杯子做一杯姜汁青柠无酒精小杯饮，好一起干杯又不显眼。"}], "dictation": [{"id": "s0_1_0", "text": "I'm not drinking tonight. What do you have that's alcohol-free but not too sweet?"}, {"id": "s0_5_0", "text": "Sounds good. Just to double-check, there's no alcohol in it at all? Not even a little?"}, {"id": "s1_3_0", "text": "Thanks, but I'll pass. Could you make me something fun to toast with instead?"}, {"id": "s1_5_0", "text": "That's perfect. I don't want to make a big deal out of it."}], "shadow": {"speaker": "A", "text": "That's really generous of him. The others will love it, but count me out, please.", "marked": "That's really <b>generous</b> of him. //<br>The <b>others</b> will love it, / but <b>count me out</b>, / please. //"}, "prompts": [{"q": "公司聚餐时，经理举着酒杯让你「至少喝一杯」。你不想喝，用轻松的方式拒绝，又不让场面冷下来。", "ref": "Thanks, really, but I'm sticking to soda tonight. I've got an early start with my son tomorrow, and he doesn't care how late I stayed out. But I'm definitely joining the toast, so fill my glass with soda. To a great quarter, everyone, and thanks for all the hard work.", "ref_zh": "真的谢谢，但我今晚就喝汽水了。明天一早要陪儿子，他可不管我昨晚多晚回家。不过干杯我一定参加，给我倒上汽水。敬这个精彩的季度，大家辛苦了。", "id": "ref0"}, {"q": "在餐厅你想点一款无酒精啤酒，问服务员有没有、是什么牌子、酒精含量是否真的为零。", "ref": "Hi, do you have any non-alcoholic beer? If you do, which brand is it? I just want to check, is it completely zero alcohol, or is it the kind with a tiny bit in it? I'm driving tonight, so I'd rather be safe. If you don't have one, a ginger beer would be fine.", "ref_zh": "你好，你们有无酒精啤酒吗？有的话是什么牌子？我想确认一下，是完全零酒精，还是含一点点的那种？我今晚要开车，想稳妥点。没有的话，来一杯姜汁汽水也行。", "id": "ref1"}], "words": [{"w": "citrusy", "ipa": "/ˈsɪtrəsi/", "zh": "柑橘味的", "ex": "This tea has a light, citrusy taste.", "id": "w0"}, {"w": "bitter", "ipa": "/ˈbɪtər/", "zh": "苦的", "ex": "Bitter gourd is too bitter for my kid.", "id": "w1"}, {"w": "zero-proof", "ipa": "/ˈzɪroʊ pruːf/", "zh": "零酒精的（饮品）", "ex": "More bars now have a zero-proof menu.", "id": "w2"}, {"w": "bitters", "ipa": "/ˈbɪtərz/", "zh": "苦精（调酒用，含酒精）", "ex": "Ask them to skip the bitters if you can't have alcohol.", "id": "w3"}, {"w": "shooter", "ipa": "/ˈʃuːtər/", "zh": "一口饮的小杯饮品", "ex": "They served a mango shooter before the meal.", "id": "w4"}, {"w": "celebration", "ipa": "/ˌseləˈbreɪʃən/", "zh": "庆祝", "ex": "We're having a small celebration for my daughter's birthday.", "id": "w5"}, {"w": "count me out", "ipa": "/kaʊnt mi aʊt/", "zh": "我就不参加了", "ex": "A run at six in the morning? Count me out.", "id": "w6"}, {"w": "leave out", "ipa": "/liːv aʊt/", "zh": "不放，省去", "ex": "Can you leave out the chilli in my noodles?", "id": "w7"}, {"w": "generous", "ipa": "/ˈdʒenərəs/", "zh": "大方的", "ex": "It was very generous of our neighbours to lend us their stroller.", "id": "w8"}, {"w": "tab", "ipa": "/tæb/", "zh": "（酒吧）记账单", "ex": "Can I start a tab? I'll pay at the end.", "id": "w9"}], "sections": [{"heading": "1. Finding the Right Drink", "heading_zh": "1. 找一杯合适的饮品", "rows": [[{"id": "s0_0_0", "md": "Hey there, what are we having tonight?", "text": "Hey there, what are we having tonight?", "zh": "嗨，今晚喝点什么？", "sp": "B"}], [{"id": "s0_1_0", "md": "**I'm not drinking tonight. What do you have that's alcohol-free but not too sweet?**", "text": "I'm not drinking tonight. What do you have that's alcohol-free but not too sweet?", "zh": "我今晚不喝酒。有没有无酒精、又不太甜的？", "sp": "A"}], [{"id": "s0_2_0", "md": "Good question. Most people just get a soda. Do you like something ==citrusy== or more ==bitter==?", "text": "Good question. Most people just get a soda. Do you like something citrusy or more bitter?", "zh": "问得好。大多数人就点个汽水。你喜欢柑橘味的，还是偏苦一点的？", "sp": "B"}], [{"id": "s0_3_0", "md": "Bitter, I think. Something that __feels like__ a proper drink, not a kids' juice.", "text": "Bitter, I think. Something that feels like a proper drink, not a kids' juice.", "zh": "苦一点的吧。要有点正经喝酒的感觉，别像小孩喝的果汁。", "sp": "A"}], [{"id": "s0_4_0", "md": "Then try our ==zero-proof== spritz. It's grapefruit, tonic and a non-alcoholic aperitif.", "text": "Then try our zero-proof spritz. It's grapefruit, tonic and a non-alcoholic aperitif.", "zh": "那试试我们的零度气泡酒。西柚、汤力水，加一种无酒精开胃酒。", "sp": "B"}], [{"id": "s0_5_0", "md": "Sounds good. Just to __double-check__, there's no alcohol in it at all? Not even a little?", "text": "Sounds good. Just to double-check, there's no alcohol in it at all? Not even a little?", "zh": "听着不错。我再确认一下，里面完全没有酒精吧？一点都没有？", "sp": "A"}], [{"id": "s0_6_0", "md": "Good that you asked. Normally I add a dash of ==bitters==, and that does have alcohol. I'll __leave it out__.", "text": "Good that you asked. Normally I add a dash of bitters, and that does have alcohol. I'll leave it out.", "zh": "幸好你问了。平时我会加几滴苦精，那个是含酒精的。我不放就是了。", "sp": "B"}], [{"id": "s0_7_0", "md": "Thanks, I appreciate that. I'm on medication this week, so I need to be careful.", "text": "Thanks, I appreciate that. I'm on medication this week, so I need to be careful.", "zh": "谢谢，很感激。我这周在吃药，得注意点。", "sp": "A"}]]}, {"heading": "2. Saying No Without the Awkwardness", "heading_zh": "2. 不尴尬地说不", "rows": [[{"id": "s1_0_0", "md": "Here's your spritz. Oh, and your table's celebrating, right? The owner wants to send over a round of shots.", "text": "Here's your spritz. Oh, and your table's celebrating, right? The owner wants to send over a round of shots.", "zh": "你的气泡饮来了。对了，你们那桌在庆祝吧？老板想送一轮小杯烈酒。", "sp": "B"}], [{"id": "s1_1_0", "md": "That's really ==generous== of him. The others will love it, but __count me out__, please.", "text": "That's really generous of him. The others will love it, but count me out, please.", "zh": "老板太大方了。其他人肯定喜欢，不过我就不要了。", "sp": "A"}], [{"id": "s1_2_0", "md": "Are you sure? It's just one. Nobody's going to judge you.", "text": "Are you sure? It's just one. Nobody's going to judge you.", "zh": "确定吗？就一小杯而已，没人会说你的。", "sp": "B"}], [{"id": "s1_3_0", "md": "**Thanks, but I'll pass. Could you make me something fun to toast with instead?**", "text": "Thanks, but I'll pass. Could you make me something fun to toast with instead?", "zh": "谢谢，但我不喝了。能给我弄点好玩的、可以一起干杯的吗？", "sp": "A"}], [{"id": "s1_4_0", "md": "Sure. How about a ginger and lime ==shooter== in the same glass? Nobody will know the difference.", "text": "Sure. How about a ginger and lime shooter in the same glass? Nobody will know the difference.", "zh": "可以。用同样的杯子给你做一杯姜汁青柠小杯饮怎么样？别人看不出区别。", "sp": "B"}], [{"id": "s1_5_0", "md": "That's perfect. I don't want to __make a big deal__ out of it.", "text": "That's perfect. I don't want to make a big deal out of it.", "zh": "太好了。我不想把这事搞得太显眼。", "sp": "A"}], [{"id": "s1_6_0", "md": "Totally get it. Happens more than you'd think. I'll bring them all over together.", "text": "Totally get it. Happens more than you'd think. I'll bring them all over together.", "zh": "完全理解，这种情况比你想的多多了。我一起端过去。", "sp": "B"}], [{"id": "s1_7_0", "md": "**You're a lifesaver. Can you put my drinks on the same tab as the table?**", "text": "You're a lifesaver. Can you put my drinks on the same tab as the table?", "zh": "你真是救了我。我的饮品能记在那桌的账上吗？", "sp": "A"}], [{"id": "s1_8_0", "md": "Already done. Enjoy the ==celebration==.", "text": "Already done. Enjoy the celebration.", "zh": "已经记好了。玩得开心。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Finding the Right Drink", "zh": "1. 找一杯合适的饮品", "start": 0.0, "end": 2.232, "words": [[0.105, 0.355], [0.697, 1.04], [1.053, 1.132], [1.145, 1.395], [1.408, 1.842]]}, {"kind": "s", "id": "s0_0_0", "md": "Hey there, what are we having tonight?", "zh": "嗨，今晚喝点什么？", "sp": "B", "gap": false, "start": 2.232, "end": 4.512, "words": [[2.332, 2.595], [2.608, 2.937], [3.135, 3.266], [3.279, 3.332], [3.345, 3.424], [3.437, 3.674], [3.687, 4.108]]}, {"kind": "s", "id": "s0_1_0", "md": "**I'm not drinking tonight. What do you have that's alcohol-free but not too sweet?**", "zh": "我今晚不喝酒。有没有无酒精、又不太甜的？", "sp": "A", "gap": false, "start": 4.512, "end": 9.216, "words": [[4.617, 4.722], [4.736, 4.907], [4.92, 5.249], [5.262, 5.683], [6.117, 6.209], [6.223, 6.275], [6.288, 6.38], [6.394, 6.591], [6.604, 6.775], [6.788, 7.644], [7.762, 7.907], [7.92, 8.183], [8.196, 8.354], [8.367, 8.828]]}, {"kind": "s", "id": "s0_2_0", "md": "Good question. Most people just get a soda. Do you like something ==citrusy== or more ==bitter==?", "zh": "问得好。大多数人就点个汽水。你喜欢柑橘味的，还是偏苦一点的？", "sp": "B", "gap": false, "start": 9.216, "end": 15.408, "words": [[9.316, 9.54], [9.553, 10.158], [10.542, 10.924], [10.937, 11.292], [11.305, 11.529], [11.542, 11.687], [11.7, 11.766], [11.779, 12.292], [12.674, 12.805], [12.819, 12.898], [12.911, 13.082], [13.095, 13.463], [13.477, 14.134], [14.148, 14.384], [14.398, 14.595], [14.608, 15.003]]}, {"kind": "s", "id": "s0_3_0", "md": "Bitter, I think. Something that __feels like__ a proper drink, not a kids' juice.", "zh": "苦一点的吧。要有点正经喝酒的感觉，别像小孩喝的果汁。", "sp": "A", "gap": false, "start": 15.408, "end": 20.376, "words": [[15.526, 15.816], [15.934, 15.987], [16.0, 16.421], [16.869, 17.158], [17.171, 17.303], [17.316, 17.632], [17.645, 17.776], [17.79, 17.842], [17.855, 18.224], [18.237, 18.605], [18.934, 19.079], [19.092, 19.132], [19.145, 19.461], [19.474, 19.974]]}, {"kind": "s", "id": "s0_4_0", "md": "Then try our ==zero-proof== spritz. It's grapefruit, tonic and a non-alcoholic aperitif.", "zh": "那试试我们的零度气泡酒。西柚、汤力水，加一种无酒精开胃酒。", "sp": "B", "gap": false, "start": 20.376, "end": 27.336, "words": [[20.476, 20.779], [20.792, 21.055], [21.068, 21.187], [21.2, 21.858], [21.871, 22.463], [22.847, 23.11], [23.123, 23.729], [24.058, 24.584], [24.663, 24.834], [24.86, 24.9], [24.913, 25.965], [26.005, 26.939]]}, {"kind": "s", "id": "s0_5_0", "md": "Sounds good. Just to __double-check__, there's no alcohol in it at all? Not even a little?", "zh": "听着不错。我再确认一下，里面完全没有酒精吧？一点都没有？", "sp": "A", "gap": false, "start": 27.336, "end": 32.544, "words": [[27.454, 27.665], [27.678, 27.928], [28.362, 28.533], [28.547, 28.625], [28.639, 29.296], [29.586, 29.757], [29.77, 29.968], [29.981, 30.494], [30.507, 30.586], [30.599, 30.665], [30.678, 30.757], [30.77, 31.007], [31.441, 31.586], [31.599, 31.77], [31.783, 31.823], [31.836, 32.152]]}, {"kind": "s", "id": "s0_6_0", "md": "Good that you asked. Normally I add a dash of ==bitters==, and that does have alcohol. I'll __leave it out__.", "zh": "幸好你问了。平时我会加几滴苦精，那个是含酒精的。我不放就是了。", "sp": "B", "gap": false, "start": 32.544, "end": 39.384, "words": [[32.644, 32.894], [32.907, 33.039], [33.052, 33.17], [33.183, 33.736], [34.12, 34.778], [34.791, 34.91], [34.923, 35.094], [35.107, 35.186], [35.199, 35.489], [35.502, 35.594], [35.607, 36.107], [36.239, 36.41], [36.423, 36.607], [36.62, 36.844], [36.857, 37.015], [37.028, 37.673], [38.055, 38.383], [38.397, 38.554], [38.568, 38.647], [38.66, 39.002]]}, {"kind": "s", "id": "s0_7_0", "md": "Thanks, I appreciate that. I'm on medication this week, so I need to be careful.", "zh": "谢谢，很感激。我这周在吃药，得注意点。", "sp": "A", "gap": false, "start": 39.384, "end": 44.424, "words": [[39.516, 39.818], [39.91, 39.989], [40.002, 40.542], [40.555, 40.844], [41.279, 41.397], [41.41, 41.516], [41.529, 42.147], [42.16, 42.331], [42.345, 42.66], [42.937, 43.081], [43.095, 43.134], [43.147, 43.345], [43.358, 43.397], [43.41, 43.516], [43.529, 44.029]]}, {"kind": "h", "id": "h1", "md": "2. Saying No Without the Awkwardness", "zh": "2. 不尴尬地说不", "start": 44.424, "end": 47.4, "words": [[44.542, 44.779], [45.135, 45.503], [45.516, 45.779], [45.792, 46.148], [46.161, 46.266], [46.279, 47.016]]}, {"kind": "s", "id": "s1_0_0", "md": "Here's your spritz. Oh, and your table's celebrating, right? The owner wants to send over a round of shots.", "zh": "你的气泡饮来了。对了，你们那桌在庆祝吧？老板想送一轮小杯烈酒。", "sp": "B", "gap": false, "start": 47.4, "end": 54.72, "words": [[47.5, 47.882], [47.895, 48.013], [48.026, 48.618], [49.003, 49.516], [49.555, 49.818], [49.845, 49.963], [49.976, 50.371], [50.384, 51.016], [51.042, 51.424], [51.805, 52.003], [52.016, 52.279], [52.292, 52.503], [52.516, 52.608], [52.621, 52.963], [52.976, 53.2], [53.213, 53.305], [53.318, 53.661], [53.674, 53.739], [53.753, 54.318]]}, {"kind": "s", "id": "s1_1_0", "md": "That's really ==generous== of him. The others will love it, but __count me out__, please.", "zh": "老板太大方了。其他人肯定喜欢，不过我就不要了。", "sp": "A", "gap": false, "start": 54.72, "end": 59.76, "words": [[54.838, 54.996], [55.009, 55.246], [55.259, 55.694], [55.707, 55.799], [55.812, 55.996], [56.431, 56.536], [56.549, 56.838], [56.852, 56.983], [56.996, 57.233], [57.246, 57.404], [57.681, 57.825], [57.838, 58.102], [58.115, 58.286], [58.299, 58.575], [58.786, 59.378]]}, {"kind": "s", "id": "s1_2_0", "md": "Are you sure? It's just one. Nobody's going to judge you.", "zh": "确定吗？就一小杯而已，没人会说你的。", "sp": "B", "gap": false, "start": 59.76, "end": 64.272, "words": [[59.86, 60.057], [60.071, 60.149], [60.163, 60.557], [60.942, 61.205], [61.218, 61.534], [61.547, 61.915], [62.297, 62.915], [62.928, 63.126], [63.139, 63.205], [63.218, 63.494], [63.507, 63.889]]}, {"kind": "s", "id": "s1_3_0", "md": "**Thanks, but I'll pass. Could you make me something fun to toast with instead?**", "zh": "谢谢，但我不喝了。能给我弄点好玩的、可以一起干杯的吗？", "sp": "A", "gap": false, "start": 64.272, "end": 68.76, "words": [[64.404, 64.772], [64.877, 65.009], [65.022, 65.127], [65.14, 65.654], [66.088, 66.206], [66.219, 66.312], [66.325, 66.522], [66.535, 66.64], [66.654, 67.009], [67.022, 67.351], [67.364, 67.443], [67.456, 67.772], [67.785, 67.917], [67.93, 68.377]]}, {"kind": "s", "id": "s1_4_0", "md": "Sure. How about a ginger and lime ==shooter== in the same glass? Nobody will know the difference.", "zh": "可以。用同样的杯子给你做一杯姜汁青柠小杯饮怎么样？别人看不出区别。", "sp": "B", "gap": false, "start": 68.76, "end": 75.48, "words": [[68.86, 69.439], [69.823, 70.034], [70.047, 70.27], [70.284, 70.349], [70.363, 70.942], [70.955, 71.126], [71.139, 71.402], [71.415, 71.836], [71.849, 71.955], [71.968, 72.047], [72.06, 72.428], [72.442, 73.007], [73.389, 73.915], [73.928, 74.099], [74.113, 74.31], [74.323, 74.428], [74.442, 75.099]]}, {"kind": "s", "id": "s1_5_0", "md": "That's perfect. I don't want to __make a big deal__ out of it.", "zh": "太好了。我不想把这事搞得太显眼。", "sp": "A", "gap": false, "start": 75.48, "end": 78.816, "words": [[75.598, 75.73], [75.743, 76.283], [76.717, 76.769], [76.783, 76.901], [76.914, 77.006], [77.019, 77.072], [77.085, 77.256], [77.269, 77.348], [77.441, 77.704], [77.717, 77.967], [77.98, 78.125], [78.138, 78.23], [78.243, 78.427]]}, {"kind": "s", "id": "s1_6_0", "md": "Totally get it. Happens more than you'd think. I'll bring them all over together.", "zh": "完全理解，这种情况比你想的多多了。我一起端过去。", "sp": "B", "gap": false, "start": 78.816, "end": 84.528, "words": [[78.916, 79.442], [79.455, 79.666], [79.679, 79.929], [80.313, 80.866], [80.879, 81.155], [81.169, 81.313], [81.327, 81.511], [81.524, 81.945], [82.327, 82.655], [82.669, 82.853], [82.866, 83.05], [83.129, 83.34], [83.353, 83.576], [83.59, 84.129]]}, {"kind": "s", "id": "s1_7_0", "md": "**You're a lifesaver. Can you put my drinks on the same tab as the table?**", "zh": "你真是救了我。我的饮品能记在那桌的账上吗？", "sp": "A", "gap": false, "start": 84.528, "end": 88.968, "words": [[84.633, 84.739], [84.752, 84.804], [84.817, 85.567], [86.002, 86.107], [86.12, 86.199], [86.212, 86.357], [86.37, 86.489], [86.502, 86.91], [86.923, 87.002], [87.015, 87.094], [87.107, 87.423], [87.436, 87.831], [87.936, 88.054], [88.067, 88.16], [88.173, 88.581]]}, {"kind": "s", "id": "s1_8_0", "md": "Already done. Enjoy the ==celebration==.", "zh": "已经记好了。玩得开心。", "sp": "B", "gap": false, "start": 88.968, "end": 92.208, "words": [[89.068, 89.581], [89.594, 90.015], [90.4, 90.86], [90.873, 90.978], [90.992, 91.821]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

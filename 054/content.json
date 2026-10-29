@@ -1,0 +1,192 @@
+{
+  "id": "054",
+  "title": "Talking to Someone Who Is Underperforming",
+  "meta": "B2 · 约 290 词 · 场景：绩效谈话",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Conversation Managers Delay",
+      "paragraphs": [
+        [
+          "For three sprints in a row, one of your engineers has missed estimates, and his code reviews keep coming back with basic bugs.",
+          "You notice it, the team notices it, and you tell yourself that next sprint will be different.",
+          "It usually is not."
+        ],
+        [
+          "Managers delay this conversation because it feels ==confrontational==.",
+          "But silence is not neutral.",
+          "The engineer assumes everything is fine, the team starts to __pick up the slack__ and quietly resent it, and the problem grows.",
+          "**Waiting does not protect the person; it only makes the eventual conversation harder.**"
+        ],
+        [
+          "Remember that ==underperformance== has many causes.",
+          "It might be unclear expectations, a skill gap, or a problem at home.",
+          "You cannot fix it until you __get to the bottom of__ it, and you cannot do that without ==raising== it."
+        ]
+      ],
+      "heading_zh": "1. 管理者总在拖延的那场谈话",
+      "paragraphs_zh": [
+        [
+          "连续三个 sprint，你的一位工程师都没达到预估，他的代码 review 还老是被打回来，都是些低级 bug。",
+          "你注意到了，团队也注意到了，你跟自己说下个 sprint 会不一样。",
+          "通常并不会。"
+        ],
+        [
+          "管理者拖延这场谈话，是因为感觉像是在对抗。",
+          "但沉默并不是中立的。",
+          "那位工程师以为一切都好，团队开始帮他兜底并在心里暗暗不满，问题越来越大。",
+          "等待并不能保护这个人；只会让最终的那场谈话更难开口。"
+        ],
+        [
+          "要记住，表现不佳的原因有很多。",
+          "可能是预期没讲清楚，可能是能力有缺口，也可能是家里出了事。",
+          "不搞清楚根源你就没法解决，而不把问题提出来你就没法搞清楚。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Running the Conversation",
+      "paragraphs": [
+        [
+          "Hold it in private, and say why you are there in the first minute.",
+          "\"I want to talk about the last few sprints, because I'm worried, and I want to help.\"",
+          "Long warm-ups make people anxious and ==dilute== the message."
+        ],
+        [
+          "Then share facts, not ==labels==.",
+          "\"Three of your last five reviews needed major rework\" is something you can discuss.",
+          "\"You seem careless\" is something people can only defend against."
+        ],
+        [
+          "Next, stop talking and ask for their view.",
+          "\"What's your read on what's been happening?\"",
+          "You may learn about an unclear spec, a personal ==struggle==, or a task that was simply too big for their level."
+        ],
+        [
+          "Finally, agree on a concrete plan with dates.",
+          "One or two clear goals, the support you will provide, and a time to __check in__ two weeks later.",
+          "**Be kind about the person and clear about the gap.**",
+          "Leaving someone confused about where they stand is the least kind option of all."
+        ]
+      ],
+      "heading_zh": "2. 怎么谈",
+      "paragraphs_zh": [
+        [
+          "私下谈，并且在第一分钟就说明来意。",
+          "「我想聊聊最近几个 sprint，因为我有点担心，也想帮你。」",
+          "铺垫太长会让人焦虑，还会冲淡你要说的事。"
+        ],
+        [
+          "然后，讲事实，不贴标签。",
+          "「你最近五次 review 里有三次需要大改」，这是可以讨论的。",
+          "「你好像挺粗心的」，这只会让人去辩解。"
+        ],
+        [
+          "接着，停下来，问问他的看法。",
+          "「你自己怎么看最近发生的事？」",
+          "你可能会了解到需求文档不清楚、个人遇到困难，或者某个任务对他的级别来说本来就太大了。"
+        ],
+        [
+          "最后，约定一个带日期的具体计划。",
+          "一两个清晰的目标、你会提供的支持，以及两周后约个时间复盘。",
+          "对人要温和，对差距要说清楚。",
+          "让一个人搞不清自己处在什么位置，才是最不善意的做法。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "经理为什么常常拖延绩效谈话？拖延的后果是什么？",
+      "a": "觉得像对抗；但沉默不中立，当事人以为没问题，团队替他补位并暗生怨气，问题越来越大，最后的谈话更难。"
+    },
+    {
+      "q": "谈话时为什么要讲事实而不是贴标签？",
+      "a": "事实（五次评审有三次需要大改）可以讨论；标签（你很粗心）只会让人防御。"
+    },
+    {
+      "q": "谈话的最后一步是什么？",
+      "a": "约定具体计划：一两个明确目标、你提供的支持、两周后的检查时间；对人友善、对差距清楚。"
+    }
+  ],
+  "dictation": [
+    "Waiting does not protect the person; it only makes the eventual conversation harder.",
+    "Long warm-ups make people anxious and dilute the message.",
+    "Be kind about the person and clear about the gap.",
+    "Leaving someone confused about where they stand is the least kind option of all."
+  ],
+  "shadow": {
+    "text": "Then share facts, not labels. \"Three of your last five reviews needed major rework\" is something you can discuss. \"You seem careless\" is something people can only defend against.",
+    "marked": "Then share <b>facts</b>, / <b>not</b> labels. //<br>\"<b>Three</b> of your last <b>five</b> reviews / needed <b>major</b> rework\" / is something you can <b>discuss</b>. //<br>\"You seem <b>careless</b>\" / is something people can <b>only</b> defend against. //"
+  },
+  "prompts": [
+    {
+      "q": "你要和一位最近连续几次延期、代码质量下降的下属谈话。用 30 秒开场：第一分钟讲明来意，讲事实，然后请他说说他的看法。",
+      "ref": "Thanks for making time. I want to talk about the last few sprints, because I'm a bit worried and I want to help. Two of your last three tasks slipped by more than a week, and the payment fix needed a second rollback. I'm not assuming I know why. What's your read on what's been happening?",
+      "ref_zh": "谢谢你抽时间。我想聊聊最近几个 sprint，因为我有点担心，也想帮你。你最近三个任务里有两个延期超过一周，支付那个修复还回滚了两次。我不预设自己知道原因。你自己怎么看最近发生的事？"
+    },
+    {
+      "q": "谈话接近尾声，你们已经找到原因（需求不清 + 任务太大）。用 30 秒总结一个带日期的改进计划和你的支持。",
+      "ref": "Okay, so it sounds like unclear specs and oversized tasks are the main problems. Here's what I suggest. For the next two weeks, we'll split every task into pieces of two days or less, and I'll join your first spec review with the PM. Your goal is to hit your estimates on those smaller tasks. Let's check in on the twentieth and see how it's going. Does that feel fair?",
+      "ref_zh": "好，听下来主要问题是需求不清楚和任务太大。我的建议是这样。接下来两周，我们把每个任务都拆成两天以内的小块，你跟 PM 的第一次需求评审我也会参加。你的目标是在这些小任务上达到自己的预估。我们二十号对一下，看看进展如何。你觉得这样公平吗？"
+    }
+  ],
+  "words": [
+    {
+      "w": "confrontational",
+      "ipa": "/ˌkɑːnfrʌnˈteɪʃənl/",
+      "zh": "对抗性的",
+      "ex": "I want this to be a conversation, not a confrontational review."
+    },
+    {
+      "w": "underperformance",
+      "ipa": "/ˌʌndərpərˈfɔːrməns/",
+      "zh": "表现不佳",
+      "ex": "We need to address the underperformance before the review cycle."
+    },
+    {
+      "w": "raise (v.)",
+      "ipa": "/reɪz/",
+      "zh": "提出（问题）",
+      "ex": "I'd like to raise a concern about the test coverage.",
+      "tts_w": "raise"
+    },
+    {
+      "w": "dilute",
+      "ipa": "/daɪˈluːt/",
+      "zh": "冲淡、削弱",
+      "ex": "Adding ten minor points will dilute the main message."
+    },
+    {
+      "w": "label",
+      "ipa": "/ˈleɪbl/",
+      "zh": "标签",
+      "ex": "Avoid labels like lazy; describe what actually happened."
+    },
+    {
+      "w": "struggle",
+      "ipa": "/ˈstrʌɡl/",
+      "zh": "困难、挣扎",
+      "ex": "She mentioned a struggle with the new framework."
+    },
+    {
+      "w": "resent",
+      "ipa": "/rɪˈzent/",
+      "zh": "怨恨、不满",
+      "ex": "The team will resent covering his on-call shifts every week."
+    },
+    {
+      "w": "rework",
+      "ipa": "/ˈriːwɜːrk/",
+      "zh": "返工",
+      "ex": "The unclear spec caused a week of rework."
+    },
+    {
+      "w": "eventual",
+      "ipa": "/ɪˈventʃuəl/",
+      "zh": "最终的",
+      "ex": "The eventual fix was a single line in the config."
+    }
+  ]
+}

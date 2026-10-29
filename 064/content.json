@@ -1,0 +1,189 @@
+{
+  "id": "064",
+  "title": "Making a Call with Incomplete Data",
+  "meta": "B2 · 约 280 词 · 场景：决策会议",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Waiting Is Also a Choice",
+      "paragraphs": [
+        [
+          "In almost every planning meeting, someone eventually says, \"Let's wait for more data.\"",
+          "Sometimes that is wise.",
+          "Often it is a polite way to avoid __owning a decision__."
+        ],
+        [
+          "The problem is that waiting is not ==neutral==.",
+          "While the team waits two more weeks for experiment results, engineers sit idle, competitors ship, and the ==window== slowly closes.",
+          "**Not deciding is also a decision, and it usually has a cost nobody wrote down.**"
+        ],
+        [
+          "Data is rarely complete in real work.",
+          "Logs have gaps, dashboards ==contradict== each other, and the user research covers twelve people.",
+          "The skill is not finding certainty; it is acting __in proportion to__ the evidence you have."
+        ],
+        [
+          "Before asking for more data, ask what result would actually change the decision.",
+          "If no realistic number from the experiment would make you choose differently, the extra two weeks buy you nothing.",
+          "If one result really would flip the choice, then wait, but agree on the date you will decide."
+        ]
+      ],
+      "heading_zh": "1. 等待也是一种选择",
+      "paragraphs_zh": [
+        [
+          "几乎每次规划会上，最后总有人会说：「要不再等等更多数据吧。」",
+          "有时候这确实明智。",
+          "但很多时候，这只是一种体面地回避为决定负责的说法。"
+        ],
+        [
+          "问题在于，等待并不是中性的。",
+          "团队再等两周实验结果的时候，工程师闲着，竞品在上线，窗口期一点点关上。",
+          "不做决定本身也是一种决定，而且它通常有一笔没人记下来的成本。"
+        ],
+        [
+          "实际工作中，数据很少是完整的。",
+          "日志有缺口，几个看板互相打架，用户调研只覆盖了十二个人。",
+          "真正的本事不是找到确定性；而是根据手上证据的分量去行动。"
+        ],
+        [
+          "在要更多数据之前，先问一句：什么样的结果会真正改变这个决定？",
+          "如果实验跑出任何现实的数字都不会让你改选，那多等两周什么都买不到。",
+          "如果某个结果真的会让你改选，那就等，但要先约好哪天拍板。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Name What Would Change Your Mind",
+      "paragraphs": [
+        [
+          "When you make a call with partial data, say three things out loud.",
+          "First, what you are deciding and why the current evidence ==leans== that way.",
+          "Second, what you are still ==uncertain== about, so nobody thinks you are hiding the gaps."
+        ],
+        [
+          "Third, and most important, name the signal that would make you ==reverse== it.",
+          "\"We'll go with the new ranking, and if retention drops in the first week, we'll switch back.\"",
+          "**Naming your exit condition turns a gamble into an experiment.**"
+        ],
+        [
+          "This works because it gives the doubters something concrete to watch instead of something to argue about.",
+          "It also __protects your credibility__.",
+          "If the data turns against you, you are following your own plan, not __backing down__ under pressure."
+        ]
+      ],
+      "heading_zh": "2. 说清什么会让你改主意",
+      "paragraphs_zh": [
+        [
+          "当你在数据不全的情况下拍板时，要把三件事说出来。",
+          "第一，你决定的是什么，以及为什么现有证据倾向于这个方向。",
+          "第二，你还有哪些不确定的地方，免得大家觉得你在藏着缺口。"
+        ],
+        [
+          "第三，也是最重要的，说出什么信号会让你推翻这个决定。",
+          "「我们先上新的排序，如果第一周留存掉了，就切回去。」",
+          "把退出条件说出来，赌博就变成了一次实验。"
+        ],
+        [
+          "这招管用，是因为它给了持怀疑态度的人一个具体的东西去盯，而不是一个去争论的东西。",
+          "它也能保住你的信誉。",
+          "如果数据最后对你不利，你是在执行自己的方案，而不是顶不住压力退让。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者为什么说“等等更多数据”并不是中立的？",
+      "a": "等待本身也是决定，有成本：工程师闲置、对手上线、时间窗口关闭，只是没人把这笔账写下来。"
+    },
+    {
+      "q": "数据不全时做决定，要说出哪三件事？",
+      "a": "决定是什么以及证据为何倾向它；还有哪些不确定；什么信号会让你推翻这个决定。"
+    },
+    {
+      "q": "说出“退出条件”有什么好处？",
+      "a": "把赌博变成实验，给质疑者一个具体可观察的指标；数据不利时你是在执行原计划，而不是被迫让步，保护了信誉。"
+    }
+  ],
+  "dictation": [
+    "Not deciding is also a decision, and it usually has a cost nobody wrote down.",
+    "The skill is not finding certainty; it is acting in proportion to the evidence you have.",
+    "Naming your exit condition turns a gamble into an experiment.",
+    "This works because it gives the doubters something concrete to watch instead of something to argue about."
+  ],
+  "shadow": {
+    "text": "Third, and most important, name the signal that would make you reverse it. \"We'll go with the new ranking, and if retention drops in the first week, we'll switch back.\" Naming your exit condition turns a gamble into an experiment.",
+    "marked": "<b>Third</b>, / and most <b>important</b>, / name the <b>signal</b> / that would make you <b>reverse</b> it. //<br>\"We'll go with the <b>new</b> ranking, / and if <b>retention</b> drops in the first week, / we'll switch <b>back</b>.\" //<br>Naming your <b>exit</b> condition / turns a <b>gamble</b> / into an <b>experiment</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "A/B 实验还要两周才出完整结果，但下个版本马上要定。用 30 秒做出决定：说明倾向、不确定点和反悔条件。",
+      "ref": "Here's my call: we ship the new onboarding flow in the next release. The early numbers lean that way, completion is up in the first four days, though the sample is still small. What I'm unsure about is whether it hurts long-term retention. So if week-two retention drops more than two points, we switch back to the old flow. That way we're not waiting, and we're not guessing blindly.",
+      "ref_zh": "我的决定是：新的新手引导流程下个版本上线。早期数据倾向于这样做，前四天完成率涨了，不过样本还小。我不确定的是它会不会伤害长期留存。所以如果第二周留存掉超过两个点，我们就切回老流程。这样我们既不干等，也不是瞎猜。"
+    },
+    {
+      "q": "会上有人第三次提议“再等等数据”。用 30 秒指出等待的成本，并推动大家定下来。",
+      "ref": "I get why more data feels safer. But waiting isn't free. Two engineers are blocked until we choose, and the holiday window closes in three weeks. We'll never have complete data here. Can we decide today based on what we have, and agree on one metric that would make us change course? Then the extra data becomes a check, not a reason to wait.",
+      "ref_zh": "我理解多要点数据感觉更稳妥。但等待不是免费的。我们不定下来，两个工程师就一直卡着，节日窗口期三周后就关了。这件事我们永远不会有完整的数据。能不能今天就根据现有的信息拍板，同时约定一个会让我们改方向的指标？这样后面的数据是用来校验的，而不是拿来当等待的理由。"
+    }
+  ],
+  "words": [
+    {
+      "w": "neutral",
+      "ipa": "/ˈnuːtrəl/",
+      "zh": "中立的、无影响的",
+      "ex": "Delaying the launch isn't a neutral choice; it costs us the campaign."
+    },
+    {
+      "w": "window",
+      "ipa": "/ˈwɪndoʊ/",
+      "zh": "时间窗口、机会期",
+      "ex": "We have a two-week window before the code freeze."
+    },
+    {
+      "w": "contradict",
+      "ipa": "/ˌkɑːntrəˈdɪkt/",
+      "zh": "相互矛盾、反驳",
+      "ex": "The dashboard numbers contradict what the client is reporting."
+    },
+    {
+      "w": "lean (v.)",
+      "ipa": "/liːn/",
+      "zh": "倾向于",
+      "ex": "I'm leaning toward option A, but I'd like to hear from QA.",
+      "tts_w": "lean"
+    },
+    {
+      "w": "uncertain",
+      "ipa": "/ʌnˈsɜːrtən/",
+      "zh": "不确定的",
+      "ex": "We're still uncertain whether the vendor can handle our peak load."
+    },
+    {
+      "w": "reverse (v.)",
+      "ipa": "/rɪˈvɜːrs/",
+      "zh": "推翻、撤销",
+      "ex": "If the metrics drop, we'll reverse the change on Monday.",
+      "tts_w": "reverse"
+    },
+    {
+      "w": "proportion",
+      "ipa": "/prəˈpɔːrʃən/",
+      "zh": "比例；相称",
+      "ex": "Our testing effort should be in proportion to the risk of the change."
+    },
+    {
+      "w": "gamble",
+      "ipa": "/ˈɡæmbəl/",
+      "zh": "赌博、冒险",
+      "ex": "Rewriting the service right before launch is a big gamble."
+    },
+    {
+      "w": "idle",
+      "ipa": "/ˈaɪdəl/",
+      "zh": "闲置的",
+      "ex": "Half the GPUs were idle overnight while the job waited for data."
+    }
+  ]
+}

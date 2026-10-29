@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Helping a Strong Engineer Grow into a Lead · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "057", "title": "Helping a Strong Engineer Grow into a Lead", "meta": "B2 · 约 280 词 · 场景：培养骨干", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. When Strength Becomes a Bottleneck", "heading_zh": "1. 当长处变成瓶颈", "rows": [[{"id": "s0_0_0", "md": "Every team has one: the engineer who can fix anything.", "text": "Every team has one: the engineer who can fix anything.", "zh": "每个团队都有这么一个人：什么都能修的工程师。", "sp": null}, {"id": "s0_0_1", "md": "When production breaks, people page her first, and when a design looks risky, she rewrites it over the weekend.", "text": "When production breaks, people page her first, and when a design looks risky, she rewrites it over the weekend.", "zh": "线上一出问题，大家第一个 page 她；设计一看有风险，她周末就给重写了。", "sp": null}, {"id": "s0_0_2", "md": "Naturally, she is the first person you think of for the next lead role.", "text": "Naturally, she is the first person you think of for the next lead role.", "zh": "很自然地，下一个 lead 的位置你第一个想到的就是她。", "sp": null}], [{"id": "s0_1_0", "md": "Here is the problem.", "text": "Here is the problem.", "zh": "问题就在这里。", "sp": null}, {"id": "s0_1_1", "md": "The habits that made her ==exceptional== as an engineer can hold her back as a lead.", "text": "The habits that made her exceptional as an engineer can hold her back as a lead.", "zh": "那些让她成为出色工程师的习惯，可能会拖累她当 lead。", "sp": null}, {"id": "s0_1_2", "md": "If she keeps solving every hard problem herself, the team stops learning, and she becomes the ==bottleneck== for everything.", "text": "If she keeps solving every hard problem herself, the team stops learning, and she becomes the bottleneck for everything.", "zh": "如果她继续自己解决每一个难题，团队就不再成长，而她会成为所有事情的瓶颈。", "sp": null}, {"id": "s0_1_3", "md": "**As an engineer, she was measured by what she built; as a lead, she is measured by what her team builds.**", "text": "As an engineer, she was measured by what she built; as a lead, she is measured by what her team builds.", "zh": "作为工程师，衡量她的是她做出了什么；作为 lead，衡量她的是她的团队做出了什么。", "sp": null}], [{"id": "s0_2_0", "md": "Most strong engineers do not see this shift on their own.", "text": "Most strong engineers do not see this shift on their own.", "zh": "大多数强工程师自己意识不到这个转变。", "sp": null}, {"id": "s0_2_1", "md": "They feel ==guilty== when they are not coding and ==anxious== when someone else writes code more slowly than they would.", "text": "They feel guilty when they are not coding and anxious when someone else writes code more slowly than they would.", "zh": "不写代码的时候他们会内疚，别人写代码比自己慢的时候他们会焦虑。", "sp": null}]]}, {"heading": "2. Designing the Transition", "heading_zh": "2. 设计这次转型", "rows": [[{"id": "s1_0_0", "md": "Start by naming the shift out loud.", "text": "Start by naming the shift out loud.", "zh": "先把这个转变明确说出来。", "sp": null}, {"id": "s1_0_1", "md": "Tell her directly that her success now depends on how many people can do what she does.", "text": "Tell her directly that her success now depends on how many people can do what she does.", "zh": "直接告诉她，她现在的成功取决于有多少人能做到她能做的事。", "sp": null}, {"id": "s1_0_2", "md": "Saying it clearly __gives her permission__ to step back from the keyboard.", "text": "Saying it clearly gives her permission to step back from the keyboard.", "zh": "把话说清楚，就等于允许她从键盘前退后一步。", "sp": null}], [{"id": "s1_1_0", "md": "Then give her a project that is too big to do alone.", "text": "Then give her a project that is too big to do alone.", "zh": "然后，给她一个一个人干不完的项目。", "sp": null}, {"id": "s1_1_1", "md": "A cross-team migration with three engineers is ideal, because she simply cannot write all the code.", "text": "A cross-team migration with three engineers is ideal, because she simply cannot write all the code.", "zh": "一个配三个工程师的跨团队迁移就很理想，因为她根本不可能把所有代码都写了。", "sp": null}, {"id": "s1_1_2", "md": "She will have to plan, ==delegate==, and review, whether she likes it or not.", "text": "She will have to plan, delegate, and review, whether she likes it or not.", "zh": "不管她愿不愿意，她都得去规划、分工和 review。", "sp": null}], [{"id": "s1_2_0", "md": "Next, change what you praise.", "text": "Next, change what you praise.", "zh": "接着，改变你表扬的东西。", "sp": null}, {"id": "s1_2_1", "md": "Stop celebrating the heroic late-night fix, and start recognizing the moment she __walked a junior through__ it instead.", "text": "Stop celebrating the heroic late-night fix, and start recognizing the moment she walked a junior through it instead.", "zh": "别再庆祝深夜英雄式的救火，开始认可她带着初级工程师一起搞定问题的那一刻。", "sp": null}, {"id": "s1_2_2", "md": "People grow toward whatever their manager ==notices==.", "text": "People grow toward whatever their manager notices.", "zh": "经理注意到什么，人就会往什么方向成长。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, expect a dip.", "text": "Finally, expect a dip.", "zh": "最后，做好产出下滑的准备。", "sp": null}, {"id": "s1_3_1", "md": "Her ==output== will drop for a few months, and she may feel less useful than before.", "text": "Her output will drop for a few months, and she may feel less useful than before.", "zh": "接下来几个月她的产出会下降，她可能会觉得自己不如以前有用了。", "sp": null}, {"id": "s1_3_2", "md": "**Tell her the dip is normal, and stay close enough to help her through it.**", "text": "Tell her the dip is normal, and stay close enough to help her through it.", "zh": "告诉她这种下滑很正常，并且待在离她足够近的地方，帮她度过这段时间。", "sp": null}]]}], "gist": [{"q": "为什么最强的工程师当 lead 时会出问题？", "a": "让她优秀的习惯（自己解决所有难题）会让团队停止学习，她变成一切的瓶颈；工程师按自己做了什么衡量，lead 按团队做了什么衡量。"}, {"q": "作者建议给她什么样的项目？为什么？", "a": "一个大到一个人做不完的项目，比如三个人参与的跨团队迁移，逼她去规划、委派和评审。"}, {"q": "转型期经理还应该做什么？", "a": "明确说出角色的转变；改变表扬的对象（表扬她带新人而不是熬夜救火）；预期产出会下滑一段时间，告诉她这很正常并陪她度过。"}], "dictation": [{"id": "s0_1_3", "text": "As an engineer, she was measured by what she built; as a lead, she is measured by what her team builds."}, {"id": "s1_1_0", "text": "Then give her a project that is too big to do alone."}, {"id": "s1_2_2", "text": "People grow toward whatever their manager notices."}, {"id": "s1_3_2", "text": "Tell her the dip is normal, and stay close enough to help her through it."}], "shadow": {"text": "Then give her a project that is too big to do alone. A cross-team migration with three engineers is ideal, because she simply cannot write all the code. She will have to plan, delegate, and review, whether she likes it or not.", "marked": "Then give her a project / that is <b>too big</b> to do <b>alone</b>. //<br>A <b>cross-team</b> migration with <b>three</b> engineers is <b>ideal</b>, / because she simply <b>cannot</b> write all the code. //<br>She will have to <b>plan</b>, / <b>delegate</b>, / and <b>review</b>, / whether she <b>likes</b> it or not. //"}, "prompts": [{"q": "你团队最强的工程师刚被提拔为小组负责人，但他还是什么都自己写。用 30 秒在一对一里跟他讲清角色的转变。", "ref": "First, congratulations, you really earned this. I want to be honest about one thing that changes now. Until last month, your impact was the code you wrote, and it was excellent. From now on, your impact is what the three people on your team can deliver. So when you're tempted to fix something yourself, ask whether someone else could learn by doing it. I'd rather see you slower and the team stronger.", "ref_zh": "首先，恭喜你，这是你实打实挣来的。有一件从现在开始会变的事，我想跟你说实话。到上个月为止，你的影响力是你写的代码，而且写得非常好。从现在起，你的影响力是你团队里这三个人能交付什么。所以当你忍不住想自己动手修的时候，先问问自己，有没有别人可以通过做这件事学到东西。我宁愿看到你慢一点、团队强一点。", "id": "ref0"}, {"q": "这位新 lead 担心自己写代码少了、产出下降，觉得自己没用。用 30 秒安慰并鼓励他。", "ref": "What you're feeling is completely normal, and almost every new lead goes through it. Your own commits are down, yes. But look at what happened this month. Mei shipped her first feature without help, and the design review you ran caught two real problems. That's your output now, it just shows up in other people's work. Give it a few months, and you'll see it clearly.", "ref_zh": "你现在的感受完全正常，几乎每个新 lead 都会经历。没错，你自己的 commit 少了。但看看这个月发生了什么。Mei 第一次没靠别人帮忙就上线了自己的功能，你主持的设计评审抓到了两个真问题。这些就是你现在的产出，只是它体现在别人的工作里。再给它几个月，你就会看得很清楚。", "id": "ref1"}], "words": [{"w": "exceptional", "ipa": "/ɪkˈsepʃənl/", "zh": "杰出的、非凡的", "ex": "Her debugging skills are exceptional; she found the leak in an hour.", "id": "w0"}, {"w": "bottleneck", "ipa": "/ˈbɑːtlnek/", "zh": "瓶颈", "ex": "If every review goes through one person, he becomes the bottleneck.", "id": "w1"}, {"w": "guilty", "ipa": "/ˈɡɪlti/", "zh": "内疚的", "ex": "Don't feel guilty about skipping the coding task; planning is your job now.", "id": "w2"}, {"w": "anxious", "ipa": "/ˈæŋkʃəs/", "zh": "焦虑的", "ex": "The team is anxious about the launch date moving again.", "id": "w3"}, {"w": "delegate", "ipa": "/ˈdelɪɡeɪt/", "zh": "委派、授权", "ex": "Try to delegate the on-call schedule to someone on the team.", "id": "w4"}, {"w": "notice", "ipa": "/ˈnoʊtɪs/", "zh": "注意到", "ex": "Did anyone notice the error rate went up after the deploy?", "id": "w5"}, {"w": "output", "ipa": "/ˈaʊtpʊt/", "zh": "产出", "ex": "Team output went up after we cut the number of meetings.", "id": "w6"}, {"w": "heroic", "ipa": "/hɪˈroʊɪk/", "zh": "英雄式的", "ex": "We shouldn't depend on heroic weekend fixes to hit a deadline.", "id": "w7"}, {"w": "dip", "ipa": "/dɪp/", "zh": "短暂下滑", "ex": "Expect a small dip in velocity while the new hires ramp up.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. When Strength Becomes a Bottleneck", "zh": "1. 当长处变成瓶颈", "start": 0.0, "end": 2.928, "words": [[0.105, 0.355], [0.737, 0.882], [0.895, 1.355], [1.368, 1.763], [1.776, 1.829], [1.842, 2.539]]}, {"kind": "s", "id": "s0_0_0", "md": "Every team has one: the engineer who can fix anything.", "zh": "每个团队都有这么一个人：什么都能修的工程师。", "sp": null, "gap": false, "start": 2.928, "end": 6.72, "words": [[3.033, 3.283], [3.296, 3.573], [3.586, 3.783], [3.796, 4.112], [4.546, 4.625], [4.639, 5.191], [5.204, 5.349], [5.362, 5.507], [5.52, 5.875], [5.889, 6.336]]}, {"kind": "s", "id": "s0_0_1", "md": "When production breaks, people page her first, and when a design looks risky, she rewrites it over the weekend.", "zh": "线上一出问题，大家第一个 page 她；设计一看有风险，她周末就给重写了。", "sp": null, "gap": false, "start": 6.72, "end": 14.088, "words": [[6.838, 6.931], [6.944, 7.43], [7.444, 7.97], [8.207, 8.562], [8.575, 8.891], [8.904, 9.049], [9.062, 9.654], [9.97, 10.049], [10.062, 10.181], [10.194, 10.246], [10.259, 10.694], [10.707, 10.93], [10.944, 11.417], [11.786, 12.023], [12.036, 12.667], [12.681, 12.786], [12.878, 13.075], [13.088, 13.167], [13.181, 13.707]]}, {"kind": "s", "id": "s0_0_2", "md": "Naturally, she is the first person you think of for the next lead role.", "zh": "很自然地，下一个 lead 的位置你第一个想到的就是她。", "sp": null, "gap": false, "start": 14.088, "end": 18.312, "words": [[14.193, 14.746], [15.141, 15.325], [15.338, 15.443], [15.456, 15.575], [15.588, 15.956], [15.97, 16.312], [16.325, 16.43], [16.443, 16.72], [16.733, 16.812], [16.825, 16.93], [16.943, 17.022], [17.035, 17.391], [17.404, 17.588], [17.601, 17.917]]}, {"kind": "s", "id": "s0_1_0", "md": "Here is the problem.", "zh": "问题就在这里。", "sp": null, "gap": true, "start": 18.312, "end": 20.184, "words": [[18.43, 18.523], [18.536, 18.615], [18.628, 18.707], [18.72, 19.167]]}, {"kind": "s", "id": "s0_1_1", "md": "The habits that made her ==exceptional== as an engineer can hold her back as a lead.", "zh": "那些让她成为出色工程师的习惯，可能会拖累她当 lead。", "sp": null, "gap": false, "start": 20.184, "end": 25.056, "words": [[20.302, 20.355], [20.368, 20.763], [20.776, 20.934], [20.947, 21.197], [21.21, 21.355], [21.368, 22.092], [22.171, 22.289], [22.302, 22.421], [22.434, 23.052], [23.066, 23.197], [23.21, 23.513], [23.526, 23.645], [23.658, 23.987], [24.092, 24.184], [24.197, 24.25], [24.263, 24.658]]}, {"kind": "s", "id": "s0_1_2", "md": "If she keeps solving every hard problem herself, the team stops learning, and she becomes the ==bottleneck== for everything.", "zh": "如果她继续自己解决每一个难题，团队就不再成长，而她会成为所有事情的瓶颈。", "sp": null, "gap": false, "start": 25.056, "end": 32.424, "words": [[25.161, 25.293], [25.306, 25.503], [25.517, 25.845], [25.859, 26.372], [26.385, 26.688], [26.701, 27.043], [27.056, 27.464], [27.477, 28.082], [28.319, 28.424], [28.438, 28.727], [28.74, 29.122], [29.135, 29.53], [29.924, 29.964], [29.977, 30.148], [30.161, 30.595], [30.609, 30.701], [30.714, 31.332], [31.345, 31.556], [31.569, 32.043]]}, {"kind": "s", "id": "s0_1_3", "md": "**As an engineer, she was measured by what she built; as a lead, she is measured by what her team builds.**", "zh": "作为工程师，衡量她的是她做出了什么；作为 lead，衡量她的是她的团队做出了什么。", "sp": null, "gap": false, "start": 32.424, "end": 39.312, "words": [[32.529, 32.661], [32.674, 32.753], [32.766, 33.411], [33.792, 33.911], [33.924, 34.082], [34.095, 34.529], [34.542, 34.674], [34.687, 34.819], [34.832, 35.016], [35.029, 35.424], [35.911, 36.029], [36.042, 36.095], [36.108, 36.516], [36.911, 37.121], [37.135, 37.24], [37.253, 37.674], [37.687, 37.832], [37.845, 37.99], [38.003, 38.121], [38.135, 38.398], [38.411, 38.924]]}, {"kind": "s", "id": "s0_2_0", "md": "Most strong engineers do not see this shift on their own.", "zh": "大多数强工程师自己意识不到这个转变。", "sp": null, "gap": true, "start": 39.312, "end": 43.104, "words": [[39.417, 39.68], [39.694, 40.101], [40.115, 40.707], [40.825, 40.957], [40.97, 41.22], [41.233, 41.549], [41.562, 41.733], [41.746, 42.115], [42.128, 42.233], [42.246, 42.43], [42.444, 42.72]]}, {"kind": "s", "id": "s0_2_1", "md": "They feel ==guilty== when they are not coding and ==anxious== when someone else writes code more slowly than they would.", "zh": "不写代码的时候他们会内疚，别人写代码比自己慢的时候他们会焦虑。", "sp": null, "gap": false, "start": 43.104, "end": 49.272, "words": [[43.222, 43.328], [43.341, 43.617], [43.63, 44.078], [44.091, 44.222], [44.236, 44.328], [44.341, 44.433], [44.446, 44.736], [44.749, 45.288], [45.301, 45.486], [45.499, 46.091], [46.275, 46.407], [46.42, 46.762], [46.775, 46.999], [47.012, 47.262], [47.275, 47.578], [47.591, 47.775], [47.788, 48.249], [48.262, 48.393], [48.407, 48.538], [48.551, 48.894]]}, {"kind": "h", "id": "h1", "md": "2. Designing the Transition", "zh": "2. 设计这次转型", "start": 49.272, "end": 51.648, "words": [[49.39, 49.667], [49.996, 50.456], [50.469, 50.548], [50.561, 51.259]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by naming the shift out loud.", "zh": "先把这个转变明确说出来。", "sp": null, "gap": false, "start": 51.648, "end": 53.904, "words": [[51.753, 52.056], [52.069, 52.174], [52.187, 52.53], [52.543, 52.609], [52.622, 52.951], [52.964, 53.135], [53.148, 53.503]]}, {"kind": "s", "id": "s1_0_1", "md": "Tell her directly that her success now depends on how many people can do what she does.", "zh": "直接告诉她，她现在的成功取决于有多少人能做到她能做的事。", "sp": null, "gap": false, "start": 53.904, "end": 59.4, "words": [[54.022, 54.167], [54.18, 54.286], [54.299, 54.825], [54.838, 54.97], [54.983, 55.154], [55.167, 55.746], [55.759, 56.115], [56.22, 56.654], [56.667, 56.786], [56.799, 57.022], [57.036, 57.325], [57.338, 57.733], [57.746, 57.891], [57.904, 58.207], [58.22, 58.338], [58.351, 58.496], [58.509, 58.996]]}, {"kind": "s", "id": "s1_0_2", "md": "Saying it clearly __gives her permission__ to step back from the keyboard.", "zh": "把话说清楚，就等于允许她从键盘前退后一步。", "sp": null, "gap": false, "start": 59.4, "end": 63.408, "words": [[59.505, 59.808], [59.821, 59.926], [59.939, 60.413], [60.426, 60.703], [60.716, 60.834], [60.847, 61.4], [61.492, 61.571], [61.584, 61.953], [61.966, 62.229], [62.242, 62.4], [62.413, 62.479], [62.492, 63.018]]}, {"kind": "s", "id": "s1_1_0", "md": "Then give her a project that is too big to do alone.", "zh": "然后，给她一个一个人干不完的项目。", "sp": null, "gap": true, "start": 63.408, "end": 66.72, "words": [[63.526, 63.645], [63.658, 63.829], [63.842, 63.947], [63.961, 64.0], [64.013, 64.54], [64.553, 64.698], [64.711, 64.855], [64.869, 65.158], [65.171, 65.605], [65.619, 65.711], [65.724, 65.895], [65.908, 66.342]]}, {"kind": "s", "id": "s1_1_1", "md": "A cross-team migration with three engineers is ideal, because she simply cannot write all the code.", "zh": "一个配三个工程师的跨团队迁移就很理想，因为她根本不可能把所有代码都写了。", "sp": null, "gap": false, "start": 66.72, "end": 73.104, "words": [[66.825, 66.891], [66.904, 67.444], [67.457, 68.023], [68.036, 68.207], [68.22, 68.549], [68.562, 69.128], [69.141, 69.259], [69.273, 69.825], [70.154, 70.457], [70.47, 70.615], [70.628, 71.023], [71.036, 71.602], [71.615, 71.852], [71.983, 72.167], [72.181, 72.273], [72.286, 72.707]]}, {"kind": "s", "id": "s1_1_2", "md": "She will have to plan, ==delegate==, and review, whether she likes it or not.", "zh": "不管她愿不愿意，她都得去规划、分工和 review。", "sp": null, "gap": false, "start": 73.104, "end": 78.0, "words": [[73.222, 73.354], [73.367, 73.486], [73.499, 73.736], [73.749, 73.828], [73.841, 74.38], [74.617, 75.104], [75.393, 75.486], [75.499, 75.972], [76.301, 76.512], [76.525, 76.709], [76.722, 77.038], [77.051, 77.144], [77.157, 77.236], [77.249, 77.604]]}, {"kind": "s", "id": "s1_2_0", "md": "Next, change what you praise.", "zh": "接着，改变你表扬的东西。", "sp": null, "gap": true, "start": 78.0, "end": 80.16, "words": [[78.105, 78.513], [78.789, 79.026], [79.039, 79.145], [79.158, 79.25], [79.263, 79.776]]}, {"kind": "s", "id": "s1_2_1", "md": "Stop celebrating the heroic late-night fix, and start recognizing the moment she __walked a junior through__ it instead.", "zh": "别再庆祝深夜英雄式的救火，开始认可她带着初级工程师一起搞定问题的那一刻。", "sp": null, "gap": false, "start": 80.16, "end": 87.504, "words": [[80.278, 80.607], [80.621, 81.305], [81.318, 81.397], [81.41, 81.923], [81.936, 82.397], [82.41, 82.936], [83.199, 83.318], [83.331, 83.686], [83.699, 84.37], [84.384, 84.449], [84.463, 84.857], [85.094, 85.278], [85.292, 85.621], [85.634, 85.686], [85.699, 86.186], [86.199, 86.489], [86.502, 86.568], [86.581, 87.12]]}, {"kind": "s", "id": "s1_2_2", "md": "People grow toward whatever their manager ==notices==.", "zh": "经理注意到什么，人就会往什么方向成长。", "sp": null, "gap": false, "start": 87.504, "end": 90.672, "words": [[87.622, 87.899], [87.912, 88.293], [88.307, 88.636], [88.649, 89.03], [89.043, 89.188], [89.201, 89.636], [89.649, 90.28]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, expect a dip.", "zh": "最后，做好产出下滑的准备。", "sp": null, "gap": true, "start": 90.672, "end": 92.688, "words": [[90.843, 91.264], [91.501, 91.909], [91.922, 91.975], [91.988, 92.29]]}, {"kind": "s", "id": "s1_3_1", "md": "Her ==output== will drop for a few months, and she may feel less useful than before.", "zh": "接下来几个月她的产出会下降，她可能会觉得自己不如以前有用了。", "sp": null, "gap": false, "start": 92.688, "end": 97.872, "words": [[92.806, 92.938], [92.951, 93.385], [93.399, 93.543], [93.556, 93.899], [93.912, 94.083], [94.096, 94.135], [94.149, 94.385], [94.399, 94.951], [95.267, 95.359], [95.372, 95.556], [95.57, 95.78], [95.793, 96.148], [96.162, 96.412], [96.425, 96.833], [96.846, 96.977], [96.991, 97.491]]}, {"kind": "s", "id": "s1_3_2", "md": "**Tell her the dip is normal, and stay close enough to help her through it.**", "zh": "告诉她这种下滑很正常，并且待在离她足够近的地方，帮她度过这段时间。", "sp": null, "gap": false, "start": 97.872, "end": 102.096, "words": [[97.977, 98.122], [98.135, 98.24], [98.254, 98.385], [98.398, 98.675], [98.78, 98.925], [98.938, 99.385], [99.78, 99.846], [99.859, 100.122], [100.135, 100.49], [100.504, 100.754], [100.767, 100.846], [100.859, 101.096], [101.109, 101.227], [101.24, 101.53], [101.543, 101.714]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Saying I Don't Know Without Losing Credibility · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "009", "title": "Saying I Don't Know Without Losing Credibility", "meta": "B2 · 约 280 词 · 场景：回答问题", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Two Engineers, One Question", "heading_zh": "1. 两个工程师，同一个问题", "rows": [[{"id": "s0_0_0", "md": "Imagine two engineers being asked the same thing in a review.", "text": "Imagine two engineers being asked the same thing in a review.", "zh": "想象两个工程师在评审会上被问了同一个问题。", "sp": null}, {"id": "s0_0_1", "md": "\"How many users will this migration affect?\"", "text": "\"How many users will this migration affect?\"", "zh": "「这次迁移会影响多少用户？」", "sp": null}, {"id": "s0_0_2", "md": "The first one answers right away with a confident number.", "text": "The first one answers right away with a confident number.", "zh": "第一个张口就给了一个很自信的数字。", "sp": null}, {"id": "s0_0_3", "md": "The second says, \"I don't know yet, but I can find out by tomorrow.\"", "text": "The second says, \"I don't know yet, but I can find out by tomorrow.\"", "zh": "第二个说：「我现在还不知道，但明天之前能查清楚。」", "sp": null}], [{"id": "s0_1_0", "md": "A week later, the first number turns out to be wrong by a factor of ten.", "text": "A week later, the first number turns out to be wrong by a factor of ten.", "zh": "一周后，第一个数字被发现差了十倍。", "sp": null}, {"id": "s0_1_1", "md": "From then on, people quietly double-check everything that engineer says.", "text": "From then on, people quietly double-check everything that engineer says.", "zh": "从那以后，那个工程师说的每句话，大家都会悄悄再核实一遍。", "sp": null}, {"id": "s0_1_2", "md": "The second engineer, meanwhile, has become the person whose answers people __take at face value__.", "text": "The second engineer, meanwhile, has become the person whose answers people take at face value.", "zh": "而第二个工程师，成了那个说什么大家都直接信的人。", "sp": null}], [{"id": "s0_2_0", "md": "**Credibility does not come from always knowing; it comes from being right about what you know.**", "text": "Credibility does not come from always knowing; it comes from being right about what you know.", "zh": "信誉不是来自什么都知道，而是来自你对自己知道的东西判断准确。", "sp": null}, {"id": "s0_2_1", "md": "Leaders learn very quickly whose ==confidence== is ==calibrated== and whose is just a performance.", "text": "Leaders learn very quickly whose confidence is calibrated and whose is just a performance.", "zh": "领导很快就能看出来，谁的自信是有分寸的，谁的只是在表演。", "sp": null}, {"id": "s0_2_2", "md": "A ==bluff== might save you for one meeting, but it costs you the next ten.", "text": "A bluff might save you for one meeting, but it costs you the next ten.", "zh": "硬撑也许能帮你混过一个会，但接下来十个会都要还。", "sp": null}]]}, {"heading": "2. Make Not Knowing Sound Useful", "heading_zh": "2. 让「不知道」听起来也有用", "rows": [[{"id": "s1_0_0", "md": "The trick is to never stop at \"I don't know.\"", "text": "The trick is to never stop at \"I don't know.\"", "zh": "诀窍是永远别停在「我不知道」上。", "sp": null}, {"id": "s1_0_1", "md": "**Follow it with what you do know, how you will find out, and when.**", "text": "Follow it with what you do know, how you will find out, and when.", "zh": "后面要接上你知道什么、你打算怎么查、什么时候给答复。", "sp": null}, {"id": "s1_0_2", "md": "\"I don't have the exact number, but it's only users on the old app version, and I'll pull the figure from the logs by noon.\"", "text": "\"I don't have the exact number, but it's only users on the old app version, and I'll pull the figure from the logs by noon.\"", "zh": "「具体数字我手上没有，但只涉及老版本 app 的用户，中午前我从日志里把数拉出来。」", "sp": null}], [{"id": "s1_1_0", "md": "It also helps to __put a number on your certainty__.", "text": "It also helps to put a number on your certainty.", "zh": "给你的把握程度报个数也很有帮助。", "sp": null}, {"id": "s1_1_1", "md": "\"I'm fairly sure it's under ten percent, maybe seventy percent ==confident==.\"", "text": "\"I'm fairly sure it's under ten percent, maybe seventy percent confident.\"", "zh": "「我比较确定在百分之十以下，大概七成把握。」", "sp": null}, {"id": "s1_1_2", "md": "This sounds ==precise== even when the answer is rough, and it tells people how much weight to give it.", "text": "This sounds precise even when the answer is rough, and it tells people how much weight to give it.", "zh": "哪怕答案很粗略，这样说听起来也很精确，还能让大家知道这个答案该信几分。", "sp": null}], [{"id": "s1_2_0", "md": "If the question is outside your area, __point to the right person__ instead of guessing.", "text": "If the question is outside your area, point to the right person instead of guessing.", "zh": "如果问题超出了你的范围，就指给对的人，别瞎猜。", "sp": null}, {"id": "s1_2_1", "md": "\"That's really a question for the data team, I'll ==loop in== Anna.\"", "text": "\"That's really a question for the data team, I'll loop in Anna.\"", "zh": "「这个其实得问数据团队，我把 Anna 拉进来。」", "sp": null}], [{"id": "s1_3_0", "md": "Finally, close the gap you opened.", "text": "Finally, close the gap you opened.", "zh": "最后，把你留下的口子补上。", "sp": null}, {"id": "s1_3_1", "md": "Send the real answer when you promised, even if nobody reminds you.", "text": "Send the real answer when you promised, even if nobody reminds you.", "zh": "在你承诺的时间把真实答案发出去，哪怕没人提醒你。", "sp": null}, {"id": "s1_3_2", "md": "Each time you do this, the words \"I don't know\" become a little more ==trustworthy==.", "text": "Each time you do this, the words \"I don't know\" become a little more trustworthy.", "zh": "每这样做一次，你说「我不知道」时就更值得信任一点。", "sp": null}]]}], "gist": [{"q": "两位工程师的例子说明了什么？", "a": "随口给出错误数字的人从此被人怀疑；坦诚说“不知道但明天给你”的人反而赢得信任。"}, {"q": "作者认为可信度从哪里来？", "a": "不是永远都知道答案，而是对自己知道的部分判断准确，信心与实际相符。"}, {"q": "说“不知道”之后应该补充什么？", "a": "说出已知部分、怎么查、什么时候给答案；给出把握程度；不是自己领域就指向对的人；按时兑现承诺。"}], "dictation": [{"id": "s0_2_0", "text": "Credibility does not come from always knowing; it comes from being right about what you know."}, {"id": "s1_0_1", "text": "Follow it with what you do know, how you will find out, and when."}, {"id": "s0_2_2", "text": "A bluff might save you for one meeting, but it costs you the next ten."}, {"id": "s1_3_1", "text": "Send the real answer when you promised, even if nobody reminds you."}], "shadow": {"text": "The trick is to never stop at \"I don't know.\" Follow it with what you do know, how you will find out, and when.", "marked": "The <b>trick</b> / is to <b>never</b> stop at / \"I <b>don't</b> know.\" //<br>Follow it with what you <b>do</b> know, / <b>how</b> you will find out, / and <b>when</b>. //"}, "prompts": [{"q": "评审会上，总监问你：“这次数据库迁移会让多少请求变慢？”你没有确切数字。用 30 秒回答：说已知部分、把握程度、怎么查、什么时候给结果。", "ref": "I don't have an exact number yet. What I do know is that only the reporting queries touch the old tables, and those are a small share of our traffic. My best guess is under five percent of requests, and I'd say I'm about seventy percent confident in that. I'll run a replay test this afternoon and send you the real figure by tomorrow morning.", "ref_zh": "我现在还没有确切的数字。我知道的是，只有报表查询会碰到老表，而这部分只占我们流量的一小块。我最好的估计是不到百分之五的请求，大概有七成把握。今天下午我跑一个回放测试，明早之前把准确数字发给你。", "id": "ref0"}, {"q": "客户沟通会上，有人问你一个法务合规的问题，不在你的领域。用 30 秒不丢面子地说不知道，并指向对的人。", "ref": "That's a great question, and I don't want to give you a half-right answer on something this important. Data retention rules are really owned by our legal and privacy team. What I can tell you is that the system supports deleting user data on request. I'll loop in our privacy lead today, and we'll come back to you with a written answer this week.", "ref_zh": "这个问题很好，这么重要的事，我不想给你一个半对不对的答案。数据保留的规则其实归法务和隐私团队管。我能告诉你的是，系统支持按用户请求删除数据。我今天就把隐私负责人拉进来，这周内给你一个书面答复。", "id": "ref1"}], "words": [{"w": "confidence", "ipa": "/ˈkɑːnfɪdəns/", "zh": "信心、把握", "ex": "We have high confidence in the fix, but we'll keep monitoring.", "id": "w0"}, {"w": "calibrated", "ipa": "/ˈkæləˌbreɪtɪd/", "zh": "（判断）校准过的、与实际相符的", "ex": "His estimates are well calibrated; when he says two weeks, it's two weeks.", "id": "w1"}, {"w": "bluff (n.)", "ipa": "/blʌf/", "zh": "虚张声势", "ex": "The confident answer was a bluff, and the logs proved it.", "tts_w": "bluff", "id": "w2"}, {"w": "confident", "ipa": "/ˈkɑːnfɪdənt/", "zh": "有把握的", "ex": "I'm confident the cache is warm before peak hours.", "id": "w3"}, {"w": "precise", "ipa": "/prɪˈsaɪs/", "zh": "精确的", "ex": "Can you be more precise about when the errors started?", "id": "w4"}, {"w": "loop in", "ipa": "/luːp ɪn/", "zh": "拉进来（沟通）", "ex": "Let me loop in the security team before we open the port.", "id": "w5"}, {"w": "trustworthy", "ipa": "/ˈtrʌstˌwɜːrði/", "zh": "值得信赖的", "ex": "These metrics aren't trustworthy until we fix the double counting.", "id": "w6"}, {"w": "take at face value", "ipa": "/teɪk æt feɪs ˈvælju/", "zh": "直接相信、照单全收", "ex": "Don't take the vendor's benchmark at face value.", "id": "w7"}, {"w": "certainty", "ipa": "/ˈsɜːrtənti/", "zh": "确定性、把握", "ex": "We can't say with certainty that the patch fixed it.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Two Engineers, One Question", "zh": "1. 两个工程师，同一个问题", "start": 0.0, "end": 3.024, "words": [[0.105, 0.408], [0.882, 1.118], [1.132, 1.789], [1.961, 2.145], [2.158, 2.632]]}, {"kind": "s", "id": "s0_0_0", "md": "Imagine two engineers being asked the same thing in a review.", "zh": "想象两个工程师在评审会上被问了同一个问题。", "sp": null, "gap": false, "start": 3.024, "end": 7.32, "words": [[3.129, 3.577], [3.59, 3.853], [3.866, 4.432], [4.445, 4.748], [4.892, 5.221], [5.235, 5.327], [5.34, 5.682], [5.695, 6.142], [6.274, 6.366], [6.379, 6.419], [6.432, 6.919]]}, {"kind": "s", "id": "s0_0_1", "md": "\"How many users will this migration affect?\"", "zh": "「这次迁移会影响多少用户？」", "sp": null, "gap": false, "start": 7.32, "end": 10.128, "words": [[7.517, 7.57], [7.649, 7.899], [7.912, 8.36], [8.373, 8.478], [8.491, 8.649], [8.662, 9.215], [9.228, 9.715]]}, {"kind": "s", "id": "s0_0_2", "md": "The first one answers right away with a confident number.", "zh": "第一个张口就给了一个很自信的数字。", "sp": null, "gap": false, "start": 10.128, "end": 13.512, "words": [[10.246, 10.312], [10.325, 10.681], [10.694, 10.917], [10.931, 11.325], [11.339, 11.536], [11.549, 11.931], [11.944, 12.102], [12.115, 12.154], [12.167, 12.707], [12.72, 13.115]]}, {"kind": "s", "id": "s0_0_3", "md": "The second says, \"I don't know yet, but I can find out by tomorrow.\"", "zh": "第二个说：「我现在还不知道，但明天之前能查清楚。」", "sp": null, "gap": false, "start": 13.512, "end": 18.144, "words": [[13.63, 13.696], [13.709, 14.104], [14.117, 14.565], [14.973, 15.038], [15.051, 15.275], [15.288, 15.446], [15.459, 15.828], [16.144, 16.275], [16.288, 16.341], [16.354, 16.499], [16.512, 16.841], [16.854, 16.999], [17.012, 17.13], [17.144, 17.749]]}, {"kind": "s", "id": "s0_1_0", "md": "A week later, the first number turns out to be wrong by a factor of ten.", "zh": "一周后，第一个数字被发现差了十倍。", "sp": null, "gap": true, "start": 18.144, "end": 22.656, "words": [[18.249, 18.315], [18.328, 18.539], [18.552, 18.894], [19.183, 19.276], [19.289, 19.591], [19.605, 19.855], [19.868, 20.21], [20.223, 20.355], [20.368, 20.447], [20.46, 20.591], [20.605, 21.012], [21.026, 21.197], [21.21, 21.276], [21.289, 21.762], [21.776, 21.881], [21.894, 22.262]]}, {"kind": "s", "id": "s0_1_1", "md": "From then on, people quietly double-check everything that engineer says.", "zh": "从那以后，那个工程师说的每句话，大家都会悄悄再核实一遍。", "sp": null, "gap": false, "start": 22.656, "end": 27.528, "words": [[22.801, 22.919], [22.932, 23.077], [23.09, 23.419], [23.827, 24.169], [24.182, 24.709], [24.722, 25.393], [25.577, 26.024], [26.038, 26.182], [26.195, 26.616], [26.63, 27.143]]}, {"kind": "s", "id": "s0_1_2", "md": "The second engineer, meanwhile, has become the person whose answers people __take at face value__.", "zh": "而第二个工程师，成了那个说什么大家都直接信的人。", "sp": null, "gap": false, "start": 27.528, "end": 33.6, "words": [[27.646, 27.699], [27.712, 28.081], [28.094, 28.646], [28.962, 29.541], [29.91, 30.015], [30.028, 30.344], [30.357, 30.449], [30.462, 30.91], [30.923, 31.199], [31.212, 31.646], [31.66, 32.015], [32.028, 32.317], [32.331, 32.423], [32.436, 32.778], [32.791, 33.199]]}, {"kind": "s", "id": "s0_2_0", "md": "**Credibility does not come from always knowing; it comes from being right about what you know.**", "zh": "信誉不是来自什么都知道，而是来自你对自己知道的东西判断准确。", "sp": null, "gap": true, "start": 33.6, "end": 39.168, "words": [[33.705, 34.403], [34.416, 34.587], [34.6, 34.889], [34.903, 35.232], [35.245, 35.482], [35.626, 36.047], [36.061, 36.455], [36.797, 36.863], [36.876, 37.139], [37.153, 37.324], [37.337, 37.679], [37.692, 37.903], [37.916, 38.218], [38.232, 38.389], [38.403, 38.495], [38.508, 38.784]]}, {"kind": "s", "id": "s0_2_1", "md": "Leaders learn very quickly whose ==confidence== is ==calibrated== and whose is just a performance.", "zh": "领导很快就能看出来，谁的自信是有分寸的，谁的只是在表演。", "sp": null, "gap": false, "start": 39.168, "end": 45.144, "words": [[39.273, 39.642], [39.655, 39.944], [39.957, 40.326], [40.339, 40.839], [40.852, 41.036], [41.05, 41.694], [41.707, 41.826], [41.839, 42.563], [42.8, 42.931], [42.944, 43.444], [43.576, 43.694], [43.707, 43.957], [43.971, 44.01], [44.023, 44.76]]}, {"kind": "s", "id": "s0_2_2", "md": "A ==bluff== might save you for one meeting, but it costs you the next ten.", "zh": "硬撑也许能帮你混过一个会，但接下来十个会都要还。", "sp": null, "gap": false, "start": 45.144, "end": 49.272, "words": [[45.249, 45.328], [45.341, 45.697], [45.71, 45.933], [45.947, 46.262], [46.276, 46.394], [46.407, 46.552], [46.565, 46.749], [46.762, 47.157], [47.447, 47.565], [47.578, 47.67], [47.683, 48.065], [48.078, 48.17], [48.183, 48.262], [48.276, 48.552], [48.565, 48.881]]}, {"kind": "h", "id": "h1", "md": "2. Make Not Knowing Sound Useful", "zh": "2. 让「不知道」听起来也有用", "start": 49.272, "end": 51.936, "words": [[49.377, 49.601], [50.035, 50.206], [50.219, 50.456], [50.469, 50.772], [50.785, 51.088], [51.101, 51.535]]}, {"kind": "s", "id": "s1_0_0", "md": "The trick is to never stop at \"I don't know.\"", "zh": "诀窍是永远别停在「我不知道」上。", "sp": null, "gap": false, "start": 51.936, "end": 54.72, "words": [[52.054, 52.107], [52.12, 52.423], [52.436, 52.541], [52.554, 52.633], [52.647, 52.936], [52.949, 53.331], [53.462, 53.633], [53.66, 53.739], [53.752, 54.015], [54.028, 54.318]]}, {"kind": "s", "id": "s1_0_1", "md": "**Follow it with what you do know, how you will find out, and when.**", "zh": "后面要接上你知道什么、你打算怎么查、什么时候给答复。", "sp": null, "gap": false, "start": 54.72, "end": 58.872, "words": [[54.917, 55.22], [55.233, 55.325], [55.338, 55.496], [55.509, 55.654], [55.667, 55.759], [55.773, 55.97], [55.983, 56.325], [56.72, 56.865], [56.878, 56.983], [56.996, 57.102], [57.115, 57.444], [57.457, 57.746], [58.062, 58.154], [58.167, 58.483]]}, {"kind": "s", "id": "s1_0_2", "md": "\"I don't have the exact number, but it's only users on the old app version, and I'll pull the figure from the logs by noon.\"", "zh": "「具体数字我手上没有，但只涉及老版本 app 的用户，中午前我从日志里把数拉出来。」", "sp": null, "gap": false, "start": 58.872, "end": 66.144, "words": [[59.03, 59.056], [59.056, 59.254], [59.267, 59.451], [59.464, 59.53], [59.543, 60.017], [60.03, 60.385], [60.648, 60.767], [60.78, 60.925], [61.043, 61.372], [61.385, 61.885], [61.898, 61.99], [62.004, 62.096], [62.109, 62.398], [62.411, 62.622], [62.635, 63.096], [63.425, 63.49], [63.504, 63.609], [63.622, 63.859], [63.872, 63.964], [63.977, 64.332], [64.346, 64.504], [64.517, 64.596], [64.609, 64.951], [64.964, 65.109], [65.122, 65.49]]}, {"kind": "s", "id": "s1_1_0", "md": "It also helps to __put a number on your certainty__.", "zh": "给你的把握程度报个数也很有帮助。", "sp": null, "gap": true, "start": 66.144, "end": 68.856, "words": [[66.249, 66.328], [66.341, 66.631], [66.644, 66.907], [66.92, 67.012], [67.026, 67.197], [67.21, 67.236], [67.249, 67.631], [67.644, 67.736], [67.749, 67.868], [67.881, 68.46]]}, {"kind": "s", "id": "s1_1_1", "md": "\"I'm fairly sure it's under ten percent, maybe seventy percent ==confident==.\"", "zh": "「我比较确定在百分之十以下，大概七成把握。」", "sp": null, "gap": false, "start": 68.856, "end": 73.176, "words": [[69.04, 69.08], [69.159, 69.501], [69.514, 69.79], [69.803, 69.922], [69.935, 70.132], [70.145, 70.343], [70.356, 70.817], [71.159, 71.409], [71.422, 71.79], [71.803, 72.198], [72.211, 72.764]]}, {"kind": "s", "id": "s1_1_2", "md": "This sounds ==precise== even when the answer is rough, and it tells people how much weight to give it.", "zh": "哪怕答案很粗略，这样说听起来也很精确，还能让大家知道这个答案该信几分。", "sp": null, "gap": false, "start": 73.176, "end": 78.72, "words": [[73.281, 73.452], [73.465, 73.742], [73.755, 74.347], [74.505, 74.729], [74.742, 74.86], [74.873, 74.952], [74.965, 75.373], [75.387, 75.505], [75.518, 75.926], [76.347, 76.4], [76.413, 76.505], [76.518, 76.808], [76.821, 77.137], [77.15, 77.308], [77.321, 77.531], [77.544, 77.794], [77.808, 77.887], [77.9, 78.136], [78.15, 78.334]]}, {"kind": "s", "id": "s1_2_0", "md": "If the question is outside your area, __point to the right person__ instead of guessing.", "zh": "如果问题超出了你的范围，就指给对的人，别瞎猜。", "sp": null, "gap": true, "start": 78.72, "end": 83.808, "words": [[78.825, 78.93], [78.944, 79.023], [79.036, 79.523], [79.667, 79.825], [79.838, 80.299], [80.312, 80.444], [80.457, 80.825], [81.207, 81.496], [81.509, 81.588], [81.602, 81.694], [81.707, 81.97], [81.983, 82.457], [82.575, 82.917], [82.931, 83.009], [83.023, 83.43]]}, {"kind": "s", "id": "s1_2_1", "md": "\"That's really a question for the data team, I'll ==loop in== Anna.\"", "zh": "「这个其实得问数据团队，我把 Anna 拉进来。」", "sp": null, "gap": false, "start": 83.808, "end": 87.408, "words": [[84.005, 84.071], [84.15, 84.413], [84.426, 84.479], [84.492, 84.913], [84.926, 85.019], [85.032, 85.111], [85.124, 85.361], [85.374, 85.703], [86.124, 86.242], [86.255, 86.479], [86.492, 86.611], [86.624, 86.979]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, close the gap you opened.", "zh": "最后，把你留下的口子补上。", "sp": null, "gap": true, "start": 87.408, "end": 87.768, "words": [[87.566, 88.0], [88.276, 88.566], [88.579, 88.671], [88.684, 88.934], null, null]}, {"kind": "s", "id": "s1_3_1", "md": "Send the real answer when you promised, even if nobody reminds you.", "zh": "在你承诺的时间把真实答案发出去，哪怕没人提醒你。", "sp": null, "gap": false, "start": 87.768, "end": 92.28, "words": [[87.873, 88.097], [88.11, 88.202], [88.215, 88.636], [88.65, 89.044], [89.057, 89.189], [89.202, 89.294], [89.307, 89.952], [90.36, 90.558], [90.571, 90.689], [90.702, 91.176], [91.189, 91.676], [91.689, 91.886]]}, {"kind": "s", "id": "s1_3_2", "md": "Each time you do this, the words \"I don't know\" become a little more ==trustworthy==.", "zh": "每这样做一次，你说「我不知道」时就更值得信任一点。", "sp": null, "gap": false, "start": 92.28, "end": 97.296, "words": [[92.385, 92.556], [92.569, 92.793], [92.806, 92.912], [92.925, 93.148], [93.162, 93.543], [93.767, 93.872], [93.885, 94.24], [94.372, 94.438], [94.451, 94.754], [94.767, 95.096], [95.333, 95.648], [95.662, 95.701], [95.714, 96.017], [96.03, 96.175], [96.188, 96.912]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

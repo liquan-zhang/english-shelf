@@ -1,0 +1,233 @@
+{
+  "id": "108",
+  "type": "dialogue",
+  "title": "When the Food Is Wrong",
+  "meta": "B2 · 约 280 词 · 场景：上错菜、菜凉、等太久的礼貌投诉",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Waiter",
+      "name_zh": "服务员",
+      "voice": "en-GB-RyanNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. The Wrong Dish",
+      "heading_zh": "1. 上错菜",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Here you are, the grilled salmon with mashed potatoes.",
+          "zh": "您的烤三文鱼配土豆泥。"
+        },
+        {
+          "sp": "A",
+          "en": "Sorry, I think there's been a ==mix-up==. I actually ordered the salmon with salad, not mash.",
+          "zh": "不好意思，好像搞错了。我点的是三文鱼配沙拉，不是土豆泥。"
+        },
+        {
+          "sp": "B",
+          "en": "Oh, I do apologise. Let me check. You're quite right, it says salad. I'll get that changed.",
+          "zh": "哦，非常抱歉。我查一下。您说得对，单子上写的是沙拉。我马上给您换。"
+        },
+        {
+          "sp": "A",
+          "en": "Thanks. Also, the pasta came out a while ago, and it's gone ==lukewarm== while we waited for everything else.",
+          "zh": "谢谢。另外意面很早就上了，等其他菜的时候已经温吞了。"
+        },
+        {
+          "sp": "B",
+          "en": "I'm sorry about that. Would you like the kitchen to __heat it up__, or make a fresh one?",
+          "zh": "抱歉。您是想让厨房热一下，还是重新做一份？"
+        },
+        {
+          "sp": "A",
+          "en": "**A fresh one would be better, if that's not too much trouble.**",
+          "zh": "如果不太麻烦的话，重新做一份更好。"
+        },
+        {
+          "sp": "B",
+          "en": "Not at all. Is everything else alright?",
+          "zh": "一点也不麻烦。其他还好吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Actually, we've been waiting almost forty minutes for the kids' meals. Could you __check on__ them? They're getting quite ==cranky==.",
+          "zh": "其实孩子们的餐我们已经等了快四十分钟了。能帮忙催一下吗？他们已经开始闹脾气了。"
+        },
+        {
+          "sp": "B",
+          "en": "Of course. I'll __chase it up__ right now.",
+          "zh": "当然，我现在就去催。"
+        },
+        {
+          "sp": "A",
+          "en": "**Thank you. Could we get some bread for them in the meantime?**",
+          "zh": "谢谢。这期间能先给他们来点面包吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Certainly. I'll bring some over, ==on the house==.",
+          "zh": "当然。我拿一些过来，免费的。"
+        }
+      ]
+    },
+    {
+      "heading": "2. Giving Feedback",
+      "heading_zh": "2. 提意见",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "How was everything in the end?",
+          "zh": "最后吃得怎么样？"
+        },
+        {
+          "sp": "A",
+          "en": "The food was good once it came, but honestly, the wait was really long. I'd like to give some feedback, if that's okay.",
+          "zh": "菜上了以后挺好吃的，不过说实话，等得太久了。我想提点意见，可以吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Please do. We'd appreciate it.",
+          "zh": "请说，我们很欢迎。"
+        },
+        {
+          "sp": "A",
+          "en": "We waited nearly an hour for the kids' food, and two dishes came out wrong. It __put a damper on__ the evening.",
+          "zh": "孩子的饭等了将近一个小时，还有两道菜上错了。整晚的兴致都被扫了。"
+        },
+        {
+          "sp": "B",
+          "en": "I completely understand, and I'm really sorry. We're ==short-staffed== tonight, but that's no ==excuse==.",
+          "zh": "我完全理解，真的很抱歉。我们今晚人手不够，但这不是理由。"
+        },
+        {
+          "sp": "A",
+          "en": "**I appreciate you saying that. Is there anything you can do about the bill?**",
+          "zh": "谢谢你这么说。账单上能有什么表示吗？"
+        },
+        {
+          "sp": "B",
+          "en": "I've spoken to my manager. We've taken the pasta off, and we've ==waived== the service charge.",
+          "zh": "我跟经理说过了。意面不收钱，服务费也免了。"
+        },
+        {
+          "sp": "A",
+          "en": "**That's very fair. Thanks for handling it so well.**",
+          "zh": "很公道。谢谢你处理得这么好。"
+        },
+        {
+          "sp": "B",
+          "en": "Thank you for being so understanding. We hope you'll __give us another chance__.",
+          "zh": "谢谢您这么体谅。希望您再给我们一次机会。"
+        },
+        {
+          "sp": "A",
+          "en": "We will. The salmon was lovely, actually.",
+          "zh": "会的。其实三文鱼很好吃。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "第一道菜和意面分别有什么问题？",
+      "a": "三文鱼配菜上错了，点的是沙拉却上了土豆泥；意面早早上来，等其他菜时已经凉了，「你」要求重新做一份。"
+    },
+    {
+      "q": "孩子们的餐等了多久？服务员做了什么？",
+      "a": "等了快四十分钟；服务员马上去催，并免费先送了面包。"
+    },
+    {
+      "q": "「你」提意见后，餐厅怎么补偿的？",
+      "a": "服务员承认今晚人手不够，跟经理商量后免了意面的钱和服务费。"
+    }
+  ],
+  "dictation": [
+    "Sorry, I think there's been a mix-up. I actually ordered the salmon with salad, not mash.",
+    "A fresh one would be better, if that's not too much trouble.",
+    "Thank you. Could we get some bread for them in the meantime?",
+    "I appreciate you saying that. Is there anything you can do about the bill?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Actually, we've been waiting almost forty minutes for the kids' meals. Could you check on them? They're getting quite cranky.",
+    "marked": "Actually, / we've been waiting <b>almost forty minutes</b> / for the kids' meals. //<br>Could you <b>check</b> on them? //<br>They're getting quite <b>cranky</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你点的牛排要五分熟，端上来几乎全熟了。礼貌地跟服务员说明，并提出你希望的处理方式。",
+      "ref": "Excuse me, sorry to bother you. I asked for my steak medium, but this one is almost well done. It's quite dry inside. Would it be possible to have it cooked again? I'm happy to wait. And could you keep the sides warm for me, so everything comes out together this time?",
+      "ref_zh": "不好意思，打扰一下。我的牛排要的是五分熟，但这块几乎全熟了，里面挺干的。能重新做一份吗？我可以等。另外配菜能帮我保温一下吗？这次一起上。"
+    },
+    {
+      "q": "你在一碗汤里发现了一根头发。冷静地叫来服务员，说明情况，不想闹大，但希望换掉这道菜。",
+      "ref": "Hi, sorry, could you come over for a second? I just found a hair in my soup. I don't want to make a big deal out of it, but I'd rather not eat this one. Could you take it away and bring me something else? Maybe the fish noodles instead. Thanks for understanding.",
+      "ref_zh": "你好，不好意思，能过来一下吗？我刚在汤里发现了一根头发。我不想把事情闹大，但这碗我不想吃了。能拿走换个别的吗？换成鱼片面吧。谢谢理解。"
+    }
+  ],
+  "words": [
+    {
+      "w": "mix-up",
+      "ipa": "/ˈmɪks ʌp/",
+      "zh": "搞混；弄错",
+      "ex": "There was a mix-up with our booking."
+    },
+    {
+      "w": "lukewarm",
+      "ipa": "/ˌluːkˈwɔːrm/",
+      "zh": "温吞的；不够热的",
+      "ex": "The coffee was only lukewarm."
+    },
+    {
+      "w": "cranky",
+      "ipa": "/ˈkræŋki/",
+      "zh": "（孩子）烦躁闹脾气的",
+      "ex": "He gets cranky when he's hungry."
+    },
+    {
+      "w": "chase up",
+      "ipa": "/tʃeɪs ʌp/",
+      "zh": "催办",
+      "ex": "Could you chase up my order? It's been a while."
+    },
+    {
+      "w": "in the meantime",
+      "ipa": "/ɪn ðə ˈmiːntaɪm/",
+      "zh": "在此期间",
+      "ex": "The doctor is running late. In the meantime, please fill in this form."
+    },
+    {
+      "w": "on the house",
+      "ipa": "/ɑːn ðə haʊs/",
+      "zh": "店家免费请客",
+      "ex": "The dessert is on the house tonight."
+    },
+    {
+      "w": "short-staffed",
+      "ipa": "/ˌʃɔːrt ˈstæft/",
+      "zh": "人手不足的",
+      "ex": "Sorry for the wait, we're short-staffed today."
+    },
+    {
+      "w": "excuse (n.)",
+      "ipa": "/ɪkˈskjuːs/",
+      "zh": "借口；理由",
+      "ex": "Being busy is no excuse for being rude.",
+      "tts_w": "excuse"
+    },
+    {
+      "w": "waive",
+      "ipa": "/weɪv/",
+      "zh": "免除（费用）",
+      "ex": "They waived the delivery fee because it came late."
+    }
+  ]
+}

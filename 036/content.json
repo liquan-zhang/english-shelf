@@ -1,0 +1,188 @@
+{
+  "id": "036",
+  "title": "Disagreeing with Your Manager in a One-on-One",
+  "meta": "B2 · 约 260 词 · 场景：一对一",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Right Room for It",
+      "paragraphs": [
+        [
+          "Your manager has decided to merge two teams, and you think it is a mistake.",
+          "You could say nothing, complain to your peers, or raise it at the next ==all-hands==.",
+          "All three options are worse than a quiet conversation in your one-on-one."
+        ],
+        [
+          "In private, your manager can change their mind without __losing face__.",
+          "In public, even a good point can feel like a challenge to their ==authority==.",
+          "**Disagree in private, early, and with specifics; support in public once it is decided.**"
+        ],
+        [
+          "Timing matters too.",
+          "A concern raised before an announcement can still shape the plan.",
+          "After the announcement, the same concern sounds like ==resistance==, and your manager now has to __walk back__ something they said to the whole group."
+        ]
+      ],
+      "heading_zh": "1. 选对场合",
+      "paragraphs_zh": [
+        [
+          "你的经理决定把两个团队合并，而你觉得这是个错误。",
+          "你可以什么都不说，可以跟同事吐槽，也可以在下一次全员大会上提出来。",
+          "这三种做法，都不如在 1:1 里私下好好聊一聊。"
+        ],
+        [
+          "私下里，经理改主意不会丢面子。",
+          "当着大家的面，哪怕是一个好意见，也可能让人觉得是在挑战他的权威。",
+          "反对要私下提、早点提、具体地提；一旦定了，就在公开场合支持。"
+        ],
+        [
+          "时机也很重要。",
+          "在宣布之前提出顾虑，还有机会影响方案。",
+          "宣布之后再提同样的顾虑，听起来就像是在抵触，而经理也得把已经对全组说出口的话收回来。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Ask, Show, Listen",
+      "paragraphs": [
+        [
+          "Begin by asking for permission: \"Can I push back on something?\"",
+          "It sounds small, but it __signals respect__ and gets your manager ready to listen.",
+          "Most managers will say yes, and now the disagreement is something they invited."
+        ],
+        [
+          "Then describe what you see, not what you feel.",
+          "\"If we merge the teams in March, both ==roadmaps== slip, and the on-call ==rotation== doubles for half the engineers.\"",
+          "Facts about impact are much harder to __brush aside__ than \"I don't think this is a good idea.\""
+        ],
+        [
+          "Finish with a real question: \"What am I missing?\"",
+          "Your manager may know about budget cuts or a reorganization you cannot see yet.",
+          "**Sometimes the best result of disagreeing is learning why you were wrong.**"
+        ],
+        [
+          "If the decision stands, say so out loud: \"Okay, I'll make it work.\"",
+          "Then actually do it, without ==hinting== to your team that you were against it."
+        ]
+      ],
+      "heading_zh": "2. 先问、再摆事实、再听",
+      "paragraphs_zh": [
+        [
+          "开头先征得同意：「我能对一件事提点不同意见吗？」",
+          "这听起来是件小事，但它传递了尊重，也让经理做好了倾听的准备。",
+          "大多数经理都会说可以，这样一来，这次反对就成了他自己邀请来的。"
+        ],
+        [
+          "然后描述你看到的事实，而不是你的感受。",
+          "「如果三月份合并团队，两边的 roadmap 都会延期，一半工程师的 on-call 轮值会翻倍。」",
+          "关于影响的事实，比一句「我觉得这不是个好主意」难糊弄过去得多。"
+        ],
+        [
+          "最后真诚地问一句：「我是不是漏了什么？」",
+          "你的经理可能知道一些你还看不到的预算削减或者组织调整。",
+          "有时候，提反对意见最好的结果，是搞明白自己为什么错了。"
+        ],
+        [
+          "如果决定不变，就明确说出来：「好，我来把它落地。」",
+          "然后真的去做，别在团队面前暗示你当初是反对的。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么一对一是表达不同意的合适场合？",
+      "a": "私下里经理可以改主意而不丢面子；公开场合再好的意见也像在挑战他的权威。"
+    },
+    {
+      "q": "为什么时机很重要？",
+      "a": "宣布之前提的顾虑还能影响计划；宣布之后同样的话听起来像抵触，经理还得当众收回说过的话。"
+    },
+    {
+      "q": "在一对一里不同意经理的三步是什么？最后要做到什么？",
+      "a": "先征求许可（「我能提个不同意见吗」）；讲具体影响而不是感受；问「我漏掉了什么」。如果决定不变，明确表态支持并真的执行，不向团队暗示自己反对。"
+    }
+  ],
+  "dictation": [
+    "Disagree in private, early, and with specifics; support in public once it is decided.",
+    "Sometimes the best result of disagreeing is learning why you were wrong.",
+    "A concern raised before an announcement can still shape the plan.",
+    "Then describe what you see, not what you feel."
+  ],
+  "shadow": {
+    "text": "Finish with a real question: \"What am I missing?\" Your manager may know about budget cuts or a reorganization you cannot see yet. Sometimes the best result of disagreeing is learning why you were wrong.",
+    "marked": "Finish with a <b>real</b> question: / \"What am <b>I</b> missing?\" //<br>Your manager may know about <b>budget cuts</b> / or a <b>reorganization</b> / you cannot see <b>yet</b>. //<br>Sometimes the <b>best</b> result of disagreeing / is learning <b>why</b> you were <b>wrong</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "经理计划把你团队最资深的工程师调去支援另一个项目。在一对一里用 30 秒表达不同意：先征求许可，讲具体影响，再问你漏掉了什么。",
+      "ref": "Can I push back on something? I'm worried about moving Wei to the search project next month. He's the only person who knows the billing service well, and we have the tax migration in April. Without him, I think that slips by at least three weeks, and on-call gets thinner. But I may not have the full picture. What am I missing about why search needs him now?",
+      "ref_zh": "我能对一件事提点不同意见吗？我有点担心下个月把 Wei 调去搜索项目。他是唯一一个对计费服务很熟的人，而我们四月份还有税务迁移。没有他，我觉得那个项目至少要延期三周，on-call 的人手也会更紧。不过我可能了解得不全面。搜索项目为什么现在就需要他，我是不是漏了什么？"
+    },
+    {
+      "q": "你在一对一里反对过，但经理还是维持了原决定。用 30 秒表态支持，并说明你接下来会怎么做。",
+      "ref": "Okay, thanks for explaining the budget side, that helps. I still have some concerns about the timeline, but I understand why we're doing it, and I'll make it work. I'll talk to the team this week and present it as our plan, not yours. I'll also flag early if the April date starts to look risky, so we can adjust before it becomes a problem.",
+      "ref_zh": "好的，谢谢你把预算那边的情况讲清楚，这很有帮助。我对时间线还是有些顾虑，但我理解我们为什么要这么做，我会把它落地。这周我会跟团队沟通，把它当作我们的计划来讲，而不是你的。如果四月份的时间点开始有风险，我也会提前预警，这样我们能在问题出现之前调整。"
+    }
+  ],
+  "words": [
+    {
+      "w": "all-hands",
+      "ipa": "/ˈɔːl hændz/",
+      "zh": "全员大会",
+      "ex": "The reorg will be announced at Friday's all-hands.",
+      "tts_w": "all hands",
+      "tts": "The reorganization will be announced at Friday's all hands."
+    },
+    {
+      "w": "authority",
+      "ipa": "/əˈθɔːrəti/",
+      "zh": "权威、职权",
+      "ex": "She has the authority to approve the extra headcount."
+    },
+    {
+      "w": "resistance",
+      "ipa": "/rɪˈzɪstəns/",
+      "zh": "抵触、阻力",
+      "ex": "We met some resistance when we proposed a code freeze."
+    },
+    {
+      "w": "roadmap",
+      "ipa": "/ˈroʊdmæp/",
+      "zh": "路线图",
+      "ex": "This request isn't on our roadmap until next quarter."
+    },
+    {
+      "w": "rotation",
+      "ipa": "/roʊˈteɪʃən/",
+      "zh": "轮值",
+      "ex": "With two people out, the on-call rotation is every other week."
+    },
+    {
+      "w": "hint (v.)",
+      "ipa": "/hɪnt/",
+      "zh": "暗示",
+      "ex": "He hinted that the launch might move, but nothing is confirmed.",
+      "tts_w": "hint"
+    },
+    {
+      "w": "lose face",
+      "ipa": "/luːz ˈfeɪs/",
+      "zh": "丢面子",
+      "ex": "Give him a way to change the plan without losing face."
+    },
+    {
+      "w": "reorganization",
+      "ipa": "/riˌɔːrɡənəˈzeɪʃən/",
+      "zh": "组织调整",
+      "ex": "After the reorganization, our team reports to a new director."
+    },
+    {
+      "w": "brush aside",
+      "ipa": "/ˌbrʌʃ əˈsaɪd/",
+      "zh": "无视、不理会",
+      "ex": "Don't brush aside the security team's concerns."
+    }
+  ]
+}

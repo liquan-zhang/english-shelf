@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Cutting Scope to Hit a Date · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "074", "title": "Cutting Scope to Hit a Date", "meta": "B2 · 约 280 词 · 场景：项目延期", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Cut Happens Anyway", "heading_zh": "1. 砍需求迟早会发生", "rows": [[{"id": "s0_0_0", "md": "When a project runs late, scope gets cut whether you plan it or not.", "text": "When a project runs late, scope gets cut whether you plan it or not.", "zh": "项目一旦延期，不管你计划没计划，范围都会被砍。", "sp": null}, {"id": "s0_0_1", "md": "The only question is whether you cut it on purpose in week four, or by accident in the last three days.", "text": "The only question is whether you cut it on purpose in week four, or by accident in the last three days.", "zh": "唯一的问题是，你是在第四周主动砍，还是在最后三天被动砍。", "sp": null}, {"id": "s0_0_2", "md": "Pretending otherwise only means that someone else, or the calendar, makes the cut for you.", "text": "Pretending otherwise only means that someone else, or the calendar, makes the cut for you.", "zh": "假装不会发生，只意味着由别人，或者由日历，替你来砍。", "sp": null}], [{"id": "s0_1_0", "md": "Accidental cuts are the expensive kind.", "text": "Accidental cuts are the expensive kind.", "zh": "被动砍是代价最高的那种。", "sp": null}, {"id": "s0_1_1", "md": "Testing gets skipped, error handling gets ==sloppy==, and documentation quietly ==evaporates==.", "text": "Testing gets skipped, error handling gets sloppy, and documentation quietly evaporates.", "zh": "测试被跳过，错误处理草草了事，文档悄无声息地消失了。", "sp": null}, {"id": "s0_1_2", "md": "The feature ships on time but __falls apart__ in the first month, and the team spends the next quarter cleaning up.", "text": "The feature ships on time but falls apart in the first month, and the team spends the next quarter cleaning up.", "zh": "功能按时上线了，但第一个月就散架，团队下个季度都在收拾烂摊子。", "sp": null}], [{"id": "s0_2_0", "md": "**Cutting scope early is a decision; cutting it late is a symptom.**", "text": "Cutting scope early is a decision; cutting it late is a symptom.", "zh": "早砍范围是一个决定；晚砍范围是一个症状。", "sp": null}, {"id": "s0_2_1", "md": "The earlier you admit that the date and the scope don't fit, the more room you have to ==maneuver==.", "text": "The earlier you admit that the date and the scope don't fit, the more room you have to maneuver.", "zh": "你越早承认日期和范围对不上，就越有腾挪的空间。", "sp": null}, {"id": "s0_2_2", "md": "Saying it in week four feels uncomfortable, but saying it the night before launch feels much worse.", "text": "Saying it in week four feels uncomfortable, but saying it the night before launch feels much worse.", "zh": "第四周说出来会觉得别扭，但上线前一晚才说会难受得多。", "sp": null}]]}, {"heading": "2. Cut Slices, Not Corners", "heading_zh": "2. 砍整块，别偷工减料", "rows": [[{"id": "s1_0_0", "md": "Start from the user's journey, not the task list.", "text": "Start from the user's journey, not the task list.", "zh": "从用户路径出发，而不是从任务清单出发。", "sp": null}, {"id": "s1_0_1", "md": "Ask which steps a user absolutely needs on day one to get real value.", "text": "Ask which steps a user absolutely needs on day one to get real value.", "zh": "问一问：用户第一天绝对需要哪些步骤才能拿到真正的价值？", "sp": null}, {"id": "s1_0_2", "md": "For a new payments flow, that might be paying by card, but not saving cards or splitting bills.", "text": "For a new payments flow, that might be paying by card, but not saving cards or splitting bills.", "zh": "对一个新的支付流程来说，可能是用银行卡付款，而不是保存卡片或者 AA 分账。", "sp": null}], [{"id": "s1_1_0", "md": "Cut whole ==slices== of functionality rather than shaving a little quality off everything.", "text": "Cut whole slices of functionality rather than shaving a little quality off everything.", "zh": "整块整块地砍功能，而不是每样都削掉一点质量。", "sp": null}, {"id": "s1_1_1", "md": "A smaller feature that works well beats a full feature that ==misbehaves==.", "text": "A smaller feature that works well beats a full feature that misbehaves.", "zh": "一个小而好用的功能，胜过一个完整却总出毛病的功能。", "sp": null}, {"id": "s1_1_2", "md": "Users notice missing features far less than they notice broken ones.", "text": "Users notice missing features far less than they notice broken ones.", "zh": "用户对缺了的功能，远没有对坏掉的功能那么在意。", "sp": null}], [{"id": "s1_2_0", "md": "When you present the cut, frame it as a ==sequence==, not a loss.", "text": "When you present the cut, frame it as a sequence, not a loss.", "zh": "汇报砍掉的部分时，把它包装成一个先后顺序，而不是一种损失。", "sp": null}, {"id": "s1_2_1", "md": "\"We launch card payments on the fifteenth, and saved cards follow two weeks later.\"", "text": "\"We launch card payments on the fifteenth, and saved cards follow two weeks later.\"", "zh": "「十五号先上银行卡支付，两周后再上保存卡片。」", "sp": null}, {"id": "s1_2_2", "md": "**People accept a smaller first release much more easily when they can see the second one.**", "text": "People accept a smaller first release much more easily when they can see the second one.", "zh": "人们看得到第二版的时候，接受一个小一点的首版要容易得多。", "sp": null}, {"id": "s1_2_3", "md": "It also helps to __be upfront__ about what you cut and why, so nobody discovers it in a demo.", "text": "It also helps to be upfront about what you cut and why, so nobody discovers it in a demo.", "zh": "另外最好坦白说清楚砍了什么、为什么砍，免得有人在 demo 时才发现。", "sp": null}]]}], "gist": [{"q": "作者为什么说范围“总会被砍”？", "a": "项目延期时范围一定会缩，区别只在于第四周主动砍，还是最后三天被动砍。"}, {"q": "被动砍范围会砍掉什么？后果是什么？", "a": "测试、错误处理和文档；功能按时上线但第一个月就出问题，团队下个季度都在收拾。"}, {"q": "应该怎么砍、怎么汇报？", "a": "从用户旅程出发砍掉完整的功能切片而不是全面降质量；汇报时讲成先后顺序，让人看到第二个版本。"}], "dictation": [{"id": "s0_2_0", "text": "Cutting scope early is a decision; cutting it late is a symptom."}, {"id": "s1_1_1", "text": "A smaller feature that works well beats a full feature that misbehaves."}, {"id": "s1_1_2", "text": "Users notice missing features far less than they notice broken ones."}, {"id": "s1_2_2", "text": "People accept a smaller first release much more easily when they can see the second one."}], "shadow": {"text": "Cut whole slices of functionality rather than shaving a little quality off everything. A smaller feature that works well beats a full feature that misbehaves. Users notice missing features far less than they notice broken ones.", "marked": "Cut <b>whole</b> slices of functionality / rather than shaving a little <b>quality</b> / off <b>everything</b>. //<br>A <b>smaller</b> feature that works <b>well</b> / beats a <b>full</b> feature / that <b>misbehaves</b>. //<br>Users notice <b>missing</b> features / far <b>less</b> / than they notice <b>broken</b> ones. //"}, "prompts": [{"q": "项目进行到第四周，你发现按现有范围肯定赶不上发布日。用 30 秒向 PM 提出砍范围的建议，讲成先后顺序。", "ref": "I want to raise this now rather than in the last week. At our current pace, we won't finish everything by the launch date. My suggestion is to launch with the core flow, creating and sharing a playlist, and move collaborative editing to a follow-up release two weeks later. That way the date holds, quality doesn't suffer, and users still get the main value on day one.", "ref_zh": "我想现在就提出来，而不是等到最后一周。按目前的进度，上线日之前我们做不完所有东西。我的建议是先上核心流程，也就是创建和分享歌单，把协同编辑挪到两周后的下一个版本。这样日期保住了，质量不打折扣，用户第一天也能拿到主要价值。", "id": "ref0"}, {"q": "工程师提议“每个功能都做简单一点，测试也少写点”来赶日期。用 30 秒说明为什么应该砍整块功能而不是降质量。", "ref": "I understand the idea, and I know everyone wants to hit the date. But if we cut a little from everything, we end up with five features that all half work, and we spend next month fixing them. I'd rather ship three features that are solid and drop the other two completely for now. Users forgive a missing feature much more easily than a broken one.", "ref_zh": "我理解这个思路，也知道大家都想赶上日期。但如果每样都砍一点，最后我们会得到五个都只能用一半的功能，下个月全花在修它们上。我宁愿先上三个扎实的功能，另外两个暂时整个砍掉。用户对缺一个功能的容忍度，比对一个坏掉的功能高得多。", "id": "ref1"}], "words": [{"w": "sloppy", "ipa": "/ˈslɑːpi/", "zh": "马虎的、草率的", "ex": "The code got sloppy in the last sprint because of the deadline.", "id": "w0"}, {"w": "evaporate", "ipa": "/ɪˈvæpəˌreɪt/", "zh": "（悄悄）消失、蒸发", "ex": "Our buffer evaporated when two engineers got sick.", "id": "w1"}, {"w": "maneuver (v.)", "ipa": "/məˈnuːvər/", "zh": "调整、周旋", "ex": "If we tell the client now, we still have room to maneuver.", "tts_w": "maneuver", "id": "w2"}, {"w": "slice", "ipa": "/slaɪs/", "zh": "切片、一块完整的功能", "ex": "Let's ship a thin slice end to end before adding more options.", "id": "w3"}, {"w": "misbehave", "ipa": "/ˌmɪsbɪˈheɪv/", "zh": "运行异常、表现不正常", "ex": "The app starts to misbehave when the network drops.", "id": "w4"}, {"w": "sequence", "ipa": "/ˈsiːkwəns/", "zh": "顺序、先后安排", "ex": "Let's agree on the sequence of releases before we talk dates.", "id": "w5"}, {"w": "scope", "ipa": "/skoʊp/", "zh": "范围", "ex": "If we keep the date, we have to reduce the scope.", "id": "w6"}, {"w": "symptom", "ipa": "/ˈsɪmptəm/", "zh": "症状、表象", "ex": "Slow reviews are a symptom of too much work in progress.", "id": "w7"}, {"w": "upfront", "ipa": "/ˌʌpˈfrʌnt/", "zh": "坦率的、提前说明的", "ex": "Please be upfront with the client about what's not included.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Cut Happens Anyway", "zh": "1. 砍需求迟早会发生", "start": 0.0, "end": 2.352, "words": [[0.105, 0.329], [0.671, 0.776], [0.789, 1.013], [1.026, 1.461], [1.474, 1.947]]}, {"kind": "s", "id": "s0_0_0", "md": "When a project runs late, scope gets cut whether you plan it or not.", "zh": "项目一旦延期，不管你计划没计划，范围都会被砍。", "sp": null, "gap": false, "start": 2.352, "end": 6.672, "words": [[2.457, 2.536], [2.549, 2.602], [2.615, 3.076], [3.089, 3.365], [3.378, 3.681], [4.049, 4.405], [4.418, 4.615], [4.628, 4.957], [4.97, 5.234], [5.247, 5.352], [5.365, 5.681], [5.694, 5.786], [5.799, 5.878], [5.891, 6.273]]}, {"kind": "s", "id": "s0_0_1", "md": "The only question is whether you cut it on purpose in week four, or by accident in the last three days.", "zh": "唯一的问题是，你是在第四周主动砍，还是在最后三天被动砍。", "sp": null, "gap": false, "start": 6.672, "end": 13.08, "words": [[6.79, 6.883], [6.896, 7.146], [7.159, 7.685], [7.79, 7.922], [7.935, 8.198], [8.211, 8.33], [8.343, 8.58], [8.593, 8.672], [8.685, 8.856], [8.869, 9.343], [9.356, 9.475], [9.488, 9.711], [9.725, 10.159], [10.58, 10.685], [10.698, 10.896], [10.909, 11.448], [11.461, 11.54], [11.554, 11.633], [11.646, 12.001], [12.014, 12.212], [12.225, 12.685]]}, {"kind": "s", "id": "s0_0_2", "md": "Pretending otherwise only means that someone else, or the calendar, makes the cut for you.", "zh": "假装不会发生，只意味着由别人，或者由日历，替你来砍。", "sp": null, "gap": false, "start": 13.08, "end": 18.768, "words": [[13.198, 13.685], [13.698, 14.304], [14.317, 14.593], [14.606, 14.962], [14.975, 15.133], [15.146, 15.554], [15.567, 16.001], [16.225, 16.33], [16.343, 16.422], [16.435, 16.988], [17.409, 17.593], [17.606, 17.698], [17.712, 17.962], [17.975, 18.159], [18.172, 18.37]]}, {"kind": "s", "id": "s0_1_0", "md": "Accidental cuts are the expensive kind.", "zh": "被动砍是代价最高的那种。", "sp": null, "gap": true, "start": 18.768, "end": 21.744, "words": [[18.873, 19.413], [19.426, 19.847], [20.005, 20.136], [20.15, 20.229], [20.242, 20.873], [20.886, 21.36]]}, {"kind": "s", "id": "s0_1_1", "md": "Testing gets skipped, error handling gets ==sloppy==, and documentation quietly ==evaporates==.", "zh": "测试被跳过，错误处理草草了事，文档悄无声息地消失了。", "sp": null, "gap": false, "start": 21.744, "end": 28.104, "words": [[21.849, 22.204], [22.218, 22.441], [22.455, 22.968], [23.297, 23.56], [23.573, 24.02], [24.033, 24.27], [24.283, 24.915], [25.231, 25.336], [25.349, 26.31], [26.323, 26.862], [26.876, 27.705]]}, {"kind": "s", "id": "s0_1_2", "md": "The feature ships on time but __falls apart__ in the first month, and the team spends the next quarter cleaning up.", "zh": "功能按时上线了，但第一个月就散架，团队下个季度都在收拾烂摊子。", "sp": null, "gap": false, "start": 28.104, "end": 34.752, "words": [[28.222, 28.288], [28.301, 28.657], [28.67, 28.986], [28.999, 29.157], [29.17, 29.617], [29.749, 29.893], [29.907, 30.249], [30.262, 30.604], [30.617, 30.696], [30.709, 30.788], [30.801, 31.143], [31.157, 31.538], [31.867, 31.933], [31.946, 32.025], [32.038, 32.433], [32.446, 32.841], [32.854, 32.933], [32.946, 33.288], [33.301, 33.696], [33.709, 34.104], [34.117, 34.354]]}, {"kind": "s", "id": "s0_2_0", "md": "**Cutting scope early is a decision; cutting it late is a symptom.**", "zh": "早砍范围是一个决定；晚砍范围是一个症状。", "sp": null, "gap": true, "start": 34.752, "end": 39.312, "words": [[34.857, 35.12], [35.134, 35.489], [35.581, 36.041], [36.134, 36.278], [36.291, 36.344], [36.357, 36.923], [37.226, 37.528], [37.541, 37.66], [37.673, 38.002], [38.239, 38.344], [38.357, 38.41], [38.423, 38.923]]}, {"kind": "s", "id": "s0_2_1", "md": "The earlier you admit that the date and the scope don't fit, the more room you have to ==maneuver==.", "zh": "你越早承认日期和范围对不上，就越有腾挪的空间。", "sp": null, "gap": false, "start": 39.312, "end": 45.288, "words": [[39.417, 39.549], [39.562, 40.009], [40.023, 40.167], [40.18, 40.575], [40.588, 40.733], [40.746, 40.865], [40.878, 41.233], [41.312, 41.391], [41.404, 41.483], [41.496, 41.93], [41.944, 42.18], [42.194, 42.601], [42.97, 43.062], [43.075, 43.378], [43.391, 43.733], [43.865, 43.996], [44.009, 44.22], [44.233, 44.312], [44.325, 44.891]]}, {"kind": "s", "id": "s0_2_2", "md": "Saying it in week four feels uncomfortable, but saying it the night before launch feels much worse.", "zh": "第四周说出来会觉得别扭，但上线前一晚才说会难受得多。", "sp": null, "gap": false, "start": 45.288, "end": 51.528, "words": [[45.406, 45.801], [45.814, 45.893], [45.906, 46.025], [46.038, 46.275], [46.288, 46.591], [46.604, 46.972], [46.985, 47.749], [48.143, 48.275], [48.288, 48.617], [48.63, 48.722], [48.735, 48.801], [48.814, 49.13], [49.143, 49.512], [49.525, 49.933], [49.946, 50.262], [50.275, 50.564], [50.577, 51.13]]}, {"kind": "h", "id": "h1", "md": "2. Cut Slices, Not Corners", "zh": "2. 砍整块，别偷工减料", "start": 51.528, "end": 54.48, "words": [[51.646, 51.87], [52.331, 52.528], [52.541, 53.146], [53.265, 53.502], [53.515, 54.081]]}, {"kind": "s", "id": "s1_0_0", "md": "Start from the user's journey, not the task list.", "zh": "从用户路径出发，而不是从任务清单出发。", "sp": null, "gap": false, "start": 54.48, "end": 57.84, "words": [[54.598, 54.941], [54.954, 55.098], [55.112, 55.164], [55.177, 55.625], [55.638, 56.072], [56.401, 56.546], [56.559, 56.638], [56.651, 57.033], [57.046, 57.454]]}, {"kind": "s", "id": "s1_0_1", "md": "Ask which steps a user absolutely needs on day one to get real value.", "zh": "问一问：用户第一天绝对需要哪些步骤才能拿到真正的价值？", "sp": null, "gap": false, "start": 57.84, "end": 62.52, "words": [[57.945, 58.222], [58.235, 58.393], [58.406, 58.735], [58.748, 58.787], [58.801, 59.287], [59.301, 59.958], [59.972, 60.274], [60.287, 60.419], [60.432, 60.656], [60.669, 61.037], [61.051, 61.156], [61.169, 61.406], [61.419, 61.643], [61.656, 62.129]]}, {"kind": "s", "id": "s1_0_2", "md": "For a new payments flow, that might be paying by card, but not saving cards or splitting bills.", "zh": "对一个新的支付流程来说，可能是用银行卡付款，而不是保存卡片或者 AA 分账。", "sp": null, "gap": false, "start": 62.52, "end": 68.856, "words": [[62.678, 62.783], [62.796, 62.823], [62.836, 63.073], [63.086, 63.546], [63.559, 63.954], [64.27, 64.402], [64.415, 64.638], [64.652, 64.783], [64.796, 65.099], [65.112, 65.309], [65.323, 65.744], [66.059, 66.217], [66.231, 66.454], [66.467, 66.862], [66.875, 67.402], [67.494, 67.612], [67.625, 67.994], [68.007, 68.467]]}, {"kind": "s", "id": "s1_1_0", "md": "Cut whole ==slices== of functionality rather than shaving a little quality off everything.", "zh": "整块整块地砍功能，而不是每样都削掉一点质量。", "sp": null, "gap": true, "start": 68.856, "end": 74.472, "words": [[68.961, 69.159], [69.172, 69.474], [69.488, 70.04], [70.053, 70.132], [70.145, 71.001], [71.238, 71.54], [71.553, 71.685], [71.698, 72.251], [72.343, 72.382], [72.395, 72.698], [72.711, 73.238], [73.251, 73.488], [73.619, 74.08]]}, {"kind": "s", "id": "s1_1_1", "md": "A smaller feature that works well beats a full feature that ==misbehaves==.", "zh": "一个小而好用的功能，胜过一个完整却总出毛病的功能。", "sp": null, "gap": false, "start": 74.472, "end": 78.912, "words": [[74.577, 74.63], [74.643, 75.09], [75.104, 75.419], [75.433, 75.577], [75.59, 75.972], [75.985, 76.183], [76.196, 76.498], [76.577, 76.63], [76.643, 77.051], [77.064, 77.538], [77.551, 77.709], [77.722, 78.511]]}, {"kind": "s", "id": "s1_1_2", "md": "Users notice missing features far less than they notice broken ones.", "zh": "用户对缺了的功能，远没有对坏掉的功能那么在意。", "sp": null, "gap": false, "start": 78.912, "end": 83.304, "words": [[79.017, 79.412], [79.425, 79.833], [79.846, 80.201], [80.215, 80.701], [80.715, 81.044], [81.057, 81.438], [81.451, 81.57], [81.583, 81.675], [81.688, 82.057], [82.07, 82.425], [82.438, 82.912]]}, {"kind": "s", "id": "s1_2_0", "md": "When you present the cut, frame it as a ==sequence==, not a loss.", "zh": "汇报砍掉的部分时，把它包装成一个先后顺序，而不是一种损失。", "sp": null, "gap": true, "start": 83.304, "end": 87.504, "words": [[83.409, 83.501], [83.515, 83.593], [83.607, 83.962], [83.975, 84.067], [84.08, 84.409], [84.804, 85.107], [85.12, 85.212], [85.225, 85.357], [85.37, 85.422], [85.436, 86.08], [86.317, 86.488], [86.501, 86.528], [86.541, 87.107]]}, {"kind": "s", "id": "s1_2_1", "md": "\"We launch card payments on the fifteenth, and saved cards follow two weeks later.\"", "zh": "「十五号先上银行卡支付，两周后再上保存卡片。」", "sp": null, "gap": false, "start": 87.504, "end": 92.544, "words": [[87.688, 87.701], [87.78, 88.096], [88.109, 88.399], [88.412, 88.793], [88.807, 88.899], [88.912, 88.978], [88.991, 89.649], [90.03, 90.109], [90.122, 90.465], [90.478, 90.807], [90.82, 91.149], [91.162, 91.425], [91.438, 91.754], [91.767, 92.136]]}, {"kind": "s", "id": "s1_2_2", "md": "**People accept a smaller first release much more easily when they can see the second one.**", "zh": "人们看得到第二版的时候，接受一个小一点的首版要容易得多。", "sp": null, "gap": false, "start": 92.544, "end": 97.896, "words": [[92.662, 92.912], [92.926, 93.307], [93.32, 93.36], [93.373, 93.807], [93.82, 94.176], [94.189, 94.61], [94.623, 94.952], [94.965, 95.228], [95.241, 95.768], [95.991, 96.136], [96.149, 96.268], [96.281, 96.439], [96.452, 96.768], [96.781, 96.873], [96.886, 97.255], [97.268, 97.504]]}, {"kind": "s", "id": "s1_2_3", "md": "It also helps to __be upfront__ about what you cut and why, so nobody discovers it in a demo.", "zh": "另外最好坦白说清楚砍了什么、为什么砍，免得有人在 demo 时才发现。", "sp": null, "gap": false, "start": 97.896, "end": 103.416, "words": [[98.001, 98.08], [98.093, 98.383], [98.396, 98.659], [98.672, 98.751], [98.764, 98.896], [98.909, 99.304], [99.317, 99.593], [99.607, 99.738], [99.751, 99.87], [99.883, 100.225], [100.343, 100.475], [100.488, 100.896], [101.238, 101.409], [101.422, 101.83], [101.843, 102.357], [102.37, 102.435], [102.449, 102.528], [102.541, 102.593], [102.607, 103.028]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Disagreeing with a Senior Leader in Public · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "008", "title": "Disagreeing with a Senior Leader in Public", "meta": "B2 · 约 280 词 · 场景：向上表达异议", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. What Leaders Say in Private", "heading_zh": "1. 领导私下怎么说", "rows": [[{"id": "s0_0_0", "md": "Ask senior leaders what frustrates them, and many give the same answer.", "text": "Ask senior leaders what frustrates them, and many give the same answer.", "zh": "问高层领导最让他们头疼的是什么，很多人的回答都一样。", "sp": null}, {"id": "s0_0_1", "md": "\"Nobody tells me when my idea is bad until it's too late.\"", "text": "\"Nobody tells me when my idea is bad until it's too late.\"", "zh": "「我的想法不行，没人告诉我，直到为时已晚。」", "sp": null}, {"id": "s0_0_2", "md": "The higher you go, the more people __filter what they say__, and the less ==accurate== your picture of reality becomes.", "text": "The higher you go, the more people filter what they say, and the less accurate your picture of reality becomes.", "zh": "位置越高，大家说话就越会过滤，你对现实的判断也就越失真。", "sp": null}], [{"id": "s0_1_0", "md": "So most leaders do want pushback.", "text": "So most leaders do want pushback.", "zh": "所以大多数领导其实是想要反对意见的。", "sp": null}, {"id": "s0_1_1", "md": "What they do not want is to lose face in front of a large group, or to feel ==ambushed== by a surprise attack on their plan.", "text": "What they do not want is to lose face in front of a large group, or to feel ambushed by a surprise attack on their plan.", "zh": "他们不想要的，是当着一大群人丢面子，或者被一场针对自己方案的突然袭击打个措手不及。", "sp": null}, {"id": "s0_1_2", "md": "**The problem is rarely that you disagree; it is how and where you do it.**", "text": "The problem is rarely that you disagree; it is how and where you do it.", "zh": "问题很少在于你不同意，而在于你怎么表达、在哪儿表达。", "sp": null}], [{"id": "s0_2_0", "md": "Public disagreement with a senior person is not about being brave.", "text": "Public disagreement with a senior person is not about being brave.", "zh": "当众反对一位高层，跟勇不勇敢没关系。", "sp": null}, {"id": "s0_2_1", "md": "It is about making it easy for them to change their mind without looking ==weak==.", "text": "It is about making it easy for them to change their mind without looking weak.", "zh": "关键是让对方能轻松改变主意，又不显得软弱。", "sp": null}]]}, {"heading": "2. Give Them a Door, Not a Wall", "heading_zh": "2. 给他们一扇门，而不是一堵墙", "rows": [[{"id": "s1_0_0", "md": "Start by asking for room.", "text": "Start by asking for room.", "zh": "先请求一个发言的空间。", "sp": null}, {"id": "s1_0_1", "md": "\"Can I offer a different view on the timeline?\"", "text": "\"Can I offer a different view on the timeline?\"", "zh": "「关于时间线，我能提一个不同的看法吗？」", "sp": null}, {"id": "s1_0_2", "md": "It takes two seconds, and it __signals respect__ while still letting you speak.", "text": "It takes two seconds, and it signals respect while still letting you speak.", "zh": "只要两秒钟，既表达了尊重，又能让你把话说出来。", "sp": null}], [{"id": "s1_1_0", "md": "Then lead with evidence, not opinion.", "text": "Then lead with evidence, not opinion.", "zh": "然后用证据开路，而不是观点。", "sp": null}, {"id": "s1_1_1", "md": "\"In the last two launches of this size, testing took six weeks, not three.\"", "text": "\"In the last two launches of this size, testing took six weeks, not three.\"", "zh": "「最近两次这种规模的上线，测试都花了六周，不是三周。」", "sp": null}, {"id": "s1_1_2", "md": "Data shifts the conversation from \"me against you\" to \"us looking at the same facts.\"", "text": "Data shifts the conversation from \"me against you\" to \"us looking at the same facts.\"", "zh": "数据能把对话从「我对你」变成「我们一起看同一组事实」。", "sp": null}], [{"id": "s1_2_0", "md": "Most importantly, offer a way forward that does not ==require== them to fully reverse.", "text": "Most importantly, offer a way forward that does not require them to fully reverse.", "zh": "最重要的是，给出一条不需要他完全推翻自己的路。", "sp": null}, {"id": "s1_2_1", "md": "Suggest a smaller pilot, an extra checkpoint, or a date to review the risk together.", "text": "Suggest a smaller pilot, an extra checkpoint, or a date to review the risk together.", "zh": "建议先做个小范围试点、加一个检查点，或者约个时间一起复盘风险。", "sp": null}, {"id": "s1_2_2", "md": "**People change direction more easily when you give them a door instead of a wall.**", "text": "People change direction more easily when you give them a door instead of a wall.", "zh": "你给人一扇门而不是一堵墙，他们就更容易调转方向。", "sp": null}], [{"id": "s1_3_0", "md": "Know when to stop.", "text": "Know when to stop.", "zh": "要知道什么时候收手。", "sp": null}, {"id": "s1_3_1", "md": "If the leader still disagrees, say \"Understood, I'll ==flag== it if we see early signs,\" and then __drop it__ in the meeting.", "text": "If the leader still disagrees, say \"Understood, I'll flag it if we see early signs,\" and then drop it in the meeting.", "zh": "如果领导还是不同意，就说「明白，如果看到早期苗头我会及时提出来」，然后在会上就不再提了。", "sp": null}, {"id": "s1_3_2", "md": "If the issue is serious, __follow up one on one__ afterward.", "text": "If the issue is serious, follow up one on one afterward.", "zh": "如果问题确实严重，会后再单独找他聊。", "sp": null}, {"id": "s1_3_3", "md": "A ==calm== disagreement handled this way usually earns more trust than quiet agreement ever could.", "text": "A calm disagreement handled this way usually earns more trust than quiet agreement ever could.", "zh": "这样处理的一次心平气和的反对，通常比默默同意更能赢得信任。", "sp": null}]]}], "gist": [{"q": "作者说高层私下最常抱怨的是什么？", "a": "没人在为时已晚之前告诉他们方案不好；层级越高，听到的信息越被过滤。"}, {"q": "公开反对高层时，作者建议的几个做法是什么？", "a": "先征求发言空间；用证据而不是观点开头；给出不需要对方完全推翻的出路，比如小规模试点或检查点；对方仍坚持时适可而止，严重问题会后单独沟通。"}, {"q": "“给门而不是给墙”是什么意思？", "a": "给对方一个体面调整方向的台阶，而不是逼他当众认错。"}], "dictation": [{"id": "s0_1_2", "text": "The problem is rarely that you disagree; it is how and where you do it."}, {"id": "s1_2_2", "text": "People change direction more easily when you give them a door instead of a wall."}, {"id": "s1_1_0", "text": "Then lead with evidence, not opinion."}, {"id": "s1_3_2", "text": "If the issue is serious, follow up one on one afterward."}], "shadow": {"text": "Most importantly, offer a way forward that does not require them to fully reverse. Suggest a smaller pilot, an extra checkpoint, or a date to review the risk together.", "marked": "Most <b>importantly</b>, / offer a way <b>forward</b> / that does <b>not</b> require them / to <b>fully</b> reverse. //<br>Suggest a smaller <b>pilot</b>, / an extra <b>checkpoint</b>, / or a <b>date</b> / to review the risk <b>together</b>. //"}, "prompts": [{"q": "全员会上，业务负责人宣布新功能三周后全球上线。你认为测试时间不够。用 30 秒公开表达不同意见：先征求空间，再用数据，最后给一个台阶。", "ref": "Can I offer a slightly different view on the timeline? Looking at our last two launches of this size, testing took about six weeks, mostly because of payment edge cases. I'd hate for us to rush and then roll back in front of users. What if we launch in two smaller markets in three weeks, as planned, and go global once we've seen a clean week of data?", "ref_zh": "关于时间线，我能提一个稍微不同的看法吗？看我们最近两次这种规模的上线，测试都花了大概六周，主要是卡在支付的各种边界情况上。我很不希望我们赶着上线，然后当着用户的面回滚。要不我们按原计划三周后先在两个小市场上线，等看到一周干净的数据再全球放量？", "id": "ref0"}, {"q": "你刚才在会上提了异议，但总监还是坚持原计划。用 30 秒得体地收住，并说明你会怎样跟进风险。", "ref": "Understood, and thanks for hearing me out. Let's go with the plan as it is. To stay safe, I'll set up a dashboard for error rates in the new flow, and I'll flag it right away if we see early warning signs. Would it be okay if I grabbed fifteen minutes with you later this week to walk through the rollback steps?", "ref_zh": "明白，谢谢你听我说完。那就按现在的方案来。为了稳妥起见，我会给新流程搭一个错误率的看板，一有预警信号我马上同步。这周晚些时候能不能约你十五分钟，一起过一下回滚步骤？", "id": "ref1"}], "words": [{"w": "accurate", "ipa": "/ˈækjərət/", "zh": "准确的", "ex": "We need accurate numbers before we promise a date.", "id": "w0"}, {"w": "ambush (v.)", "ipa": "/ˈæmbʊʃ/", "zh": "突然发难、伏击", "ex": "Share the concern before the review, so the team doesn't feel ambushed.", "tts_w": "ambush", "id": "w1"}, {"w": "weak", "ipa": "/wiːk/", "zh": "软弱的、站不住的", "ex": "The business case looks weak without the cost numbers.", "id": "w2"}, {"w": "require", "ipa": "/rɪˈkwaɪər/", "zh": "需要、要求", "ex": "This change requires a database migration.", "id": "w3"}, {"w": "flag (v.)", "ipa": "/flæɡ/", "zh": "提出、标记（风险）", "ex": "I'll flag it in the channel if the error rate goes up.", "tts_w": "flag", "id": "w4"}, {"w": "calm", "ipa": "/kɑːm/", "zh": "冷静的", "ex": "Her calm tone kept the incident call from turning into a blame game.", "id": "w5"}, {"w": "pushback", "ipa": "/ˈpʊʃbæk/", "zh": "反对意见、阻力", "ex": "We got some pushback from sales on the new pricing.", "id": "w6"}, {"w": "lose face", "ipa": "/luːz feɪs/", "zh": "丢面子", "ex": "Give him a way to change the plan without losing face.", "id": "w7"}, {"w": "evidence", "ipa": "/ˈevɪdəns/", "zh": "证据", "ex": "Do we have any evidence that users want this feature?", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. What Leaders Say in Private", "zh": "1. 领导私下怎么说", "start": 0.0, "end": 2.544, "words": [[0.105, 0.368], [0.724, 0.934], [0.947, 1.303], [1.316, 1.553], [1.566, 1.658], [1.671, 2.145]]}, {"kind": "s", "id": "s0_0_0", "md": "Ask senior leaders what frustrates them, and many give the same answer.", "zh": "问高层领导最让他们头疼的是什么，很多人的回答都一样。", "sp": null, "gap": false, "start": 2.544, "end": 6.888, "words": [[2.649, 2.899], [2.912, 3.294], [3.307, 3.662], [3.676, 3.847], [3.86, 4.465], [4.478, 4.676], [5.097, 5.189], [5.202, 5.465], [5.478, 5.649], [5.662, 5.728], [5.741, 6.044], [6.057, 6.491]]}, {"kind": "s", "id": "s0_0_1", "md": "\"Nobody tells me when my idea is bad until it's too late.\"", "zh": "「我的想法不行，没人告诉我，直到为时已晚。」", "sp": null, "gap": false, "start": 6.888, "end": 10.632, "words": [[7.072, 7.283], [7.362, 7.651], [7.664, 7.77], [7.783, 7.901], [7.914, 8.072], [8.085, 8.638], [8.651, 8.783], [8.796, 9.23], [9.243, 9.506], [9.52, 9.651], [9.664, 9.862], [9.875, 10.23]]}, {"kind": "s", "id": "s0_0_2", "md": "The higher you go, the more people __filter what they say__, and the less ==accurate== your picture of reality becomes.", "zh": "位置越高，大家说话就越会过滤，你对现实的判断也就越失真。", "sp": null, "gap": false, "start": 10.632, "end": 17.52, "words": [[10.75, 10.803], [10.816, 11.158], [11.171, 11.29], [11.303, 11.685], [11.974, 12.053], [12.066, 12.25], [12.264, 12.619], [12.632, 13.119], [13.132, 13.303], [13.316, 13.474], [13.487, 13.921], [14.224, 14.329], [14.343, 14.435], [14.448, 14.75], [14.869, 15.342], [15.356, 15.487], [15.5, 15.895], [15.908, 16.0], [16.014, 16.461], [16.474, 17.119]]}, {"kind": "s", "id": "s0_1_0", "md": "So most leaders do want pushback.", "zh": "所以大多数领导其实是想要反对意见的。", "sp": null, "gap": true, "start": 17.52, "end": 19.824, "words": [[17.638, 17.796], [17.809, 18.086], [18.099, 18.454], [18.467, 18.586], [18.599, 18.809], [18.823, 19.441]]}, {"kind": "s", "id": "s0_1_1", "md": "What they do not want is to lose face in front of a large group, or to feel ==ambushed== by a surprise attack on their plan.", "zh": "他们不想要的，是当着一大群人丢面子，或者被一场针对自己方案的突然袭击打个措手不及。", "sp": null, "gap": false, "start": 19.824, "end": 26.64, "words": [[19.929, 20.035], [20.048, 20.14], [20.153, 20.258], [20.271, 20.508], [20.521, 20.758], [20.771, 20.864], [20.877, 20.982], [20.995, 21.363], [21.377, 21.706], [21.719, 21.824], [21.837, 22.1], [22.113, 22.153], [22.166, 22.206], [22.219, 22.653], [22.666, 23.021], [23.35, 23.456], [23.469, 23.535], [23.548, 23.85], [23.956, 24.456], [24.469, 24.6], [24.613, 24.666], [24.679, 25.179], [25.192, 25.574], [25.587, 25.679], [25.692, 25.824], [25.837, 26.245]]}, {"kind": "s", "id": "s0_1_2", "md": "**The problem is rarely that you disagree; it is how and where you do it.**", "zh": "问题很少在于你不同意，而在于你怎么表达、在哪儿表达。", "sp": null, "gap": false, "start": 26.64, "end": 28.68, "words": [[26.758, 26.811], [26.824, 27.232], [27.245, 27.39], [27.403, 27.811], [27.824, 27.982], [27.995, 28.087], [28.101, 28.745], [29.153, 29.219], [29.232, 29.351], [29.364, 29.824], [29.995, 30.114], [30.127, 30.285], [30.298, 30.403], null, null]}, {"kind": "s", "id": "s0_2_0", "md": "Public disagreement with a senior person is not about being brave.", "zh": "当众反对一位高层，跟勇不勇敢没关系。", "sp": null, "gap": true, "start": 28.68, "end": 32.856, "words": [[28.798, 29.075], [29.088, 29.719], [29.733, 29.877], [29.891, 29.93], [29.943, 30.312], [30.325, 30.812], [30.996, 31.114], [31.127, 31.377], [31.391, 31.693], [31.706, 31.956], [31.969, 32.456]]}, {"kind": "s", "id": "s0_2_1", "md": "It is about making it easy for them to change their mind without looking ==weak==.", "zh": "关键是让对方能轻松改变主意，又不显得软弱。", "sp": null, "gap": false, "start": 32.856, "end": 37.344, "words": [[32.961, 33.04], [33.053, 33.159], [33.172, 33.435], [33.448, 33.777], [33.79, 33.882], [33.961, 34.29], [34.303, 34.435], [34.448, 34.619], [34.632, 34.698], [34.711, 35.119], [35.132, 35.264], [35.277, 35.711], [35.83, 36.224], [36.238, 36.553], [36.567, 36.948]]}, {"kind": "h", "id": "h1", "md": "2. Give Them a Door, Not a Wall", "zh": "2. 给他们一扇门，而不是一堵墙", "start": 37.344, "end": 40.032, "words": [[37.462, 37.739], [38.094, 38.252], [38.265, 38.37], [38.383, 38.449], [38.462, 38.844], [39.094, 39.226], [39.239, 39.291], [39.305, 39.633]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by asking for room.", "zh": "先请求一个发言的空间。", "sp": null, "gap": false, "start": 40.032, "end": 41.856, "words": [[40.15, 40.453], [40.466, 40.637], [40.65, 41.019], [41.032, 41.216], [41.229, 41.466]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Can I offer a different view on the timeline?\"", "zh": "「关于时间线，我能提一个不同的看法吗？」", "sp": null, "gap": false, "start": 41.856, "end": 44.328, "words": [[42.04, 42.093], [42.093, 42.224], [42.238, 42.553], [42.567, 42.619], [42.632, 42.974], [42.988, 43.238], [43.251, 43.33], [43.343, 43.409], [43.422, 43.922]]}, {"kind": "s", "id": "s1_0_2", "md": "It takes two seconds, and it __signals respect__ while still letting you speak.", "zh": "只要两秒钟，既表达了尊重，又能让你把话说出来。", "sp": null, "gap": false, "start": 44.328, "end": 49.272, "words": [[44.433, 44.525], [44.539, 44.815], [44.828, 45.012], [45.025, 45.631], [45.933, 46.052], [46.065, 46.144], [46.157, 46.631], [46.644, 47.21], [47.46, 47.631], [47.644, 48.052], [48.065, 48.275], [48.289, 48.381], [48.394, 48.881]]}, {"kind": "s", "id": "s1_1_0", "md": "Then lead with evidence, not opinion.", "zh": "然后用证据开路，而不是观点。", "sp": null, "gap": true, "start": 49.272, "end": 51.84, "words": [[49.377, 49.588], [49.601, 49.811], [49.825, 49.996], [50.009, 50.548], [50.825, 50.983], [50.996, 51.443]]}, {"kind": "s", "id": "s1_1_1", "md": "\"In the last two launches of this size, testing took six weeks, not three.\"", "zh": "「最近两次这种规模的上线，测试都花了六周，不是三周。」", "sp": null, "gap": false, "start": 51.84, "end": 57.096, "words": [[52.011, 52.037], [52.037, 52.103], [52.116, 52.458], [52.472, 52.643], [52.656, 53.143], [53.156, 53.235], [53.248, 53.445], [53.458, 53.958], [54.182, 54.59], [54.603, 54.814], [54.827, 55.208], [55.222, 55.695], [55.932, 56.195], [56.208, 56.695]]}, {"kind": "s", "id": "s1_1_2", "md": "Data shifts the conversation from \"me against you\" to \"us looking at the same facts.\"", "zh": "数据能把对话从「我对你」变成「我们一起看同一组事实」。", "sp": null, "gap": false, "start": 57.096, "end": 62.784, "words": [[57.214, 57.478], [57.491, 57.899], [57.912, 58.004], [58.017, 58.78], [58.793, 59.03], [59.057, 59.346], [59.359, 59.754], [59.767, 59.951], [60.214, 60.412], [60.478, 60.701], [60.714, 61.096], [61.109, 61.201], [61.214, 61.307], [61.32, 61.675], [61.688, 62.372]]}, {"kind": "s", "id": "s1_2_0", "md": "Most importantly, offer a way forward that does not ==require== them to fully reverse.", "zh": "最重要的是，给出一条不需要他完全推翻自己的路。", "sp": null, "gap": true, "start": 62.784, "end": 68.04, "words": [[62.889, 63.1], [63.113, 63.771], [64.166, 64.481], [64.495, 64.56], [64.573, 64.758], [64.771, 65.244], [65.258, 65.416], [65.429, 65.587], [65.6, 65.837], [65.85, 66.284], [66.297, 66.481], [66.495, 66.573], [66.587, 66.968], [66.981, 67.639]]}, {"kind": "s", "id": "s1_2_1", "md": "Suggest a smaller pilot, an extra checkpoint, or a date to review the risk together.", "zh": "建议先做个小范围试点、加一个检查点，或者约个时间一起复盘风险。", "sp": null, "gap": false, "start": 68.04, "end": 73.872, "words": [[68.145, 68.672], [68.685, 68.724], [68.737, 69.185], [69.198, 69.645], [69.935, 70.093], [70.106, 70.435], [70.448, 71.027], [71.422, 71.54], [71.553, 71.645], [71.658, 71.935], [71.948, 72.079], [72.093, 72.553], [72.566, 72.685], [72.698, 72.974], [72.987, 73.474]]}, {"kind": "s", "id": "s1_2_2", "md": "**People change direction more easily when you give them a door instead of a wall.**", "zh": "你给人一扇门而不是一堵墙，他们就更容易调转方向。", "sp": null, "gap": false, "start": 73.872, "end": 78.792, "words": [[73.99, 74.254], [74.267, 74.609], [74.622, 75.201], [75.372, 75.635], [75.648, 76.148], [76.24, 76.398], [76.411, 76.504], [76.517, 76.714], [76.727, 76.872], [76.885, 76.964], [76.977, 77.398], [77.49, 77.872], [77.885, 77.925], [77.938, 78.004], [78.017, 78.398]]}, {"kind": "s", "id": "s1_3_0", "md": "Know when to stop.", "zh": "要知道什么时候收手。", "sp": null, "gap": true, "start": 78.792, "end": 80.664, "words": [[78.897, 79.002], [79.016, 79.108], [79.121, 79.174], [79.187, 79.621]]}, {"kind": "s", "id": "s1_3_1", "md": "If the leader still disagrees, say \"Understood, I'll ==flag== it if we see early signs,\" and then __drop it__ in the meeting.", "zh": "如果领导还是不同意，就说「明白，如果看到早期苗头我会及时提出来」，然后在会上就不再提了。", "sp": null, "gap": false, "start": 80.664, "end": 88.68, "words": [[80.769, 80.901], [80.914, 81.006], [81.019, 81.322], [81.335, 81.624], [81.638, 82.467], [82.651, 83.019], [83.493, 84.177], [84.585, 84.69], [84.703, 85.098], [85.111, 85.19], [85.203, 85.322], [85.335, 85.44], [85.453, 85.782], [85.914, 86.23], [86.243, 86.835], [87.111, 87.19], [87.203, 87.348], [87.361, 87.69], [87.703, 87.769], [87.782, 87.861], [87.875, 87.94], [87.953, 88.296]]}, {"kind": "s", "id": "s1_3_2", "md": "If the issue is serious, __follow up one on one__ afterward.", "zh": "如果问题确实严重，会后再单独找他聊。", "sp": null, "gap": false, "start": 88.68, "end": 92.568, "words": [[88.785, 88.904], [88.917, 89.009], [89.022, 89.43], [89.443, 89.562], [89.575, 90.312], [90.509, 90.891], [90.904, 91.062], [91.075, 91.285], [91.298, 91.443], [91.456, 91.627], [91.641, 92.167]]}, {"kind": "s", "id": "s1_3_3", "md": "A ==calm== disagreement handled this way usually earns more trust than quiet agreement ever could.", "zh": "这样处理的一次心平气和的反对，通常比默默同意更能赢得信任。", "sp": null, "gap": false, "start": 92.568, "end": 98.904, "words": [[92.673, 92.739], [92.752, 93.107], [93.121, 93.818], [93.831, 94.279], [94.292, 94.476], [94.489, 94.752], [94.765, 95.358], [95.371, 95.7], [95.713, 96.029], [96.042, 96.581], [96.594, 96.752], [96.765, 97.147], [97.16, 97.713], [97.923, 98.107], [98.121, 98.502]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

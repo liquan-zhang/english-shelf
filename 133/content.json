@@ -1,0 +1,87 @@
+{
+  "id": "133",
+  "type": "dialogue",
+  "title": "Getting Your Phone Repaired",
+  "meta": "B2 · 约 300 词 · 场景：手机维修报价与追加问题",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Technician", "name_zh": "维修师傅", "voice": "en-GB-SoniaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. At the Repair Counter",
+      "heading_zh": "1. 在维修柜台",
+      "lines": [
+        {"sp": "B", "en": "Hi, what seems to be the problem?", "zh": "你好，手机怎么了？"},
+        {"sp": "A", "en": "I dropped my phone this morning, and __the screen cracked__. The touch still works, but only in some places.", "zh": "我今早把手机摔了，屏幕裂了。触摸还能用，但只有部分地方灵。"},
+        {"sp": "B", "en": "Let me have a look. Yes, the ==display== will need replacing. Is it still under ==warranty==?", "zh": "我看看。嗯，屏幕得换。还在保修期内吗？"},
+        {"sp": "A", "en": "**No, it's about two years old. Could you give me a rough quote before you start?**", "zh": "不在了，用了快两年了。开工之前能先给我报个大概的价吗？"},
+        {"sp": "B", "en": "An ==original== screen is two hundred and sixty dollars. A third-party one is one hundred and forty.", "zh": "原装屏两百六十块，副厂屏一百四十块。"},
+        {"sp": "A", "en": "What's the difference, apart from the price?", "zh": "除了价格，还有什么区别？"},
+        {"sp": "B", "en": "The original is brighter and keeps the water resistance. The cheaper one is fine, but the colours are a bit off.", "zh": "原装的更亮，防水性能也能保住。便宜的也能用，就是颜色有点偏。"},
+        {"sp": "A", "en": "I'll go with the original, then. Do your repairs come with any warranty?", "zh": "那我选原装的。你们的维修有保修吗？"},
+        {"sp": "B", "en": "Yes, ninety days on parts and labour. Have you __backed up__ your data?", "zh": "有，零件和人工保修九十天。您的数据备份了吗？"},
+        {"sp": "A", "en": "Yes, last night. How long will it take? I need it for work tomorrow.", "zh": "备份了，昨晚弄的。要修多久？我明天上班要用。"},
+        {"sp": "B", "en": "It should be done by five today. We'll text you when you can __pick it up__.", "zh": "今天五点前应该能好。可以取的时候我们发短信给您。"},
+        {"sp": "A", "en": "Perfect. I'll come by after five.", "zh": "太好了。那我五点以后过来。"}
+      ]
+    },
+    {
+      "heading": "2. An Unexpected Phone Call",
+      "heading_zh": "2. 一通意外的电话",
+      "lines": [
+        {"sp": "B", "en": "Hello, this is the repair shop calling about your phone. We opened it up and found another issue.", "zh": "您好，这里是维修店，打来说一下您手机的事。我们拆开后发现了另一个问题。"},
+        {"sp": "A", "en": "Oh no. What's wrong with it?", "zh": "啊，糟糕。出什么问题了？"},
+        {"sp": "B", "en": "There's some ==corrosion== near the ==charging port==. It looks like water got in at some point.", "zh": "充电口附近有些腐蚀，看起来之前进过水。"},
+        {"sp": "A", "en": "That's strange. It's never been in water. Does that change the price?", "zh": "奇怪，它从来没泡过水。那价格会变吗？"},
+        {"sp": "B", "en": "Cleaning it would be another eighty dollars. If we leave it, the charging might stop working later.", "zh": "清理要再加八十块。如果不处理，以后充电可能会出问题。"},
+        {"sp": "A", "en": "**Can you go ahead with the screen only for now? I'll decide on the rest later.**", "zh": "能不能先只换屏幕？其他的我之后再决定。"},
+        {"sp": "B", "en": "We can, but our warranty wouldn't ==cover== any charging problems in that case.", "zh": "可以，但那样的话，充电方面的问题就不在我们的保修范围内了。"},
+        {"sp": "A", "en": "Understood. Could you __send me a photo__ of the damage? I'd like to __take a look__ first.", "zh": "明白。能把损坏的地方拍张照片发给我吗？我想先看一下。"},
+        {"sp": "B", "en": "Sure, I'll send it on WhatsApp in a minute.", "zh": "好的，我马上用 WhatsApp 发给您。"},
+        {"sp": "A", "en": "Thanks. I'll __get back to you__ within half an hour.", "zh": "谢谢。我半小时内回复你。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "换屏有哪两种选择？「你」选了哪种？", "a": "原装屏两百六十块，副厂屏一百四十块；「你」选了更亮、能保住防水的原装屏。"},
+    {"q": "维修店打电话来说了什么新问题？", "a": "充电口附近有腐蚀，像是进过水，清理要再加八十块，不处理以后可能充不了电。"},
+    {"q": "「你」是怎么回应的？", "a": "先只换屏幕，其他之后再定；请对方拍照发过来，自己半小时内答复。"}
+  ],
+  "dictation": [
+    "No, it's about two years old. Could you give me a rough quote before you start?",
+    "What's the difference, apart from the price?",
+    "Can you go ahead with the screen only for now? I'll decide on the rest later.",
+    "Understood. Could you send me a photo of the damage? I'd like to take a look first."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "I dropped my phone this morning, and the screen cracked. The touch still works, but only in some places.",
+    "marked": "I <b>dropped</b> my phone / this <b>morning</b>, / and the <b>screen</b> cracked. //<br>The touch <b>still</b> works, / but only in <b>some</b> places. //"
+  },
+  "prompts": [
+    {
+      "q": "手机修好取回来两天，充电又不正常了。回到店里，要求按保修免费处理。",
+      "ref": "Hi, I picked up my phone here on Monday after a screen repair. Since yesterday, it only charges if I hold the cable at a certain angle. It was fine before I brought it in. I believe the repair is under your ninety-day warranty, so could you check it again at no charge? Here's my receipt.",
+      "ref_zh": "你好，我周一在这里修完屏幕把手机取走了。从昨天开始，充电线要卡在某个角度才能充上。送修之前是好的。我想这应该在你们九十天的保修范围内，能不能免费再帮我检查一下？这是我的收据。"
+    },
+    {
+      "q": "你把笔记本电脑送去修，想在开修前问清：费用上限、数据安全、需要多久。",
+      "ref": "Hi, my laptop won't turn on since this morning. Before you open it, could you give me an estimate? If the repair is going to cost more than two hundred dollars, please call me first instead of going ahead. Also, there's work data on it, so please don't wipe the hard drive. Roughly how many days will it take?",
+      "ref_zh": "你好，我的笔记本从今早开始就开不了机。开机检查之前，能先给我估个价吗？如果维修费会超过两百块，请先打电话问我，别直接修。另外里面有工作资料，请不要格式化硬盘。大概要几天？"
+    }
+  ],
+  "words": [
+    {"w": "display", "ipa": "/dɪˈspleɪ/", "zh": "显示屏", "ex": "The display is too dim to read in the sun."},
+    {"w": "warranty", "ipa": "/ˈwɔːrənti/", "zh": "保修", "ex": "The fridge is still under warranty for another year."},
+    {"w": "original", "ipa": "/əˈrɪdʒənəl/", "zh": "原装的；原厂的", "ex": "Please keep the original box in case you need to return it."},
+    {"w": "quote", "ipa": "/kwoʊt/", "zh": "报价", "ex": "Can you give me a quote for painting the living room?"},
+    {"w": "back up", "ipa": "/bæk ʌp/", "zh": "备份", "ex": "Back up your photos before you update the phone."},
+    {"w": "corrosion", "ipa": "/kəˈroʊʒən/", "zh": "腐蚀；锈蚀", "ex": "The sea air caused some corrosion on the bike."},
+    {"w": "charging port", "ipa": "/ˈtʃɑːrdʒɪŋ pɔːrt/", "zh": "充电口", "ex": "Clean the charging port with a dry toothbrush."},
+    {"w": "cover (v.)", "ipa": "/ˈkʌvər/", "zh": "（保险/保修）覆盖、负担", "ex": "Does my insurance cover dental treatment?", "tts_w": "cover"},
+    {"w": "get back to", "ipa": "/ɡet bæk tuː/", "zh": "回复；再联系", "ex": "Let me check with my wife and get back to you tonight."}
+  ]
+}

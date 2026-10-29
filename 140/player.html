@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Signing Up for Kids' Swimming Lessons · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "140", "type": "dialogue", "title": "Signing Up for Kids' Swimming Lessons", "meta": "B2 · 约 310 词 · 场景：报名儿童游泳课与试课后续", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Swim Coach", "name_zh": "游泳教练", "voice": "en-AU-WilliamMultilingualNeural"}}, "gist": [{"q": "孩子目前的游泳基础怎样？会从哪个级别开始？", "a": "完全零基础，喜欢玩水但不肯把脸放进水里；从重点培养不怕水的海星级开始。"}, {"q": "这门课的班级规模、时长和试课规则是什么？", "a": "一个教练最多带四个孩子，每节三十分钟；试课二十五块，报名后从学期费里扣。"}, {"q": "试课后报名时遇到了什么情况？怎么解决的？", "a": "周六九点的班已满；先报十点半，同时留在九点的候补名单上；一期十节三百二十块，每期可补一节课。"}], "dictation": [{"id": "s0_4_0", "text": "How many kids are in each class, and how long are the lessons?"}, {"id": "s0_6_0", "text": "Saturday mornings would suit us best. Do parents need to get in the pool?"}, {"id": "s1_3_0", "text": "Good to know. We'd like to go ahead with the Saturday class. Is there still a spot at nine?"}, {"id": "s1_7_0", "text": "What happens if he's sick and misses a class? Can he make it up?"}], "shadow": {"speaker": "A", "text": "Complete beginner. He loves splashing around, but he won't put his face in the water.", "marked": "<b>Complete</b> beginner. //<br>He <b>loves</b> splashing around, / but he <b>won't</b> put his <b>face</b> / in the water. //"}, "prompts": [{"q": "上了三节课，孩子还是每次都哭，你想问问能不能换成一对一私教，以及费用怎么算。", "ref": "Hi, my son is in the Saturday ten thirty Starfish class. He's had three lessons now, but he still cries every time and doesn't really join in. I'm wondering if private lessons would suit him better for a while. How much would that cost? And could the remaining group lessons be moved to private ones?", "ref_zh": "你好，我儿子在周六十点半的海星班。他已经上了三节课，但每次还是哭，也不怎么参与。我在想先上一段时间一对一会不会更适合他。私教怎么收费？剩下的小班课能转成私教课吗？", "id": "ref0"}, {"q": "孩子发烧要缺下周六的课。打电话给游泳学校请假，并约一节补课。", "ref": "Hi, I'm calling about my son in the Saturday morning class. He's had a fever since yesterday, so he won't make it this Saturday. I know we need to tell you a day ahead, so I'm calling now. Could we book a make-up class instead? A weekday afternoon after four would be best for us.", "ref_zh": "你好，我打来是关于周六上午班我儿子的事。他从昨天开始发烧，所以这周六来不了。我知道要提前一天通知，所以现在打过来。能帮我们约一节补课吗？工作日下午四点以后对我们最方便。", "id": "ref1"}], "words": [{"w": "beginner", "ipa": "/bɪˈɡɪnər/", "zh": "初学者", "ex": "This yoga class is perfect for beginners.", "id": "w0"}, {"w": "water confidence", "ipa": "/ˈwɔːtər ˈkɑːnfɪdəns/", "zh": "（孩子）不怕水、在水中的自信", "ex": "The first term focuses on water confidence, not strokes.", "id": "w1"}, {"w": "viewing gallery", "ipa": "/ˈvjuːɪŋ ˈɡæləri/", "zh": "观看区", "ex": "Parents can wait in the viewing gallery with a coffee.", "id": "w2"}, {"w": "commit to", "ipa": "/kəˈmɪt tuː/", "zh": "承诺；确定参加", "ex": "I don't want to commit to a whole year at the gym.", "id": "w3"}, {"w": "deduct", "ipa": "/dɪˈdʌkt/", "zh": "扣除", "ex": "The deposit will be deducted from your final bill.", "id": "w4"}, {"w": "warm up", "ipa": "/wɔːrm ʌp/", "zh": "（对人或环境）熟悉、放开", "ex": "She's quiet at first, but she warms up after a while.", "id": "w5"}, {"w": "waitlist", "ipa": "/ˈweɪtlɪst/", "zh": "候补名单", "ex": "The class is full, but you can join the waitlist.", "id": "w6"}, {"w": "make-up class", "ipa": "/ˈmeɪk ʌp klæs/", "zh": "补课", "ex": "Can we book a make-up class for next Wednesday?", "id": "w7"}, {"w": "term", "ipa": "/tɜːrm/", "zh": "一期课程；学期", "ex": "The art class runs for ten weeks each term.", "id": "w8"}], "sections": [{"heading": "1. Asking About Classes", "heading_zh": "1. 咨询课程", "rows": [[{"id": "s0_0_0", "md": "Hi, I'd like to __sign my son up for__ swimming lessons. He's four.", "text": "Hi, I'd like to sign my son up for swimming lessons. He's four.", "zh": "你好，我想给儿子报游泳课，他四岁。", "sp": "A"}], [{"id": "s0_1_0", "md": "Great age to start. Has he had lessons before, or is he a complete ==beginner==?", "text": "Great age to start. Has he had lessons before, or is he a complete beginner?", "zh": "这个年纪开始学正好。他以前上过课吗，还是完全零基础？", "sp": "B"}], [{"id": "s0_2_0", "md": "Complete beginner. He loves splashing around, but he won't put his face in the water.", "text": "Complete beginner. He loves splashing around, but he won't put his face in the water.", "zh": "完全零基础。他喜欢在水里扑腾，但不肯把脸放进水里。", "sp": "A"}], [{"id": "s0_3_0", "md": "That's really common. He'd start in our Starfish level. It's all about ==water confidence==.", "text": "That's really common. He'd start in our Starfish level. It's all about water confidence.", "zh": "这很常见。他会从我们的海星级开始，重点是让孩子不怕水。", "sp": "B"}], [{"id": "s0_4_0", "md": "**How many kids are in each class, and how long are the lessons?**", "text": "How many kids are in each class, and how long are the lessons?", "zh": "每个班有几个孩子？每节课多长时间？", "sp": "A"}], [{"id": "s0_5_0", "md": "Four kids per coach at most, and thirty minutes each. We run weekday afternoons and Saturday mornings.", "text": "Four kids per coach at most, and thirty minutes each. We run weekday afternoons and Saturday mornings.", "zh": "一个教练最多带四个孩子，每节三十分钟。工作日下午和周六上午都有课。", "sp": "B"}], [{"id": "s0_6_0", "md": "Saturday mornings would suit us best. Do parents need to get in the pool?", "text": "Saturday mornings would suit us best. Do parents need to get in the pool?", "zh": "周六上午最适合我们。家长需要下水吗？", "sp": "A"}], [{"id": "s0_7_0", "md": "Not at his level. You can watch from the ==viewing gallery== upstairs.", "text": "Not at his level. You can watch from the viewing gallery upstairs.", "zh": "他这个级别不用。您可以在楼上的观看区看。", "sp": "B"}], [{"id": "s0_8_0", "md": "And is there a trial lesson __before we commit to__ a full term?", "text": "And is there a trial lesson before we commit to a full term?", "zh": "在报整期之前，有试听课吗？", "sp": "A"}], [{"id": "s0_9_0", "md": "Yes. A trial is twenty-five dollars, and it's ==deducted== from the term fee if you sign up.", "text": "Yes. A trial is twenty-five dollars, and it's deducted from the term fee if you sign up.", "zh": "有。试课二十五块，如果报名，会从学期费里扣掉。", "sp": "B"}]]}, {"heading": "2. After the Trial", "heading_zh": "2. 试课之后", "rows": [[{"id": "s1_0_0", "md": "Hi, it's Coach Ben from the swim school. How did your son find the trial on Saturday?", "text": "Hi, it's Coach Ben from the swim school. How did your son find the trial on Saturday?", "zh": "您好，我是游泳学校的 Ben 教练。您儿子觉得周六的试课怎么样？", "sp": "B"}], [{"id": "s1_1_0", "md": "Honestly, he was a bit scared. He cried for the first ten minutes, but he was smiling by the end.", "text": "Honestly, he was a bit scared. He cried for the first ten minutes, but he was smiling by the end.", "zh": "说实话，他有点害怕。前十分钟一直哭，不过到最后笑了。", "sp": "A"}], [{"id": "s1_2_0", "md": "That's a good sign. Most kids need two or three lessons to ==warm up==.", "text": "That's a good sign. Most kids need two or three lessons to warm up.", "zh": "这是好兆头。大部分孩子需要两三节课才能放开。", "sp": "B"}], [{"id": "s1_3_0", "md": "**Good to know. We'd like to go ahead with the Saturday class. Is there still a spot at nine?**", "text": "Good to know. We'd like to go ahead with the Saturday class. Is there still a spot at nine?", "zh": "那就好。我们想报周六的班。九点那节还有位置吗？", "sp": "A"}], [{"id": "s1_4_0", "md": "Nine is full, I'm afraid. We have ten thirty, or I can put you on the ==waitlist== for nine.", "text": "Nine is full, I'm afraid. We have ten thirty, or I can put you on the waitlist for nine.", "zh": "恐怕九点满了。十点半有，或者我把您排进九点的候补名单。", "sp": "B"}], [{"id": "s1_5_0", "md": "Let's take ten thirty for now, but please __keep us on__ the list for nine.", "text": "Let's take ten thirty for now, but please keep us on the list for nine.", "zh": "那先报十点半，不过请把我们留在九点的候补名单上。", "sp": "A"}], [{"id": "s1_6_0", "md": "Will do. The term is ten lessons, and it's three hundred and twenty dollars after the trial is deducted.", "text": "Will do. The term is ten lessons, and it's three hundred and twenty dollars after the trial is deducted.", "zh": "好的。一期十节课，扣掉试课费后是三百二十块。", "sp": "B"}], [{"id": "s1_7_0", "md": "What happens if he's sick and misses a class? Can he make it up?", "text": "What happens if he's sick and misses a class? Can he make it up?", "zh": "如果他生病缺了一节课怎么办？能补课吗？", "sp": "A"}], [{"id": "s1_8_0", "md": "You can book one ==make-up== class per term, as long as you tell us a day ahead.", "text": "You can book one make-up class per term, as long as you tell us a day ahead.", "zh": "每期可以约一节补课，只要提前一天告诉我们就行。", "sp": "B"}], [{"id": "s1_9_0", "md": "**Fair enough. I'll pay online tonight. Thanks for checking in.**", "text": "Fair enough. I'll pay online tonight. Thanks for checking in.", "zh": "挺合理的。我今晚在网上付款。谢谢你打电话来问。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Asking About Classes", "zh": "1. 咨询课程", "start": 0.0, "end": 2.352, "words": [[0.105, 0.342], [0.776, 1.092], [1.105, 1.329], [1.342, 1.974]]}, {"kind": "s", "id": "s0_0_0", "md": "Hi, I'd like to __sign my son up for__ swimming lessons. He's four.", "zh": "你好，我想给儿子报游泳课，他四岁。", "sp": "A", "gap": false, "start": 2.352, "end": 6.84, "words": [[2.47, 2.72], [3.115, 3.26], [3.273, 3.431], [3.444, 3.523], [3.536, 3.799], [3.813, 3.931], [3.944, 4.194], [4.207, 4.339], [4.352, 4.497], [4.51, 4.852], [4.865, 5.405], [5.865, 6.023], [6.036, 6.444]]}, {"kind": "s", "id": "s0_1_0", "md": "Great age to start. Has he had lessons before, or is he a complete ==beginner==?", "zh": "这个年纪开始学正好。他以前上过课吗，还是完全零基础？", "sp": "B", "gap": false, "start": 6.84, "end": 12.528, "words": [[6.89, 7.298], [7.298, 7.614], [7.614, 7.706], [7.706, 8.272], [8.627, 8.903], [8.903, 9.022], [9.022, 9.232], [9.232, 9.64], [9.64, 10.258], [10.574, 10.798], [10.798, 10.982], [10.982, 11.127], [11.127, 11.166], [11.166, 11.627], [11.627, 12.153]]}, {"kind": "s", "id": "s0_2_0", "md": "Complete beginner. He loves splashing around, but he won't put his face in the water.", "zh": "完全零基础。他喜欢在水里扑腾，但不肯把脸放进水里。", "sp": "A", "gap": false, "start": 12.528, "end": 17.832, "words": [[12.633, 13.002], [13.015, 13.475], [13.949, 14.015], [14.028, 14.331], [14.344, 14.87], [14.883, 15.331], [15.712, 15.831], [15.844, 15.936], [15.949, 16.16], [16.173, 16.331], [16.344, 16.502], [16.515, 16.831], [16.844, 16.91], [16.923, 17.002], [17.015, 17.449]]}, {"kind": "s", "id": "s0_3_0", "md": "That's really common. He'd start in our Starfish level. It's all about ==water confidence==.", "zh": "这很常见。他会从我们的海星级开始，重点是让孩子不怕水。", "sp": "B", "gap": false, "start": 17.832, "end": 24.24, "words": [[17.882, 18.277], [18.277, 18.671], [18.671, 19.198], [19.553, 19.869], [19.869, 20.342], [20.343, 20.5], [20.5, 20.658], [20.658, 21.185], [21.185, 21.606], [21.961, 22.211], [22.211, 22.514], [22.514, 22.816], [22.816, 23.158], [23.158, 23.882]]}, {"kind": "s", "id": "s0_4_0", "md": "**How many kids are in each class, and how long are the lessons?**", "zh": "每个班有几个孩子？每节课多长时间？", "sp": "A", "gap": false, "start": 24.24, "end": 28.128, "words": [[24.358, 24.451], [24.464, 24.687], [24.701, 25.016], [25.029, 25.135], [25.148, 25.24], [25.332, 25.516], [25.529, 26.122], [26.358, 26.424], [26.437, 26.608], [26.622, 26.937], [26.951, 27.016], [27.029, 27.108], [27.122, 27.74]]}, {"kind": "s", "id": "s0_5_0", "md": "Four kids per coach at most, and thirty minutes each. We run weekday afternoons and Saturday mornings.", "zh": "一个教练最多带四个孩子，每节三十分钟。工作日下午和周六上午都有课。", "sp": "B", "gap": false, "start": 28.128, "end": 35.088, "words": [[28.178, 28.56], [28.56, 28.849], [28.849, 29.007], [29.007, 29.323], [29.323, 29.415], [29.415, 29.915], [30.125, 30.296], [30.296, 30.639], [30.639, 30.941], [30.941, 31.336], [31.691, 32.007], [32.007, 32.362], [32.362, 32.823], [32.823, 33.481], [33.481, 33.652], [33.652, 34.125], [34.125, 34.718]]}, {"kind": "s", "id": "s0_6_0", "md": "Saturday mornings would suit us best. Do parents need to get in the pool?", "zh": "周六上午最适合我们。家长需要下水吗？", "sp": "A", "gap": false, "start": 35.088, "end": 39.36, "words": [[35.193, 35.601], [35.614, 36.075], [36.088, 36.22], [36.233, 36.483], [36.496, 36.627], [36.641, 37.114], [37.549, 37.654], [37.667, 38.088], [38.101, 38.246], [38.259, 38.325], [38.338, 38.47], [38.483, 38.549], [38.562, 38.641], [38.654, 38.97]]}, {"kind": "s", "id": "s0_7_0", "md": "Not at his level. You can watch from the ==viewing gallery== upstairs.", "zh": "他这个级别不用。您可以在楼上的观看区看。", "sp": "B", "gap": false, "start": 39.36, "end": 43.896, "words": [[39.41, 39.818], [39.818, 39.949], [39.949, 40.147], [40.147, 40.607], [40.963, 41.213], [41.213, 41.397], [41.397, 41.726], [41.726, 41.923], [41.923, 41.989], [41.989, 42.41], [42.41, 42.818], [42.818, 43.528]]}, {"kind": "s", "id": "s0_8_0", "md": "And is there a trial lesson __before we commit to__ a full term?", "zh": "在报整期之前，有试听课吗？", "sp": "A", "gap": false, "start": 43.896, "end": 47.112, "words": [[44.001, 44.067], [44.08, 44.185], [44.199, 44.357], [44.37, 44.422], [44.435, 44.817], [44.83, 45.159], [45.172, 45.501], [45.514, 45.62], [45.633, 45.935], [45.949, 46.067], [46.08, 46.133], [46.146, 46.383], [46.396, 46.725]]}, {"kind": "s", "id": "s0_9_0", "md": "Yes. A trial is twenty-five dollars, and it's ==deducted== from the term fee if you sign up.", "zh": "有。试课二十五块，如果报名，会从学期费里扣掉。", "sp": "B", "gap": false, "start": 47.112, "end": 53.256, "words": [[47.162, 47.82], [48.175, 48.32], [48.32, 48.794], [48.794, 48.965], [48.965, 49.491], [49.491, 49.978], [50.32, 50.478], [50.478, 50.609], [50.609, 51.188], [51.188, 51.346], [51.346, 51.425], [51.425, 51.701], [51.701, 52.044], [52.044, 52.215], [52.215, 52.28], [52.28, 52.57], [52.57, 52.886]]}, {"kind": "h", "id": "h1", "md": "2. After the Trial", "zh": "2. 试课之后", "start": 53.256, "end": 55.176, "words": [[53.374, 53.651], [53.953, 54.217], [54.23, 54.295], [54.309, 54.795]]}, {"kind": "s", "id": "s1_0_0", "md": "Hi, it's Coach Ben from the swim school. How did your son find the trial on Saturday?", "zh": "您好，我是游泳学校的 Ben 教练。您儿子觉得周六的试课怎么样？", "sp": "B", "gap": false, "start": 55.176, "end": 61.2, "words": [[55.226, 55.792], [56.002, 56.187], [56.187, 56.529], [56.529, 56.844], [56.844, 57.015], [57.015, 57.081], [57.081, 57.344], [57.344, 57.818], [58.173, 58.489], [58.489, 58.647], [58.647, 58.792], [58.792, 59.2], [59.2, 59.515], [59.515, 59.581], [59.581, 60.029], [60.029, 60.2], [60.2, 60.844]]}, {"kind": "s", "id": "s1_1_0", "md": "Honestly, he was a bit scared. He cried for the first ten minutes, but he was smiling by the end.", "zh": "说实话，他有点害怕。前十分钟一直哭，不过到最后笑了。", "sp": "A", "gap": false, "start": 61.2, "end": 67.224, "words": [[61.305, 61.805], [61.845, 61.924], [61.937, 62.068], [62.082, 62.147], [62.161, 62.384], [62.397, 62.897], [63.358, 63.424], [63.437, 63.779], [63.792, 63.897], [63.911, 63.989], [64.003, 64.318], [64.332, 64.503], [64.516, 65.003], [65.266, 65.411], [65.424, 65.489], [65.503, 65.647], [65.661, 66.108], [66.121, 66.292], [66.305, 66.41], [66.424, 66.832]]}, {"kind": "s", "id": "s1_2_0", "md": "That's a good sign. Most kids need two or three lessons to ==warm up==.", "zh": "这是好兆头。大部分孩子需要两三节课才能放开。", "sp": "B", "gap": false, "start": 67.224, "end": 71.928, "words": [[67.274, 67.669], [67.669, 67.735], [67.735, 67.945], [67.945, 68.524], [68.879, 69.287], [69.287, 69.616], [69.616, 69.866], [69.866, 70.077], [70.077, 70.169], [70.169, 70.432], [70.432, 70.879], [70.879, 70.971], [70.971, 71.221], [71.221, 71.564]]}, {"kind": "s", "id": "s1_3_0", "md": "**Good to know. We'd like to go ahead with the Saturday class. Is there still a spot at nine?**", "zh": "那就好。我们想报周六的班。九点那节还有位置吗？", "sp": "A", "gap": false, "start": 71.928, "end": 77.208, "words": [[72.033, 72.152], [72.165, 72.257], [72.27, 72.533], [72.967, 73.073], [73.086, 73.244], [73.257, 73.336], [73.349, 73.507], [73.52, 73.823], [73.836, 73.954], [73.967, 74.033], [74.046, 74.507], [74.52, 75.112], [75.546, 75.639], [75.652, 75.783], [75.796, 76.007], [76.02, 76.06], [76.073, 76.362], [76.375, 76.468], [76.481, 76.81]]}, {"kind": "s", "id": "s1_4_0", "md": "Nine is full, I'm afraid. We have ten thirty, or I can put you on the ==waitlist== for nine.", "zh": "恐怕九点满了。十点半有，或者我把您排进九点的候补名单。", "sp": "B", "gap": false, "start": 77.208, "end": 83.736, "words": [[77.258, 77.745], [77.745, 77.89], [77.89, 78.363], [78.547, 78.718], [78.719, 79.376], [79.732, 79.995], [79.995, 80.232], [80.232, 80.482], [80.482, 80.982], [81.245, 81.429], [81.429, 81.534], [81.534, 81.705], [81.705, 81.955], [81.955, 82.087], [82.087, 82.179], [82.179, 82.245], [82.245, 82.771], [82.771, 82.863], [82.863, 83.363]]}, {"kind": "s", "id": "s1_5_0", "md": "Let's take ten thirty for now, but please __keep us on__ the list for nine.", "zh": "那先报十点半，不过请把我们留在九点的候补名单上。", "sp": "A", "gap": false, "start": 83.736, "end": 87.84, "words": [[83.841, 83.986], [83.999, 84.223], [84.236, 84.473], [84.486, 84.802], [84.815, 84.973], [84.986, 85.315], [85.618, 85.762], [85.775, 86.039], [86.052, 86.275], [86.289, 86.46], [86.473, 86.552], [86.565, 86.657], [86.67, 86.947], [86.96, 87.078], [87.091, 87.447]]}, {"kind": "s", "id": "s1_6_0", "md": "Will do. The term is ten lessons, and it's three hundred and twenty dollars after the trial is deducted.", "zh": "好的。一期十节课，扣掉试课费后是三百二十块。", "sp": "B", "gap": false, "start": 87.84, "end": 94.488, "words": [[87.89, 88.258], [88.258, 88.732], [89.087, 89.258], [89.258, 89.601], [89.601, 89.785], [89.785, 90.022], [90.022, 90.627], [90.943, 91.1], [91.101, 91.258], [91.258, 91.535], [91.535, 91.758], [91.758, 91.811], [91.811, 92.048], [92.048, 92.522], [92.522, 92.824], [92.824, 92.916], [92.916, 93.351], [93.351, 93.495], [93.495, 94.127]]}, {"kind": "s", "id": "s1_7_0", "md": "What happens if he's sick and misses a class? Can he make it up?", "zh": "如果他生病缺了一节课怎么办？能补课吗？", "sp": "A", "gap": false, "start": 94.488, "end": 98.496, "words": [[94.593, 94.698], [94.712, 95.08], [95.093, 95.198], [95.212, 95.396], [95.409, 95.791], [95.909, 96.001], [96.014, 96.291], [96.304, 96.343], [96.356, 96.949], [97.383, 97.488], [97.501, 97.58], [97.593, 97.777], [97.791, 97.87], [97.883, 98.106]]}, {"kind": "s", "id": "s1_8_0", "md": "You can book one ==make-up== class per term, as long as you tell us a day ahead.", "zh": "每期可以约一节补课，只要提前一天告诉我们就行。", "sp": "B", "gap": false, "start": 98.496, "end": 103.224, "words": [[98.546, 98.783], [98.783, 98.967], [98.967, 99.243], [99.243, 99.52], [99.52, 99.928], [99.928, 100.23], [100.23, 100.349], [100.349, 100.822], [101.125, 101.296], [101.296, 101.559], [101.559, 101.664], [101.664, 101.757], [101.757, 101.98], [101.98, 102.099], [102.099, 102.138], [102.138, 102.375], [102.375, 102.849]]}, {"kind": "s", "id": "s1_9_0", "md": "**Fair enough. I'll pay online tonight. Thanks for checking in.**", "zh": "挺合理的。我今晚在网上付款。谢谢你打电话来问。", "sp": "A", "gap": false, "start": 103.224, "end": 107.064, "words": [[103.369, 103.514], [103.527, 103.856], [104.29, 104.408], [104.421, 104.619], [104.632, 104.934], [104.948, 105.369], [105.816, 105.974], [105.987, 106.092], [106.106, 106.461], [106.474, 106.658]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

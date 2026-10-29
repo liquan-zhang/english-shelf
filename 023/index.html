@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Receiving Harsh Feedback on Your Design · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "023", "title": "Receiving Harsh Feedback on Your Design", "meta": "B2 · 约 270 词 · 场景：设计被当众批评", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The First Ten Seconds", "heading_zh": "1. 最初的十秒钟", "rows": [[{"id": "s0_0_0", "md": "A senior engineer looks at your design and says, \"This will never survive production.\"", "text": "A senior engineer looks at your design and says, \"This will never survive production.\"", "zh": "一位资深工程师看了你的设计，说：「这东西到了生产环境根本活不下来。」", "sp": null}, {"id": "s0_0_1", "md": "The room goes quiet, and everyone turns to you.", "text": "The room goes quiet, and everyone turns to you.", "zh": "会议室一下安静了，所有人都看向你。", "sp": null}, {"id": "s0_0_2", "md": "What you say in the next ten seconds matters more than the design itself.", "text": "What you say in the next ten seconds matters more than the design itself.", "zh": "你接下来十秒钟说什么，比设计本身更重要。", "sp": null}], [{"id": "s0_1_0", "md": "The natural ==reflex== is to defend.", "text": "The natural reflex is to defend.", "zh": "人的本能反应是辩护。", "sp": null}, {"id": "s0_1_1", "md": "You start explaining every choice, faster and louder, and the discussion becomes a ==debate== about who is right.", "text": "You start explaining every choice, faster and louder, and the discussion becomes a debate about who is right.", "zh": "你开始解释每一个选择，越说越快、越说越大声，讨论就变成了一场谁对谁错的辩论。", "sp": null}, {"id": "s0_1_2", "md": "Even if you win, people remember that you got ==defensive==.", "text": "Even if you win, people remember that you got defensive.", "zh": "就算你赢了，大家记住的也是你当时急了。", "sp": null}], [{"id": "s0_2_0", "md": "**Your first job is not to answer the criticism; it is to understand it.**", "text": "Your first job is not to answer the criticism; it is to understand it.", "zh": "你的第一要务不是回应批评，而是弄懂批评。", "sp": null}, {"id": "s0_2_1", "md": "A calm \"Can you say more about that?\" __buys you time__ and shows you can __take a hit__.", "text": "A calm \"Can you say more about that?\" buys you time and shows you can take a hit.", "zh": "一句平静的「能具体说说吗？」能帮你争取时间，也能显示你扛得住。", "sp": null}, {"id": "s0_2_2", "md": "Harsh words often hide a useful point behind a bad delivery.", "text": "Harsh words often hide a useful point behind a bad delivery.", "zh": "难听的话背后，往往藏着一个有用的点，只是表达方式很糟。", "sp": null}, {"id": "s0_2_3", "md": "You do not have to agree yet; you only have to listen.", "text": "You do not have to agree yet; you only have to listen.", "zh": "你不必马上同意，只需要先听。", "sp": null}]]}, {"heading": "2. Turning Heat into Detail", "heading_zh": "2. 把火气变成细节", "rows": [[{"id": "s1_0_0", "md": "Ask which failure the person is actually worried about.", "text": "Ask which failure the person is actually worried about.", "zh": "问问对方到底担心的是哪种故障。", "sp": null}, {"id": "s1_0_1", "md": "\"Which part breaks first, the write path or the cache?\" turns a ==verdict== into a technical conversation.", "text": "\"Which part breaks first, the write path or the cache?\" turns a verdict into a technical conversation.", "zh": "「最先出问题的是写链路还是缓存？」这一问，就把一句定性的判词变成了技术讨论。", "sp": null}, {"id": "s1_0_2", "md": "Now you are both looking at the system, not at each other.", "text": "Now you are both looking at the system, not at each other.", "zh": "这样你们俩都在看系统，而不是盯着对方。", "sp": null}], [{"id": "s1_1_0", "md": "Then __separate the content from the tone__.", "text": "Then separate the content from the tone.", "zh": "然后把内容和语气分开。", "sp": null}, {"id": "s1_1_1", "md": "The delivery may be rude, but the point about connection limits may still be right.", "text": "The delivery may be rude, but the point about connection limits may still be right.", "zh": "对方说话也许很冲，但关于连接数上限的那个点可能是对的。", "sp": null}, {"id": "s1_1_2", "md": "If it is, say so plainly: \"Good catch, I missed that.\"", "text": "If it is, say so plainly: \"Good catch, I missed that.\"", "zh": "如果是对的，就直接说：「好问题，这个我漏了。」", "sp": null}, {"id": "s1_1_3", "md": "Admitting one gap quickly makes the rest of your choices more ==credible==.", "text": "Admitting one gap quickly makes the rest of your choices more credible.", "zh": "痛快地承认一个漏洞，反而会让你其他的选择更有说服力。", "sp": null}], [{"id": "s1_2_0", "md": "If you still disagree, ==park== it instead of fighting in the room.", "text": "If you still disagree, park it instead of fighting in the room.", "zh": "如果你还是不同意，就先把它放一放，别在会上硬杠。", "sp": null}, {"id": "s1_2_1", "md": "Say, \"Let me run a load test and come back to you on Thursday.\"", "text": "Say, \"Let me run a load test and come back to you on Thursday.\"", "zh": "可以说：「我跑个压测，周四给你结果。」", "sp": null}, {"id": "s1_2_2", "md": "**Data settles arguments that opinions only make louder.**", "text": "Data settles arguments that opinions only make louder.", "zh": "观点只会让争论越吵越凶，数据才能让它尘埃落定。", "sp": null}], [{"id": "s1_3_0", "md": "Afterwards, thank the critic in private.", "text": "Afterwards, thank the critic in private.", "zh": "事后，私下谢谢那位批评你的人。", "sp": null}, {"id": "s1_3_1", "md": "The person who __tore your design apart__ today is often the one who backs it in the next review.", "text": "The person who tore your design apart today is often the one who backs it in the next review.", "zh": "今天把你的设计批得体无完肤的人，往往就是下次评审时力挺它的那个人。", "sp": null}]]}], "gist": [{"q": "设计被当众严厉批评时，第一反应通常是什么？为什么不好？", "a": "本能地辩护，越说越快越大声，变成争谁对；就算赢了，大家也只记得你很防御。"}, {"q": "作者说第一件事应该做什么？", "a": "先理解批评而不是回答它，比如平静地问一句「能多说一点吗」，既争取时间也显得扛得住。"}, {"q": "如果你仍然不同意对方，文章建议怎么办？", "a": "先搁置，不在会上争；回去跑压测，约定时间带数据回来；会后私下感谢批评者。"}], "dictation": [{"id": "s0_2_0", "text": "Your first job is not to answer the criticism; it is to understand it."}, {"id": "s1_2_2", "text": "Data settles arguments that opinions only make louder."}, {"id": "s0_2_2", "text": "Harsh words often hide a useful point behind a bad delivery."}, {"id": "s1_0_2", "text": "Now you are both looking at the system, not at each other."}], "shadow": {"text": "Your first job is not to answer the criticism; it is to understand it. A calm \"Can you say more about that?\" buys you time and shows you can take a hit. Harsh words often hide a useful point behind a bad delivery.", "marked": "Your <b>first</b> job / is <b>not</b> to answer the criticism; / it is to <b>understand</b> it. //<br>A <b>calm</b> \"Can you say <b>more</b> about that?\" / <b>buys</b> you time / and shows you can <b>take a hit</b>. //<br><b>Harsh</b> words often hide a <b>useful</b> point / behind a <b>bad delivery</b>. //"}, "prompts": [{"q": "评审会上一位资深架构师说：「这个设计根本扛不住大促流量。」用 30 秒接住：先追问具体担心哪里，再提出会后用数据回复。", "ref": "That's a fair concern, and I want to make sure I understand it. Which part are you most worried about, the order write path or the inventory cache? If it's the cache, I agree we haven't tested a cold start under peak load. Let me run a load test at three times last year's peak and share the results with you by Friday. If it fails, we'll change the design.", "ref_zh": "这个担心很合理，我想确认一下我理解对了。你最担心的是哪部分，订单写链路还是库存缓存？如果是缓存，我同意我们还没测过峰值流量下的冷启动。我按去年峰值的三倍跑一次压测，周五前把结果发给你。如果扛不住，我们就改设计。", "id": "ref0"}, {"q": "同事在群里公开说你的方案「过度设计」。你认可其中一点但不认可整体。用 30 秒回应：先承认对的部分，再搁置分歧。", "ref": "Thanks for the direct feedback. You're right that the plugin layer is more than we need right now, and I'm happy to remove it. On the event bus, I still think we need it, because two other teams plan to subscribe next quarter. Rather than argue it here, can we spend fifteen minutes tomorrow looking at their requirements together? If the need isn't real, I'll simplify.", "ref_zh": "谢谢你直接给反馈。你说得对，插件层目前确实超出我们的需要了，我很乐意把它去掉。至于事件总线，我还是觉得需要，因为另外两个团队下个季度打算订阅。与其在这儿争，我们明天花十五分钟一起看看他们的需求怎么样？如果需求不成立，我就简化掉。", "id": "ref1"}], "words": [{"w": "harsh", "ipa": "/hɑːrʃ/", "zh": "严厉的、刺耳的", "ex": "The feedback was harsh, but the point about retries was right.", "id": "w0"}, {"w": "reflex", "ipa": "/ˈriːfleks/", "zh": "本能反应", "ex": "My first reflex was to roll back, but the logs said otherwise.", "id": "w1"}, {"w": "debate", "ipa": "/dɪˈbeɪt/", "zh": "争论、辩论", "ex": "Let's not turn this into a debate about frameworks.", "id": "w2"}, {"w": "defensive", "ipa": "/dɪˈfensɪv/", "zh": "防御性的、戒备的", "ex": "I got defensive when they questioned the schema.", "id": "w3"}, {"w": "verdict", "ipa": "/ˈvɜːrdɪkt/", "zh": "结论、裁决", "ex": "\"It won't scale\" is a verdict, not an analysis.", "id": "w4"}, {"w": "credible", "ipa": "/ˈkredəbl/", "zh": "可信的", "ex": "Benchmarks make the proposal much more credible.", "id": "w5"}, {"w": "park (v.)", "ipa": "/pɑːrk/", "zh": "暂时搁置（议题）", "ex": "Let's park the naming question and come back to it later.", "tts_w": "park", "id": "w6"}, {"w": "criticism", "ipa": "/ˈkrɪtɪsɪzəm/", "zh": "批评", "ex": "Most of the criticism was about the migration plan.", "id": "w7"}, {"w": "delivery", "ipa": "/dɪˈlɪvəri/", "zh": "表达方式", "ex": "Her point was good, but the delivery put people off.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The First Ten Seconds", "zh": "1. 最初的十秒钟", "start": 0.0, "end": 2.304, "words": [[0.105, 0.355], [0.684, 0.776], [0.789, 1.105], [1.118, 1.303], [1.316, 1.908]]}, {"kind": "s", "id": "s0_0_0", "md": "A senior engineer looks at your design and says, \"This will never survive production.\"", "zh": "一位资深工程师看了你的设计，说：「这东西到了生产环境根本活不下来。」", "sp": null, "gap": false, "start": 2.304, "end": 7.728, "words": [[2.396, 2.449], [2.462, 2.896], [2.909, 3.33], [3.343, 3.58], [3.593, 3.672], [3.686, 3.804], [3.817, 4.343], [4.488, 4.593], [4.607, 5.093], [5.515, 5.738], [5.751, 5.883], [5.896, 6.278], [6.291, 6.764], [6.778, 7.317]]}, {"kind": "s", "id": "s0_0_1", "md": "The room goes quiet, and everyone turns to you.", "zh": "会议室一下安静了，所有人都看向你。", "sp": null, "gap": false, "start": 7.728, "end": 10.896, "words": [[7.846, 7.899], [7.912, 8.149], [8.162, 8.412], [8.425, 8.873], [9.267, 9.373], [9.386, 9.807], [9.82, 10.136], [10.149, 10.267], [10.281, 10.504]]}, {"kind": "s", "id": "s0_0_2", "md": "What you say in the next ten seconds matters more than the design itself.", "zh": "你接下来十秒钟说什么，比设计本身更重要。", "sp": null, "gap": false, "start": 10.896, "end": 15.192, "words": [[11.001, 11.12], [11.133, 11.225], [11.238, 11.514], [11.528, 11.593], [11.607, 11.685], [11.699, 12.028], [12.041, 12.317], [12.33, 12.791], [12.804, 13.225], [13.238, 13.607], [13.62, 13.751], [13.764, 13.857], [13.87, 14.238], [14.251, 14.804]]}, {"kind": "s", "id": "s0_1_0", "md": "The natural ==reflex== is to defend.", "zh": "人的本能反应是辩护。", "sp": null, "gap": true, "start": 15.192, "end": 17.664, "words": [[15.297, 15.35], [15.363, 15.784], [15.797, 16.363], [16.495, 16.613], [16.626, 16.718], [16.731, 17.284]]}, {"kind": "s", "id": "s0_1_1", "md": "You start explaining every choice, faster and louder, and the discussion becomes a ==debate== about who is right.", "zh": "你开始解释每一个选择，越说越快、越说越大声，讨论就变成了一场谁对谁错的辩论。", "sp": null, "gap": false, "start": 17.664, "end": 24.624, "words": [[17.769, 17.875], [17.888, 18.164], [18.177, 18.835], [18.98, 19.282], [19.296, 19.94], [20.164, 20.769], [20.782, 20.901], [20.914, 21.348], [21.664, 21.703], [21.717, 21.782], [21.796, 22.348], [22.361, 22.73], [22.743, 22.796], [22.809, 23.243], [23.256, 23.546], [23.559, 23.743], [23.756, 23.875], [23.888, 24.23]]}, {"kind": "s", "id": "s0_1_2", "md": "Even if you win, people remember that you got ==defensive==.", "zh": "就算你赢了，大家记住的也是你当时急了。", "sp": null, "gap": false, "start": 24.624, "end": 28.104, "words": [[24.729, 24.94], [24.953, 25.071], [25.085, 25.19], [25.203, 25.532], [25.94, 26.256], [26.269, 26.677], [26.69, 26.808], [26.821, 26.9], [26.913, 27.111], [27.124, 27.716]]}, {"kind": "s", "id": "s0_2_0", "md": "**Your first job is not to answer the criticism; it is to understand it.**", "zh": "你的第一要务不是回应批评，而是弄懂批评。", "sp": null, "gap": true, "start": 28.104, "end": 32.736, "words": [[28.209, 28.314], [28.328, 28.67], [28.683, 29.025], [29.117, 29.236], [29.249, 29.591], [29.604, 29.709], [29.722, 30.038], [30.051, 30.13], [30.143, 30.775], [31.236, 31.288], [31.301, 31.42], [31.433, 31.512], [31.525, 32.157], [32.17, 32.341]]}, {"kind": "s", "id": "s0_2_1", "md": "A calm \"Can you say more about that?\" __buys you time__ and shows you can __take a hit__.", "zh": "一句平静的「能具体说说吗？」能帮你争取时间，也能显示你扛得住。", "sp": null, "gap": false, "start": 32.736, "end": 37.824, "words": [[32.841, 32.907], [32.92, 33.341], [33.591, 33.736], [33.749, 33.828], [33.841, 34.039], [34.052, 34.262], [34.275, 34.539], [34.552, 34.881], [35.197, 35.46], [35.473, 35.565], [35.578, 35.973], [36.144, 36.21], [36.223, 36.591], [36.604, 36.683], [36.697, 36.802], [36.815, 37.052], [37.065, 37.104], [37.118, 37.433]]}, {"kind": "s", "id": "s0_2_2", "md": "Harsh words often hide a useful point behind a bad delivery.", "zh": "难听的话背后，往往藏着一个有用的点，只是表达方式很糟。", "sp": null, "gap": false, "start": 37.824, "end": 41.928, "words": [[37.942, 38.179], [38.192, 38.574], [38.679, 39.035], [39.048, 39.298], [39.311, 39.35], [39.363, 39.89], [39.903, 40.245], [40.258, 40.653], [40.666, 40.706], [40.719, 40.982], [40.995, 41.534]]}, {"kind": "s", "id": "s0_2_3", "md": "You do not have to agree yet; you only have to listen.", "zh": "你不必马上同意，只需要先听。", "sp": null, "gap": false, "start": 41.928, "end": 45.408, "words": [[42.033, 42.112], [42.125, 42.244], [42.257, 42.454], [42.467, 42.691], [42.704, 42.823], [42.836, 43.204], [43.217, 43.507], [43.967, 44.086], [44.099, 44.283], [44.296, 44.494], [44.507, 44.586], [44.599, 45.007]]}, {"kind": "h", "id": "h1", "md": "2. Turning Heat into Detail", "zh": "2. 把火气变成细节", "start": 45.408, "end": 48.24, "words": [[45.513, 45.803], [46.171, 46.526], [46.54, 46.974], [47.053, 47.263], [47.276, 47.842]]}, {"kind": "s", "id": "s1_0_0", "md": "Ask which failure the person is actually worried about.", "zh": "问问对方到底担心的是哪种故障。", "sp": null, "gap": false, "start": 48.24, "end": 51.552, "words": [[48.345, 48.595], [48.608, 48.766], [48.779, 49.161], [49.174, 49.253], [49.266, 49.727], [49.885, 50.016], [50.029, 50.398], [50.411, 50.766], [50.779, 51.161]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Which part breaks first, the write path or the cache?\" turns a ==verdict== into a technical conversation.", "zh": "「最先出问题的是写链路还是缓存？」这一问，就把一句定性的判词变成了技术讨论。", "sp": null, "gap": false, "start": 51.552, "end": 58.368, "words": [[51.736, 51.802], [51.881, 52.17], [52.184, 52.486], [52.499, 52.999], [53.197, 53.302], [53.315, 53.605], [53.618, 54.065], [54.21, 54.315], [54.328, 54.42], [54.434, 55.039], [55.381, 55.644], [55.657, 55.71], [55.723, 56.236], [56.289, 56.591], [56.605, 56.67], [56.684, 57.184], [57.197, 57.986]]}, {"kind": "s", "id": "s1_0_2", "md": "Now you are both looking at the system, not at each other.", "zh": "这样你们俩都在看系统，而不是盯着对方。", "sp": null, "gap": false, "start": 58.368, "end": 61.68, "words": [[58.473, 58.605], [58.618, 58.723], [58.736, 58.855], [58.868, 59.184], [59.197, 59.5], [59.513, 59.592], [59.605, 59.684], [59.697, 60.197], [60.592, 60.736], [60.75, 60.829], [60.842, 61.0], [61.013, 61.302]]}, {"kind": "s", "id": "s1_1_0", "md": "Then __separate the content from the tone__.", "zh": "然后把内容和语气分开。", "sp": null, "gap": true, "start": 61.68, "end": 64.08, "words": [[61.798, 61.93], [61.943, 62.443], [62.456, 62.535], [62.548, 63.035], [63.048, 63.206], [63.219, 63.285], [63.298, 63.68]]}, {"kind": "s", "id": "s1_1_1", "md": "The delivery may be rude, but the point about connection limits may still be right.", "zh": "对方说话也许很冲，但关于连接数上限的那个点可能是对的。", "sp": null, "gap": false, "start": 64.08, "end": 69.24, "words": [[64.198, 64.264], [64.277, 64.764], [64.777, 65.027], [65.041, 65.238], [65.251, 65.646], [65.962, 66.093], [66.106, 66.198], [66.212, 66.475], [66.488, 66.725], [66.738, 67.225], [67.238, 67.685], [67.777, 68.041], [68.054, 68.33], [68.343, 68.462], [68.475, 68.843]]}, {"kind": "s", "id": "s1_1_2", "md": "If it is, say so plainly: \"Good catch, I missed that.\"", "zh": "如果是对的，就直接说：「好问题，这个我漏了。」", "sp": null, "gap": false, "start": 69.24, "end": 73.488, "words": [[69.345, 69.464], [69.477, 69.543], [69.556, 69.898], [70.069, 70.306], [70.319, 70.582], [70.595, 71.148], [71.49, 71.674], [71.687, 72.187], [72.385, 72.411], [72.424, 72.766], [72.779, 73.095]]}, {"kind": "s", "id": "s1_1_3", "md": "Admitting one gap quickly makes the rest of your choices more ==credible==.", "zh": "痛快地承认一个漏洞，反而会让你其他的选择更有说服力。", "sp": null, "gap": false, "start": 73.488, "end": 78.0, "words": [[73.593, 74.001], [74.014, 74.264], [74.277, 74.725], [74.791, 75.317], [75.501, 75.764], [75.777, 75.87], [75.883, 76.185], [76.199, 76.251], [76.264, 76.396], [76.409, 76.883], [76.896, 77.093], [77.106, 77.62]]}, {"kind": "s", "id": "s1_2_0", "md": "If you still disagree, ==park== it instead of fighting in the room.", "zh": "如果你还是不同意，就先把它放一放，别在会上硬杠。", "sp": null, "gap": true, "start": 78.0, "end": 81.48, "words": [[78.105, 78.21], [78.224, 78.289], [78.303, 78.539], [78.553, 79.105], [79.395, 79.645], [79.658, 79.737], [79.75, 80.105], [80.118, 80.197], [80.211, 80.579], [80.592, 80.671], [80.684, 80.75], [80.763, 81.092]]}, {"kind": "s", "id": "s1_2_1", "md": "Say, \"Let me run a load test and come back to you on Thursday.\"", "zh": "可以说：「我跑个压测，周四给你结果。」", "sp": null, "gap": false, "start": 81.48, "end": 85.896, "words": [[81.585, 81.914], [82.388, 82.48], [82.493, 82.598], [82.612, 82.783], [82.796, 82.835], [82.848, 83.138], [83.151, 83.572], [83.862, 83.954], [83.967, 84.138], [84.151, 84.414], [84.427, 84.533], [84.546, 84.677], [84.691, 84.809], [84.822, 85.388]]}, {"kind": "s", "id": "s1_2_2", "md": "**Data settles arguments that opinions only make louder.**", "zh": "观点只会让争论越吵越凶，数据才能让它尘埃落定。", "sp": null, "gap": false, "start": 85.896, "end": 89.568, "words": [[86.001, 86.251], [86.264, 86.646], [86.659, 87.238], [87.251, 87.396], [87.409, 88.12], [88.133, 88.396], [88.409, 88.685], [88.699, 89.172]]}, {"kind": "s", "id": "s1_3_0", "md": "Afterwards, thank the critic in private.", "zh": "事后，私下谢谢那位批评你的人。", "sp": null, "gap": true, "start": 89.568, "end": 92.328, "words": [[89.673, 90.344], [90.607, 90.844], [90.857, 90.95], [90.963, 91.318], [91.331, 91.423], [91.436, 91.936]]}, {"kind": "s", "id": "s1_3_1", "md": "The person who __tore your design apart__ today is often the one who backs it in the next review.", "zh": "今天把你的设计批得体无完肤的人，往往就是下次评审时力挺它的那个人。", "sp": null, "gap": false, "start": 92.328, "end": 98.16, "words": [[92.446, 92.525], [92.539, 92.92], [92.933, 93.078], [93.091, 93.42], [93.433, 93.565], [93.578, 93.946], [93.96, 94.289], [94.302, 94.749], [95.025, 95.17], [95.183, 95.565], [95.578, 95.696], [95.71, 95.96], [95.973, 96.131], [96.144, 96.565], [96.578, 96.71], [96.854, 96.96], [96.973, 97.039], [97.052, 97.381], [97.394, 97.775]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

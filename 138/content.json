@@ -1,0 +1,85 @@
+{
+  "id": "138",
+  "type": "dialogue",
+  "title": "Chatting with Other Parents at the Playground",
+  "meta": "B2 · 约 240 词 · 场景：游乐场搭话与约玩",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Other Parent", "name_zh": "另一位家长", "voice": "en-GB-RyanNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Breaking the Ice",
+      "heading_zh": "1. 打开话题",
+      "lines": [
+        {"sp": "B", "en": "Is that your little one on the slide? She's fearless!", "zh": "滑梯上那个是你家的吗？她胆子真大！"},
+        {"sp": "A", "en": "**Yes, that's Mia. She's three and a half. Which one is yours?**", "zh": "是的，那是 Mia，三岁半。哪个是你家的？"},
+        {"sp": "B", "en": "The boy in the blue hat, Oliver. He just turned four. Do you live around here?", "zh": "戴蓝帽子那个男孩，叫 Oliver，刚满四岁。你住这附近吗？"},
+        {"sp": "A", "en": "Yes, in the ==condo== just across the road. We moved in two months ago.", "zh": "对，就住马路对面那个公寓，两个月前搬进来的。"},
+        {"sp": "B", "en": "Oh nice, welcome to the ==neighbourhood==. Where did you move from?", "zh": "不错啊，欢迎来到这一片。你们从哪儿搬来的？"},
+        {"sp": "A", "en": "From Shanghai. We're still __settling in__. Does Oliver go to school nearby?", "zh": "从上海。我们还在适应中。Oliver 在附近上学吗？"},
+        {"sp": "B", "en": "Yes, he's at the preschool next to the community centre. Have you found one yet?", "zh": "对，在社区中心旁边那家幼儿园。你们找到幼儿园了吗？"},
+        {"sp": "A", "en": "Not yet. Is that one any good? I've heard mixed ==reviews==.", "zh": "还没有。那家好吗？我听到的评价有好有坏。"},
+        {"sp": "B", "en": "We've been happy with it. The teachers are lovely, though the ==waiting list== is long.", "zh": "我们挺满意的。老师都很好，不过候补名单很长。"}
+      ]
+    },
+    {
+      "heading": "2. A Squabble and a Playdate",
+      "heading_zh": "2. 小争执和约玩",
+      "lines": [
+        {"sp": "B", "en": "Uh oh. Looks like they both want the same scooter.", "zh": "哎呀，看来他俩都想要同一辆滑板车。"},
+        {"sp": "A", "en": "Mia, sweetheart, that's Oliver's scooter. Can you ask nicely and __take turns__?", "zh": "Mia，宝贝，那是 Oliver 的滑板车。你好好问一下，轮流玩好不好？"},
+        {"sp": "B", "en": "Oliver, let her __have a go__ for a few minutes, then it's your turn again.", "zh": "Oliver，让她玩几分钟，然后再轮到你。"},
+        {"sp": "A", "en": "Sorry about that. She's still learning to ==share==.", "zh": "不好意思。她还在学怎么分享。"},
+        {"sp": "B", "en": "No worries, Oliver's exactly the same. Little ==squabbles== like this happen every day.", "zh": "没事，Oliver 也一样。这种小争执每天都有。"},
+        {"sp": "A", "en": "**They seem to get along, though. Would you be up for a playdate sometime? Maybe at our place on the weekend?**", "zh": "不过他俩好像挺合得来。哪天约着一起玩怎么样？周末来我们家？"},
+        {"sp": "B", "en": "That would be great. Saturdays are busy with swimming, but Sunday morning could work.", "zh": "那太好了。周六要上游泳课，但周日上午可以。"},
+        {"sp": "A", "en": "How about Sunday at ten? There's a pool in our condo, __if the weather holds__.", "zh": "周日十点怎么样？我们公寓有泳池，天气好的话可以去玩。"},
+        {"sp": "B", "en": "Sunday at ten sounds perfect. Shall we ==swap== numbers?", "zh": "周日十点很好。我们交换一下电话吧？"},
+        {"sp": "A", "en": "**Sure. I'll WhatsApp you our address. It was really nice meeting you.**", "zh": "好的，我用 WhatsApp 把地址发给你。很高兴认识你。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "两位家长互相介绍了哪些信息？", "a": "Mia 三岁半，住对面公寓，两个月前从上海搬来；Oliver 刚满四岁，在社区中心旁的幼儿园上学。"},
+    {"q": "两个孩子发生了什么？大人怎么处理的？", "a": "两人抢同一辆滑板车；「你」让 Mia 好好问、轮流玩，对方让 Oliver 先给她玩几分钟。"},
+    {"q": "最后约了什么？", "a": "周日上午十点来「你」家玩，天气好可以去公寓泳池；两人交换了电话，「你」用 WhatsApp 发地址。"}
+  ],
+  "dictation": [
+    "Yes, that's Mia. She's three and a half. Which one is yours?",
+    "Not yet. Is that one any good? I've heard mixed reviews.",
+    "Sorry about that. She's still learning to share.",
+    "They seem to get along, though. Would you be up for a playdate sometime? Maybe at our place on the weekend?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "From Shanghai. We're still settling in. Does Oliver go to school nearby?",
+    "marked": "From <b>Shanghai</b>. //<br>We're still <b>settling in</b>. //<br>Does <b>Oliver</b> / go to school <b>nearby</b>? //"
+  },
+  "prompts": [
+    {
+      "q": "在电梯里遇到一位常见面的家长，孩子年龄相仿。主动搭话，并问问附近有什么适合孩子的地方。",
+      "ref": "Hi, I think I see you at the playground most evenings. Your daughter must be about the same age as my son, around three? We're fairly new here, so I'm still looking for things to do with him on weekends. Are there any good indoor playgrounds or kids' classes nearby that you'd recommend?",
+      "ref_zh": "你好，我好像傍晚经常在游乐场看到你。你女儿应该跟我儿子差不多大，三岁左右吧？我们刚搬来不久，还在找周末能带他去玩的地方。附近有没有什么好的室内游乐场或者儿童课程可以推荐？"
+    },
+    {
+      "q": "约好的周日玩耍，孩子早上发烧了。给对方家长发语音，取消并改约。",
+      "ref": "Hi, it's Mia's dad. I'm really sorry, but Mia woke up with a fever this morning, so we'll have to cancel today. I don't want Oliver to catch anything. She was really looking forward to it, though. Could we do next Sunday instead, same time? Let me know what works for you. Sorry again.",
+      "ref_zh": "你好，我是 Mia 的爸爸。真不好意思，Mia 今早起来发烧了，今天只能取消了，不想让 Oliver 被传染。不过她本来特别期待。下周日同一时间可以吗？看你们什么时候方便。再次抱歉。"
+    }
+  ],
+  "words": [
+    {"w": "condo", "ipa": "/ˈkɑːndoʊ/", "zh": "（私人）公寓", "ex": "Our condo has a pool and a small gym."},
+    {"w": "neighbourhood", "ipa": "/ˈneɪbərhʊd/", "zh": "街区；附近一带", "ex": "It's a quiet neighbourhood with lots of families."},
+    {"w": "settle in", "ipa": "/ˈsetəl ɪn/", "zh": "安顿下来；适应", "ex": "It took us a few months to settle in after the move."},
+    {"w": "review", "ipa": "/rɪˈvjuː/", "zh": "评价", "ex": "The restaurant has great reviews on Google."},
+    {"w": "waiting list", "ipa": "/ˈweɪtɪŋ lɪst/", "zh": "候补名单", "ex": "Can you put my name on the waiting list?"},
+    {"w": "take turns", "ipa": "/teɪk tɜːrnz/", "zh": "轮流", "ex": "You two need to take turns on the swing."},
+    {"w": "share", "ipa": "/ʃer/", "zh": "分享", "ex": "Can you share your crayons with your brother?"},
+    {"w": "squabble", "ipa": "/ˈskwɑːbəl/", "zh": "（小事）争吵", "ex": "The kids had a squabble over the last cookie."},
+    {"w": "swap", "ipa": "/swɑːp/", "zh": "交换", "ex": "Let's swap seats so you can see the screen."},
+    {"w": "playdate", "ipa": "/ˈpleɪdeɪt/", "zh": "（家长约的）孩子一起玩", "ex": "We arranged a playdate at the park on Saturday."}
+  ]
+}

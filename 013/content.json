@@ -1,0 +1,190 @@
+{
+  "id": "013",
+  "title": "Explaining a System to Non-Engineers",
+  "meta": "B2 · 约 280 词 · 场景：跨职能沟通",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. They Need Decisions, Not Diagrams",
+      "paragraphs": [
+        [
+          "When a sales lead asks why the new feature is taking so long, most engineers reach for a diagram.",
+          "Queues, services, databases, arrows going everywhere.",
+          "Ten minutes later, the sales lead is ==politely== nodding and understands even less than before."
+        ],
+        [
+          "The mistake is answering a question they did not ask.",
+          "They do not want to know how the system works.",
+          "They want to know what it means for their customers, their deadline, and their ==promises==.",
+          "**Explain the system only as deeply as the decision in front of them requires.**"
+        ],
+        [
+          "This is not about ==dumbing== things down for people who are less smart.",
+          "It is about __translating__ your world into theirs, which is a skill in its own right."
+        ]
+      ],
+      "heading_zh": "1. 他们要的是决策，不是架构图",
+      "paragraphs_zh": [
+        [
+          "销售负责人问新功能为什么拖了这么久，大多数工程师第一反应是去画架构图。",
+          "队列、服务、数据库，箭头满天飞。",
+          "十分钟后，销售负责人礼貌地点着头，懂的比之前还少。"
+        ],
+        [
+          "错就错在回答了一个对方没问的问题。",
+          "他们并不想知道系统是怎么运作的。",
+          "他们想知道的是，这对他们的客户、他们的 deadline、他们许下的承诺意味着什么。",
+          "系统讲到多深，只取决于他们眼前要做的决定需要多深。"
+        ],
+        [
+          "这不是因为对方不够聪明，所以要讲得浅显一点。",
+          "而是把你的世界翻译成他们的世界，这本身就是一项本事。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Outcome, Picture, Impact",
+      "paragraphs": [
+        [
+          "Start with the outcome they care about.",
+          "\"Right now, a customer's order can take up to a minute to show up in their history.\""
+        ],
+        [
+          "Then give one picture, not five.",
+          "\"Think of it like a busy restaurant kitchen; orders come in faster than the cooks can handle, so they ==pile up== at the counter.\"",
+          "**One good analogy beats ten accurate details.**",
+          "Pick something from daily life, and stop as soon as the picture works, before the ==analogy== starts to break."
+        ],
+        [
+          "Finally, connect it back to their world.",
+          "\"Adding more cooks takes about three weeks, which is why the promotion should start after the holidays.\"",
+          "Now they can __plan around it__, which is what they really needed."
+        ],
+        [
+          "Watch your ==jargon== along the way.",
+          "Words like \"latency\" or \"throughput\" feel normal to you, but each one is a small wall.",
+          "At the end, ask them to __say it back__ in their own words.",
+          "If they can explain it to their boss, you have done your job ==properly==."
+        ]
+      ],
+      "heading_zh": "2. 结果、画面、影响",
+      "paragraphs_zh": [
+        [
+          "先讲他们关心的结果。",
+          "「现在，客户下的单最长要一分钟才能在历史订单里看到。」"
+        ],
+        [
+          "然后给一个画面，不是五个。",
+          "「可以把它想象成一个忙碌的餐厅后厨：单子进来的速度比厨师做得快，就在出餐口堆起来了。」",
+          "一个好的类比，胜过十个准确的细节。",
+          "从日常生活里挑个例子，画面一立住就停，别等到类比开始站不住脚。"
+        ],
+        [
+          "最后，把它跟他们的世界连起来。",
+          "「再加厨师大概要三周，所以促销最好放在节后开始。」",
+          "这样他们就能据此做计划了，这才是他们真正需要的。"
+        ],
+        [
+          "过程中注意少用黑话。",
+          "像「延迟」「吞吐量」这种词你觉得很平常，但每一个对他们来说都是一道小墙。",
+          "最后，请他们用自己的话复述一遍。",
+          "如果他们能讲给自己的老板听，你的活儿就干到位了。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "工程师向非技术同事解释系统时常犯的错误是什么？",
+      "a": "回答了对方没问的问题，讲系统怎么运作，而对方只想知道对客户、截止时间和承诺意味着什么。"
+    },
+    {
+      "q": "作者建议的三步解释结构是什么？",
+      "a": "先讲对方关心的结果；再用一个生活化的类比；最后连回对方的工作，让他能据此做计划。"
+    },
+    {
+      "q": "怎么检验对方真的听懂了？",
+      "a": "请对方用自己的话复述，能讲给自己老板听就说明讲清楚了。"
+    }
+  ],
+  "dictation": [
+    "Explain the system only as deeply as the decision in front of them requires.",
+    "One good analogy beats ten accurate details.",
+    "They do not want to know how the system works.",
+    "Now they can plan around it, which is what they really needed."
+  ],
+  "shadow": {
+    "text": "Then give one picture, not five. \"Think of it like a busy restaurant kitchen; orders come in faster than the cooks can handle, so they pile up at the counter.\" One good analogy beats ten accurate details.",
+    "marked": "Then give <b>one</b> picture, / not <b>five</b>. //<br>\"Think of it like a busy restaurant <b>kitchen</b>; / orders come in <b>faster</b> / than the cooks can handle, / so they <b>pile up</b> at the counter.\" //<br>One <b>good</b> analogy / beats <b>ten</b> accurate details. //"
+  },
+  "prompts": [
+    {
+      "q": "市场部同事问你：为什么大促那天 App 会变慢？用 30 秒按“结果、类比、对他的影响”向她解释，不用技术术语。",
+      "ref": "Good question. What users notice is that pages take a few seconds longer to load during big sales. Think of it like a shop with only four checkout counters. On a normal day that's fine, but on sale day the lines get really long. We're adding more counters, but it takes a few weeks. So for the next campaign, starting at different times in different regions would really help.",
+      "ref_zh": "好问题。用户能感觉到的是，大促期间页面加载会慢上几秒。可以把它想象成一家只有四个收银台的店。平时没问题，但到了大促那天，队就排得特别长。我们正在加收银台，但需要几周时间。所以下次活动，如果不同地区错开时间开始，会很有帮助。"
+    },
+    {
+      "q": "财务同事问为什么要花钱做“数据库迁移”。用 30 秒用一个类比解释，并说明不做会有什么后果。",
+      "ref": "Fair question, since nothing visible changes for users. Our current database is like an old warehouse that's almost full. We can still squeeze things in, but every month it gets slower to find anything, and one day the shelves will simply run out. Moving to the new one costs us about two months of work now. If we wait, we'll be forced to move during a crisis, which is much more expensive.",
+      "ref_zh": "这个问题问得在理，毕竟用户那边看不到任何变化。我们现在的数据库就像一个快塞满的旧仓库。东西还能硬塞进去，但每个月找东西都更慢，总有一天货架会直接用完。现在搬到新仓库，大概要花两个月的工作量。如果等下去，我们就会被迫在出事的时候搬，那代价就大多了。"
+    }
+  ],
+  "words": [
+    {
+      "w": "politely",
+      "ipa": "/pəˈlaɪtli/",
+      "zh": "礼貌地",
+      "ex": "She politely declined the extra scope for this sprint."
+    },
+    {
+      "w": "promise (n.)",
+      "ipa": "/ˈprɑːmɪs/",
+      "zh": "承诺",
+      "ex": "We can't make promises to the client until load testing is done.",
+      "tts_w": "promise"
+    },
+    {
+      "w": "dumb down",
+      "ipa": "/dʌm daʊn/",
+      "zh": "（贬义）把内容讲得过于浅显",
+      "ex": "You don't need to dumb it down; just skip the internal names."
+    },
+    {
+      "w": "pile up",
+      "ipa": "/paɪl ʌp/",
+      "zh": "堆积",
+      "ex": "Messages pile up in the queue when the consumer is down."
+    },
+    {
+      "w": "analogy",
+      "ipa": "/əˈnælədʒi/",
+      "zh": "类比",
+      "ex": "The traffic jam analogy helped the PM understand the backlog."
+    },
+    {
+      "w": "jargon",
+      "ipa": "/ˈdʒɑːrɡən/",
+      "zh": "行话、术语",
+      "ex": "Keep the jargon out of the customer email."
+    },
+    {
+      "w": "properly",
+      "ipa": "/ˈprɑːpərli/",
+      "zh": "恰当地、好好地",
+      "ex": "We never properly tested the failover path."
+    },
+    {
+      "w": "translate",
+      "ipa": "/trænsˈleɪt/",
+      "zh": "转化、翻译",
+      "ex": "Can you translate these metrics into what they mean for revenue?"
+    },
+    {
+      "w": "say it back",
+      "ipa": "/seɪ ɪt bæk/",
+      "zh": "复述",
+      "ex": "I asked the new hire to say it back, just to make sure we were aligned."
+    }
+  ]
+}

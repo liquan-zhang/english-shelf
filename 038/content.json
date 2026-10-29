@@ -1,0 +1,180 @@
+{
+  "id": "038",
+  "title": "Escalating Without Burning Bridges",
+  "meta": "B2 · 约 260 词 · 场景：跨团队问题升级",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. What Escalation Really Is",
+      "paragraphs": [
+        [
+          "For two weeks, you have been waiting for another team to fix a bug that blocks your launch.",
+          "Polite reminders in the chat have gone nowhere.",
+          "You know it is time to ==escalate==, but it feels like __going behind someone's back__."
+        ],
+        [
+          "Escalation feels personal because we treat it as a complaint.",
+          "**A good escalation is not a complaint about a person; it is a request for a decision that neither of you can make alone.**",
+          "Usually the other team is not lazy; they have ==conflicting== priorities from their own leadership.",
+          "Your bug is simply losing to something their boss cares about more."
+        ],
+        [
+          "Seen this way, escalating actually helps them.",
+          "It __takes the pressure off__ the engineer stuck in the middle.",
+          "It also puts the choice in front of someone with the ==mandate== to make it, instead of leaving two teams to argue forever."
+        ]
+      ],
+      "heading_zh": "1. 升级到底是什么",
+      "paragraphs_zh": [
+        [
+          "两周了，你一直在等另一个团队修一个卡住你们上线的 bug。",
+          "在群里客客气气地催了几次，都石沉大海。",
+          "你知道是时候往上升级了，但总觉得这像是在背后告状。"
+        ],
+        [
+          "升级之所以让人觉得针对个人，是因为我们把它当成了投诉。",
+          "好的升级不是投诉某个人；而是请别人来做一个你们俩谁都定不了的决定。",
+          "通常对方团队并不是偷懒；他们有来自自己领导的、相互冲突的优先级。",
+          "你的 bug 只是排在了他们老板更在意的事情后面。"
+        ],
+        [
+          "这么一看，升级其实是在帮他们。",
+          "它能给夹在中间的那位工程师减压。",
+          "它还能把这个选择交给有权拍板的人，而不是让两个团队无休止地扯皮。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. No Surprises",
+      "paragraphs": [
+        [
+          "**Tell the other person before you escalate, and invite them to join.**",
+          "\"I think we need our managers to decide between your roadmap item and our launch; can we write it up together?\"",
+          "This turns a potential ==ambush== into a shared problem."
+        ],
+        [
+          "Keep the write-up short and ==neutral==.",
+          "State the impact on each side, the options, and the date you need an answer.",
+          "Avoid ==loaded== words like \"ignored\" or \"refused,\" which make readers __pick sides__ instead of solving the problem."
+        ],
+        [
+          "After the decision, thank the other team, whatever the result.",
+          "If the call goes against you, accept it and __plan around it__.",
+          "You will work with these people again next quarter, and they will remember exactly how you handled this one."
+        ]
+      ],
+      "heading_zh": "2. 不要搞突然袭击",
+      "paragraphs_zh": [
+        [
+          "升级之前先告诉对方，并邀请他一起参与。",
+          "「我觉得需要我们俩的经理来决定，是先做你们 roadmap 上的事还是先保我们的上线；我们一起写个说明好吗？」",
+          "这样，一场可能的突然袭击就变成了双方共同的问题。"
+        ],
+        [
+          "说明要写得简短、中立。",
+          "写清楚对双方各自的影响、有哪些选项，以及你需要在哪天之前得到答复。",
+          "避免用「无视」「拒绝」这类带情绪的词，它们会让读的人去站队，而不是去解决问题。"
+        ],
+        [
+          "不管结果如何，决定出来后都要谢谢对方团队。",
+          "如果结果对你不利，就接受它，然后围绕它重新规划。",
+          "下个季度你们还要一起共事，而他们会清清楚楚地记得你这次是怎么处理的。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么升级问题会让人觉得像「背后告状」？作者怎么重新定义它？",
+      "a": "因为我们把升级当成投诉；作者认为好的升级是请上级做一个双方都做不了的决定，对方往往只是有冲突的优先级。"
+    },
+    {
+      "q": "为什么说升级其实也帮了对方？",
+      "a": "它减轻了夹在中间的工程师的压力，把选择交给有权决定的人，而不是让两个团队一直争下去。"
+    },
+    {
+      "q": "升级时怎样不伤关系？",
+      "a": "升级前先告诉对方并邀请一起写；文字简短中立，写清双方影响、选项和需要答复的日期，避免「无视」「拒绝」这类带情绪的词；结果出来后感谢对方，结果不利也接受。"
+    }
+  ],
+  "dictation": [
+    "A good escalation is not a complaint about a person; it is a request for a decision that neither of you can make alone.",
+    "Tell the other person before you escalate, and invite them to join.",
+    "Escalation feels personal because we treat it as a complaint.",
+    "State the impact on each side, the options, and the date you need an answer."
+  ],
+  "shadow": {
+    "text": "Escalation feels personal because we treat it as a complaint. A good escalation is not a complaint about a person; it is a request for a decision that neither of you can make alone.",
+    "marked": "Escalation feels <b>personal</b> / because we treat it as a <b>complaint</b>. //<br>A good escalation / is <b>not</b> a complaint about a <b>person</b>; / it is a request for a <b>decision</b> / that <b>neither</b> of you / can make <b>alone</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "另一个团队的工程师一直没修阻塞你们上线的 bug。你决定升级，先私下跟他说一声。用 30 秒说明你要升级、为什么、并邀请他一起写。",
+      "ref": "Hey, I wanted to talk to you before I do anything. I know you're stuck between our bug and your team's migration, and that's not your fault. I think it's a priority call that neither of us can make. Would you be okay if we wrote a short note to both our managers together, laying out the two options and the launch date? That way nobody feels surprised.",
+      "ref_zh": "嘿，我想在做任何动作之前先跟你聊聊。我知道你夹在我们的 bug 和你们团队的迁移之间，这不是你的错。我觉得这是一个优先级的问题，我们俩谁都定不了。我们一起给双方的经理写个简短的说明，把两个选项和上线日期列清楚，你看行吗？这样谁都不会觉得突然。"
+    },
+    {
+      "q": "你在写给两位经理的升级说明，口头先跟自己的经理过一遍：用中立的语言讲清楚影响、选项和需要答复的时间。",
+      "ref": "Here's the summary I'm planning to send. The login bug in the identity service blocks our launch on the fifteenth. The identity team is focused on their migration, which also has a hard deadline. Option one, they spend two days on our fix and the migration moves by two days. Option two, we launch without single sign-on and add it in the next release. We need a decision by Friday.",
+      "ref_zh": "这是我打算发出去的总结。身份服务里的登录 bug 卡住了我们十五号的上线。身份团队正在全力做他们的迁移，那个也有硬性的 deadline。方案一，他们花两天修我们的问题，迁移顺延两天。方案二，我们先不带单点登录上线，下个版本再加上。我们需要在周五前拿到决定。"
+    }
+  ],
+  "words": [
+    {
+      "w": "escalate",
+      "ipa": "/ˈeskəleɪt/",
+      "zh": "（向上）升级问题",
+      "ex": "If we don't hear back by Friday, I'll escalate to their director."
+    },
+    {
+      "w": "conflicting",
+      "ipa": "/kənˈflɪktɪŋ/",
+      "zh": "相互冲突的",
+      "ex": "The two teams got conflicting instructions about the launch date."
+    },
+    {
+      "w": "mandate",
+      "ipa": "/ˈmændeɪt/",
+      "zh": "授权、职权范围",
+      "ex": "Our team doesn't have the mandate to change their API."
+    },
+    {
+      "w": "ambush",
+      "ipa": "/ˈæmbʊʃ/",
+      "zh": "突然袭击",
+      "ex": "Raising it first in the big meeting would feel like an ambush."
+    },
+    {
+      "w": "neutral",
+      "ipa": "/ˈnuːtrəl/",
+      "zh": "中立的",
+      "ex": "Keep the incident summary neutral and stick to the timeline."
+    },
+    {
+      "w": "loaded",
+      "ipa": "/ˈloʊdɪd/",
+      "zh": "带情绪色彩的、有倾向的",
+      "ex": "\"Careless\" is a loaded word; let's just describe what happened."
+    },
+    {
+      "w": "burn bridges",
+      "ipa": "/ˌbɜːrn ˈbrɪdʒɪz/",
+      "zh": "断了后路、伤了关系",
+      "ex": "Push hard on the deadline, but don't burn bridges with the vendor."
+    },
+    {
+      "w": "write-up",
+      "ipa": "/ˈraɪt ʌp/",
+      "zh": "书面说明",
+      "ex": "Can you send a short write-up of the options before the meeting?",
+      "tts_w": "write up"
+    },
+    {
+      "w": "reminder",
+      "ipa": "/rɪˈmaɪndər/",
+      "zh": "提醒",
+      "ex": "I sent a reminder, but the ticket is still unassigned."
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "id": "050",
+  "title": "Handling a Turf War",
+  "meta": "B2 · 约 280 词 · 场景：团队边界冲突",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. How Turf Wars Start",
+      "paragraphs": [
+        [
+          "Two teams discover, in the same quarterly review, that both are building a notification service.",
+          "Each has a design doc, a roadmap, and a manager who has already promised it upward.",
+          "Within a week, design reviews turn into ==debates== about history, and nobody shares code."
+        ],
+        [
+          "Turf wars are rarely about ego alone.",
+          "Owning a system means headcount, visibility, and a story for promotion.",
+          "So when ==boundaries== are unclear, smart people __dig in__, because losing the project feels like losing their future."
+        ],
+        [
+          "**You will not end a turf war by proving who was there first.**",
+          "History is ==ambiguous==, and every side has a version that makes them look right.",
+          "The only exit is to change the question."
+        ]
+      ],
+      "heading_zh": "1. 地盘之争是怎么开始的",
+      "paragraphs_zh": [
+        [
+          "两个团队在同一次季度 review 上发现，双方都在做一个通知服务。",
+          "每边都有设计文档、有 roadmap，还有一个已经向上承诺过的老板。",
+          "不到一周，设计评审就变成了翻旧账，谁也不共享代码。"
+        ],
+        [
+          "地盘之争很少只是面子问题。",
+          "拥有一个系统，意味着 HC、能见度，以及一个能拿去晋升的故事。",
+          "所以边界一不清楚，聪明人就会死守，因为丢了项目感觉就像丢了前途。"
+        ],
+        [
+          "你没法靠证明谁先来的来结束地盘之争。",
+          "历史本身就说不清，每一方都有一个让自己显得占理的版本。",
+          "唯一的出路是换一个问题。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Changing the Question",
+      "paragraphs": [
+        [
+          "Move the discussion from \"who owns it\" to \"what do our users need.\"",
+          "Write down the use cases together, and you will often find that the two teams need different things.",
+          "One needs fast push alerts, the other needs reliable email at scale."
+        ],
+        [
+          "That opens the door to a split by ==interface==, not by people.",
+          "One team owns delivery, the other owns templates and scheduling, and a clear contract sits between them.",
+          "Both teams __walk away with__ something real to own."
+        ],
+        [
+          "If the teams still cannot agree, do not let the fight __drag on__ for months.",
+          "Ask a shared manager to decide, and give them a short, ==neutral== document with both options and their costs.",
+          "**A fast, imperfect decision is better than a slow war that burns both teams out.**"
+        ],
+        [
+          "Finally, be generous after the ==outcome==.",
+          "If your side wins, invite the other team into design reviews.",
+          "If your side loses, help them succeed, because people will remember how you behaved far longer than who won."
+        ]
+      ],
+      "heading_zh": "2. 换一个问题",
+      "paragraphs_zh": [
+        [
+          "把讨论从「这归谁」转到「我们的用户需要什么」。",
+          "一起把使用场景写下来，你往往会发现两个团队需要的是不同的东西。",
+          "一个需要快速的推送提醒，另一个需要大规模、可靠的邮件。"
+        ],
+        [
+          "这就为按接口拆分、而不是按人拆分打开了口子。",
+          "一个团队负责投递，另一个负责模板和调度，中间是一份清晰的接口约定。",
+          "两个团队都能拿到真正属于自己的东西。"
+        ],
+        [
+          "如果两个团队还是谈不拢，别让这场仗拖上几个月。",
+          "请共同的上级来拍板，并给他一份简短、中立的文档，列出两个方案和各自的代价。",
+          "一个快速但不完美的决定，好过一场把两个团队都拖垮的持久战。"
+        ],
+        [
+          "最后，结果出来之后要大度。",
+          "如果你这边赢了，就邀请对方团队来参加设计评审。",
+          "如果你这边输了，就帮他们做成，因为人们记住你当时的表现，会比记住谁赢了久得多。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么团队会陷入地盘之争？",
+      "a": "拥有一个系统意味着人头编制、能见度和晋升故事；归属不清时，丢掉项目就像丢掉前途，所以大家会死守。"
+    },
+    {
+      "q": "作者说怎样才能走出地盘之争？",
+      "a": "不去争谁先来的（历史总是模糊的），而是换个问题：从「谁拥有」变成「用户需要什么」，再按接口而不是按人拆分。"
+    },
+    {
+      "q": "如果仍然谈不拢怎么办？结果出来后呢？",
+      "a": "请共同上级拍板，提供一份中立的文档列出两个方案和代价；结果出来后要大度，赢了邀请对方参与评审，输了帮对方成功。"
+    }
+  ],
+  "dictation": [
+    "You will not end a turf war by proving who was there first.",
+    "Write down the use cases together, and you will often find that the two teams need different things.",
+    "A fast, imperfect decision is better than a slow war that burns both teams out.",
+    "Both teams walk away with something real to own."
+  ],
+  "shadow": {
+    "text": "Turf wars are rarely about ego alone. Owning a system means headcount, visibility, and a story for promotion.",
+    "marked": "Turf wars are <b>rarely</b> about <b>ego</b> alone. //<br><b>Owning</b> a system means <b>headcount</b>, / <b>visibility</b>, / and a <b>story</b> for promotion. //"
+  },
+  "prompts": [
+    {
+      "q": "你的团队和另一个团队都想负责新的配置中心，会议开始变得火药味很浓。用 30 秒把讨论从「谁拥有」拉回到「用户需要什么」。",
+      "ref": "I think we could argue about history all afternoon and still not agree. Can we try a different question? What do the services using this config center actually need? If we list the use cases on the board, we might find that one team cares about fast rollout and the other about audit and approvals. Then we can talk about splitting by interface instead of picking a winner.",
+      "ref_zh": "我觉得我们就算争一下午历史，也还是谈不拢。我们能不能换个问题？用这个配置中心的服务到底需要什么？如果我们把使用场景列在白板上，可能会发现一个团队在乎的是快速发布，另一个在乎的是审计和审批。那我们就可以讨论按接口拆分，而不是非要决出一个赢家。"
+    },
+    {
+      "q": "两个团队争了一个月仍无结论。用 30 秒向共同的上级提出请他拍板，并说明你会准备一份中立的方案对比。",
+      "ref": "We've been going back and forth on the notification service for a month, and both teams are losing time. I'd like to ask you to make the call. Kevin and I will write one short document together, with both options, the cost of each, and the risks. We'll send it by Thursday. Whatever you decide, my team will support it fully.",
+      "ref_zh": "通知服务这件事我们已经来回拉扯了一个月，两个团队都在浪费时间。我想请你来拍板。Kevin 和我会一起写一份简短的文档，列出两个方案、各自的成本和风险。我们周四前发给你。不管你怎么定，我的团队都会全力支持。"
+    }
+  ],
+  "words": [
+    {
+      "w": "debate",
+      "ipa": "/dɪˈbeɪt/",
+      "zh": "争论、辩论",
+      "ex": "Let's not turn the design review into a debate about who started it."
+    },
+    {
+      "w": "boundary",
+      "ipa": "/ˈbaʊndri/",
+      "zh": "边界",
+      "ex": "We need a clear boundary between the API team and the client team."
+    },
+    {
+      "w": "ambiguous",
+      "ipa": "/æmˈbɪɡjuəs/",
+      "zh": "模糊的、有歧义的",
+      "ex": "The requirements are ambiguous, so let's confirm with the PM."
+    },
+    {
+      "w": "interface",
+      "ipa": "/ˈɪntərfeɪs/",
+      "zh": "接口、边界",
+      "ex": "If we agree on the interface, both teams can work in parallel."
+    },
+    {
+      "w": "neutral",
+      "ipa": "/ˈnuːtrəl/",
+      "zh": "中立的",
+      "ex": "Please keep the comparison doc neutral; list costs for both options."
+    },
+    {
+      "w": "outcome",
+      "ipa": "/ˈaʊtkʌm/",
+      "zh": "结果",
+      "ex": "Whatever the outcome, we'll update the roadmap by Monday."
+    },
+    {
+      "w": "headcount",
+      "ipa": "/ˈhedkaʊnt/",
+      "zh": "人员编制",
+      "ex": "We asked for two more headcount to support the new service."
+    },
+    {
+      "w": "dig in",
+      "ipa": "/dɪɡ ɪn/",
+      "zh": "坚持立场、死守",
+      "ex": "Once both leads dig in, the meeting stops being useful."
+    },
+    {
+      "w": "generous",
+      "ipa": "/ˈdʒenərəs/",
+      "zh": "大度的、慷慨的",
+      "ex": "Be generous with credit when the other team helps you ship."
+    }
+  ]
+}

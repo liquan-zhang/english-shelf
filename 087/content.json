@@ -1,0 +1,183 @@
+{
+  "id": "087",
+  "title": "Talking About Food, Travel, and Home",
+  "meta": "B2 · 约 290 词 · 场景：聊食物旅行和家乡",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Three Topics That Work Almost Anywhere",
+      "paragraphs": [
+        [
+          "In a team with people from Chennai, Manchester, Jakarta and Shanghai, it can be hard to __find common ground__.",
+          "Pop culture is different, sports are different, and politics is a ==minefield==."
+        ],
+        [
+          "Food, travel and home are the exception.",
+          "Everyone eats, most people have a trip they love to talk about, and everyone comes from somewhere.",
+          "**These topics are safe because everyone is an expert on their own experience.**"
+        ],
+        [
+          "If you grew up in China and work in Singapore, you have an ==advantage== here, not a weakness.",
+          "Your colleagues are often ==fascinated== by places they have never visited.",
+          "Your hometown, your favorite breakfast, and the way your family celebrates the new year are all ready-made stories."
+        ]
+      ],
+      "heading_zh": "1. 几乎在哪儿都好聊的三个话题",
+      "paragraphs_zh": [
+        [
+          "一个团队里有来自金奈、曼彻斯特、雅加达和上海的人，要找共同话题可能挺难的。",
+          "流行文化不一样，体育不一样，政治更是雷区。"
+        ],
+        [
+          "吃的、旅行和家乡是例外。",
+          "人人都要吃饭，大多数人都有一趟爱聊的旅行，每个人也都来自某个地方。",
+          "这些话题之所以安全，是因为每个人在自己的经历上都是专家。"
+        ],
+        [
+          "如果你在中国长大、在新加坡工作，这在这儿是你的优势，不是短板。",
+          "同事们往往对自己没去过的地方特别好奇。",
+          "你的家乡、你最爱的早餐、你家怎么过年，都是现成的故事。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Prepare a Few Home Stories",
+      "paragraphs": [
+        [
+          "Prepare three short stories you can tell in under a minute: one about a dish, one about a place, and one about a ==tradition==.",
+          "For example: \"In my hometown, people eat noodles for breakfast, and the soup is so spicy that visitors ==underestimate== it every time.\""
+        ],
+        [
+          "Then turn the topic back with a ==comparison== question.",
+          "\"What's a typical breakfast where you grew up?\" or \"Is there a dish from home you can't find here?\"",
+          "Questions like these __level the playing field__, because both of you get to be the expert."
+        ],
+        [
+          "**Be curious about other people's food, but never rank it.**",
+          "Calling a dish \"too oily\" or \"weird\" can sound like a judgment about someone's home.",
+          "Try \"I've never had that, what does it taste like?\" instead, and you will sound open, not ==picky==."
+        ],
+        [
+          "Travel works the same way.",
+          "Ask people for ==recommendations==, because everyone loves __being treated as__ a local guide.",
+          "\"If I only had one day in your hometown, where should I go?\" is a question almost nobody can resist."
+        ]
+      ],
+      "heading_zh": "2. 准备几个家乡故事",
+      "paragraphs_zh": [
+        [
+          "准备三个一分钟内能讲完的小故事：一道菜、一个地方、一个习俗。",
+          "比如：「我们老家早上吃粉，汤辣得不行，外地人每次都低估它。」"
+        ],
+        [
+          "然后用一个对比式的问题把话题抛回去。",
+          "「你们那边早餐一般吃什么？」或者「有没有哪道家乡菜在这边吃不到？」",
+          "这类问题能把双方拉到同一起跑线，因为你们俩都能当一回专家。"
+        ],
+        [
+          "对别人家的吃的要好奇，但千万别给它排高低。",
+          "说一道菜「太油」或者「好怪」，听起来就像是在评判人家的家乡。",
+          "换成「我还没吃过，是什么味道？」，你听起来就是开放，而不是挑剔。"
+        ],
+        [
+          "旅行也是一样。",
+          "多请别人推荐，因为谁都喜欢被当成本地向导。",
+          "「如果我在你老家只能待一天，该去哪儿？」这个问题几乎没人能抵挡。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么食物、旅行和家乡在多国团队里是安全话题？",
+      "a": "每个人都要吃饭、大多有喜欢的旅行、都来自某个地方；每个人都是自己经历的专家。"
+    },
+    {
+      "q": "作者为什么说来自中国、在新加坡工作反而是优势？",
+      "a": "同事对没去过的地方很好奇，家乡、早餐、过年方式都是现成的故事。"
+    },
+    {
+      "q": "聊别人的食物时要注意什么？",
+      "a": "可以好奇但不要评判或排名，别说“太油”“奇怪”；改问“我没吃过，是什么味道？”；旅行话题多请对方推荐。"
+    }
+  ],
+  "dictation": [
+    "These topics are safe because everyone is an expert on their own experience.",
+    "Then turn the topic back with a comparison question.",
+    "Be curious about other people's food, but never rank it.",
+    "Calling a dish \"too oily\" or \"weird\" can sound like a judgment about someone's home."
+  ],
+  "shadow": {
+    "text": "Food, travel and home are the exception. Everyone eats, most people have a trip they love to talk about, and everyone comes from somewhere. These topics are safe because everyone is an expert on their own experience.",
+    "marked": "Food, <b>travel</b> and <b>home</b> / are the <b>exception</b>. //<br>Everyone <b>eats</b>, / most people have a <b>trip</b> they love to talk about, / and everyone comes from <b>somewhere</b>. //<br>These topics are <b>safe</b> / because everyone is an <b>expert</b> / on their <b>own</b> experience. //"
+  },
+  "prompts": [
+    {
+      "q": "英国同事问你：What's your hometown like? 用一个准备好的家乡故事回答，再用比较式问题问回去，30 秒。",
+      "ref": "I'm from a mid-sized city in Hunan, in central China. It's famous for very spicy food, and people there are quite proud of it. My mom honestly thinks the chili here is for children. What about you? Where did you grow up, and is there a dish from home you really miss in Singapore?",
+      "ref_zh": "我来自湖南的一个中等城市，在中国中部。那边以特别能吃辣出名，大家也挺引以为豪的。我妈真心觉得这边的辣椒是给小孩吃的。你呢？你在哪儿长大的？有没有哪道家乡菜在新加坡特别想吃？"
+    },
+    {
+      "q": "澳洲同事带来一种很咸的家乡涂酱让你尝，你觉得味道很怪。得体地回应，并把话题聊下去。",
+      "ref": "Wow, that's strong! Definitely not like anything I grew up with. Is this something people eat every day back home, or just for breakfast? Interesting. It reminds me of the fermented tofu my grandfather loved. Most of my friends couldn't stand it either. Next time I'll bring some in, and you can get your revenge.",
+      "ref_zh": "哇，这个味儿好冲！跟我从小吃的完全不一样。这是你们那边每天都吃的，还是只早餐吃？有意思。让我想起我爷爷最爱的腐乳。我大多数朋友也受不了那个。下次我带点来，你就可以报仇了。"
+    }
+  ],
+  "words": [
+    {
+      "w": "minefield",
+      "ipa": "/ˈmaɪnˌfiːld/",
+      "zh": "雷区",
+      "ex": "Pricing for that market is a legal minefield, so talk to the lawyers first."
+    },
+    {
+      "w": "advantage",
+      "ipa": "/ədˈvæntɪdʒ/",
+      "zh": "优势",
+      "ex": "Knowing both teams is a real advantage when priorities clash."
+    },
+    {
+      "w": "fascinated",
+      "ipa": "/ˈfæsəˌneɪtɪd/",
+      "zh": "着迷的、极感兴趣的",
+      "ex": "The new hires were fascinated by how the recommendation system works."
+    },
+    {
+      "w": "tradition",
+      "ipa": "/trəˈdɪʃən/",
+      "zh": "传统",
+      "ex": "Friday demos have become a tradition on our team."
+    },
+    {
+      "w": "underestimate",
+      "ipa": "/ˌʌndərˈestəˌmeɪt/",
+      "zh": "低估",
+      "ex": "We underestimated how long the data migration would take."
+    },
+    {
+      "w": "comparison",
+      "ipa": "/kəmˈpærɪsən/",
+      "zh": "比较",
+      "ex": "A side-by-side comparison of the two designs would help us decide."
+    },
+    {
+      "w": "picky",
+      "ipa": "/ˈpɪki/",
+      "zh": "挑剔的",
+      "ex": "He's picky about naming, which is annoying but keeps the code clean."
+    },
+    {
+      "w": "recommendation",
+      "ipa": "/ˌrekəmenˈdeɪʃən/",
+      "zh": "推荐、建议",
+      "ex": "Any recommendations for a good lunch spot near the new office?"
+    },
+    {
+      "w": "common ground",
+      "ipa": "/ˈkɑːmən ɡraʊnd/",
+      "zh": "共同点、共识",
+      "ex": "Let's start from the common ground: we both want fewer incidents."
+    }
+  ]
+}

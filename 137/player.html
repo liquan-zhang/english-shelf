@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Talking to Your Child's Teacher · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "137", "type": "dialogue", "title": "Talking to Your Child's Teacher", "meta": "B2 · 约 260 词 · 场景：家长会谈孩子表现与小冲突", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Teacher", "name_zh": "老师", "voice": "en-SG-LunaNeural"}}, "gist": [{"q": "老师怎么评价 Leo 的社交和英语？", "a": "大集体里有点害羞，但有两个好朋友；英语进步很大，都听得懂，只是开口缺自信。"}, {"q": "老师提到的小问题是什么？", "a": "上周玩游戏时同学拿了他的玩具，他着急推了对方；没人受伤，两人很快和好。"}, {"q": "关于作业，老师给了什么建议？", "a": "作业不该超过二十分钟；如果卡住了就停下，写个条子给老师。"}], "dictation": [{"id": "s0_1_0", "text": "That's good to hear. How is he getting along with the other kids?"}, {"id": "s0_5_0", "text": "Is there anything we can do at home to help?"}, {"id": "s1_3_0", "text": "Thanks for telling me. We'll have a chat with him tonight about using words instead."}, {"id": "s1_7_0", "text": "That's a relief. Could we stay in touch by email if anything else comes up?"}], "shadow": {"speaker": "A", "text": "One more thing. He spends almost an hour on homework most nights. Is that normal?", "marked": "One more <b>thing</b>. //<br>He spends <b>almost an hour</b> / on <b>homework</b> / most nights. //<br>Is that <b>normal</b>? //"}, "prompts": [{"q": "孩子回家说在学校被同学欺负了。给老师打电话，说明情况，请老师留意，但语气别带指责。", "ref": "Hi, this is Leo's dad. Sorry to call after school. Leo came home a bit upset today. He said one of the boys keeps taking his snacks and laughing at his English. I'm not sure how much of it is true, but could you keep an eye on it for a few days? And please let me know what you see.", "ref_zh": "你好，我是 Leo 的爸爸。不好意思放学后打电话。Leo 今天回家有点不开心，说有个男孩老拿他的零食，还笑他的英语。我不确定有多少是真的，但能不能麻烦你这几天留意一下？看到什么也请告诉我。", "id": "ref0"}, {"q": "下周你要带孩子回国三天，需要请假。给老师写一段口头留言，说明请假和补课的事。", "ref": "Hi, just a quick note. We need to fly back to China next week for a family event, so Leo will miss school from Wednesday to Friday. Sorry for the short notice. Is there any work he should do while he's away? I'd like to make sure he doesn't fall behind. Thank you for understanding.", "ref_zh": "你好，简单说一下。我们下周要回国参加一个家庭活动，所以 Leo 周三到周五不能来上学。抱歉通知得有点晚。他不在的这几天有什么需要做的功课吗？我想确保他不会落下。谢谢理解。", "id": "ref1"}], "words": [{"w": "shy", "ipa": "/ʃaɪ/", "zh": "害羞的", "ex": "She's shy at first, but she warms up quickly.", "id": "w0"}, {"w": "confidence", "ipa": "/ˈkɑːnfɪdəns/", "zh": "自信", "ex": "Swimming lessons gave him a lot of confidence.", "id": "w1"}, {"w": "encourage", "ipa": "/ɪnˈkɜːrɪdʒ/", "zh": "鼓励", "ex": "We encourage the kids to try new food at dinner.", "id": "w2"}, {"w": "on track", "ipa": "/ɑːn træk/", "zh": "进度正常", "ex": "The renovation is on track to finish by Friday.", "id": "w3"}, {"w": "concern", "ipa": "/kənˈsɜːrn/", "zh": "担忧的事；问题", "ex": "My main concern is the long commute to school.", "id": "w4"}, {"w": "frustrated", "ipa": "/ˈfrʌstreɪtɪd/", "zh": "沮丧的；着急的", "ex": "He gets frustrated when the puzzle pieces don't fit.", "id": "w5"}, {"w": "make up", "ipa": "/meɪk ʌp/", "zh": "和好", "ex": "The kids argued, but they made up after lunch.", "id": "w6"}, {"w": "homework", "ipa": "/ˈhoʊmwɜːrk/", "zh": "家庭作业", "ex": "Let's finish your homework before we go to the park.", "id": "w7"}, {"w": "keep someone posted", "ipa": "/kiːp ˈsʌmwʌn ˈpoʊstɪd/", "zh": "随时告知某人进展", "ex": "Keep me posted on when the delivery arrives.", "id": "w8"}], "sections": [{"heading": "1. How He's Doing", "heading_zh": "1. 孩子的表现", "rows": [[{"id": "s0_0_0", "md": "Thanks for coming in, Mr. Zhang. Leo is doing well overall. He's very curious in class.", "text": "Thanks for coming in, Mr. Zhang. Leo is doing well overall. He's very curious in class.", "zh": "谢谢您过来，张先生。Leo 整体表现不错，上课时好奇心很强。", "sp": "B"}], [{"id": "s0_1_0", "md": "**That's good to hear. How is he getting along with the other kids?**", "text": "That's good to hear. How is he getting along with the other kids?", "zh": "听到这个很高兴。他跟其他小朋友相处得怎么样？", "sp": "A"}], [{"id": "s0_2_0", "md": "He's a bit ==shy== in big groups, but he has two close friends he plays with every day.", "text": "He's a bit shy in big groups, but he has two close friends he plays with every day.", "zh": "在大集体里他有点害羞，但他有两个好朋友，每天都一起玩。", "sp": "B"}], [{"id": "s0_3_0", "md": "At home he talks nonstop, but he says English is still hard sometimes.", "text": "At home he talks nonstop, but he says English is still hard sometimes.", "zh": "在家里他说个不停，但他说英语有时候还是挺难的。", "sp": "A"}], [{"id": "s0_4_0", "md": "His English has improved a lot this term. He understands everything. He just needs more ==confidence== when he speaks.", "text": "His English has improved a lot this term. He understands everything. He just needs more confidence when he speaks.", "zh": "这学期他的英语进步很大。他什么都听得懂，只是开口说的时候需要更多自信。", "sp": "B"}], [{"id": "s0_5_0", "md": "**Is there anything we can do at home to help?**", "text": "Is there anything we can do at home to help?", "zh": "我们在家能做些什么来帮他吗？", "sp": "A"}], [{"id": "s0_6_0", "md": "Read with him every night, even for ten minutes. And ==encourage== him to tell you about his day in English.", "text": "Read with him every night, even for ten minutes. And encourage him to tell you about his day in English.", "zh": "每晚陪他读书，哪怕十分钟也好。再鼓励他用英语跟你们讲讲一天的事。", "sp": "B"}], [{"id": "s0_7_0", "md": "We can __definitely do that__. How about his reading level?", "text": "We can definitely do that. How about his reading level?", "zh": "这个我们一定能做到。他的阅读水平怎么样？", "sp": "A"}], [{"id": "s0_8_0", "md": "He's __right on track__. He loves picture books about animals.", "text": "He's right on track. He loves picture books about animals.", "zh": "完全跟得上进度。他特别喜欢动物绘本。", "sp": "B"}]]}, {"heading": "2. A Small Concern", "heading_zh": "2. 一个小问题", "rows": [[{"id": "s1_0_0", "md": "There's one small ==concern== I wanted to raise. Last week, he pushed a classmate during a game.", "text": "There's one small concern I wanted to raise. Last week, he pushed a classmate during a game.", "zh": "有个小问题想跟您说一下。上周玩游戏的时候，他推了一个同学。", "sp": "B"}], [{"id": "s1_1_0", "md": "Oh, I'm sorry to hear that. Do you know what happened, exactly?", "text": "Oh, I'm sorry to hear that. Do you know what happened, exactly?", "zh": "啊，很抱歉。你知道具体是怎么回事吗？", "sp": "A"}], [{"id": "s1_2_0", "md": "The other boy took his toy, and Leo got ==frustrated==. Nobody was hurt, and they __made up__ quickly.", "text": "The other boy took his toy, and Leo got frustrated. Nobody was hurt, and they made up quickly.", "zh": "另一个男孩拿了他的玩具，Leo 着急了。没人受伤，他们很快就和好了。", "sp": "B"}], [{"id": "s1_3_0", "md": "Thanks for telling me. We'll __have a chat__ with him tonight about using words instead.", "text": "Thanks for telling me. We'll have a chat with him tonight about using words instead.", "zh": "谢谢你告诉我。我们今晚会跟他聊聊，让他用说的而不是动手。", "sp": "A"}], [{"id": "s1_4_0", "md": "That would help. We're also teaching the class to come to a teacher when they feel upset.", "text": "That would help. We're also teaching the class to come to a teacher when they feel upset.", "zh": "那会很有帮助。我们也在教全班，心里不舒服时要来找老师。", "sp": "B"}], [{"id": "s1_5_0", "md": "One more thing. He spends almost an hour on ==homework== most nights. Is that normal?", "text": "One more thing. He spends almost an hour on homework most nights. Is that normal?", "zh": "还有一件事。他大部分晚上做作业要花将近一个小时，这正常吗？", "sp": "A"}], [{"id": "s1_6_0", "md": "It shouldn't take more than twenty minutes. If he's stuck, let him stop and just write me a note.", "text": "It shouldn't take more than twenty minutes. If he's stuck, let him stop and just write me a note.", "zh": "应该不超过二十分钟。如果他卡住了，就让他停下，给我写个条子就行。", "sp": "B"}], [{"id": "s1_7_0", "md": "**That's a relief. Could we stay in touch by email if anything else comes up?**", "text": "That's a relief. Could we stay in touch by email if anything else comes up?", "zh": "那我就放心了。如果还有其他情况，我们能通过邮件保持联系吗？", "sp": "A"}], [{"id": "s1_8_0", "md": "Of course. I'll __keep you posted__.", "text": "Of course. I'll keep you posted.", "zh": "当然。有情况我会随时告诉您。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. How He's Doing", "zh": "1. 孩子的表现", "start": 0.0, "end": 1.872, "words": [[0.118, 0.342], [0.789, 0.908], [0.921, 1.118], [1.132, 1.474]]}, {"kind": "s", "id": "s0_0_0", "md": "Thanks for coming in, Mr. Zhang. Leo is doing well overall. He's very curious in class.", "zh": "谢谢您过来，张先生。Leo 整体表现不错，上课时好奇心很强。", "sp": "B", "gap": false, "start": 1.872, "end": 11.352, "words": [[1.975, 2.304], [2.317, 2.488], [2.501, 2.896], [2.909, 3.343], [3.593, 4.027], [4.04, 4.619], [5.543, 5.925], [5.938, 6.148], [6.161, 6.517], [6.53, 6.767], [6.78, 7.49], [8.411, 8.74], [8.754, 9.004], [9.017, 9.477], [9.49, 9.675], [9.688, 10.425]]}, {"kind": "s", "id": "s0_1_0", "md": "**That's good to hear. How is he getting along with the other kids?**", "zh": "听到这个很高兴。他跟其他小朋友相处得怎么样？", "sp": "A", "gap": false, "start": 11.352, "end": 14.928, "words": [[11.47, 11.615], [11.628, 11.76], [11.773, 11.839], [11.852, 12.155], [12.589, 12.76], [12.773, 12.865], [12.878, 12.97], [12.984, 13.22], [13.234, 13.563], [13.576, 13.694], [13.707, 13.799], [13.813, 13.997], [14.01, 14.523]]}, {"kind": "s", "id": "s0_2_0", "md": "He's a bit ==shy== in big groups, but he has two close friends he plays with every day.", "zh": "在大集体里他有点害羞，但他有两个好朋友，每天都一起玩。", "sp": "B", "gap": false, "start": 14.928, "end": 21.336, "words": [[15.031, 15.32], [15.333, 15.425], [15.439, 15.662], [15.675, 15.965], [15.978, 16.162], [16.175, 16.399], [16.412, 17.017], [17.281, 17.478], [17.491, 17.636], [17.649, 17.86], [17.873, 18.11], [18.123, 18.452], [18.465, 18.82], [18.833, 18.991], [19.004, 19.373], [19.386, 19.623], [19.636, 19.939], [19.952, 20.399]]}, {"kind": "s", "id": "s0_3_0", "md": "At home he talks nonstop, but he says English is still hard sometimes.", "zh": "在家里他说个不停，但他说英语有时候还是挺难的。", "sp": "A", "gap": false, "start": 21.336, "end": 25.968, "words": [[21.441, 21.533], [21.547, 21.783], [21.797, 21.902], [21.915, 22.204], [22.218, 22.836], [23.139, 23.27], [23.283, 23.375], [23.389, 23.652], [23.77, 24.165], [24.178, 24.27], [24.283, 24.573], [24.586, 24.849], [24.862, 25.586]]}, {"kind": "s", "id": "s0_4_0", "md": "His English has improved a lot this term. He understands everything. He just needs more ==confidence== when he speaks.", "zh": "这学期他的英语进步很大。他什么都听得懂，只是开口说的时候需要更多自信。", "sp": "B", "gap": false, "start": 25.968, "end": 36.624, "words": [[26.071, 26.4], [26.413, 26.913], [26.926, 27.176], [27.189, 27.755], [27.768, 27.807], [27.821, 28.123], [28.136, 28.386], [28.4, 28.952], [29.876, 30.139], [30.152, 30.915], [30.929, 31.692], [32.613, 32.836], [32.85, 33.218], [33.231, 33.586], [33.6, 33.863], [33.876, 34.521], [34.534, 34.718], [34.731, 34.863], [34.876, 35.718]]}, {"kind": "s", "id": "s0_5_0", "md": "**Is there anything we can do at home to help?**", "zh": "我们在家能做些什么来帮他吗？", "sp": "A", "gap": false, "start": 36.624, "end": 38.928, "words": [[36.729, 36.821], [36.835, 36.979], [36.992, 37.348], [37.361, 37.466], [37.479, 37.611], [37.624, 37.821], [37.835, 37.9], [37.913, 38.111], [38.124, 38.177], [38.19, 38.545]]}, {"kind": "s", "id": "s0_6_0", "md": "Read with him every night, even for ten minutes. And ==encourage== him to tell you about his day in English.", "zh": "每晚陪他读书，哪怕十分钟也好。再鼓励他用英语跟你们讲讲一天的事。", "sp": "B", "gap": false, "start": 38.928, "end": 47.592, "words": [[39.031, 39.294], [39.307, 39.478], [39.491, 39.741], [39.754, 40.017], [40.031, 40.491], [40.754, 41.096], [41.11, 41.294], [41.307, 41.583], [41.596, 42.36], [43.283, 43.467], [43.481, 44.073], [44.086, 44.283], [44.296, 44.428], [44.441, 44.691], [44.704, 44.875], [44.889, 45.178], [45.191, 45.415], [45.428, 45.704], [45.717, 45.915], [45.928, 46.665]]}, {"kind": "s", "id": "s0_7_0", "md": "We can __definitely do that__. How about his reading level?", "zh": "这个我们一定能做到。他的阅读水平怎么样？", "sp": "A", "gap": false, "start": 47.592, "end": 50.928, "words": [[47.697, 47.776], [47.789, 47.908], [47.921, 48.368], [48.381, 48.579], [48.592, 48.921], [49.355, 49.474], [49.487, 49.71], [49.724, 49.855], [49.868, 50.158], [50.171, 50.526]]}, {"kind": "s", "id": "s0_8_0", "md": "He's __right on track__. He loves picture books about animals.", "zh": "完全跟得上进度。他特别喜欢动物绘本。", "sp": "B", "gap": false, "start": 50.928, "end": 56.952, "words": [[51.031, 51.386], [51.399, 51.702], [51.715, 51.873], [51.886, 52.491], [53.415, 53.652], [53.665, 54.033], [54.046, 54.481], [54.494, 54.796], [54.81, 55.165], [55.178, 56.02]]}, {"kind": "h", "id": "h1", "md": "2. A Small Concern", "zh": "2. 一个小问题", "start": 56.952, "end": 58.944, "words": [[57.07, 57.334], [57.636, 57.689], [57.702, 58.044], [58.057, 58.557]]}, {"kind": "s", "id": "s1_0_0", "md": "There's one small ==concern== I wanted to raise. Last week, he pushed a classmate during a game.", "zh": "有个小问题想跟您说一下。上周玩游戏的时候，他推了一个同学。", "sp": "B", "gap": false, "start": 58.944, "end": 67.008, "words": [[59.047, 59.349], [59.362, 59.573], [59.586, 59.941], [59.955, 60.441], [60.455, 60.547], [60.56, 60.981], [60.994, 61.112], [61.126, 61.823], [62.747, 63.128], [63.141, 63.615], [63.733, 63.957], [63.97, 64.286], [64.299, 64.378], [64.391, 64.984], [64.997, 65.339], [65.352, 65.457], [65.47, 66.076]]}, {"kind": "s", "id": "s1_1_0", "md": "Oh, I'm sorry to hear that. Do you know what happened, exactly?", "zh": "啊，很抱歉。你知道具体是怎么回事吗？", "sp": "A", "gap": false, "start": 67.008, "end": 70.752, "words": [[67.126, 67.271], [67.297, 67.442], [67.455, 67.758], [67.771, 67.824], [67.837, 68.061], [68.074, 68.376], [68.811, 68.863], [68.876, 68.969], [68.982, 69.1], [69.113, 69.218], [69.232, 69.653], [69.824, 70.35]]}, {"kind": "s", "id": "s1_2_0", "md": "The other boy took his toy, and Leo got ==frustrated==. Nobody was hurt, and they __made up__ quickly.", "zh": "另一个男孩拿了他的玩具，Leo 着急了。没人受伤，他们很快就和好了。", "sp": "B", "gap": false, "start": 70.752, "end": 79.608, "words": [[70.855, 71.052], [71.065, 71.368], [71.381, 71.552], [71.565, 71.815], [71.828, 72.052], [72.065, 72.552], [72.841, 73.078], [73.091, 73.407], [73.42, 73.644], [73.657, 74.539], [75.463, 75.963], [75.976, 76.239], [76.252, 76.765], [77.015, 77.265], [77.278, 77.397], [77.41, 77.739], [77.752, 77.963], [77.976, 78.686]]}, {"kind": "s", "id": "s1_3_0", "md": "Thanks for telling me. We'll __have a chat__ with him tonight about using words instead.", "zh": "谢谢你告诉我。我们今晚会跟他聊聊，让他用说的而不是动手。", "sp": "A", "gap": false, "start": 79.608, "end": 84.144, "words": [[79.726, 79.884], [79.897, 80.003], [80.016, 80.319], [80.332, 80.49], [80.924, 81.016], [81.029, 81.147], [81.161, 81.213], [81.226, 81.516], [81.529, 81.661], [81.674, 81.805], [81.819, 82.226], [82.305, 82.569], [82.582, 82.911], [82.924, 83.213], [83.226, 83.753]]}, {"kind": "s", "id": "s1_4_0", "md": "That would help. We're also teaching the class to come to a teacher when they feel upset.", "zh": "那会很有帮助。我们也在教全班，心里不舒服时要来找老师。", "sp": "B", "gap": false, "start": 84.144, "end": 90.984, "words": [[84.247, 84.51], [84.523, 84.707], [84.72, 85.247], [86.17, 86.433], [86.447, 86.736], [86.749, 87.157], [87.17, 87.289], [87.302, 87.618], [87.631, 87.789], [87.802, 88.052], [88.065, 88.197], [88.21, 88.289], [88.302, 88.749], [88.762, 88.947], [88.96, 89.091], [89.105, 89.368], [89.381, 90.065]]}, {"kind": "s", "id": "s1_5_0", "md": "One more thing. He spends almost an hour on ==homework== most nights. Is that normal?", "zh": "还有一件事。他大部分晚上做作业要花将近一个小时，这正常吗？", "sp": "A", "gap": false, "start": 90.984, "end": 96.288, "words": [[91.102, 91.195], [91.208, 91.379], [91.392, 91.734], [92.195, 92.26], [92.273, 92.576], [92.589, 92.984], [92.997, 93.063], [93.076, 93.379], [93.392, 93.484], [93.497, 93.984], [93.997, 94.3], [94.313, 94.813], [95.247, 95.339], [95.352, 95.523], [95.537, 95.905]]}, {"kind": "s", "id": "s1_6_0", "md": "It shouldn't take more than twenty minutes. If he's stuck, let him stop and just write me a note.", "zh": "应该不超过二十分钟。如果他卡住了，就让他停下，给我写个条子就行。", "sp": "B", "gap": false, "start": 96.288, "end": 104.4, "words": [[96.391, 96.575], [96.588, 96.97], [96.983, 97.22], [97.233, 97.522], [97.535, 97.733], [97.746, 98.18], [98.193, 99.048], [99.959, 100.156], [100.17, 100.354], [100.367, 100.827], [101.077, 101.341], [101.354, 101.551], [101.564, 101.946], [101.959, 102.117], [102.13, 102.433], [102.446, 102.656], [102.67, 102.867], [102.88, 102.92], [102.933, 103.472]]}, {"kind": "s", "id": "s1_7_0", "md": "**That's a relief. Could we stay in touch by email if anything else comes up?**", "zh": "那我就放心了。如果还有其他情况，我们能通过邮件保持联系吗？", "sp": "A", "gap": false, "start": 104.4, "end": 108.648, "words": [[104.518, 104.663], [104.676, 104.742], [104.755, 105.255], [105.689, 105.782], [105.795, 105.874], [105.887, 106.097], [106.111, 106.216], [106.229, 106.518], [106.532, 106.663], [106.676, 107.111], [107.124, 107.242], [107.255, 107.571], [107.584, 107.742], [107.755, 108.032], [108.045, 108.255]]}, {"kind": "s", "id": "s1_8_0", "md": "Of course. I'll __keep you posted__.", "zh": "当然。有情况我会随时告诉您。", "sp": "B", "gap": false, "start": 108.648, "end": 113.184, "words": [[108.751, 109.001], [109.014, 109.803], [110.714, 110.951], [110.964, 111.28], [111.293, 111.477], [111.49, 112.266]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

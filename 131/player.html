@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Returning Something You Bought · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "131", "type": "dialogue", "title": "Returning Something You Bought", "meta": "B2 · 约 310 词 · 场景：商店退换货与无小票退礼物", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Sales Assistant", "name_zh": "店员", "voice": "en-US-EmmaNeural"}}, "gist": [{"q": "空气炸锅出了什么问题？为什么不能直接退款？", "a": "能开机但完全不加热；买了十天，超过了七天退款期，按规定只能走厂家保修。"}, {"q": "「你」怎么说服店员？最后怎么处理的？", "a": "说明第三天就坏了、当时在出差、明显是质量问题；经理破例当天换一台新的，「你」还要求先试机。"}, {"q": "没有小票的玩具最后怎么退的？", "a": "不能退到卡上，只能退成店内消费额度；「你」指出是原价买的，店员破例按原价三十九块九给额度。"}], "dictation": [{"id": "s0_1_0", "text": "Hi, I'd like to return this air fryer. It stopped working after just a few days."}, {"id": "s0_7_0", "text": "It turns on, but it doesn't heat up at all. It's clearly a defect, not something we did."}, {"id": "s1_2_0", "text": "No, I'm afraid not. Is there any way you could still take it back?"}, {"id": "s1_4_0", "text": "Would it be possible to put it back on my card instead?"}], "shadow": {"speaker": "A", "text": "I understand, but it broke down on the third day. I was away on a business trip, so I couldn't bring it in sooner.", "marked": "I <b>understand</b>, / but it broke down / on the <b>third</b> day. //<br>I was <b>away</b> / on a business trip, / so I <b>couldn't</b> bring it in <b>sooner</b>. //"}, "prompts": [{"q": "你网购的儿童鞋尺码不对，到线下门店想换。说明情况，问能不能在店里换，以及没货怎么办。", "ref": "Hi, I bought these shoes for my son on your website last week, but they're a size too small. He's only tried them on indoors. Can I exchange them here in the store, or do I have to send them back by post? And if you don't have the next size in stock, could I get a refund instead?", "ref_zh": "你好，我上周在你们官网给儿子买了这双鞋，但小了一码。他只在家里试穿过。能在门店直接换吗，还是必须寄回去？如果大一码没货，可以改成退款吗？", "id": "ref0"}, {"q": "你买的衬衫洗了一次就掉色，但店员说洗过的不能退。礼貌而坚定地争取，并要求见经理。", "ref": "I understand you normally don't accept washed items, but I followed the care label exactly. I washed it once in cold water, and the colour came out all over my other clothes. That's a quality problem, not something I did wrong. If you're not able to help, could I please speak to the manager?", "ref_zh": "我理解洗过的东西你们一般不退，但我完全是按洗涤标签操作的。只用冷水洗了一次，颜色就掉得我其他衣服上都是。这是质量问题，不是我操作不当。如果你没法处理，能请经理来一下吗？", "id": "ref1"}], "words": [{"w": "receipt", "ipa": "/rɪˈsiːt/", "zh": "小票，收据", "ex": "Do you need a printed receipt, or is an email okay?", "id": "w0"}, {"w": "refund", "ipa": "/ˈriːfʌnd/", "zh": "退款", "ex": "I asked for a refund because the shoes were too small.", "id": "w1"}, {"w": "warranty", "ipa": "/ˈwɔːrənti/", "zh": "保修", "ex": "The laptop comes with a two year warranty.", "id": "w2"}, {"w": "defect", "ipa": "/ˈdiːfekt/", "zh": "缺陷，质量问题", "ex": "If there's a defect, they'll replace it for free.", "id": "w3"}, {"w": "exception", "ipa": "/ɪkˈsepʃən/", "zh": "例外，破例", "ex": "Normally we don't allow food inside, but we'll make an exception.", "id": "w4"}, {"w": "unopened", "ipa": "/ʌnˈoʊpənd/", "zh": "未拆封的", "ex": "You can return unopened items within thirty days.", "id": "w5"}, {"w": "store credit", "ipa": "/stɔːr ˈkredɪt/", "zh": "店内消费额度", "ex": "They gave me store credit instead of cash.", "id": "w6"}, {"w": "proof of purchase", "ipa": "/pruːf əv ˈpɜːrtʃəs/", "zh": "购买凭证", "ex": "Keep your proof of purchase for warranty claims.", "id": "w7"}, {"w": "promotion", "ipa": "/prəˈmoʊʃən/", "zh": "促销", "ex": "The supermarket has a promotion on durian this week.", "id": "w8"}, {"w": "break down", "ipa": "/breɪk daʊn/", "zh": "（机器）坏掉", "ex": "Our washing machine broke down again.", "id": "w9"}], "sections": [{"heading": "1. A Faulty Air Fryer", "heading_zh": "1. 坏掉的空气炸锅", "rows": [[{"id": "s0_0_0", "md": "Hi, how can I help you today?", "text": "Hi, how can I help you today?", "zh": "您好，今天有什么可以帮您？", "sp": "B"}], [{"id": "s0_1_0", "md": "**Hi, I'd like to return this air fryer. It stopped working after just a few days.**", "text": "Hi, I'd like to return this air fryer. It stopped working after just a few days.", "zh": "你好，我想退这台空气炸锅。才用了几天就坏了。", "sp": "A"}], [{"id": "s0_2_0", "md": "Oh no. Do you have the ==receipt== with you?", "text": "Oh no. Do you have the receipt with you?", "zh": "哎呀。您带小票了吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "I have the digital receipt in my email. Here it is. I bought it ten days ago.", "text": "I have the digital receipt in my email. Here it is. I bought it ten days ago.", "zh": "邮箱里有电子小票，就这个。我是十天前买的。", "sp": "A"}], [{"id": "s0_4_0", "md": "Thanks. Unfortunately, our ==refund== policy is seven days. After that, it goes back to the manufacturer for repair under ==warranty==.", "text": "Thanks. Unfortunately, our refund policy is seven days. After that, it goes back to the manufacturer for repair under warranty.", "zh": "谢谢。不过我们的退款期是七天。超过七天就只能走厂家保修维修了。", "sp": "B"}], [{"id": "s0_5_0", "md": "I understand, but it __broke down__ on the third day. I was away on a business trip, so I couldn't bring it in sooner.", "text": "I understand, but it broke down on the third day. I was away on a business trip, so I couldn't bring it in sooner.", "zh": "我理解，但它第三天就坏了。我当时出差，所以没法早点拿过来。", "sp": "A"}], [{"id": "s0_6_0", "md": "I see. What exactly is wrong with it?", "text": "I see. What exactly is wrong with it?", "zh": "明白了。具体是什么问题？", "sp": "B"}], [{"id": "s0_7_0", "md": "It turns on, but it doesn't heat up at all. It's clearly a ==defect==, not something we did.", "text": "It turns on, but it doesn't heat up at all. It's clearly a defect, not something we did.", "zh": "能开机，但完全不加热。这明显是质量问题，不是我们弄坏的。", "sp": "A"}], [{"id": "s0_8_0", "md": "Let me __check with my manager__. One moment, please.", "text": "Let me check with my manager. One moment, please.", "zh": "我去问一下经理。请稍等。", "sp": "B"}], [{"id": "s0_9_0", "md": "Okay, my manager says we can make an ==exception== and swap it for a new one today.", "text": "Okay, my manager says we can make an exception and swap it for a new one today.", "zh": "好的，经理说可以破例，今天给您换一台新的。", "sp": "B"}], [{"id": "s0_10_0", "md": "**That would be great. Could you test the new one before I take it home?**", "text": "That would be great. Could you test the new one before I take it home?", "zh": "太好了。我带回家之前，能先把新的试一下吗？", "sp": "A"}]]}, {"heading": "2. A Gift Without a Receipt", "heading_zh": "2. 没有小票的礼物", "rows": [[{"id": "s1_0_0", "md": "While I'm here, my son got this toy as a gift, but he already has the same one. It's ==unopened==.", "text": "While I'm here, my son got this toy as a gift, but he already has the same one. It's unopened.", "zh": "趁我在这儿，我儿子收到这个玩具当礼物，可他已经有一个一样的了。还没拆封。", "sp": "A"}], [{"id": "s1_1_0", "md": "Do you have a gift receipt, by any chance?", "text": "Do you have a gift receipt, by any chance?", "zh": "请问您有礼品小票吗？", "sp": "B"}], [{"id": "s1_2_0", "md": "No, I'm afraid not. Is there any way you could still take it back?", "text": "No, I'm afraid not. Is there any way you could still take it back?", "zh": "恐怕没有。还有什么办法能退吗？", "sp": "A"}], [{"id": "s1_3_0", "md": "Without a receipt, I can only offer ==store credit== at the current selling price.", "text": "Without a receipt, I can only offer store credit at the current selling price.", "zh": "没有小票的话，我只能按现价给您退成店内消费额度。", "sp": "B"}], [{"id": "s1_4_0", "md": "**Would it be possible to put it back on my card instead?**", "text": "Would it be possible to put it back on my card instead?", "zh": "能不能直接退到我的卡上？", "sp": "A"}], [{"id": "s1_5_0", "md": "Sorry, card refunds need ==proof of purchase==. But the credit is valid for a year, and you can use it online too.", "text": "Sorry, card refunds need proof of purchase. But the credit is valid for a year, and you can use it online too.", "zh": "抱歉，退到卡上需要购买凭证。不过额度一年内有效，网上也能用。", "sp": "B"}], [{"id": "s1_6_0", "md": "Okay, store credit is fine then. How much is it worth?", "text": "Okay, store credit is fine then. How much is it worth?", "zh": "好吧，那消费额度也行。值多少钱？", "sp": "A"}], [{"id": "s1_7_0", "md": "It's on ==promotion== right now, so it's thirty-two ninety.", "text": "It's on promotion right now, so it's thirty-two ninety.", "zh": "它现在在促销，所以是三十二块九。", "sp": "B"}], [{"id": "s1_8_0", "md": "Oh, but it was bought at full price. __Is there anything you can do__?", "text": "Oh, but it was bought at full price. Is there anything you can do?", "zh": "哦，可这是原价买的。能想想办法吗？", "sp": "A"}], [{"id": "s1_9_0", "md": "Let me see. I'll __go ahead and__ give you the full price, thirty-nine ninety. Just this once.", "text": "Let me see. I'll go ahead and give you the full price, thirty-nine ninety. Just this once.", "zh": "我看看。那我就按原价给您，三十九块九。就这一次。", "sp": "B"}], [{"id": "s1_10_0", "md": "That's really kind of you. Thanks for all your help.", "text": "That's really kind of you. Thanks for all your help.", "zh": "你真好。谢谢你帮了这么多。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. A Faulty Air Fryer", "zh": "1. 坏掉的空气炸锅", "start": 0.0, "end": 2.352, "words": [[0.105, 0.408], [0.75, 0.803], [0.816, 1.289], [1.303, 1.474], [1.487, 1.974]]}, {"kind": "s", "id": "s0_0_0", "md": "Hi, how can I help you today?", "zh": "您好，今天有什么可以帮您？", "sp": "B", "gap": false, "start": 2.352, "end": 4.488, "words": [[2.431, 2.641], [2.668, 2.865], [2.878, 3.036], [3.049, 3.128], [3.141, 3.405], [3.418, 3.536], [3.549, 4.102]]}, {"kind": "s", "id": "s0_1_0", "md": "**Hi, I'd like to return this air fryer. It stopped working after just a few days.**", "zh": "你好，我想退这台空气炸锅。才用了几天就坏了。", "sp": "A", "gap": false, "start": 4.488, "end": 9.6, "words": [[4.606, 4.883], [5.225, 5.356], [5.37, 5.541], [5.554, 5.646], [5.659, 6.041], [6.054, 6.225], [6.238, 6.37], [6.383, 6.856], [7.291, 7.383], [7.396, 7.725], [7.738, 8.067], [8.08, 8.304], [8.317, 8.514], [8.527, 8.554], [8.567, 8.751], [8.764, 9.212]]}, {"kind": "s", "id": "s0_2_0", "md": "Oh no. Do you have the ==receipt== with you?", "zh": "哎呀。您带小票了吗？", "sp": "B", "gap": false, "start": 9.6, "end": 12.384, "words": [[9.692, 9.771], [9.784, 10.139], [10.561, 10.626], [10.639, 10.745], [10.758, 10.982], [10.995, 11.087], [11.1, 11.534], [11.547, 11.732], [11.745, 11.995]]}, {"kind": "s", "id": "s0_3_0", "md": "I have the digital receipt in my email. Here it is. I bought it ten days ago.", "zh": "邮箱里有电子小票，就这个。我是十天前买的。", "sp": "A", "gap": false, "start": 12.384, "end": 17.256, "words": [[12.502, 12.568], [12.581, 12.713], [12.726, 12.818], [12.831, 13.226], [13.239, 13.647], [13.66, 13.726], [13.739, 13.897], [13.91, 14.397], [14.845, 14.963], [14.976, 15.042], [15.055, 15.331], [15.766, 15.831], [15.845, 16.002], [16.016, 16.108], [16.121, 16.305], [16.318, 16.542], [16.555, 16.871]]}, {"kind": "s", "id": "s0_4_0", "md": "Thanks. Unfortunately, our ==refund== policy is seven days. After that, it goes back to the manufacturer for repair under ==warranty==.", "zh": "谢谢。不过我们的退款期是七天。超过七天就只能走厂家保修维修了。", "sp": "B", "gap": false, "start": 17.256, "end": 26.232, "words": [[17.348, 17.848], [18.269, 19.164], [19.19, 19.361], [19.374, 19.822], [19.835, 20.309], [20.322, 20.427], [20.44, 20.769], [20.782, 21.322], [21.743, 22.111], [22.124, 22.519], [22.545, 22.69], [22.703, 22.953], [22.967, 23.203], [23.217, 23.348], [23.361, 23.453], [23.467, 24.309], [24.322, 24.493], [24.506, 24.914], [24.927, 25.19], [25.203, 25.835]]}, {"kind": "s", "id": "s0_5_0", "md": "I understand, but it __broke down__ on the third day. I was away on a business trip, so I couldn't bring it in sooner.", "zh": "我理解，但它第三天就坏了。我当时出差，所以没法早点拿过来。", "sp": "A", "gap": false, "start": 26.232, "end": 32.976, "words": [[26.337, 26.456], [26.469, 27.127], [27.416, 27.535], [27.548, 27.64], [27.653, 27.916], [27.929, 28.219], [28.232, 28.311], [28.324, 28.39], [28.403, 28.706], [28.719, 29.035], [29.469, 29.535], [29.548, 29.693], [29.706, 29.982], [29.995, 30.087], [30.1, 30.153], [30.166, 30.548], [30.561, 30.877], [31.179, 31.337], [31.35, 31.429], [31.443, 31.758], [31.771, 31.956], [31.969, 32.035], [32.048, 32.14], [32.153, 32.587]]}, {"kind": "s", "id": "s0_6_0", "md": "I see. What exactly is wrong with it?", "zh": "明白了。具体是什么问题？", "sp": "B", "gap": false, "start": 32.976, "end": 36.168, "words": [[33.081, 33.173], [33.187, 33.621], [34.029, 34.16], [34.173, 34.765], [34.779, 34.95], [34.963, 35.226], [35.239, 35.45], [35.463, 35.779]]}, {"kind": "s", "id": "s0_7_0", "md": "It turns on, but it doesn't heat up at all. It's clearly a ==defect==, not something we did.", "zh": "能开机，但完全不加热。这明显是质量问题，不是我们弄坏的。", "sp": "A", "gap": false, "start": 36.168, "end": 41.88, "words": [[36.273, 36.379], [36.392, 36.694], [36.707, 37.05], [37.339, 37.457], [37.471, 37.589], [37.602, 37.918], [37.931, 38.142], [38.155, 38.3], [38.313, 38.405], [38.418, 38.694], [39.129, 39.247], [39.26, 39.668], [39.681, 39.734], [39.747, 40.3], [40.615, 40.773], [40.786, 41.076], [41.089, 41.181], [41.194, 41.497]]}, {"kind": "s", "id": "s0_8_0", "md": "Let me __check with my manager__. One moment, please.", "zh": "我去问一下经理。请稍等。", "sp": "B", "gap": false, "start": 41.88, "end": 45.528, "words": [[41.959, 42.077], [42.091, 42.209], [42.222, 42.525], [42.538, 42.669], [42.683, 42.854], [42.867, 43.604], [44.012, 44.196], [44.209, 44.591], [44.617, 45.13]]}, {"kind": "s", "id": "s0_9_0", "md": "Okay, my manager says we can make an ==exception== and swap it for a new one today.", "zh": "好的，经理说可以破例，今天给您换一台新的。", "sp": "B", "gap": false, "start": 45.528, "end": 50.28, "words": [[45.62, 45.883], [45.91, 46.054], [46.067, 46.554], [46.567, 46.831], [46.844, 46.975], [46.989, 47.133], [47.146, 47.357], [47.37, 47.449], [47.462, 48.081], [48.094, 48.199], [48.212, 48.567], [48.581, 48.686], [48.699, 48.87], [48.883, 48.923], [48.936, 49.146], [49.16, 49.37], [49.383, 49.896]]}, {"kind": "s", "id": "s0_10_0", "md": "**That would be great. Could you test the new one before I take it home?**", "zh": "太好了。我带回家之前，能先把新的试一下吗？", "sp": "A", "gap": false, "start": 50.28, "end": 53.928, "words": [[50.398, 50.477], [50.491, 50.596], [50.609, 50.714], [50.727, 51.135], [51.569, 51.688], [51.701, 51.78], [51.793, 52.096], [52.109, 52.188], [52.201, 52.359], [52.372, 52.543], [52.556, 52.872], [52.885, 52.925], [52.938, 53.175], [53.188, 53.254], [53.267, 53.543]]}, {"kind": "h", "id": "h1", "md": "2. A Gift Without a Receipt", "zh": "2. 没有小票的礼物", "start": 53.928, "end": 56.424, "words": [[54.033, 54.349], [54.704, 54.796], [54.81, 55.112], [55.125, 55.454], [55.467, 55.494], [55.507, 56.033]]}, {"kind": "s", "id": "s1_0_0", "md": "While I'm here, my son got this toy as a gift, but he already has the same one. It's ==unopened==.", "zh": "趁我在这儿，我儿子收到这个玩具当礼物，可他已经有一个一样的了。还没拆封。", "sp": "A", "gap": false, "start": 56.424, "end": 62.4, "words": [[56.542, 56.687], [56.7, 56.832], [56.845, 57.227], [57.49, 57.582], [57.595, 57.871], [57.885, 58.082], [58.095, 58.279], [58.292, 58.542], [58.556, 58.661], [58.674, 58.727], [58.74, 59.227], [59.49, 59.621], [59.635, 59.74], [59.753, 60.042], [60.056, 60.266], [60.279, 60.371], [60.385, 60.713], [60.727, 60.99], [61.424, 61.516], [61.529, 62.003]]}, {"kind": "s", "id": "s1_1_0", "md": "Do you have a gift receipt, by any chance?", "zh": "请问您有礼品小票吗？", "sp": "B", "gap": false, "start": 62.4, "end": 65.184, "words": [[62.492, 62.545], [62.558, 62.65], [62.663, 62.821], [62.834, 62.926], [62.939, 63.268], [63.282, 63.755], [63.782, 63.953], [63.966, 64.163], [64.176, 64.782]]}, {"kind": "s", "id": "s1_2_0", "md": "No, I'm afraid not. Is there any way you could still take it back?", "zh": "恐怕没有。还有什么办法能退吗？", "sp": "A", "gap": false, "start": 65.184, "end": 69.12, "words": [[65.289, 65.526], [65.789, 65.921], [65.934, 66.25], [66.263, 66.579], [67.013, 67.105], [67.118, 67.25], [67.263, 67.421], [67.434, 67.592], [67.605, 67.697], [67.71, 67.816], [67.829, 68.039], [68.052, 68.25], [68.263, 68.342], [68.355, 68.723]]}, {"kind": "s", "id": "s1_3_0", "md": "Without a receipt, I can only offer ==store credit== at the current selling price.", "zh": "没有小票的话，我只能按现价给您退成店内消费额度。", "sp": "B", "gap": false, "start": 69.12, "end": 74.16, "words": [[69.212, 69.554], [69.567, 69.62], [69.633, 70.212], [70.554, 70.633], [70.646, 70.844], [70.857, 71.146], [71.159, 71.475], [71.488, 71.817], [71.831, 72.225], [72.238, 72.357], [72.37, 72.462], [72.475, 72.804], [72.817, 73.199], [73.212, 73.778]]}, {"kind": "s", "id": "s1_4_0", "md": "**Would it be possible to put it back on my card instead?**", "zh": "能不能直接退到我的卡上？", "sp": "A", "gap": false, "start": 74.16, "end": 77.16, "words": [[74.265, 74.344], [74.357, 74.423], [74.436, 74.542], [74.555, 75.094], [75.107, 75.173], [75.186, 75.371], [75.384, 75.463], [75.476, 75.752], [75.765, 75.857], [75.871, 76.002], [76.015, 76.292], [76.305, 76.778]]}, {"kind": "s", "id": "s1_5_0", "md": "Sorry, card refunds need ==proof of purchase==. But the credit is valid for a year, and you can use it online too.", "zh": "抱歉，退到卡上需要购买凭证。不过额度一年内有效，网上也能用。", "sp": "B", "gap": false, "start": 77.16, "end": 84.672, "words": [[77.252, 77.726], [77.752, 78.081], [78.094, 78.607], [78.621, 78.844], [78.857, 79.134], [79.147, 79.278], [79.292, 79.989], [80.397, 80.502], [80.515, 80.607], [80.621, 80.989], [81.002, 81.147], [81.16, 81.528], [81.542, 81.726], [81.739, 81.792], [81.805, 82.292], [82.607, 82.713], [82.726, 82.857], [82.871, 83.028], [83.042, 83.278], [83.292, 83.397], [83.41, 83.831], [83.844, 84.278]]}, {"kind": "s", "id": "s1_6_0", "md": "Okay, store credit is fine then. How much is it worth?", "zh": "好吧，那消费额度也行。值多少钱？", "sp": "A", "gap": false, "start": 84.672, "end": 88.32, "words": [[84.777, 85.093], [85.317, 85.619], [85.633, 85.948], [85.961, 86.067], [86.08, 86.382], [86.396, 86.619], [87.067, 87.146], [87.159, 87.33], [87.343, 87.422], [87.435, 87.514], [87.527, 87.922]]}, {"kind": "s", "id": "s1_7_0", "md": "It's on ==promotion== right now, so it's thirty-two ninety.", "zh": "它现在在促销，所以是三十二块九。", "sp": "B", "gap": false, "start": 88.32, "end": 91.584, "words": [[88.386, 88.478], [88.491, 88.623], [88.636, 89.215], [89.228, 89.452], [89.465, 89.741], [89.767, 89.952], [89.965, 90.123], [90.136, 90.609], [90.623, 91.188]]}, {"kind": "s", "id": "s1_8_0", "md": "Oh, but it was bought at full price. __Is there anything you can do__?", "zh": "哦，可这是原价买的。能想想办法吗？", "sp": "A", "gap": false, "start": 91.584, "end": 95.616, "words": [[91.689, 91.9], [92.295, 92.4], [92.413, 92.466], [92.479, 92.61], [92.623, 92.847], [92.86, 92.939], [92.952, 93.137], [93.15, 93.702], [94.137, 94.229], [94.242, 94.373], [94.387, 94.716], [94.729, 94.821], [94.834, 94.966], [94.979, 95.229]]}, {"kind": "s", "id": "s1_9_0", "md": "Let me see. I'll __go ahead and__ give you the full price, thirty-nine ninety. Just this once.", "zh": "我看看。那我就按原价给您，三十九块九。就这一次。", "sp": "B", "gap": false, "start": 95.616, "end": 101.784, "words": [[95.682, 95.84], [95.853, 95.984], [95.998, 96.432], [96.853, 96.998], [97.011, 97.221], [97.234, 97.563], [97.577, 97.682], [97.695, 97.879], [97.892, 98.011], [98.024, 98.142], [98.155, 98.405], [98.419, 98.84], [98.866, 99.405], [99.419, 99.971], [100.353, 100.616], [100.629, 100.866], [100.879, 101.379]]}, {"kind": "s", "id": "s1_10_0", "md": "That's really kind of you. Thanks for all your help.", "zh": "你真好。谢谢你帮了这么多。", "sp": "A", "gap": false, "start": 101.784, "end": 104.664, "words": [[101.902, 102.047], [102.06, 102.271], [102.284, 102.534], [102.547, 102.613], [102.626, 102.824], [103.271, 103.429], [103.442, 103.639], [103.652, 103.784], [103.797, 103.916], [103.929, 104.271]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

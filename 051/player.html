@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Giving Feedback That People Can Use · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "051", "title": "Giving Feedback That People Can Use", "meta": "B2 · 约 280 词 · 场景：给下属反馈", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Feedback Nobody Can Act On", "heading_zh": "1. 没法照着做的反馈", "rows": [[{"id": "s0_0_0", "md": "\"You need to be more proactive.\"", "text": "\"You need to be more proactive.\"", "zh": "「你需要更主动一点。」", "sp": null}, {"id": "s0_0_1", "md": "Most of us have heard a sentence like this in a review, and most of us had no idea what to do with it.", "text": "Most of us have heard a sentence like this in a review, and most of us had no idea what to do with it.", "zh": "我们大多数人都在绩效评估里听过类似的话，而且大多数人都不知道该怎么办。", "sp": null}, {"id": "s0_0_2", "md": "Proactive about what? In which meetings? Compared to whom?", "text": "Proactive about what? In which meetings? Compared to whom?", "zh": "在哪方面主动？在哪些会上？跟谁比？", "sp": null}], [{"id": "s0_1_0", "md": "Vague feedback is not kind; it is just ==incomplete==.", "text": "Vague feedback is not kind; it is just incomplete.", "zh": "模糊的反馈不是善意；它只是不完整。", "sp": null}, {"id": "s0_1_1", "md": "The person walks away worried, guesses what you meant, and often changes the wrong thing.", "text": "The person walks away worried, guesses what you meant, and often changes the wrong thing.", "zh": "对方带着焦虑离开，猜你到底什么意思，结果常常改错了地方。", "sp": null}, {"id": "s0_1_2", "md": "**If the person cannot picture the next step, you have given an opinion, not feedback.**", "text": "If the person cannot picture the next step, you have given an opinion, not feedback.", "zh": "如果对方想象不出下一步该怎么做，你给的就是一个看法，而不是反馈。", "sp": null}], [{"id": "s0_2_0", "md": "Timing matters just as much.", "text": "Timing matters just as much.", "zh": "时机同样重要。", "sp": null}, {"id": "s0_2_1", "md": "Feedback about a design review from two months ago feels like a ==punishment==, not help.", "text": "Feedback about a design review from two months ago feels like a punishment, not help.", "zh": "针对两个月前一次设计评审的反馈，感觉像是惩罚，而不是帮助。", "sp": null}, {"id": "s0_2_2", "md": "Details have faded, and the person cannot ==connect== your comment to a real moment anymore.", "text": "Details have faded, and the person cannot connect your comment to a real moment anymore.", "zh": "细节已经模糊了，对方已经没法把你的评论和一个真实的场景对应起来。", "sp": null}, {"id": "s0_2_3", "md": "By then, the moment to learn from it has already passed.", "text": "By then, the moment to learn from it has already passed.", "zh": "到那时，从中学习的时机早就过去了。", "sp": null}]]}, {"heading": "2. Make It Specific, Make It Soon", "heading_zh": "2. 说具体，说及时", "rows": [[{"id": "s1_0_0", "md": "A simple structure helps: the situation, the behavior, and the ==impact==.", "text": "A simple structure helps: the situation, the behavior, and the impact.", "zh": "一个简单的结构很好用：情境、行为、影响。", "sp": null}, {"id": "s1_0_1", "md": "\"In yesterday's incident call, you went quiet for ten minutes after finding the bad config. The team kept debugging the wrong service.\"", "text": "\"In yesterday's incident call, you went quiet for ten minutes after finding the bad config. The team kept debugging the wrong service.\"", "zh": "「昨天故障电话会上，你发现那个错误配置之后沉默了十分钟。团队一直在排查错误的服务。」", "sp": null}, {"id": "s1_0_2", "md": "There are no labels and no guessing, just one ==observable== moment and its result.", "text": "There are no labels and no guessing, just one observable moment and its result.", "zh": "没有贴标签，不用猜，只有一个看得见的瞬间和它的后果。", "sp": null}], [{"id": "s1_1_0", "md": "Then add a forward-looking request.", "text": "Then add a forward-looking request.", "zh": "然后，加一个面向未来的请求。", "sp": null}, {"id": "s1_1_1", "md": "\"Next time, say what you found right away, even if you're only half sure.\"", "text": "\"Next time, say what you found right away, even if you're only half sure.\"", "zh": "「下次，发现了什么马上说出来，哪怕你只有五成把握。」", "sp": null}, {"id": "s1_1_2", "md": "It is concrete, it is small, and it is easy to try.", "text": "It is concrete, it is small, and it is easy to try.", "zh": "它很具体，很小，也很容易尝试。", "sp": null}, {"id": "s1_1_3", "md": "Now the person knows exactly what better looks like.", "text": "Now the person knows exactly what better looks like.", "zh": "这样对方就清楚地知道「做得更好」是什么样子了。", "sp": null}], [{"id": "s1_2_0", "md": "Try to give feedback within a day or two.", "text": "Try to give feedback within a day or two.", "zh": "尽量在一两天之内给反馈。", "sp": null}, {"id": "s1_2_1", "md": "Small, frequent comments __feel like coaching__; rare, heavy ones feel like ==judgment==.", "text": "Small, frequent comments feel like coaching; rare, heavy ones feel like judgment.", "zh": "小而频繁的意见像是辅导；少而沉重的意见像是审判。", "sp": null}, {"id": "s1_2_2", "md": "**The sooner you say it, the smaller it feels.**", "text": "The sooner you say it, the smaller it feels.", "zh": "说得越早，事情显得越小。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, __check for understanding__ instead of assuming it.", "text": "Finally, check for understanding instead of assuming it.", "zh": "最后，确认对方理解了，而不是想当然。", "sp": null}, {"id": "s1_3_1", "md": "Ask, \"How does that land for you?\" and listen to the answer.", "text": "Ask, \"How does that land for you?\" and listen to the answer.", "zh": "问一句「你听了有什么想法？」，然后认真听回答。", "sp": null}, {"id": "s1_3_2", "md": "Sometimes you will learn that the person had context you were missing, and that is ==worth knowing== too.", "text": "Sometimes you will learn that the person had context you were missing, and that is worth knowing too.", "zh": "有时候你会发现对方掌握着你不知道的背景，这同样值得知道。", "sp": null}]]}], "gist": [{"q": "为什么 \"You need to be more proactive\" 这样的反馈没用？", "a": "太模糊，对方不知道具体指什么、下一步该做什么，只能猜，常常改错方向；这只是意见不是反馈。"}, {"q": "作者推荐的反馈结构是什么？", "a": "情境、行为、影响，再加一个面向未来的具体请求，比如「下次一发现问题就马上说出来」。"}, {"q": "关于反馈的时机，作者怎么说？", "a": "一两天内给；小而频繁的反馈像辅导，少而重的像审判；越早说越显得小。最后要确认对方的理解。"}], "dictation": [{"id": "s0_1_2", "text": "If the person cannot picture the next step, you have given an opinion, not feedback."}, {"id": "s0_2_1", "text": "Feedback about a design review from two months ago feels like a punishment, not help."}, {"id": "s1_1_3", "text": "Now the person knows exactly what better looks like."}, {"id": "s1_2_2", "text": "The sooner you say it, the smaller it feels."}], "shadow": {"text": "Try to give feedback within a day or two. Small, frequent comments feel like coaching; rare, heavy ones feel like judgment. The sooner you say it, the smaller it feels.", "marked": "Try to give feedback / within a <b>day</b> or <b>two</b>. //<br><b>Small</b>, <b>frequent</b> comments / feel like <b>coaching</b>; / <b>rare</b>, <b>heavy</b> ones / feel like <b>judgment</b>. //<br>The <b>sooner</b> you say it, / the <b>smaller</b> it feels. //"}, "prompts": [{"q": "下属在昨天的方案评审上，被问到性能数据时一直绕开话题，导致评审没结论。用 30 秒给他具体的反馈：情境、行为、影响和下次的做法。", "ref": "Can I give you some quick feedback on yesterday's review? When Sam asked about the latency numbers, you moved on to the architecture slide twice without answering. Because of that, the reviewers didn't feel ready to approve, and we have to meet again next week. Next time, if you don't have the number, just say so and promise a follow-up. That builds more trust than avoiding it. How does that sound?", "ref_zh": "能就昨天的评审给你一点快速反馈吗？Sam 问到延迟数据的时候，你两次都没回答就直接翻到了架构那页。正因为这样，评审的人觉得还没法批，我们下周还得再开一次。下次如果手头没有数据，直接说没有，然后承诺会后跟进就好。这比回避更能建立信任。你觉得呢？", "id": "ref0"}, {"q": "一位工程师这周主动写了上线检查清单，避免了一次回滚。用 30 秒给他具体的正向反馈，并说明你希望他继续做什么。", "ref": "I want to mention the launch checklist you wrote on Tuesday. Because you added the step to check the feature flag defaults, we caught the wrong setting before the rollout, and we didn't need a rollback. That probably saved us a stressful evening. I'd love for you to keep doing that, and maybe share the checklist with the other two teams on Friday.", "ref_zh": "我想提一下你周二写的上线 checklist。因为你加了检查 feature flag 默认值那一步，我们在灰度之前就发现了错误的配置，没有回滚。这大概帮我们省掉了一个焦头烂额的晚上。希望你继续保持，也可以考虑周五把这份 checklist 分享给另外两个团队。", "id": "ref1"}], "words": [{"w": "incomplete", "ipa": "/ˌɪnkəmˈpliːt/", "zh": "不完整的", "ex": "The incident report is incomplete without the timeline.", "id": "w0"}, {"w": "punishment", "ipa": "/ˈpʌnɪʃmənt/", "zh": "惩罚", "ex": "A surprise rating at year end feels like punishment, not feedback.", "id": "w1"}, {"w": "connect", "ipa": "/kəˈnekt/", "zh": "联系起来", "ex": "I couldn't connect the error spike to any deploy.", "id": "w2"}, {"w": "impact", "ipa": "/ˈɪmpækt/", "zh": "影响", "ex": "What was the user impact during the outage?", "id": "w3"}, {"w": "observable", "ipa": "/əbˈzɜːrvəbl/", "zh": "可观察到的", "ex": "Focus on observable behavior, like missed standups, not attitude.", "id": "w4"}, {"w": "judgment", "ipa": "/ˈdʒʌdʒmənt/", "zh": "评判", "ex": "I'm not passing judgment; I just want to understand what happened.", "id": "w5"}, {"w": "worth knowing", "ipa": "/wɜːrθ ˈnoʊɪŋ/", "zh": "值得知道", "ex": "It's worth knowing that the cache restarts every night.", "id": "w6"}, {"w": "proactive", "ipa": "/proʊˈæktɪv/", "zh": "主动的", "ex": "Being proactive means flagging the risk before the PM asks.", "id": "w7"}, {"w": "forward-looking", "ipa": "/ˈfɔːrwərd ˈlʊkɪŋ/", "zh": "面向未来的", "ex": "Let's keep the postmortem forward-looking and focus on fixes.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Feedback Nobody Can Act On", "zh": "1. 没法照着做的反馈", "start": 0.0, "end": 2.592, "words": [[0.105, 0.329], [0.671, 1.184], [1.197, 1.54], [1.553, 1.697], [1.711, 1.974], [1.987, 2.21]]}, {"kind": "s", "id": "s0_0_0", "md": "\"You need to be more proactive.\"", "zh": "「你需要更主动一点。」", "sp": null, "gap": false, "start": 2.592, "end": 4.512, "words": [[2.776, 2.816], [2.816, 2.96], [2.974, 3.039], [3.053, 3.171], [3.184, 3.368], [3.381, 4.052]]}, {"kind": "s", "id": "s0_0_1", "md": "Most of us have heard a sentence like this in a review, and most of us had no idea what to do with it.", "zh": "我们大多数人都在绩效评估里听过类似的话，而且大多数人都不知道该怎么办。", "sp": null, "gap": false, "start": 4.512, "end": 10.512, "words": [[4.617, 4.867], [4.88, 4.973], [4.986, 5.144], [5.157, 5.288], [5.301, 5.486], [5.499, 5.538], [5.551, 6.012], [6.025, 6.249], [6.262, 6.486], [6.499, 6.578], [6.591, 6.63], [6.644, 7.13], [7.551, 7.683], [7.696, 7.973], [7.986, 8.065], [8.078, 8.249], [8.262, 8.446], [8.459, 8.749], [8.762, 9.275], [9.288, 9.433], [9.446, 9.525], [9.538, 9.736], [9.749, 9.946], [9.959, 10.13]]}, {"kind": "s", "id": "s0_0_2", "md": "Proactive about what? In which meetings? Compared to whom?", "zh": "在哪方面主动？在哪些会上？跟谁比？", "sp": null, "gap": false, "start": 10.512, "end": 14.496, "words": [[10.63, 11.051], [11.065, 11.354], [11.367, 11.723], [12.157, 12.236], [12.249, 12.433], [12.446, 12.973], [13.407, 13.736], [13.749, 13.815], [13.828, 14.104]]}, {"kind": "s", "id": "s0_1_0", "md": "Vague feedback is not kind; it is just ==incomplete==.", "zh": "模糊的反馈不是善意；它只是不完整。", "sp": null, "gap": true, "start": 14.496, "end": 18.24, "words": [[14.601, 14.838], [14.851, 15.404], [15.483, 15.588], [15.601, 15.851], [15.864, 16.325], [16.772, 16.825], [16.838, 16.957], [16.97, 17.206], [17.22, 17.851]]}, {"kind": "s", "id": "s0_1_1", "md": "The person walks away worried, guesses what you meant, and often changes the wrong thing.", "zh": "对方带着焦虑离开，猜你到底什么意思，结果常常改错了地方。", "sp": null, "gap": false, "start": 18.24, "end": 23.568, "words": [[18.372, 18.437], [18.451, 18.845], [18.858, 19.174], [19.187, 19.464], [19.477, 19.977], [20.227, 20.569], [20.582, 20.727], [20.74, 20.845], [20.858, 21.227], [21.543, 21.661], [21.674, 22.056], [22.069, 22.451], [22.464, 22.556], [22.569, 22.845], [22.858, 23.187]]}, {"kind": "s", "id": "s0_1_2", "md": "**If the person cannot picture the next step, you have given an opinion, not feedback.**", "zh": "如果对方想象不出下一步该怎么做，你给的就是一个看法，而不是反馈。", "sp": null, "gap": false, "start": 23.568, "end": 28.776, "words": [[23.673, 23.779], [23.792, 23.871], [23.884, 24.252], [24.265, 24.686], [24.7, 25.029], [25.042, 25.107], [25.121, 25.384], [25.397, 25.779], [26.107, 26.186], [26.2, 26.331], [26.344, 26.607], [26.621, 26.713], [26.726, 27.239], [27.568, 27.726], [27.739, 28.397]]}, {"kind": "s", "id": "s0_2_0", "md": "Timing matters just as much.", "zh": "时机同样重要。", "sp": null, "gap": true, "start": 28.776, "end": 30.984, "words": [[28.881, 29.184], [29.197, 29.684], [29.802, 30.052], [30.065, 30.158], [30.171, 30.605]]}, {"kind": "s", "id": "s0_2_1", "md": "Feedback about a design review from two months ago feels like a ==punishment==, not help.", "zh": "针对两个月前一次设计评审的反馈，感觉像是惩罚，而不是帮助。", "sp": null, "gap": false, "start": 30.984, "end": 36.12, "words": [[31.142, 31.589], [31.602, 31.852], [31.866, 31.905], [31.918, 32.339], [32.352, 32.734], [32.747, 32.958], [32.971, 33.234], [33.247, 33.523], [33.537, 33.839], [33.852, 34.155], [34.168, 34.287], [34.3, 34.352], [34.366, 34.905], [35.234, 35.392], [35.405, 35.734]]}, {"kind": "s", "id": "s0_2_2", "md": "Details have faded, and the person cannot ==connect== your comment to a real moment anymore.", "zh": "细节已经模糊了，对方已经没法把你的评论和一个真实的场景对应起来。", "sp": null, "gap": false, "start": 36.12, "end": 41.64, "words": [[36.225, 36.699], [36.712, 36.817], [36.831, 37.265], [37.659, 37.712], [37.725, 37.804], [37.817, 38.265], [38.278, 38.725], [38.738, 39.107], [39.12, 39.238], [39.252, 39.659], [39.804, 39.936], [39.949, 40.041], [40.054, 40.357], [40.37, 40.738], [40.752, 41.252]]}, {"kind": "s", "id": "s0_2_3", "md": "By then, the moment to learn from it has already passed.", "zh": "到那时，从中学习的时机早就过去了。", "sp": null, "gap": false, "start": 41.64, "end": 45.288, "words": [[41.758, 41.864], [41.877, 42.166], [42.561, 42.653], [42.666, 42.995], [43.008, 43.101], [43.114, 43.416], [43.429, 43.64], [43.653, 43.772], [43.785, 43.956], [43.969, 44.324], [44.337, 44.903]]}, {"kind": "h", "id": "h1", "md": "2. Make It Specific, Make It Soon", "zh": "2. 说具体，说及时", "start": 45.288, "end": 48.192, "words": [[45.406, 45.63], [46.064, 46.235], [46.249, 46.327], [46.341, 46.998], [47.196, 47.367], [47.38, 47.459], [47.472, 47.814]]}, {"kind": "s", "id": "s1_0_0", "md": "A simple structure helps: the situation, the behavior, and the ==impact==.", "zh": "一个简单的结构很好用：情境、行为、影响。", "sp": null, "gap": false, "start": 48.192, "end": 53.352, "words": [[48.297, 48.35], [48.363, 48.731], [48.745, 49.205], [49.218, 49.731], [50.021, 50.126], [50.139, 50.837], [51.205, 51.284], [51.297, 51.942], [52.192, 52.245], [52.258, 52.337], [52.35, 52.955]]}, {"kind": "s", "id": "s1_0_1", "md": "\"In yesterday's incident call, you went quiet for ten minutes after finding the bad config. The team kept debugging the wrong service.\"", "zh": "「昨天故障电话会上，你发现那个错误配置之后沉默了十分钟。团队一直在排查错误的服务。」", "sp": null, "gap": false, "start": 53.352, "end": 61.776, "words": [[53.536, 53.602], [53.602, 54.168], [54.181, 54.589], [54.602, 54.957], [55.247, 55.313], [55.326, 55.51], [55.523, 55.905], [55.918, 56.076], [56.089, 56.378], [56.391, 56.773], [56.891, 57.155], [57.168, 57.602], [57.615, 57.707], [57.72, 57.997], [58.01, 58.549], [58.997, 59.049], [59.063, 59.391], [59.405, 59.694], [59.707, 60.247], [60.26, 60.339], [60.352, 60.655], [60.668, 61.339]]}, {"kind": "s", "id": "s1_0_2", "md": "There are no labels and no guessing, just one ==observable== moment and its result.", "zh": "没有贴标签，不用猜，只有一个看得见的瞬间和它的后果。", "sp": null, "gap": false, "start": 61.776, "end": 67.296, "words": [[61.894, 61.987], [62.0, 62.079], [62.092, 62.315], [62.329, 62.934], [63.092, 63.263], [63.276, 63.5], [63.513, 64.0], [64.342, 64.565], [64.579, 64.776], [64.789, 65.394], [65.408, 65.829], [66.197, 66.276], [66.289, 66.421], [66.434, 66.908]]}, {"kind": "s", "id": "s1_1_0", "md": "Then add a forward-looking request.", "zh": "然后，加一个面向未来的请求。", "sp": null, "gap": true, "start": 67.296, "end": 69.744, "words": [[67.401, 67.717], [67.809, 67.928], [67.941, 67.98], [67.993, 68.757], [68.77, 69.349]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Next time, say what you found right away, even if you're only half sure.\"", "zh": "「下次，发现了什么马上说出来，哪怕你只有五成把握。」", "sp": null, "gap": false, "start": 69.744, "end": 74.544, "words": [[69.928, 70.033], [70.112, 70.415], [70.81, 70.981], [70.994, 71.126], [71.139, 71.244], [71.257, 71.56], [71.573, 71.731], [71.744, 72.112], [72.507, 72.744], [72.757, 72.862], [72.876, 73.047], [73.06, 73.336], [73.349, 73.691], [73.705, 74.126]]}, {"kind": "s", "id": "s1_1_2", "md": "It is concrete, it is small, and it is easy to try.", "zh": "它很具体，很小，也很容易尝试。", "sp": null, "gap": false, "start": 74.544, "end": 78.408, "words": [[74.649, 74.728], [74.741, 74.86], [74.873, 75.518], [75.833, 75.899], [75.912, 76.031], [76.044, 76.57], [76.899, 76.952], [76.965, 77.057], [77.07, 77.215], [77.228, 77.478], [77.491, 77.557], [77.57, 78.018]]}, {"kind": "s", "id": "s1_1_3", "md": "Now the person knows exactly what better looks like.", "zh": "这样对方就清楚地知道「做得更好」是什么样子了。", "sp": null, "gap": false, "start": 78.408, "end": 81.504, "words": [[78.513, 78.618], [78.632, 78.724], [78.737, 79.119], [79.132, 79.395], [79.408, 80.04], [80.053, 80.224], [80.237, 80.461], [80.474, 80.737], [80.75, 81.105]]}, {"kind": "s", "id": "s1_2_0", "md": "Try to give feedback within a day or two.", "zh": "尽量在一两天之内给反馈。", "sp": null, "gap": true, "start": 81.504, "end": 84.288, "words": [[81.609, 81.754], [81.767, 81.846], [81.859, 82.043], [82.057, 82.622], [82.636, 82.899], [82.912, 82.978], [82.991, 83.346], [83.425, 83.543], [83.557, 83.899]]}, {"kind": "s", "id": "s1_2_1", "md": "Small, frequent comments __feel like coaching__; rare, heavy ones feel like ==judgment==.", "zh": "小而频繁的意见像是辅导；少而沉重的意见像是审判。", "sp": null, "gap": false, "start": 84.288, "end": 89.904, "words": [[84.393, 84.841], [85.104, 85.499], [85.512, 85.959], [85.972, 86.196], [86.209, 86.393], [86.406, 86.88], [87.301, 87.683], [88.077, 88.275], [88.288, 88.564], [88.577, 88.775], [88.788, 88.946], [88.959, 89.512]]}, {"kind": "s", "id": "s1_2_2", "md": "**The sooner you say it, the smaller it feels.**", "zh": "说得越早，事情显得越小。", "sp": null, "gap": false, "start": 89.904, "end": 92.832, "words": [[90.022, 90.075], [90.088, 90.404], [90.417, 90.522], [90.536, 90.838], [90.851, 90.983], [91.246, 91.338], [91.351, 91.799], [91.812, 91.891], [91.904, 92.443]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, __check for understanding__ instead of assuming it.", "zh": "最后，确认对方理解了，而不是想当然。", "sp": null, "gap": true, "start": 92.832, "end": 96.312, "words": [[92.99, 93.411], [93.714, 93.937], [93.95, 94.095], [94.108, 94.779], [94.793, 95.187], [95.2, 95.266], [95.279, 95.753], [95.766, 95.924]]}, {"kind": "s", "id": "s1_3_1", "md": "Ask, \"How does that land for you?\" and listen to the answer.", "zh": "问一句「你听了有什么想法？」，然后认真听回答。", "sp": null, "gap": false, "start": 96.312, "end": 100.176, "words": [[96.417, 96.746], [97.009, 97.102], [97.115, 97.246], [97.259, 97.43], [97.444, 97.746], [97.759, 97.97], [97.983, 98.141], [98.733, 98.851], [98.865, 99.115], [99.128, 99.194], [99.207, 99.312], [99.325, 99.786]]}, {"kind": "s", "id": "s1_3_2", "md": "Sometimes you will learn that the person had context you were missing, and that is ==worth knowing== too.", "zh": "有时候你会发现对方掌握着你不知道的背景，这同样值得知道。", "sp": null, "gap": false, "start": 100.176, "end": 105.48, "words": [[100.294, 100.768], [100.781, 100.847], [100.86, 101.005], [101.018, 101.321], [101.334, 101.452], [101.465, 101.544], [101.558, 101.992], [102.005, 102.137], [102.15, 102.755], [102.768, 102.86], [102.873, 102.992], [103.005, 103.426], [103.847, 103.913], [103.926, 104.097], [104.11, 104.202], [104.215, 104.426], [104.439, 104.715], [104.729, 105.097]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

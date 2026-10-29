@@ -1,0 +1,191 @@
+{
+  "id": "044",
+  "title": "Saying No Without Closing the Door",
+  "meta": "B2 · 约 280 词 · 场景：拒绝请求",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. What a Bare No Costs You",
+      "paragraphs": [
+        [
+          "A partner team asks you to build a custom report for their launch next month.",
+          "Your team is already stretched, so you reply, \"Sorry, we don't have the bandwidth.\"",
+          "It feels efficient, but the other side hears something else.",
+          "They hear that their problem does not matter to you."
+        ],
+        [
+          "A bare no has a long memory.",
+          "Months later, when you need a favor from that team, someone will ==recall== that you were the person who __shut them down__.",
+          "**The words you use to refuse often matter more than the refusal itself.**"
+        ],
+        [
+          "You will have to say no often as a lead, and that is healthy.",
+          "Protecting your team's ==focus== is part of the job.",
+          "The skill is to decline the request while keeping the ==relationship== intact."
+        ]
+      ],
+      "heading_zh": "1. 一句干巴巴的「不」会让你付出什么",
+      "paragraphs_zh": [
+        [
+          "一个合作团队请你为他们下个月的上线做一份定制报表。",
+          "你的团队已经忙不过来了，于是你回复：「抱歉，我们没有人力。」",
+          "感觉挺高效，但对方听到的是另一回事。",
+          "他们听到的是：他们的问题在你这儿无所谓。"
+        ],
+        [
+          "一句干巴巴的「不」，别人会记很久。",
+          "几个月后，当你需要那个团队帮忙时，会有人想起来你就是当初把他们打发走的那个人。",
+          "你拒绝时用的措辞，往往比拒绝本身更重要。"
+        ],
+        [
+          "作为 lead，你会经常需要说不，这很正常。",
+          "保护团队的专注度本来就是工作的一部分。",
+          "真正的功夫在于拒绝了请求，关系却还完好无损。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. The Shape of a Good No",
+      "paragraphs": [
+        [
+          "Start by showing that you understood the request.",
+          "Repeat their goal in one sentence, so they know you are not ==brushing them off==.",
+          "\"You need launch numbers your leadership can trust by the twentieth.\""
+        ],
+        [
+          "Then give the real reason, briefly and without ==apology== theatre.",
+          "\"We are __heads down on__ the payment migration until the end of the month.\"",
+          "One honest reason is more convincing than three weak ones."
+        ],
+        [
+          "Now open a door.",
+          "Offer a smaller version, a later date, or a person who can help.",
+          "\"We can't build a custom report, but we can __give you access to__ the raw table and an example query today.\"",
+          "**A no with an alternative still feels like help.**"
+        ],
+        [
+          "Finally, name the condition that would turn it into a yes.",
+          "\"If this is still needed after the migration, let's __put it on the list__ for next quarter.\"",
+          "A clear condition shows that the door is closed for now, not ==permanently==."
+        ]
+      ],
+      "heading_zh": "2. 好的拒绝长什么样",
+      "paragraphs_zh": [
+        [
+          "先表明你听懂了对方的请求。",
+          "用一句话复述他们的目标，让他们知道你不是在敷衍。",
+          "「你们需要在二十号之前拿到领导能信得过的上线数据。」"
+        ],
+        [
+          "然后给出真实的理由，简短，别演那种道歉戏码。",
+          "「到月底之前我们都在埋头做支付迁移。」",
+          "一个真实的理由比三个站不住的理由更有说服力。"
+        ],
+        [
+          "接着，给对方留一扇门。",
+          "提供一个缩小的版本、一个更晚的时间，或者一个能帮上忙的人。",
+          "「定制报表我们做不了，但今天就可以给你们开原始表的权限，再附一个示例查询。」",
+          "带着替代方案的拒绝，听起来依然是在帮忙。"
+        ],
+        [
+          "最后，说清楚在什么条件下会变成同意。",
+          "「如果迁移完了你们还需要，我们就把它放进下个季度的清单。」",
+          "一个清楚的条件表明，这扇门只是暂时关上，不是永远关上。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "简单地回一句 \"We don't have the bandwidth\" 有什么代价？",
+      "a": "对方听到的是「你的问题对我不重要」；几个月后你求他们时，他们会记得你曾经直接回绝。"
+    },
+    {
+      "q": "一个好的拒绝包括哪几部分？",
+      "a": "先复述对方目标表明理解；给一个真实的简短理由；提供替代方案（缩小版、晚一点或别人能帮）；说明什么条件下能变成 yes。"
+    },
+    {
+      "q": "为什么只给一个理由？",
+      "a": "一个诚实的理由比三个站不住的理由更有说服力。"
+    }
+  ],
+  "dictation": [
+    "The words you use to refuse often matter more than the refusal itself.",
+    "One honest reason is more convincing than three weak ones.",
+    "A no with an alternative still feels like help.",
+    "Protecting your team's focus is part of the job."
+  ],
+  "shadow": {
+    "text": "Now open a door. Offer a smaller version, a later date, or a person who can help.",
+    "marked": "Now <b>open</b> a <b>door</b>. //<br>Offer a <b>smaller</b> version, / a <b>later</b> date, / or a <b>person</b> who can help. //"
+  },
+  "prompts": [
+    {
+      "q": "隔壁团队请你们帮忙做一次压测，但你们这两周在赶支付迁移。用 30 秒拒绝，但给出替代方案和可以答应的条件。",
+      "ref": "I understand you need confidence in the new service before the sale event. Honestly, we're heads down on the payment migration for the next two weeks, so we can't run the load test ourselves. What we can do is share our test scripts today and spend thirty minutes walking your engineer through them. If you still need us after the migration, I'm happy to put it on our list.",
+      "ref_zh": "我理解你们在大促之前需要对新服务有信心。说实话，接下来两周我们都在埋头做支付迁移，所以压测没法我们自己来跑。我们能做的是今天就把测试脚本共享给你们，再花三十分钟带你们的工程师过一遍。如果迁移完之后你们还需要我们，我很乐意把它排进我们的清单。"
+    },
+    {
+      "q": "你的老板临时问你能不能接一个新的内部工具项目。你认为团队现在接不了。用 30 秒说 no，但不关上门。",
+      "ref": "Thanks for thinking of us, and I can see why this tool matters. Right now, though, taking it on would put the search launch at risk, and that's the commitment we made to the business. My suggestion is that we scope it properly in the next planning cycle. If it's urgent before then, Ken's team built something similar last year, and they might be able to reuse it.",
+      "ref_zh": "谢谢你们想到我们，我也明白这个工具为什么重要。不过现在接下来的话，会让搜索的上线有风险，而那是我们对业务做过的承诺。我的建议是在下一个规划周期里把它好好评估一下范围。如果在那之前就很急，Ken 的团队去年做过一个类似的东西，也许可以直接复用。"
+    }
+  ],
+  "words": [
+    {
+      "w": "recall",
+      "ipa": "/rɪˈkɔːl/",
+      "zh": "回想起、记得",
+      "ex": "I recall that we had the same timeout issue last spring."
+    },
+    {
+      "w": "focus",
+      "ipa": "/ˈfoʊkəs/",
+      "zh": "专注、重点",
+      "ex": "Our focus this month is the payment migration, nothing else."
+    },
+    {
+      "w": "relationship",
+      "ipa": "/rɪˈleɪʃənʃɪp/",
+      "zh": "关系",
+      "ex": "We have a good working relationship with the data team."
+    },
+    {
+      "w": "brush off",
+      "ipa": "/brʌʃ ɔːf/",
+      "zh": "敷衍、打发",
+      "ex": "I don't want to brush off their concern, so let's set up a call."
+    },
+    {
+      "w": "apology",
+      "ipa": "/əˈpɑːlədʒi/",
+      "zh": "道歉",
+      "ex": "A short apology is enough; then explain the fix."
+    },
+    {
+      "w": "permanently",
+      "ipa": "/ˈpɜːrmənəntli/",
+      "zh": "永久地",
+      "ex": "We're not removing the feature permanently, just disabling it for now."
+    },
+    {
+      "w": "bandwidth",
+      "ipa": "/ˈbændwɪdθ/",
+      "zh": "（人的）精力、余力",
+      "ex": "Do you have the bandwidth to review this before Friday?"
+    },
+    {
+      "w": "decline",
+      "ipa": "/dɪˈklaɪn/",
+      "zh": "婉拒",
+      "ex": "We had to decline the request because of the code freeze."
+    },
+    {
+      "w": "intact",
+      "ipa": "/ɪnˈtækt/",
+      "zh": "完好无损的",
+      "ex": "The rollback kept all user data intact."
+    }
+  ]
+}

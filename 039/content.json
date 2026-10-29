@@ -1,0 +1,190 @@
+{
+  "id": "039",
+  "title": "Talking About Your Career Growth",
+  "meta": "B2 · 约 280 词 · 场景：职业发展对话",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. A Question Too Wide to Answer",
+      "paragraphs": [
+        [
+          "\"How do I get promoted?\" is one of the most common questions in one-on-ones.",
+          "It is also one of the least useful.",
+          "It usually gets a polite, ==generic== answer about \"showing more impact.\""
+        ],
+        [
+          "The problem is that the question is too wide.",
+          "Your manager would have to describe the whole next level from memory, on the spot.",
+          "Most people cannot do that well, so they __fall back on__ the words in the job ladder.",
+          "**Ask about the gap, not the destination.**"
+        ],
+        [
+          "Try this instead: \"Looking at my last project, what would someone at the next level have done differently?\"",
+          "Now your manager can point to a real moment: maybe you solved the technical problem well but didn't ==influence== the teams around you.",
+          "That kind of answer is ==actionable==, because you can __work on it__ starting next week."
+        ]
+      ],
+      "heading_zh": "1. 问得太宽，没法回答",
+      "paragraphs_zh": [
+        [
+          "「我怎么才能晋升？」是 1:1 里最常见的问题之一。",
+          "它也是最没用的问题之一。",
+          "得到的通常是一个客气又笼统的回答，说要「体现更多影响力」。"
+        ],
+        [
+          "问题在于，这个问题太宽了。",
+          "你的经理得当场凭记忆把下一个职级完整描述一遍。",
+          "大多数人做不好这件事，于是只能搬出职级体系里的那些说法。",
+          "要问差距，而不是问终点。"
+        ],
+        [
+          "换个问法试试：「看我上一个项目，如果是下一个职级的人来做，会有哪些不同的做法？」",
+          "这样经理就能指出一个真实的场景：也许你把技术问题解决得很好，但没能影响到周边的团队。",
+          "这种回答是可以落地的，因为你下周就能开始改进。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. From Conversation to Plan",
+      "paragraphs": [
+        [
+          "Once you know the gap, ask for a chance to close it.",
+          "If the gap is influence across teams, ask to lead the next project that ==spans== two teams.",
+          "**Growth comes from stretch work, not from waiting until you feel ready.**"
+        ],
+        [
+          "Write down what you agreed, in your own words, and send it to your manager.",
+          "It keeps both of you honest.",
+          "It also gives your manager something ==tangible== to bring into ==calibration==, where they have to argue your case against other strong people."
+        ],
+        [
+          "Then __check in__ every month or two.",
+          "Don't wait for the formal review, when it is too late to change the story.",
+          "Ask, \"Am I closer than last time, and what is still missing?\""
+        ],
+        [
+          "Your manager wants you to grow, but they have many people to think about.",
+          "Making your progress easy to see keeps it __on their agenda__."
+        ]
+      ],
+      "heading_zh": "2. 从谈话到计划",
+      "paragraphs_zh": [
+        [
+          "一旦知道了差距，就去争取一个弥补它的机会。",
+          "如果差距是跨团队的影响力，就主动要求牵头下一个横跨两个团队的项目。",
+          "成长来自有挑战的工作，而不是等到你觉得自己准备好了。"
+        ],
+        [
+          "把你们商定的内容用自己的话写下来，发给你的经理。",
+          "这能让双方都说到做到。",
+          "这也能让经理在校准会上有实实在在的东西可拿，他得在那里拿你跟其他优秀的人比，替你争取。"
+        ],
+        [
+          "然后每一两个月跟进一次。",
+          "别等到正式绩效评估，到那时想改变叙事已经晚了。",
+          "问一句：「跟上次比，我离目标更近了吗？还缺什么？」"
+        ],
+        [
+          "你的经理希望你成长，但他要操心的人很多。",
+          "让你的进展一目了然，才能让它一直留在他的议程上。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么「我怎么才能晋升」是个没用的问题？",
+      "a": "问题太宽，经理只能凭记忆描述整个下一级，于是给出「多展现影响力」这类泛泛的回答。"
+    },
+    {
+      "q": "作者建议换成什么问法？",
+      "a": "针对具体项目问差距：「看我上个项目，下一级的人会怎么做得不一样？」这样得到的是能马上行动的反馈。"
+    },
+    {
+      "q": "知道差距之后要做哪几件事？",
+      "a": "争取能补差距的挑战性工作；把约定用自己的话写下来发给经理（方便他在校准会上替你争取）；每一两个月主动跟进进展。"
+    }
+  ],
+  "dictation": [
+    "Ask about the gap, not the destination.",
+    "Growth comes from stretch work, not from waiting until you feel ready.",
+    "Once you know the gap, ask for a chance to close it.",
+    "Don't wait for the formal review, when it is too late to change the story."
+  ],
+  "shadow": {
+    "text": "Once you know the gap, ask for a chance to close it. If the gap is influence across teams, ask to lead the next project that spans two teams. Growth comes from stretch work, not from waiting until you feel ready.",
+    "marked": "Once you know the <b>gap</b>, / ask for a <b>chance</b> to close it. //<br>If the gap is <b>influence</b> across teams, / ask to <b>lead</b> the next project / that spans <b>two</b> teams. //<br>Growth comes from <b>stretch</b> work, / <b>not</b> from waiting / until you feel <b>ready</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "在一对一里和经理谈晋升。不要问「我怎么晋升」，用 30 秒针对你最近的一个项目问差距在哪。",
+      "ref": "I'd like to spend a few minutes on my growth today. Rather than ask about promotion in general, can we look at the search migration I just finished? If someone at the next level had led that project, what would they have done differently? I want something concrete I can work on this quarter, not just the description in the job ladder.",
+      "ref_zh": "今天我想花几分钟聊聊我的成长。与其笼统地问晋升，我们能不能看看我刚做完的搜索迁移？如果是下一个职级的人来牵头这个项目，他会有哪些不同的做法？我想要一个这个季度能具体去改进的点，而不只是职级体系里的那段描述。"
+    },
+    {
+      "q": "经理说你的差距是「跨团队影响力」。用 30 秒提出一个具体的机会请求，并约定怎么跟进。",
+      "ref": "That's really helpful, thank you. If cross-team influence is the gap, I'd like to lead the logging cleanup next quarter, since it touches four teams and nobody owns it yet. I'll write up what we agreed today and send it to you, so we're on the same page. Could we check in on it every month, maybe in the first one-on-one of each month?",
+      "ref_zh": "这真的很有帮助，谢谢。如果跨团队影响力是差距，我想下个季度牵头日志治理，因为它涉及四个团队，目前还没人负责。我会把今天商定的内容写下来发给你，确保我们理解一致。我们能每个月跟进一次吗，比如放在每个月的第一次 1:1 上？"
+    }
+  ],
+  "words": [
+    {
+      "w": "generic",
+      "ipa": "/dʒəˈnerɪk/",
+      "zh": "泛泛的、笼统的",
+      "ex": "The feedback was too generic to act on."
+    },
+    {
+      "w": "influence (v.)",
+      "ipa": "/ˈɪnfluəns/",
+      "zh": "影响",
+      "ex": "You need to influence the platform team, not just file tickets.",
+      "tts_w": "influence"
+    },
+    {
+      "w": "actionable",
+      "ipa": "/ˈækʃənəbl/",
+      "zh": "可执行的、能付诸行动的",
+      "ex": "Let's turn these findings into actionable items with owners."
+    },
+    {
+      "w": "span (v.)",
+      "ipa": "/spæn/",
+      "zh": "跨越、涵盖",
+      "ex": "The project spans three teams and two time zones.",
+      "tts_w": "span"
+    },
+    {
+      "w": "tangible",
+      "ipa": "/ˈtændʒəbl/",
+      "zh": "具体的、看得见的",
+      "ex": "We need tangible results before the quarterly review."
+    },
+    {
+      "w": "calibration",
+      "ipa": "/ˌkælɪˈbreɪʃən/",
+      "zh": "（绩效）校准",
+      "ex": "Managers compare ratings across teams during calibration."
+    },
+    {
+      "w": "stretch (adj.)",
+      "ipa": "/stretʃ/",
+      "zh": "有挑战性的、需要够一够的",
+      "ex": "Leading the migration is a stretch assignment for her.",
+      "tts_w": "stretch"
+    },
+    {
+      "w": "promote",
+      "ipa": "/prəˈmoʊt/",
+      "zh": "晋升",
+      "ex": "He was promoted after leading the payments rebuild."
+    },
+    {
+      "w": "agenda",
+      "ipa": "/əˈdʒendə/",
+      "zh": "议程、关注事项",
+      "ex": "Let's put the hiring plan on next week's agenda."
+    }
+  ]
+}

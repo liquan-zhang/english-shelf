@@ -1,0 +1,188 @@
+{
+  "id": "027",
+  "title": "Defending a Technical Decision",
+  "meta": "B2 · 约 260 词 · 场景：被质疑旧决策",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Defend the Reasoning, Not the Result",
+      "paragraphs": [
+        [
+          "Six months ago, you chose a message queue instead of direct calls between services.",
+          "Now a director asks in a review why the system is so complicated.",
+          "You have about one minute to __make your case__."
+        ],
+        [
+          "The weak answer tries to ==justify== the result.",
+          "\"It was the right call, and it works fine\" sounds like you are protecting your ==ego==.",
+          "It also invites the next question, and the one after that.",
+          "The strong answer explains the reasoning, so people can judge it for themselves."
+        ],
+        [
+          "**You are not defending a choice; you are showing how you made it.**",
+          "If the reasoning was ==sound==, the decision holds up even when the outcome is mixed.",
+          "If it was not, it is better that you __spot the flaw__ before someone else does."
+        ]
+      ],
+      "heading_zh": "1. 为思路辩护，而不是为结果辩护",
+      "paragraphs_zh": [
+        [
+          "六个月前，你选了消息队列，而不是服务之间直接调用。",
+          "现在有位总监在评审会上问，这个系统为什么这么复杂。",
+          "你大概只有一分钟来讲清楚你的理由。"
+        ],
+        [
+          "弱的回答是想证明结果是对的。",
+          "「当时那么选没错，现在也跑得好好的」，听起来像是在维护自己的面子。",
+          "而且它还会招来下一个问题，然后再下一个。",
+          "强的回答是把思路讲出来，让大家自己去判断。"
+        ],
+        [
+          "你不是在为一个选择辩护，而是在展示你是怎么做出这个选择的。",
+          "如果思路站得住，哪怕结果有好有坏，这个决策也经得起推敲。",
+          "如果思路有问题，那最好是你自己先发现漏洞，而不是让别人先发现。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Context, Options, Evidence",
+      "paragraphs": [
+        [
+          "Start with the ==constraints== you faced at the time.",
+          "\"We had three teams shipping on different schedules, and direct calls kept breaking each other's releases.\"",
+          "Context makes an old decision look far less ==arbitrary==."
+        ],
+        [
+          "Then show the ==alternatives== you rejected.",
+          "\"We looked at a shared library and a single deployment, and both would have slowed every team down.\"",
+          "This proves you __did your homework__ and did not just follow your gut."
+        ],
+        [
+          "Finally, share the evidence and its limits.",
+          "\"Release conflicts dropped to almost zero, but debugging got harder, and that cost is real.\"",
+          "**Naming the downside yourself takes the weapon out of your critic's hand.**"
+        ],
+        [
+          "End by saying what data would change your mind.",
+          "That one sentence is the difference between confidence and ==stubbornness==, and senior people __notice the difference__ right away."
+        ]
+      ],
+      "heading_zh": "2. 背景、选项、证据",
+      "paragraphs_zh": [
+        [
+          "先讲清楚当时面临的约束。",
+          "「当时有三个团队按不同的节奏发版，直接调用老是把彼此的发布搞挂。」",
+          "有了背景，一个旧决策看起来就没那么拍脑袋了。"
+        ],
+        [
+          "然后讲你否掉了哪些备选方案。",
+          "「我们看过共享库和统一部署，这两个方案都会拖慢每个团队。」",
+          "这证明你做过功课，不是凭感觉拍板的。"
+        ],
+        [
+          "最后，拿出证据，也讲清楚证据的局限。",
+          "「发布冲突基本降到了零，但排查问题变难了，这个代价是实打实的。」",
+          "自己先把缺点说出来，批评你的人手里就没了武器。"
+        ],
+        [
+          "结尾说一下，什么样的数据会让你改变主意。",
+          "就这一句话，区分了自信和固执，而资深的人一下子就能听出这个区别。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "被质疑旧决策时，弱的回答和强的回答区别在哪？",
+      "a": "弱的回答为结果辩护（「当时是对的、现在跑得好」），像在护面子；强的回答讲清推理过程，让大家自己判断。"
+    },
+    {
+      "q": "作者建议回答的结构是什么？",
+      "a": "当时的约束条件 → 否掉了哪些备选方案 → 证据及其局限（主动讲代价）→ 什么数据会让你改变主意。"
+    },
+    {
+      "q": "为什么要主动说出决策的缺点？",
+      "a": "自己先讲出代价，就等于缴了批评者的武器，也显得自信而不是固执。"
+    }
+  ],
+  "dictation": [
+    "You are not defending a choice; you are showing how you made it.",
+    "Naming the downside yourself takes the weapon out of your critic's hand.",
+    "Context makes an old decision look far less arbitrary.",
+    "End by saying what data would change your mind."
+  ],
+  "shadow": {
+    "text": "Finally, share the evidence and its limits. \"Release conflicts dropped to almost zero, but debugging got harder, and that cost is real.\" Naming the downside yourself takes the weapon out of your critic's hand.",
+    "marked": "Finally, / share the <b>evidence</b> / and its <b>limits</b>. //<br>\"Release conflicts dropped to <b>almost zero</b>, / <b>but</b> debugging got <b>harder</b>, / and that cost is <b>real</b>.\" //<br><b>Naming</b> the downside <b>yourself</b> / takes the <b>weapon</b> / out of your critic's hand. //"
+  },
+  "prompts": [
+    {
+      "q": "新来的总监问你：「当初为什么要自研配置中心，不直接用现成方案？」用 30 秒按「约束、备选、证据、什么会让我改主意」来回答。",
+      "ref": "Good question. Two years ago we needed config changes to reach every region in under ten seconds, and the open source options we tested took close to a minute. We also looked at buying a hosted service, but it couldn't run inside our private network. Since then, change propagation has stayed fast and we've had no config outages. The cost is maintenance. If a hosted option now meets the latency bar, I'd be open to switching.",
+      "ref_zh": "好问题。两年前我们要求配置变更在十秒内推到所有地区，而我们测过的开源方案都要将近一分钟。我们也考虑过买托管服务，但它没法跑在我们的内网里。从那以后，变更下发一直很快，也没出过配置相关的故障。代价是维护成本。如果现在有托管方案能达到延迟要求，我愿意考虑切过去。"
+    },
+    {
+      "q": "同事说你选的数据库「太小众、招人难」。承认这个代价，同时讲清楚当时的理由。",
+      "ref": "That's a fair point, and I'll admit hiring is harder because of it. When we made the choice, our main constraint was write volume. The mainstream option needed three times the hardware for the same load, and we had a fixed budget. So we accepted a smaller talent pool in exchange for lower cost. If our write volume drops or the budget changes, I'd happily reopen that decision.",
+      "ref_zh": "这个点说得对，我承认因为这个，招人确实更难了。当时做选择时，我们最主要的约束是写入量。主流方案在同样负载下需要三倍的机器，而我们的预算是固定的。所以我们用更小的人才池，换来了更低的成本。如果写入量下降了，或者预算有变化，我很乐意重新讨论这个决策。"
+    }
+  ],
+  "words": [
+    {
+      "w": "justify",
+      "ipa": "/ˈdʒʌstɪfaɪ/",
+      "zh": "为……辩护、证明合理",
+      "ex": "Can we justify a new service for just two endpoints?"
+    },
+    {
+      "w": "ego",
+      "ipa": "/ˈiːɡoʊ/",
+      "zh": "自尊心、面子",
+      "ex": "Let's leave ego out of it and look at the benchmark."
+    },
+    {
+      "w": "sound (adj.)",
+      "ipa": "/saʊnd/",
+      "zh": "合理的、站得住的",
+      "ex": "The plan is sound, but the timeline is too tight.",
+      "tts_w": "sound"
+    },
+    {
+      "w": "flaw",
+      "ipa": "/flɔː/",
+      "zh": "缺陷、漏洞",
+      "ex": "We found a flaw in the retry logic during load testing."
+    },
+    {
+      "w": "constraint",
+      "ipa": "/kənˈstreɪnt/",
+      "zh": "约束、限制",
+      "ex": "Our main constraint was a fixed hardware budget."
+    },
+    {
+      "w": "arbitrary",
+      "ipa": "/ˈɑːrbɪtreri/",
+      "zh": "随意的、武断的",
+      "ex": "The thirty-second timeout looks arbitrary; where did it come from?"
+    },
+    {
+      "w": "alternative",
+      "ipa": "/ɔːlˈtɜːrnətɪv/",
+      "zh": "备选方案",
+      "ex": "We considered two alternatives before picking this design."
+    },
+    {
+      "w": "stubbornness",
+      "ipa": "/ˈstʌbərnnəs/",
+      "zh": "固执",
+      "ex": "Holding on to the old design now looks like stubbornness."
+    },
+    {
+      "w": "downside",
+      "ipa": "/ˈdaʊnsaɪd/",
+      "zh": "缺点、负面影响",
+      "ex": "The downside is that local debugging gets harder."
+    }
+  ]
+}

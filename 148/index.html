@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Reporting a Lost Item · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "148", "type": "dialogue", "title": "Reporting a Lost Item", "meta": "B2 · 约 280 词 · 场景：地铁站报失钱包", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Station Staff", "name_zh": "车站工作人员", "voice": "en-GB-RyanNeural"}}, "gist": [{"q": "「你」把钱包落在哪里了？钱包长什么样，里面有什么？", "a": "落在环线往港湾方向的地铁上；黑色真皮对折钱包，四角磨旧，里面有工作准证、两张银行卡和大约八十块现金。"}, {"q": "工作人员找回钱包时说了什么情况？", "a": "有人在港湾站交了钱包，卡和准证都在，但现金没了。"}, {"q": "去领钱包要带什么？太太能不能代领？", "a": "带护照和报失编号；太太代领需要「你」签字的授权书和护照复印件，所以「你」决定下班自己去。"}], "dictation": [{"id": "s0_0_0", "text": "Excuse me. I think I left my wallet on the train about twenty minutes ago."}, {"id": "s0_6_0", "text": "My employment pass, two bank cards, and about eighty dollars in cash."}, {"id": "s1_5_0", "text": "Do I need to bring anything? My ID was actually in the wallet."}, {"id": "s1_7_0", "text": "Perfect. Is it okay if my wife picks it up instead? I'm stuck at work."}], "shadow": {"speaker": "A", "text": "The Circle Line, heading towards HarbourFront. I got off here at Buona Vista.", "marked": "The <b>Circle</b> Line, / heading towards <b>HarbourFront</b>. //<br>I got off <b>here</b> / at Buona <b>Vista</b>. //"}, "prompts": [{"q": "你在出租车上落下了孩子的水壶和外套，打电话给出租车公司。说清乘车时间、路线和物品特征，并留下联系方式。", "ref": "Hi, I took one of your taxis this afternoon, around three, from Holland Village to Novena. I think I left a bag in the back seat. It's a small blue backpack with a kid's water bottle and a grey jacket inside. I paid by card, if that helps you find the driver. My number is nine one two three, four five six seven.", "ref_zh": "你好，我今天下午三点左右坐了你们的出租车，从荷兰村到诺维娜。我好像把一个包落在后座了。是个蓝色小背包，里面有一个儿童水壶和一件灰色外套。我是刷卡付的，也许能帮你们找到司机。我的电话是九一二三，四五六七。", "id": "ref0"}, {"q": "你在商场丢了手机，去客服台求助。说清最后在哪里用过、手机的样子，问他们会怎么处理。", "ref": "Hi, I think I lost my phone somewhere in the mall. The last time I used it was at the coffee shop on the second floor, maybe half an hour ago. It's a black phone in a clear case with a sticker of a cartoon dog on the back. Has anyone handed one in? If not, could you take my details and call me if it turns up?", "ref_zh": "你好，我好像在商场里把手机弄丢了。最后一次用是在二楼的咖啡店，大概半小时前。是一部黑色手机，透明壳，背面贴了一只卡通小狗贴纸。有人交过来吗？如果没有，能留下我的联系方式，找到了打给我吗？", "id": "ref1"}], "words": [{"w": "describe", "ipa": "/dɪˈskraɪb/", "zh": "描述", "ex": "Can you describe the man who took your bag?", "id": "w0"}, {"w": "bifold", "ipa": "/ˈbaɪfoʊld/", "zh": "对折式钱包", "ex": "I prefer a slim bifold to a big wallet.", "id": "w1"}, {"w": "cancel", "ipa": "/ˈkænsəl/", "zh": "注销，挂失（卡）", "ex": "I called the bank to cancel my credit card.", "id": "w2"}, {"w": "contact number", "ipa": "/ˈkɑːntækt ˈnʌmbər/", "zh": "联系电话", "ex": "Please leave a contact number at the front desk.", "id": "w3"}, {"w": "reference number", "ipa": "/ˈrefrəns ˈnʌmbər/", "zh": "编号，参考号", "ex": "Quote your reference number when you call back.", "id": "w4"}, {"w": "nightmare", "ipa": "/ˈnaɪtmer/", "zh": "噩梦；极其麻烦的事", "ex": "Getting a new passport abroad is a nightmare.", "id": "w5"}, {"w": "collect", "ipa": "/kəˈlekt/", "zh": "领取", "ex": "You can collect your parcel from the locker downstairs.", "id": "w6"}, {"w": "control station", "ipa": "/kənˈtroʊl ˈsteɪʃən/", "zh": "（新加坡地铁站）服务中心", "ex": "Ask at the control station if you need help with your card.", "id": "w7"}, {"w": "authorisation", "ipa": "/ˌɔːθərəˈzeɪʃən/", "zh": "授权（书）", "ex": "You need written authorisation to collect someone else's mail.", "id": "w8"}], "sections": [{"heading": "1. At the Station Counter", "heading_zh": "1. 在车站服务台", "rows": [[{"id": "s0_0_0", "md": "**Excuse me. I think I left my wallet on the train about twenty minutes ago.**", "text": "Excuse me. I think I left my wallet on the train about twenty minutes ago.", "zh": "不好意思。我好像二十分钟前把钱包落在地铁上了。", "sp": "A"}], [{"id": "s0_1_0", "md": "Oh dear. Which line were you on, and which direction?", "text": "Oh dear. Which line were you on, and which direction?", "zh": "哎呀。您坐的是哪条线，往哪个方向？", "sp": "B"}], [{"id": "s0_2_0", "md": "The Circle Line, heading towards HarbourFront. I got off here at Buona Vista.", "text": "The Circle Line, heading towards HarbourFront. I got off here at Buona Vista.", "zh": "环线，往港湾方向。我在这里波那维斯达站下的车。", "sp": "A"}], [{"id": "s0_3_0", "md": "Right. Can you ==describe== the wallet for me?", "text": "Right. Can you describe the wallet for me?", "zh": "好的。能描述一下钱包的样子吗？", "sp": "B"}], [{"id": "s0_4_0", "md": "It's a black leather ==bifold==, quite worn at the corners.", "text": "It's a black leather bifold, quite worn at the corners.", "zh": "是个黑色真皮对折钱包，四个角磨得挺旧的。", "sp": "A"}], [{"id": "s0_5_0", "md": "And what was inside?", "text": "And what was inside?", "zh": "里面有什么？", "sp": "B"}], [{"id": "s0_6_0", "md": "My employment pass, two bank cards, and about eighty dollars in cash.", "text": "My employment pass, two bank cards, and about eighty dollars in cash.", "zh": "我的工作准证、两张银行卡，还有大概八十块现金。", "sp": "A"}], [{"id": "s0_7_0", "md": "Have you ==cancelled== your bank cards yet?", "text": "Have you cancelled your bank cards yet?", "zh": "银行卡您挂失了吗？", "sp": "B"}], [{"id": "s0_8_0", "md": "Not yet. __I'll do that__ right after this.", "text": "Not yet. I'll do that right after this.", "zh": "还没有。这边弄完我马上就去办。", "sp": "A"}], [{"id": "s0_9_0", "md": "Good idea. I'll file a report and alert the other stations. Can I have your name and ==contact== number?", "text": "Good idea. I'll file a report and alert the other stations. Can I have your name and contact number?", "zh": "好的。我来登记报失，并通知沿线其他车站。能留一下您的姓名和联系电话吗？", "sp": "B"}], [{"id": "s0_10_0", "md": "Lee Wei, and my number is nine eight seven six, five four three two. __Feel free to__ call anytime.", "text": "Lee Wei, and my number is nine eight seven six, five four three two. Feel free to call anytime.", "zh": "李伟，电话是九八七六，五四三二。随时可以打给我。", "sp": "A"}], [{"id": "s0_11_0", "md": "Thanks. Here's your ==reference== number. If it turns up, we'll give you a call.", "text": "Thanks. Here's your reference number. If it turns up, we'll give you a call.", "zh": "谢谢。这是您的报失编号。如果找到了，我们会给您打电话。", "sp": "B"}]]}, {"heading": "2. A Call Back", "heading_zh": "2. 车站回电", "rows": [[{"id": "s1_0_0", "md": "Hello, is this Mr Lee? It's Ryan from Buona Vista station. Someone handed in a black wallet at HarbourFront.", "text": "Hello, is this Mr Lee? It's Ryan from Buona Vista station. Someone handed in a black wallet at HarbourFront.", "zh": "你好，是李先生吗？我是波那维斯达站的 Ryan。有人在港湾站交了一个黑色钱包。", "sp": "B"}], [{"id": "s1_1_0", "md": "**Oh, that's great news! Is everything still inside?**", "text": "Oh, that's great news! Is everything still inside?", "zh": "哦，太好了！东西都还在吗？", "sp": "A"}], [{"id": "s1_2_0", "md": "The cards and the pass are there, but I'm afraid there's no cash.", "text": "The cards and the pass are there, but I'm afraid there's no cash.", "zh": "卡和准证都在，不过现金恐怕没有了。", "sp": "B"}], [{"id": "s1_3_0", "md": "Ah well, I'm just relieved about the pass. Replacing it would have been a ==nightmare==.", "text": "Ah well, I'm just relieved about the pass. Replacing it would have been a nightmare.", "zh": "唉，算了，准证还在我就放心了。要补办的话可就麻烦死了。", "sp": "A"}], [{"id": "s1_4_0", "md": "I understand. You can ==collect== it at the HarbourFront ==control station== until nine tonight.", "text": "I understand. You can collect it at the HarbourFront control station until nine tonight.", "zh": "理解。今晚九点前您可以去港湾站的车站服务中心领取。", "sp": "B"}], [{"id": "s1_5_0", "md": "**Do I need to bring anything? My ID was actually in the wallet.**", "text": "Do I need to bring anything? My ID was actually in the wallet.", "zh": "需要带什么吗？我的证件其实就在钱包里。", "sp": "A"}], [{"id": "s1_6_0", "md": "Your passport will do, plus the reference number I gave you.", "text": "Your passport will do, plus the reference number I gave you.", "zh": "带护照就可以，还有我给您的那个报失编号。", "sp": "B"}], [{"id": "s1_7_0", "md": "Perfect. __Is it okay if__ my wife picks it up instead? I'm stuck at work.", "text": "Perfect. Is it okay if my wife picks it up instead? I'm stuck at work.", "zh": "好的。我太太代我去领可以吗？我在公司走不开。", "sp": "A"}], [{"id": "s1_8_0", "md": "She'd need a signed ==authorisation== letter from you, plus a copy of your passport.", "text": "She'd need a signed authorisation letter from you, plus a copy of your passport.", "zh": "她需要带一封您签字的授权书，再加一份您的护照复印件。", "sp": "B"}], [{"id": "s1_9_0", "md": "Got it. Then I'll just go myself after work. Thanks so much for calling.", "text": "Got it. Then I'll just go myself after work. Thanks so much for calling.", "zh": "明白了。那我下班后自己去吧。非常感谢你打电话来。", "sp": "A"}], [{"id": "s1_10_0", "md": "You're welcome. Glad it turned up.", "text": "You're welcome. Glad it turned up.", "zh": "不客气。找到了就好。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. At the Station Counter", "zh": "1. 在车站服务台", "start": 0.0, "end": 2.088, "words": [[0.105, 0.342], [0.671, 0.763], [0.776, 0.855], [0.868, 1.276], [1.289, 1.697]]}, {"kind": "s", "id": "s0_0_0", "md": "**Excuse me. I think I left my wallet on the train about twenty minutes ago.**", "zh": "不好意思。我好像二十分钟前把钱包落在地铁上了。", "sp": "A", "gap": false, "start": 2.088, "end": 6.36, "words": [[2.193, 2.601], [2.614, 2.785], [3.22, 3.285], [3.299, 3.47], [3.483, 3.535], [3.549, 3.785], [3.799, 3.891], [3.904, 4.246], [4.259, 4.351], [4.364, 4.43], [4.443, 4.785], [4.799, 5.049], [5.062, 5.351], [5.364, 5.641], [5.654, 5.97]]}, {"kind": "s", "id": "s0_1_0", "md": "Oh dear. Which line were you on, and which direction?", "zh": "哎呀。您坐的是哪条线，往哪个方向？", "sp": "B", "gap": false, "start": 6.36, "end": 11.4, "words": [[6.46, 6.657], [6.671, 7.157], [8.068, 8.357], [8.371, 8.621], [8.634, 8.726], [8.739, 8.91], [8.923, 9.186], [9.384, 9.502], [9.515, 9.778], [9.792, 10.489]]}, {"kind": "s", "id": "s0_2_0", "md": "The Circle Line, heading towards HarbourFront. I got off here at Buona Vista.", "zh": "环线，往港湾方向。我在这里波那维斯达站下的车。", "sp": "A", "gap": false, "start": 11.4, "end": 16.272, "words": [[11.518, 11.571], [11.584, 11.979], [11.992, 12.282], [12.676, 12.9], [12.913, 13.229], [13.242, 13.966], [14.4, 14.479], [14.492, 14.65], [14.663, 14.834], [14.847, 15.018], [15.032, 15.124], [15.137, 15.387], [15.4, 15.887]]}, {"kind": "s", "id": "s0_3_0", "md": "Right. Can you ==describe== the wallet for me?", "zh": "好的。能描述一下钱包的样子吗？", "sp": "B", "gap": false, "start": 16.272, "end": 20.376, "words": [[16.372, 16.964], [17.875, 18.059], [18.072, 18.164], [18.177, 18.598], [18.611, 18.69], [18.704, 19.059], [19.072, 19.19], [19.204, 19.467]]}, {"kind": "s", "id": "s0_4_0", "md": "It's a black leather ==bifold==, quite worn at the corners.", "zh": "是个黑色真皮对折钱包，四个角磨得挺旧的。", "sp": "A", "gap": false, "start": 20.376, "end": 24.048, "words": [[20.481, 20.587], [20.6, 20.679], [20.692, 21.113], [21.126, 21.415], [21.429, 21.981], [22.231, 22.56], [22.573, 22.876], [22.889, 22.968], [22.981, 23.06], [23.073, 23.652]]}, {"kind": "s", "id": "s0_5_0", "md": "And what was inside?", "zh": "里面有什么？", "sp": "B", "gap": false, "start": 24.048, "end": 26.424, "words": [[24.148, 24.372], [24.385, 24.595], [24.609, 24.74], [24.753, 25.503]]}, {"kind": "s", "id": "s0_6_0", "md": "My employment pass, two bank cards, and about eighty dollars in cash.", "zh": "我的工作准证、两张银行卡，还有大概八十块现金。", "sp": "A", "gap": false, "start": 26.424, "end": 31.296, "words": [[26.529, 26.648], [26.661, 27.134], [27.148, 27.674], [27.871, 28.069], [28.082, 28.332], [28.345, 28.832], [29.069, 29.161], [29.174, 29.437], [29.582, 29.792], [29.806, 30.2], [30.213, 30.306], [30.319, 30.898]]}, {"kind": "s", "id": "s0_7_0", "md": "Have you ==cancelled== your bank cards yet?", "zh": "银行卡您挂失了吗？", "sp": "B", "gap": false, "start": 31.296, "end": 34.32, "words": [[31.396, 31.593], [31.607, 31.685], [31.699, 32.146], [32.159, 32.278], [32.291, 32.633], [32.646, 33.028], [33.041, 33.396]]}, {"kind": "s", "id": "s0_8_0", "md": "Not yet. __I'll do that__ right after this.", "zh": "还没有。这边弄完我马上就去办。", "sp": "A", "gap": false, "start": 34.32, "end": 37.056, "words": [[34.425, 34.596], [34.609, 34.912], [35.346, 35.438], [35.452, 35.609], [35.623, 35.82], [35.833, 35.991], [36.004, 36.281], [36.294, 36.675]]}, {"kind": "s", "id": "s0_9_0", "md": "Good idea. I'll file a report and alert the other stations. Can I have your name and ==contact== number?", "zh": "好的。我来登记报失，并通知沿线其他车站。能留一下您的姓名和联系电话吗？", "sp": "B", "gap": false, "start": 37.056, "end": 45.312, "words": [[37.156, 37.34], [37.353, 37.932], [38.843, 39.066], [39.08, 39.369], [39.382, 39.435], [39.448, 39.909], [39.922, 40.001], [40.014, 40.343], [40.356, 40.461], [40.474, 40.685], [40.698, 41.448], [42.356, 42.54], [42.553, 42.619], [42.632, 42.803], [42.817, 42.974], [42.988, 43.33], [43.343, 43.435], [43.448, 43.948], [43.961, 44.395]]}, {"kind": "s", "id": "s0_10_0", "md": "Lee Wei, and my number is nine eight seven six, five four three two. __Feel free to__ call anytime.", "zh": "李伟，电话是九八七六，五四三二。随时可以打给我。", "sp": "A", "gap": false, "start": 45.312, "end": 52.08, "words": [[45.417, 45.562], [45.575, 45.917], [46.246, 46.351], [46.365, 46.457], [46.47, 46.825], [46.838, 46.97], [46.983, 47.404], [47.417, 47.562], [47.575, 47.865], [47.878, 48.391], [48.641, 48.996], [49.009, 49.286], [49.299, 49.588], [49.601, 49.97], [50.457, 50.615], [50.628, 50.786], [50.799, 50.891], [50.904, 51.154], [51.167, 51.68]]}, {"kind": "s", "id": "s0_11_0", "md": "Thanks. Here's your ==reference== number. If it turns up, we'll give you a call.", "zh": "谢谢。这是您的报失编号。如果找到了，我们会给您打电话。", "sp": "B", "gap": false, "start": 52.08, "end": 59.16, "words": [[52.18, 52.838], [53.748, 54.051], [54.064, 54.169], [54.183, 54.735], [54.748, 55.209], [56.117, 56.327], [56.341, 56.472], [56.485, 56.788], [56.801, 57.038], [57.209, 57.367], [57.38, 57.564], [57.577, 57.709], [57.722, 57.775], [57.788, 58.235]]}, {"kind": "h", "id": "h1", "md": "2. A Call Back", "zh": "2. 车站回电", "start": 59.16, "end": 61.032, "words": [[59.265, 59.502], [59.726, 59.778], [59.792, 60.055], [60.068, 60.476]]}, {"kind": "s", "id": "s1_0_0", "md": "Hello, is this Mr Lee? It's Ryan from Buona Vista station. Someone handed in a black wallet at HarbourFront.", "zh": "你好，是李先生吗？我是波那维斯达站的 Ryan。有人在港湾站交了一个黑色钱包。", "sp": "B", "gap": false, "start": 61.032, "end": 70.248, "words": [[61.132, 61.566], [61.829, 61.935], [61.948, 62.132], [62.145, 62.448], [62.461, 62.895], [63.806, 64.029], [64.043, 64.464], [64.477, 64.674], [64.687, 64.977], [64.99, 65.266], [65.279, 65.832], [66.74, 67.187], [67.2, 67.569], [67.582, 67.674], [67.687, 67.74], [67.753, 68.069], [68.082, 68.411], [68.424, 68.503], [68.516, 69.332]]}, {"kind": "s", "id": "s1_1_0", "md": "**Oh, that's great news! Is everything still inside?**", "zh": "哦，太好了！东西都还在吗？", "sp": "A", "gap": false, "start": 70.248, "end": 73.632, "words": [[70.366, 70.485], [70.511, 70.722], [70.735, 70.972], [70.985, 71.485], [71.919, 72.051], [72.064, 72.445], [72.459, 72.695], [72.709, 73.235]]}, {"kind": "s", "id": "s1_2_0", "md": "The cards and the pass are there, but I'm afraid there's no cash.", "zh": "卡和准证都在，不过现金恐怕没有了。", "sp": "B", "gap": false, "start": 73.632, "end": 78.168, "words": [[73.732, 73.903], [73.916, 74.324], [74.337, 74.416], [74.429, 74.508], [74.521, 74.864], [74.877, 74.982], [74.995, 75.245], [75.482, 75.6], [75.614, 75.758], [75.771, 76.166], [76.179, 76.39], [76.403, 76.64], [76.653, 77.245]]}, {"kind": "s", "id": "s1_3_0", "md": "Ah well, I'm just relieved about the pass. Replacing it would have been a ==nightmare==.", "zh": "唉，算了，准证还在我就放心了。要补办的话可就麻烦死了。", "sp": "A", "gap": false, "start": 78.168, "end": 83.256, "words": [[78.273, 78.352], [78.365, 78.694], [79.089, 79.155], [79.168, 79.379], [79.392, 79.786], [79.8, 80.023], [80.036, 80.115], [80.129, 80.694], [81.129, 81.642], [81.655, 81.76], [81.773, 81.905], [81.918, 82.036], [82.05, 82.168], [82.181, 82.221], [82.234, 82.852]]}, {"kind": "s", "id": "s1_4_0", "md": "I understand. You can ==collect== it at the HarbourFront ==control station== until nine tonight.", "zh": "理解。今晚九点前您可以去港湾站的车站服务中心领取。", "sp": "B", "gap": false, "start": 83.256, "end": 89.976, "words": [[83.356, 83.514], [83.527, 84.33], [85.24, 85.424], [85.438, 85.595], [85.609, 85.99], [86.003, 86.109], [86.122, 86.188], [86.201, 86.267], [86.28, 86.924], [86.938, 87.438], [87.451, 87.872], [87.885, 88.201], [88.214, 88.49], [88.503, 89.056]]}, {"kind": "s", "id": "s1_5_0", "md": "**Do I need to bring anything? My ID was actually in the wallet.**", "zh": "需要带什么吗？我的证件其实就在钱包里。", "sp": "A", "gap": false, "start": 89.976, "end": 93.696, "words": [[90.081, 90.147], [90.16, 90.2], [90.213, 90.384], [90.397, 90.463], [90.476, 90.673], [90.687, 91.108], [91.542, 91.726], [91.739, 92.094], [92.108, 92.279], [92.292, 92.673], [92.687, 92.752], [92.765, 92.844], [92.858, 93.305]]}, {"kind": "s", "id": "s1_6_0", "md": "Your passport will do, plus the reference number I gave you.", "zh": "带护照就可以，还有我给您的那个报失编号。", "sp": "B", "gap": false, "start": 93.696, "end": 98.136, "words": [[93.796, 94.02], [94.033, 94.599], [94.612, 94.757], [94.77, 95.099], [95.335, 95.572], [95.585, 95.678], [95.691, 96.138], [96.151, 96.428], [96.441, 96.559], [96.572, 96.901], [96.914, 97.204]]}, {"kind": "s", "id": "s1_7_0", "md": "Perfect. __Is it okay if__ my wife picks it up instead? I'm stuck at work.", "zh": "好的。我太太代我去领可以吗？我在公司走不开。", "sp": "A", "gap": false, "start": 98.136, "end": 102.936, "words": [[98.254, 98.689], [99.123, 99.241], [99.254, 99.333], [99.347, 99.715], [99.728, 99.847], [99.86, 99.991], [100.004, 100.36], [100.373, 100.636], [100.649, 100.702], [100.715, 100.847], [100.86, 101.333], [101.768, 101.86], [101.873, 102.096], [102.11, 102.202], [102.215, 102.531]]}, {"kind": "s", "id": "s1_8_0", "md": "She'd need a signed ==authorisation== letter from you, plus a copy of your passport.", "zh": "她需要带一封您签字的授权书，再加一份您的护照复印件。", "sp": "B", "gap": false, "start": 102.936, "end": 108.48, "words": [[103.036, 103.325], [103.339, 103.497], [103.51, 103.562], [103.575, 103.931], [103.944, 104.799], [104.812, 105.115], [105.128, 105.312], [105.325, 105.575], [105.812, 106.036], [106.049, 106.102], [106.115, 106.47], [106.483, 106.615], [106.628, 106.786], [106.799, 107.562]]}, {"kind": "s", "id": "s1_9_0", "md": "Got it. Then I'll just go myself after work. Thanks so much for calling.", "zh": "明白了。那我下班后自己去吧。非常感谢你打电话来。", "sp": "A", "gap": false, "start": 108.48, "end": 112.896, "words": [[108.585, 108.756], [108.769, 108.888], [109.335, 109.427], [109.441, 109.533], [109.546, 109.73], [109.743, 109.862], [109.875, 110.335], [110.348, 110.612], [110.625, 110.941], [111.388, 111.572], [111.585, 111.783], [111.796, 111.967], [111.98, 112.112], [112.125, 112.493]]}, {"kind": "s", "id": "s1_10_0", "md": "You're welcome. Glad it turned up.", "zh": "不客气。找到了就好。", "sp": "B", "gap": false, "start": 112.896, "end": 116.736, "words": [[112.996, 113.22], [113.233, 113.878], [114.788, 115.104], [115.117, 115.235], [115.249, 115.512], [115.525, 115.814]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

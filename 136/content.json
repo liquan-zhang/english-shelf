@@ -1,0 +1,86 @@
+{
+  "id": "136",
+  "type": "dialogue",
+  "title": "Visiting a Preschool",
+  "meta": "B2 · 约 290 词 · 场景：参观幼儿园与候补名单",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Centre Principal", "name_zh": "园长", "voice": "en-AU-NatashaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Touring the Centre",
+      "heading_zh": "1. 参观幼儿园",
+      "lines": [
+        {"sp": "B", "en": "Welcome! You must be Mr. Zhang. Shall I show you around first?", "zh": "欢迎！您一定是张先生吧。我先带您转转？"},
+        {"sp": "A", "en": "Yes, please. My daughter is three, and we're looking for a place starting in January.", "zh": "好的。我女儿三岁，我们在找明年一月入园的地方。"},
+        {"sp": "B", "en": "Lovely. This is the nursery classroom. The children arrive by eight thirty and start with free play.", "zh": "好呀。这是小班教室。孩子们八点半前到，先自由玩耍。"},
+        {"sp": "A", "en": "**What does a typical day look like after that?**", "zh": "那之后一天一般是怎么安排的？"},
+        {"sp": "B", "en": "Circle time, outdoor play, then lunch. They have a ==nap== from one to half past two, and pick-up starts at five.", "zh": "围圈活动、户外活动，然后吃午饭。一点到两点半午睡，五点开始可以接。"},
+        {"sp": "A", "en": "What's the ==ratio== of teachers to children in her age group?", "zh": "她这个年龄段的师生比是多少？"},
+        {"sp": "B", "en": "One teacher to eight children, plus an assistant in the mornings.", "zh": "一个老师带八个孩子，上午还有一名助教。"},
+        {"sp": "A", "en": "And what languages do you use? We speak Mandarin at home, so __I'd like her English to improve__.", "zh": "你们用什么语言教学？我们在家说普通话，所以希望她的英语能提高。"},
+        {"sp": "B", "en": "We're ==bilingual==. Classes are mainly in English, with a Mandarin teacher every day.", "zh": "我们是双语的。主要用英语上课，每天也有中文老师。"},
+        {"sp": "A", "en": "That sounds ideal. How do you handle food ==allergies==? She can't eat peanuts.", "zh": "听起来很理想。你们怎么处理食物过敏？她不能吃花生。"},
+        {"sp": "B", "en": "We're a nut-free centre, and our cook prepares separate meals when needed.", "zh": "我们园里不允许有坚果，需要的话厨师会单独做饭。"}
+      ]
+    },
+    {
+      "heading": "2. Fees and the Waiting List",
+      "heading_zh": "2. 学费与候补名单",
+      "lines": [
+        {"sp": "A", "en": "Could you __walk me through__ the fees?", "zh": "能跟我详细说说费用吗？"},
+        {"sp": "B", "en": "Full day is one thousand four hundred dollars a month, plus a ==registration== fee and one month's deposit.", "zh": "全天班每月一千四百块，另外还有报名费和一个月的押金。"},
+        {"sp": "A", "en": "Are we eligible for any ==subsidies==? We're here on an employment pass.", "zh": "我们能申请补贴吗？我们是持工作准证在这里的。"},
+        {"sp": "B", "en": "I'm afraid government subsidies are only for citizens. And there's one more thing. Our January intake is actually full.", "zh": "恐怕政府补贴只给公民。还有一件事，我们一月那批其实已经满了。"},
+        {"sp": "A", "en": "**Oh, that's a shame. Could you put her on the waiting list? How long is it usually?**", "zh": "啊，太可惜了。能把她排进候补名单吗？一般要等多久？"},
+        {"sp": "B", "en": "Of course. Usually one or two months. Families often move or change plans.", "zh": "当然可以。通常一两个月，经常有家庭搬走或者改变计划。"},
+        {"sp": "A", "en": "If a place opens up in February, could she do a ==settling-in== week with me there?", "zh": "如果二月有空位，能让她先过一周适应期、我在旁边陪着吗？"},
+        {"sp": "B", "en": "Yes. The first week has shorter days, and parents can stay for the first two mornings.", "zh": "可以。第一周时间会短一些，前两个上午家长可以留下来陪。"},
+        {"sp": "A", "en": "**Great. I'll fill in the form today. Please let me know as soon as a spot opens up.**", "zh": "太好了。我今天就填表。一有空位请马上通知我。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "这家幼儿园一天大致怎么安排？师生比是多少？", "a": "八点半前到、自由玩耍、围圈活动、户外、午饭、一点到两点半午睡，五点开始接；一个老师带八个孩子，上午加一名助教。"},
+    {"q": "关于语言和过敏，园长怎么说？", "a": "双语教学，以英语为主，每天有中文老师；全园禁坚果，必要时单独做饭。"},
+    {"q": "报名遇到了什么问题？最后怎么安排？", "a": "一月那批已满，且外国人不能拿政府补贴；「你」把女儿排进候补名单，一般等一两个月，有空位先过一周适应期。"}
+  ],
+  "dictation": [
+    "What does a typical day look like after that?",
+    "What's the ratio of teachers to children in her age group?",
+    "Oh, that's a shame. Could you put her on the waiting list? How long is it usually?",
+    "Great. I'll fill in the form today. Please let me know as soon as a spot opens up."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "And what languages do you use? We speak Mandarin at home, so I'd like her English to improve.",
+    "marked": "And what <b>languages</b> / do you use? //<br>We speak <b>Mandarin</b> at home, / so I'd like her <b>English</b> / to <b>improve</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "女儿入园第一周每天早上都哭着不肯进门。跟老师沟通，问问园里通常怎么帮孩子过渡。",
+      "ref": "Hi, I wanted to have a quick word about Mia. She's been crying every morning at the gate this week, and it's been hard for both of us. How is she after I leave? Does she settle down quickly? Is there anything you'd suggest we do at drop-off, like a shorter goodbye or bringing a toy from home?",
+      "ref_zh": "你好，想跟你简单聊聊 Mia。她这周每天早上都在门口哭，我们俩都挺难受的。我走了以后她怎么样？能很快平静下来吗？送她的时候你建议我们怎么做，比如道别短一点，或者从家里带个玩具？"
+    },
+    {
+      "q": "你在两家幼儿园之间犹豫。打电话给其中一家，问清全年额外费用和假期安排。",
+      "ref": "Hi, we visited your centre last week, and we're deciding between you and one other school. Could I check a few things? Apart from the monthly fee, are there any extra costs, like uniforms, meals or excursions? And how many weeks are you closed during the year? We both work full time, so holiday care is important for us.",
+      "ref_zh": "你好，我们上周参观过你们园，现在在你们和另一家之间做决定。能问几个问题吗？除了月费，还有其他额外费用吗，比如校服、餐费或者外出活动？一年里放假关门几周？我们俩都是全职工作，所以假期能不能托管对我们很重要。"
+    }
+  ],
+  "words": [
+    {"w": "nap", "ipa": "/næp/", "zh": "小睡；午睡", "ex": "He gets cranky if he misses his afternoon nap."},
+    {"w": "ratio", "ipa": "/ˈreɪʃioʊ/", "zh": "比例（师生比）", "ex": "The ratio is one teacher to five toddlers."},
+    {"w": "bilingual", "ipa": "/baɪˈlɪŋɡwəl/", "zh": "双语的", "ex": "Many kids in Singapore grow up bilingual."},
+    {"w": "allergy", "ipa": "/ˈælərdʒi/", "zh": "过敏", "ex": "Please tell the restaurant about your son's egg allergy."},
+    {"w": "registration", "ipa": "/ˌredʒɪˈstreɪʃən/", "zh": "报名；注册", "ex": "Registration for the holiday camp closes on Friday."},
+    {"w": "subsidy", "ipa": "/ˈsʌbsədi/", "zh": "补贴", "ex": "Citizens get a subsidy for childcare fees."},
+    {"w": "intake", "ipa": "/ˈɪnteɪk/", "zh": "（一批）招生名额", "ex": "The school has two intakes a year, in January and July."},
+    {"w": "waiting list", "ipa": "/ˈweɪtɪŋ lɪst/", "zh": "候补名单", "ex": "We've been on the waiting list for three months."},
+    {"w": "settling-in", "ipa": "/ˈsetlɪŋ ɪn/", "zh": "适应期的", "ex": "The settling-in period usually takes about two weeks."},
+    {"w": "walk through", "ipa": "/wɔːk θruː/", "zh": "一步步讲解", "ex": "Could you walk me through how the app works?"}
+  ]
+}

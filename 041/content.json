@@ -1,0 +1,187 @@
+{
+  "id": "041",
+  "title": "Getting Help from a Team That Owes You Nothing",
+  "meta": "B2 · 约 290 词 · 场景：跨团队求助",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Hidden Cost of Your Request",
+      "paragraphs": [
+        [
+          "You need a small change from the payments team, and they have no reason to give it to you.",
+          "Their roadmap is full, their manager has never heard of your project, and your deadline is not their problem.",
+          "Most people respond by ==escalating==, or by sending the same message again with more urgency.",
+          "Both moves make you look like a ==burden==."
+        ],
+        [
+          "Think about the request from their side.",
+          "Every ask comes with a hidden cost: reading your context, learning your system, and taking the ==blame== if something breaks.",
+          "**People rarely refuse the work itself; they refuse the uncertainty around it.**"
+        ],
+        [
+          "So your job is not to __make a stronger case__.",
+          "Your job is to make yes the cheapest answer they can give.",
+          "That changes what you bring to the very first conversation."
+        ]
+      ],
+      "heading_zh": "1. 你的请求背后的隐性成本",
+      "paragraphs_zh": [
+        [
+          "你需要支付团队帮你改个小东西，可他们没有任何理由要帮你。",
+          "他们的 roadmap 已经排满了，他们老板压根没听说过你的项目，你的 deadline 也不是他们的事。",
+          "大多数人的反应是往上升级，或者把同一条消息再发一遍，语气更急。",
+          "这两种做法都会让你看起来像个累赘。"
+        ],
+        [
+          "站在他们的角度想想这个请求。",
+          "每个请求都带着隐性成本：要读你的背景、要搞懂你的系统，出了问题还得背锅。",
+          "人们很少是拒绝活本身；他们拒绝的是活背后的不确定性。"
+        ],
+        [
+          "所以你要做的不是把理由讲得更硬。",
+          "你要做的是让「好」成为他们最省事的回答。",
+          "这会改变你第一次沟通时要准备的东西。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Make Yes Cheap",
+      "paragraphs": [
+        [
+          "Start by shrinking the ask until it fits into a single afternoon.",
+          "Instead of \"Can you support bulk refunds?\", try \"Can you review one change that adds a single endpoint?\"",
+          "A ==modest== request __gets a quick yes__; a vague one gets added to the backlog."
+        ],
+        [
+          "Next, do the ==legwork== yourself.",
+          "Write the design note, prepare the test cases, and offer to __pair with__ their engineer during the rollout.",
+          "You are not asking them to own your problem; you are asking them to approve your solution."
+        ],
+        [
+          "Finally, pay them in the currency they actually care about, which is visibility.",
+          "Thank the engineer by name in your launch email and copy their manager.",
+          "That small gesture __goes a long way__, because it turns a favor into ==evidence== they can show in their own review."
+        ],
+        [
+          "Next time you need help, the same team will remember you as easy to work with, not as one more ticket.",
+          "**Help flows toward people who make helping easy.**"
+        ]
+      ],
+      "heading_zh": "2. 让对方点头的成本降到最低",
+      "paragraphs_zh": [
+        [
+          "先把需求缩小，缩到一个下午就能搞定。",
+          "别问「你们能支持批量退款吗？」，换成「能帮忙 review 一个只加一个接口的改动吗？」",
+          "小请求很快就能拿到同意；模糊的请求只会被扔进 backlog。"
+        ],
+        [
+          "接着，脏活累活自己先干了。",
+          "写好设计文档，准备好测试用例，上线时主动提出跟他们的工程师一起盯。",
+          "你不是让他们来扛你的问题；你是请他们批准你的方案。"
+        ],
+        [
+          "最后，用他们真正在乎的东西来回报他们，那就是能见度。",
+          "在上线邮件里点名感谢那位工程师，并抄送他的老板。",
+          "这个小动作作用很大，因为它把一次帮忙变成了对方在自己绩效评估里能拿出来的证据。"
+        ],
+        [
+          "下次你再需要帮忙，这个团队会记得你是个好合作的人，而不是又一张工单。",
+          "谁让帮忙变得容易，帮助就会流向谁。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为别的团队拒绝帮忙，真正拒绝的是什么？",
+      "a": "不是活本身，而是活周围的不确定性：要读你的背景、学你的系统、出了问题还要背锅。"
+    },
+    {
+      "q": "作者说你的任务是什么，而不是什么？",
+      "a": "不是把理由讲得更有力，而是让「同意」成为对方成本最低的答案。"
+    },
+    {
+      "q": "让对方容易说 yes 的做法有哪些？",
+      "a": "把请求缩小到一个下午能做完；自己把设计文档和测试准备好，只请对方审批；上线后点名感谢并抄送对方经理，给他可写进绩效的证据。"
+    }
+  ],
+  "dictation": [
+    "People rarely refuse the work itself; they refuse the uncertainty around it.",
+    "Your job is to make yes the cheapest answer they can give.",
+    "You are not asking them to own your problem; you are asking them to approve your solution.",
+    "Help flows toward people who make helping easy."
+  ],
+  "shadow": {
+    "text": "Next, do the legwork yourself. Write the design note, prepare the test cases, and offer to pair with their engineer during the rollout. You are not asking them to own your problem; you are asking them to approve your solution.",
+    "marked": "Next, / do the <b>legwork</b> yourself. //<br>Write the <b>design</b> note, / prepare the <b>test</b> cases, / and offer to <b>pair</b> with their engineer / during the <b>rollout</b>. //<br>You are <b>not</b> asking them to <b>own</b> your problem; / you are asking them to <b>approve</b> your solution. //"
+  },
+  "prompts": [
+    {
+      "q": "你需要基础架构组在网关看板上加一个超时指标，但他们这个季度排满了，也不归你管。用 30 秒发起请求：把需求缩小，并说明你这边已经做好的准备。",
+      "ref": "Hi Maya, I know your quarter is packed, so I'll keep this small. We need one extra metric on the gateway dashboard to track timeout errors. My engineer has already written the change and the tests. All we need is about thirty minutes of review from someone on your side. If it's easier, we can walk through it together on Thursday.",
+      "ref_zh": "Maya 你好，我知道你们这个季度很满，所以我尽量说得简单点。我们需要在网关 dashboard 上加一个指标，用来追踪超时错误。我们的工程师已经把改动和测试都写好了。只需要你们那边找个人花大概三十分钟 review 一下。如果方便的话，周四我们可以一起过一遍。"
+    },
+    {
+      "q": "上周另一个团队的工程师帮你们解决了一个阻塞上线的问题。在跨团队周会上用 30 秒公开感谢他，让他的经理也看到这份贡献。",
+      "ref": "Before we move on, I want to call out Ravi from the storage team. Last week our launch was blocked by a write timeout, and honestly it wasn't his problem to fix. He spent a whole afternoon with us, found the root cause, and reviewed our patch the same day. We shipped on time because of him, so thank you, Ravi.",
+      "ref_zh": "在进入下一项之前，我想特别感谢一下存储团队的 Ravi。上周我们的上线被一个写超时卡住了，说实话那根本不是他该修的问题。他陪我们花了整整一个下午，找到了根因，当天就 review 了我们的补丁。我们能按时上线全靠他，所以谢谢你，Ravi。"
+    }
+  ],
+  "words": [
+    {
+      "w": "escalate",
+      "ipa": "/ˈeskəleɪt/",
+      "zh": "升级（问题）、上报",
+      "ex": "If we don't hear back by Friday, I'll escalate it to their director."
+    },
+    {
+      "w": "burden",
+      "ipa": "/ˈbɜːrdn/",
+      "zh": "负担",
+      "ex": "I don't want this migration to become a burden for the platform team."
+    },
+    {
+      "w": "blame",
+      "ipa": "/bleɪm/",
+      "zh": "责任、责备",
+      "ex": "Nobody wants to take the blame for a change they didn't write."
+    },
+    {
+      "w": "modest",
+      "ipa": "/ˈmɑːdɪst/",
+      "zh": "适度的、不大的",
+      "ex": "It's a modest change, just one config flag and a test."
+    },
+    {
+      "w": "legwork",
+      "ipa": "/ˈleɡwɜːrk/",
+      "zh": "跑腿的准备工作",
+      "ex": "We've done the legwork; the design doc and test plan are ready."
+    },
+    {
+      "w": "evidence",
+      "ipa": "/ˈevɪdəns/",
+      "zh": "证据",
+      "ex": "The latency graph is good evidence that the cache is working."
+    },
+    {
+      "w": "backlog",
+      "ipa": "/ˈbæklɔːɡ/",
+      "zh": "待办积压",
+      "ex": "That request has been sitting in their backlog for a month."
+    },
+    {
+      "w": "gesture",
+      "ipa": "/ˈdʒestʃər/",
+      "zh": "姿态、表示",
+      "ex": "Copying her manager on the thank-you note was a nice gesture."
+    },
+    {
+      "w": "uncertainty",
+      "ipa": "/ʌnˈsɜːrtnti/",
+      "zh": "不确定性",
+      "ex": "There's too much uncertainty around the rollout plan right now."
+    }
+  ]
+}

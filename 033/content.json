@@ -1,0 +1,191 @@
+{
+  "id": "033",
+  "title": "Asking Your Manager for What You Need",
+  "meta": "B2 · 约 260 词 · 场景：向经理要资源",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. A Hint Is Not a Request",
+      "paragraphs": [
+        [
+          "For three months, your team has been one engineer short.",
+          "You mention it __in passing__, your manager nods, and nothing happens.",
+          "It is ==tempting== to decide that they simply don't care."
+        ],
+        [
+          "More often, the request never became a real request.",
+          "\"We're a bit ==stretched==\" sounds like a ==remark==, not something that needs a decision.",
+          "Your manager hears twenty remarks like that every week and can only __act on__ a few.",
+          "The ones that get action are the ones that arrive with a clear question attached."
+        ],
+        [
+          "**A complaint describes a problem; a request asks someone to decide something.**",
+          "If you want a decision, you have to make it easy to make.",
+          "That means being specific about what you need, by when, and why it matters to them."
+        ]
+      ],
+      "heading_zh": "1. 暗示不等于请求",
+      "paragraphs_zh": [
+        [
+          "三个月来，你们团队一直缺一个工程师。",
+          "你顺嘴提了一句，经理点了点头，然后就没下文了。",
+          "你很容易就会认定，他根本不在乎。"
+        ],
+        [
+          "但更常见的情况是，这个请求从来就没真正变成一个请求。",
+          "「我们人手有点紧」听起来像是随口一说，而不是一件需要做决定的事。",
+          "你的经理每周都会听到二十句这样的话，只能对其中几句采取行动。",
+          "真正能推动起来的，是那些附带了明确问题的。"
+        ],
+        [
+          "抱怨是在描述一个问题；请求是在请某人做一个决定。",
+          "如果你想要一个决定，就得让这个决定容易做。",
+          "这意味着要说清楚你需要什么、什么时候要，以及这件事为什么对他很重要。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Making It Easy to Say Yes",
+      "paragraphs": [
+        [
+          "Start with a goal your manager already owns.",
+          "\"You told leadership we would launch in the new market by June.\"",
+          "Now your ask is about their ==commitment==, not your comfort.",
+          "Managers fight hardest for the things they have already promised to their own boss."
+        ],
+        [
+          "Then name the ==resource== exactly.",
+          "Not \"more help,\" but \"one backend engineer for six weeks, or a two-week delay on the reporting feature.\"",
+          "Two clear options let your manager ==weigh== them instead of just saying yes or no."
+        ],
+        [
+          "Finally, state the cost of doing nothing.",
+          "\"Without either, the launch will probably slip by a month, and on-call will __stretch thin__ again.\"",
+          "**Clear costs turn a favor into a business decision.**"
+        ],
+        [
+          "If the answer is still no, ask what would change it.",
+          "Then __put a date on__ the follow-up, so the conversation does not quietly disappear."
+        ]
+      ],
+      "heading_zh": "2. 让对方容易答应",
+      "paragraphs_zh": [
+        [
+          "从一个你经理本来就要负责的目标说起。",
+          "「你跟管理层说过，我们六月前会在新市场上线。」",
+          "这样你的请求就关乎他的承诺，而不是你过得舒不舒服。",
+          "经理最会去争取的，就是那些他已经向自己老板承诺过的事情。"
+        ],
+        [
+          "然后把需要的资源说得清清楚楚。",
+          "不是「多来点人帮忙」，而是「要一个后端工程师支援六周，或者把报表功能推迟两周」。",
+          "给出两个清晰的选项，经理就能去权衡，而不只是回答行或不行。"
+        ],
+        [
+          "最后，讲明白什么都不做的代价。",
+          "「两样都没有的话，上线很可能要推迟一个月，on-call 的人手又会捉襟见肘。」",
+          "代价讲清楚了，求人帮忙就变成了一个业务决策。"
+        ],
+        [
+          "如果答案还是不行，就问问什么条件下能改变。",
+          "然后给后续跟进定个日期，免得这次谈话就这么不了了之。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么团队缺人三个月，经理却没有行动？",
+      "a": "你只是顺口提过，「有点忙不过来」听起来像随口一说，不是一个需要决策的请求。"
+    },
+    {
+      "q": "作者怎么区分抱怨和请求？",
+      "a": "抱怨只描述问题；请求是请对方做一个决定，要说清要什么、什么时候要、为什么对他重要。"
+    },
+    {
+      "q": "让经理容易答应的请求包含哪几部分？",
+      "a": "从经理自己承诺的目标说起；把资源说具体并给两个选项；说明不做的代价；被拒绝就问什么能改变结论，并约定跟进时间。"
+    }
+  ],
+  "dictation": [
+    "A complaint describes a problem; a request asks someone to decide something.",
+    "Clear costs turn a favor into a business decision.",
+    "Now your ask is about their commitment, not your comfort.",
+    "If the answer is still no, ask what would change it."
+  ],
+  "shadow": {
+    "text": "Then name the resource exactly. Not \"more help,\" but \"one backend engineer for six weeks, or a two-week delay on the reporting feature.\" Two clear options let your manager weigh them instead of just saying yes or no.",
+    "marked": "Then name the resource <b>exactly</b>. //<br><b>Not</b> \"more help,\" / but \"<b>one</b> backend engineer for <b>six weeks</b>, / <b>or</b> a two-week delay / on the reporting feature.\" //<br>Two <b>clear</b> options / let your manager <b>weigh</b> them / instead of just saying <b>yes</b> or <b>no</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "团队人手不够，一季度的目标可能完不成。在一对一里用 30 秒向经理提出具体请求：挂钩他的目标、给两个选项、说清不做的代价。",
+      "ref": "I need a decision from you on staffing. You committed to the new payment flow by the end of March. With the current team, we'll finish in late April. I see two options: borrow one engineer from the platform team for six weeks, or move the refund feature to the next quarter. If we do neither, we'll miss the date and the on-call load will stay high.",
+      "ref_zh": "人手的事我需要你拍个板。你承诺了三月底上线新的支付流程。按现在的团队，我们要到四月下旬才能做完。我看有两个选项：从平台团队借一个工程师六周，或者把退款功能挪到下个季度。如果两个都不选，我们会错过这个时间点，on-call 的压力也会一直这么高。"
+    },
+    {
+      "q": "你需要预算请外部安全团队做一次渗透测试，经理上次说「再看看」。用 30 秒重新提出，并约定跟进时间。",
+      "ref": "I want to come back to the security test we discussed. The launch is in five weeks, and the external team needs two weeks to schedule us, so if we wait much longer, we lose the option. Without a test, we'd be shipping a new payment page with no outside review. If budget is the issue, can you tell me what would change your answer? Could we decide by Thursday?",
+      "ref_zh": "我想再跟你聊聊之前说的安全测试。上线还有五周，外部团队需要两周来排期，所以如果再拖下去，我们就没这个选项了。不做测试的话，我们上线一个全新的支付页面，却没有任何外部评审。如果卡在预算上，你能告诉我什么条件下你会改变决定吗？我们能在周四前定下来吗？"
+    }
+  ],
+  "words": [
+    {
+      "w": "tempting",
+      "ipa": "/ˈtemptɪŋ/",
+      "zh": "诱人的、让人想……的",
+      "ex": "It's tempting to skip the tests, but we'll pay for it later."
+    },
+    {
+      "w": "stretched",
+      "ipa": "/stretʃt/",
+      "zh": "（人手）紧张的",
+      "ex": "The team is stretched after two people left."
+    },
+    {
+      "w": "remark",
+      "ipa": "/rɪˈmɑːrk/",
+      "zh": "随口的评论",
+      "ex": "His remark about the deadline turned out to be a real warning."
+    },
+    {
+      "w": "commitment",
+      "ipa": "/kəˈmɪtmənt/",
+      "zh": "承诺",
+      "ex": "We made a commitment to the partner to launch in June."
+    },
+    {
+      "w": "resource",
+      "ipa": "/ˈriːsɔːrs/",
+      "zh": "资源（人力、预算等）",
+      "ex": "We need one more resource on the backend to hit the date."
+    },
+    {
+      "w": "weigh (v.)",
+      "ipa": "/weɪ/",
+      "zh": "权衡",
+      "ex": "Let's weigh the cost of a delay against the cost of more headcount.",
+      "tts_w": "weigh"
+    },
+    {
+      "w": "favor",
+      "ipa": "/ˈfeɪvər/",
+      "zh": "帮忙、人情",
+      "ex": "I don't want this to feel like a favor; it's a priority call."
+    },
+    {
+      "w": "in passing",
+      "ipa": "/ɪn ˈpæsɪŋ/",
+      "zh": "顺便、随口",
+      "ex": "She mentioned the outage in passing, so nobody followed up."
+    },
+    {
+      "w": "slip (v.)",
+      "ipa": "/slɪp/",
+      "zh": "（进度）延误",
+      "ex": "If the design review moves, the launch will slip too.",
+      "tts_w": "slip"
+    }
+  ]
+}

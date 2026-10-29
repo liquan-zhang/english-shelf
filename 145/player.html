@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Inviting Friends Over for Dinner · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "145", "type": "dialogue", "title": "Inviting Friends Over for Dinner", "meta": "B2 · 约 260 词 · 场景：请朋友来家里吃饭", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Friend", "name_zh": "朋友", "voice": "en-US-AvaNeural"}}, "gist": [{"q": "晚饭定在什么时候？朋友夫妇有什么饮食要求？", "a": "下周六晚上七点半；Tom 吃素，但吃蛋和奶制品，Sarah 什么都吃。"}, {"q": "当天发生了什么变化？", "a": "保姆临时取消，他们要带儿子 Max 一起来，而且 Max 对坚果过敏，比较严重。"}, {"q": "「你」为 Max 的过敏做了哪些安排？", "a": "保证不放花生和其他坚果，并再检查火锅蘸料；芝麻可以吃。"}], "dictation": [{"id": "s0_2_0", "text": "We'd love to have you and Tom over for dinner. Are you free next Saturday?"}, {"id": "s0_8_0", "text": "You don't have to, but a bottle of wine would be nice. Just bring yourselves."}, {"id": "s1_1_0", "text": "Of course! The more the merrier. Our son will be thrilled to have a playmate."}, {"id": "s1_5_0", "text": "Got it. I'll double-check the hotpot sauces, since some of them have peanuts."}], "shadow": {"speaker": "A", "text": "Good to know. We're planning to do hotpot, so we can make a separate vegetable broth for him.", "marked": "Good to <b>know</b>. //<br>We're planning to do <b>hotpot</b>, / so we can make a <b>separate</b> vegetable broth / for <b>him</b>. //"}, "prompts": [{"q": "你想请新同事一家周末来家里吃饭。发一条语音：说清时间、地点、问忌口，并说明孩子也欢迎来。", "ref": "Hi Priya, it's Lee. We'd love to have you and your family over for lunch next Sunday, around twelve. We're in Tiong Bahru, and I'll send you the address. Please bring the kids too. Our son would love some company. Is there anything you don't eat? Just let me know, and we'll plan around it.", "ref_zh": "嗨 Priya，我是李。下周日中午十二点左右想请你们一家来家里吃午饭。我们住在中峇鲁，地址我稍后发你。孩子一起带来吧，我儿子很想有人陪他玩。你们有什么不吃的吗？告诉我一声，我们照着安排。", "id": "ref0"}, {"q": "朋友到了才说自己最近在戒糖戒碳水，而你准备的是饺子和甜点。灵活应对，让对方不尴尬。", "ref": "Oh, no worries at all. I'm glad you told me. We've got plenty of other things. There's a big salad, some grilled chicken, and steamed fish, so you won't go hungry. Just skip the dumplings and the cake. And next time, I'll know to plan a low carb menu for you.", "ref_zh": "哦，完全没关系，你告诉我就好。我们还有很多别的菜，有一大份沙拉、烤鸡和清蒸鱼，你不会饿着的。饺子和蛋糕跳过就行。下次我就知道给你准备低碳水的菜了。", "id": "ref1"}], "words": [{"w": "dietary", "ipa": "/ˈdaɪəteri/", "zh": "饮食的", "ex": "Please let us know about any dietary needs before the event.", "id": "w0"}, {"w": "vegetarian", "ipa": "/ˌvedʒəˈteriən/", "zh": "素食者；素食的", "ex": "Is there a vegetarian option on the menu?", "id": "w1"}, {"w": "broth", "ipa": "/brɔːθ/", "zh": "汤底，清汤", "ex": "The chicken broth needs to simmer for an hour.", "id": "w2"}, {"w": "dessert", "ipa": "/dɪˈzɜːrt/", "zh": "甜点", "ex": "Let's skip dessert and just get coffee.", "id": "w3"}, {"w": "babysitter", "ipa": "/ˈbeɪbisɪtər/", "zh": "临时保姆", "ex": "We need a babysitter for Friday night.", "id": "w4"}, {"w": "allergy", "ipa": "/ˈælərdʒi/", "zh": "过敏", "ex": "My son has an allergy to shellfish.", "id": "w5"}, {"w": "sauce", "ipa": "/sɔːs/", "zh": "酱料，蘸料", "ex": "Could I have the chilli sauce on the side?", "id": "w6"}, {"w": "visitor parking", "ipa": "/ˈvɪzɪtər ˈpɑːrkɪŋ/", "zh": "访客停车位", "ex": "Visitor parking is free for the first hour.", "id": "w7"}, {"w": "block", "ipa": "/blɑːk/", "zh": "（组屋、公寓的）一栋楼", "ex": "Our block is the one next to the playground.", "id": "w8"}, {"w": "the more the merrier", "ipa": "/ðə mɔːr ðə ˈmeriər/", "zh": "人越多越热闹", "ex": "Bring your cousins along. The more the merrier!", "id": "w9"}], "sections": [{"heading": "1. Making the Invitation", "heading_zh": "1. 发出邀请", "rows": [[{"id": "s0_0_0", "md": "Hey Sarah, it's Lee. Have you got a minute?", "text": "Hey Sarah, it's Lee. Have you got a minute?", "zh": "嘿 Sarah，我是李。你现在方便说两句吗？", "sp": "A"}], [{"id": "s0_1_0", "md": "Sure, what's up?", "text": "Sure, what's up?", "zh": "当然，怎么了？", "sp": "B"}], [{"id": "s0_2_0", "md": "**We'd love to have you and Tom over for dinner. Are you free next Saturday?**", "text": "We'd love to have you and Tom over for dinner. Are you free next Saturday?", "zh": "我们想请你和 Tom 来家里吃饭。下周六有空吗？", "sp": "A"}], [{"id": "s0_3_0", "md": "Oh, that's so sweet! Saturday works, but could we make it a bit later, like seven thirty?", "text": "Oh, that's so sweet! Saturday works, but could we make it a bit later, like seven thirty?", "zh": "哇，太贴心了！周六可以，不过能不能稍微晚一点，比如七点半？", "sp": "B"}], [{"id": "s0_4_0", "md": "Seven thirty is perfect. Is there anything you guys don't eat? Any ==dietary== restrictions?", "text": "Seven thirty is perfect. Is there anything you guys don't eat? Any dietary restrictions?", "zh": "七点半正好。你们有什么不吃的吗？有没有饮食上的忌口？", "sp": "A"}], [{"id": "s0_5_0", "md": "Tom's ==vegetarian==, but he eats eggs and dairy. I'll eat anything.", "text": "Tom's vegetarian, but he eats eggs and dairy. I'll eat anything.", "zh": "Tom 吃素，不过蛋和奶制品可以吃。我什么都吃。", "sp": "B"}], [{"id": "s0_6_0", "md": "Good to know. We're planning to do hotpot, so we can __make a separate__ vegetable ==broth== for him.", "text": "Good to know. We're planning to do hotpot, so we can make a separate vegetable broth for him.", "zh": "好的，记下了。我们打算吃火锅，可以给他单独做一锅素汤底。", "sp": "A"}], [{"id": "s0_7_0", "md": "He'll love that. Can we bring anything? Wine, ==dessert==?", "text": "He'll love that. Can we bring anything? Wine, dessert?", "zh": "他肯定喜欢。我们带点什么吧？酒还是甜点？", "sp": "B"}], [{"id": "s0_8_0", "md": "__You don't have to__, but a bottle of wine would be nice. __Just bring yourselves__.", "text": "You don't have to, but a bottle of wine would be nice. Just bring yourselves.", "zh": "不用特意带，不过带瓶酒也挺好。人来就行。", "sp": "A"}], [{"id": "s0_9_0", "md": "Deal. Send me your address and I'll put it in my calendar.", "text": "Deal. Send me your address and I'll put it in my calendar.", "zh": "说定了。把地址发我，我记到日历里。", "sp": "B"}]]}, {"heading": "2. A Last-Minute Change", "heading_zh": "2. 临时变化", "rows": [[{"id": "s1_0_0", "md": "Hi Lee, sorry to call on the day. Our ==babysitter== just cancelled. Would it be okay if we brought Max?", "text": "Hi Lee, sorry to call on the day. Our babysitter just cancelled. Would it be okay if we brought Max?", "zh": "嗨李，抱歉当天才打电话。我们的保姆临时取消了，可以带 Max 一起来吗？", "sp": "B"}], [{"id": "s1_1_0", "md": "**Of course! The more the merrier. Our son will be thrilled to have a playmate.**", "text": "Of course! The more the merrier. Our son will be thrilled to have a playmate.", "zh": "当然！人越多越热闹。我儿子有个玩伴会高兴坏的。", "sp": "A"}], [{"id": "s1_2_0", "md": "Thank you. One thing, though. Max has a nut ==allergy==, and it's fairly serious.", "text": "Thank you. One thing, though. Max has a nut allergy, and it's fairly serious.", "zh": "谢谢。不过有一点，Max 对坚果过敏，还挺严重的。", "sp": "B"}], [{"id": "s1_3_0", "md": "Thanks for telling me. I'll make sure nothing has peanuts in it. __What about__ sesame?", "text": "Thanks for telling me. I'll make sure nothing has peanuts in it. What about sesame?", "zh": "谢谢你告诉我。我保证所有东西都不放花生。那芝麻呢？", "sp": "A"}], [{"id": "s1_4_0", "md": "Sesame is fine. Just no peanuts or other nuts, like cashews.", "text": "Sesame is fine. Just no peanuts or other nuts, like cashews.", "zh": "芝麻没问题。只要不放花生和其他坚果就行，比如腰果。", "sp": "B"}], [{"id": "s1_5_0", "md": "Got it. I'll double-check the hotpot ==sauces==, since some of them have peanuts.", "text": "Got it. I'll double-check the hotpot sauces, since some of them have peanuts.", "zh": "明白。我会再检查一下火锅蘸料，有些里面有花生。", "sp": "A"}], [{"id": "s1_6_0", "md": "You're a star. Honestly, he'll be happy with rice and noodles.", "text": "You're a star. Honestly, he'll be happy with rice and noodles.", "zh": "你太好了。说实话，他有米饭和面条就很开心了。", "sp": "B"}], [{"id": "s1_7_0", "md": "Also, ==visitor== parking is at the back of the ==block==. Just tell the guard you're visiting unit ten eleven.", "text": "Also, visitor parking is at the back of the block. Just tell the guard you're visiting unit ten eleven.", "zh": "另外，访客停车位在楼的后面。跟保安说你们去十楼十一号就行。", "sp": "A"}], [{"id": "s1_8_0", "md": "Great. We might be ten minutes late with all the extra packing.", "text": "Great. We might be ten minutes late with all the extra packing.", "zh": "好的。多带个孩子要收拾东西，我们可能会晚十分钟。", "sp": "B"}], [{"id": "s1_9_0", "md": "**No rush at all. Take your time, and drive safe.**", "text": "No rush at all. Take your time, and drive safe.", "zh": "完全不急，慢慢来，开车注意安全。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Making the Invitation", "zh": "1. 发出邀请", "start": 0.0, "end": 2.208, "words": [[0.105, 0.316], [0.75, 1.026], [1.039, 1.105], [1.118, 1.816]]}, {"kind": "s", "id": "s0_0_0", "md": "Hey Sarah, it's Lee. Have you got a minute?", "zh": "嘿 Sarah，我是李。你现在方便说两句吗？", "sp": "A", "gap": false, "start": 2.208, "end": 4.944, "words": [[2.34, 2.445], [2.458, 2.826], [2.945, 3.103], [3.116, 3.366], [3.8, 3.892], [3.905, 3.984], [3.997, 4.142], [4.155, 4.182], [4.195, 4.55]]}, {"kind": "s", "id": "s0_1_0", "md": "Sure, what's up?", "zh": "当然，怎么了？", "sp": "B", "gap": false, "start": 4.944, "end": 6.816, "words": [[5.044, 5.557], [5.597, 5.82], [5.833, 6.136]]}, {"kind": "s", "id": "s0_2_0", "md": "**We'd love to have you and Tom over for dinner. Are you free next Saturday?**", "zh": "我们想请你和 Tom 来家里吃饭。下周六有空吗？", "sp": "A", "gap": false, "start": 6.816, "end": 10.992, "words": [[6.934, 7.079], [7.092, 7.303], [7.316, 7.408], [7.421, 7.658], [7.671, 7.855], [7.869, 7.948], [7.961, 8.263], [8.277, 8.487], [8.5, 8.632], [8.645, 9.0], [9.434, 9.527], [9.54, 9.658], [9.671, 9.869], [9.882, 10.132], [10.145, 10.605]]}, {"kind": "s", "id": "s0_3_0", "md": "Oh, that's so sweet! Saturday works, but could we make it a bit later, like seven thirty?", "zh": "哇，太贴心了！周六可以，不过能不能稍微晚一点，比如七点半？", "sp": "B", "gap": false, "start": 10.992, "end": 17.88, "words": [[11.092, 11.487], [11.592, 11.868], [11.881, 12.105], [12.118, 12.763], [13.147, 13.766], [13.779, 14.318], [14.555, 14.858], [14.91, 15.055], [15.068, 15.174], [15.187, 15.397], [15.41, 15.516], [15.529, 15.608], [15.621, 15.845], [15.858, 16.331], [16.41, 16.66], [16.687, 17.016], [17.029, 17.476]]}, {"kind": "s", "id": "s0_4_0", "md": "Seven thirty is perfect. Is there anything you guys don't eat? Any ==dietary== restrictions?", "zh": "七点半正好。你们有什么不吃的吗？有没有饮食上的忌口？", "sp": "A", "gap": false, "start": 17.88, "end": 23.784, "words": [[17.985, 18.288], [18.301, 18.775], [18.854, 18.959], [18.972, 19.564], [19.998, 20.091], [20.104, 20.248], [20.262, 20.604], [20.617, 20.709], [20.722, 20.985], [20.998, 21.183], [21.196, 21.459], [21.893, 22.064], [22.077, 22.643], [22.656, 23.393]]}, {"kind": "s", "id": "s0_5_0", "md": "Tom's ==vegetarian==, but he eats eggs and dairy. I'll eat anything.", "zh": "Tom 吃素，不过蛋和奶制品可以吃。我什么都吃。", "sp": "B", "gap": false, "start": 23.784, "end": 29.16, "words": [[23.884, 24.318], [24.331, 25.095], [25.397, 25.555], [25.568, 25.792], [25.805, 26.055], [26.16, 26.502], [26.516, 26.634], [26.647, 27.147], [27.531, 27.847], [27.9, 28.097], [28.163, 28.755]]}, {"kind": "s", "id": "s0_6_0", "md": "Good to know. We're planning to do hotpot, so we can __make a separate__ vegetable ==broth== for him.", "zh": "好的，记下了。我们打算吃火锅，可以给他单独做一锅素汤底。", "sp": "A", "gap": false, "start": 29.16, "end": 34.632, "words": [[29.265, 29.384], [29.397, 29.489], [29.502, 29.765], [30.199, 30.305], [30.318, 30.699], [30.713, 30.792], [30.805, 30.989], [31.002, 31.607], [32.002, 32.107], [32.121, 32.213], [32.226, 32.357], [32.371, 32.542], [32.555, 32.607], [32.621, 33.055], [33.068, 33.489], [33.502, 33.831], [33.844, 34.042], [34.055, 34.239]]}, {"kind": "s", "id": "s0_7_0", "md": "He'll love that. Can we bring anything? Wine, ==dessert==?", "zh": "他肯定喜欢。我们带点什么吧？酒还是甜点？", "sp": "B", "gap": false, "start": 34.632, "end": 38.952, "words": [[34.732, 35.021], [35.035, 35.245], [35.258, 35.587], [35.971, 36.195], [36.208, 36.327], [36.34, 36.577], [36.59, 37.103], [37.485, 38.011], [38.05, 38.55]]}, {"kind": "s", "id": "s0_8_0", "md": "__You don't have to__, but a bottle of wine would be nice. __Just bring yourselves__.", "zh": "不用特意带，不过带瓶酒也挺好。人来就行。", "sp": "A", "gap": false, "start": 38.952, "end": 43.8, "words": [[39.057, 39.123], [39.136, 39.307], [39.32, 39.61], [39.623, 39.886], [40.281, 40.399], [40.413, 40.452], [40.465, 40.794], [40.807, 40.899], [40.913, 41.189], [41.202, 41.32], [41.334, 41.426], [41.439, 41.991], [42.426, 42.584], [42.597, 42.768], [42.781, 43.413]]}, {"kind": "s", "id": "s0_9_0", "md": "Deal. Send me your address and I'll put it in my calendar.", "zh": "说定了。把地址发我，我记到日历里。", "sp": "B", "gap": false, "start": 43.8, "end": 47.88, "words": [[43.9, 44.439], [44.824, 45.218], [45.232, 45.324], [45.337, 45.442], [45.455, 45.968], [46.008, 46.232], [46.284, 46.389], [46.403, 46.56], [46.574, 46.653], [46.666, 46.745], [46.758, 46.876], [46.889, 47.482]]}, {"kind": "h", "id": "h1", "md": "2. A Last-Minute Change", "zh": "2. 临时变化", "start": 47.88, "end": 50.184, "words": [[47.998, 48.301], [48.591, 48.669], [48.683, 49.288], [49.301, 49.788]]}, {"kind": "s", "id": "s1_0_0", "md": "Hi Lee, sorry to call on the day. Our ==babysitter== just cancelled. Would it be okay if we brought Max?", "zh": "嗨李，抱歉当天才打电话。我们的保姆临时取消了，可以带 Max 一起来吗？", "sp": "B", "gap": false, "start": 50.184, "end": 57.384, "words": [[50.284, 50.573], [50.587, 50.916], [51.218, 51.547], [51.56, 51.639], [51.652, 51.902], [51.916, 52.034], [52.047, 52.126], [52.139, 52.56], [52.945, 53.208], [53.234, 53.984], [53.997, 54.287], [54.3, 54.918], [55.3, 55.523], [55.537, 55.629], [55.642, 55.747], [55.76, 56.023], [56.037, 56.142], [56.155, 56.26], [56.273, 56.484], [56.497, 56.984]]}, {"kind": "s", "id": "s1_1_0", "md": "**Of course! The more the merrier. Our son will be thrilled to have a playmate.**", "zh": "当然！人越多越热闹。我儿子有个玩伴会高兴坏的。", "sp": "A", "gap": false, "start": 57.384, "end": 62.136, "words": [[57.489, 57.581], [57.595, 58.068], [58.516, 58.555], [58.568, 58.726], [58.739, 58.805], [58.818, 59.305], [59.739, 59.858], [59.871, 60.108], [60.121, 60.226], [60.239, 60.358], [60.371, 60.858], [60.871, 60.95], [60.963, 61.108], [61.121, 61.173], [61.187, 61.752]]}, {"kind": "s", "id": "s1_2_0", "md": "Thank you. One thing, though. Max has a nut ==allergy==, and it's fairly serious.", "zh": "谢谢。不过有一点，Max 对坚果过敏，还挺严重的。", "sp": "B", "gap": false, "start": 62.136, "end": 68.376, "words": [[62.236, 62.525], [62.539, 62.92], [63.304, 63.607], [63.62, 63.831], [63.857, 64.212], [64.594, 65.002], [65.015, 65.186], [65.199, 65.239], [65.252, 65.528], [65.541, 66.107], [66.331, 66.554], [66.581, 66.791], [66.804, 67.186], [67.199, 67.975]]}, {"kind": "s", "id": "s1_3_0", "md": "Thanks for telling me. I'll make sure nothing has peanuts in it. __What about__ sesame?", "zh": "谢谢你告诉我。我保证所有东西都不放花生。那芝麻呢？", "sp": "A", "gap": false, "start": 68.376, "end": 73.032, "words": [[68.494, 68.652], [68.665, 68.771], [68.784, 69.087], [69.1, 69.258], [69.692, 69.784], [69.797, 69.942], [69.955, 70.139], [70.152, 70.455], [70.468, 70.6], [70.613, 71.008], [71.021, 71.126], [71.139, 71.31], [71.744, 71.837], [71.85, 72.073], [72.087, 72.652]]}, {"kind": "s", "id": "s1_4_0", "md": "Sesame is fine. Just no peanuts or other nuts, like cashews.", "zh": "芝麻没问题。只要不放花生和其他坚果就行，比如腰果。", "sp": "B", "gap": false, "start": 73.032, "end": 78.168, "words": [[73.132, 73.698], [73.711, 73.843], [73.856, 74.342], [74.727, 75.082], [75.095, 75.306], [75.319, 75.832], [75.845, 76.043], [76.056, 76.253], [76.266, 76.714], [76.806, 77.029], [77.043, 77.779]]}, {"kind": "s", "id": "s1_5_0", "md": "Got it. I'll double-check the hotpot ==sauces==, since some of them have peanuts.", "zh": "明白。我会再检查一下火锅蘸料，有些里面有花生。", "sp": "A", "gap": false, "start": 78.168, "end": 82.944, "words": [[78.273, 78.444], [78.457, 78.576], [79.01, 79.102], [79.115, 79.681], [79.694, 79.773], [79.786, 80.326], [80.339, 80.931], [81.168, 81.405], [81.418, 81.589], [81.602, 81.681], [81.694, 81.813], [81.826, 81.984], [81.997, 82.55]]}, {"kind": "s", "id": "s1_6_0", "md": "You're a star. Honestly, he'll be happy with rice and noodles.", "zh": "你太好了。说实话，他有米饭和面条就很开心了。", "sp": "B", "gap": false, "start": 82.944, "end": 87.744, "words": [[83.044, 83.268], [83.281, 83.333], [83.347, 83.912], [84.297, 84.981], [85.244, 85.402], [85.415, 85.533], [85.547, 85.941], [85.955, 86.112], [86.126, 86.52], [86.533, 86.718], [86.731, 87.349]]}, {"kind": "s", "id": "s1_7_0", "md": "Also, ==visitor== parking is at the back of the ==block==. Just tell the guard you're visiting unit ten eleven.", "zh": "另外，访客停车位在楼的后面。跟保安说你们去十楼十一号就行。", "sp": "A", "gap": false, "start": 87.744, "end": 93.816, "words": [[87.849, 88.297], [88.52, 88.876], [88.889, 89.362], [89.428, 89.533], [89.547, 89.626], [89.639, 89.718], [89.731, 90.02], [90.033, 90.099], [90.112, 90.191], [90.205, 90.626], [91.06, 91.231], [91.244, 91.428], [91.441, 91.534], [91.547, 91.849], [91.862, 91.981], [91.994, 92.468], [92.481, 92.783], [92.797, 92.981], [92.994, 93.415]]}, {"kind": "s", "id": "s1_8_0", "md": "Great. We might be ten minutes late with all the extra packing.", "zh": "好的。多带个孩子要收拾东西，我们可能会晚十分钟。", "sp": "B", "gap": false, "start": 93.816, "end": 98.448, "words": [[93.916, 94.482], [94.866, 95.116], [95.129, 95.379], [95.392, 95.537], [95.55, 95.866], [95.879, 96.169], [96.182, 96.511], [96.524, 96.708], [96.8, 96.998], [97.011, 97.077], [97.09, 97.471], [97.484, 98.05]]}, {"kind": "s", "id": "s1_9_0", "md": "**No rush at all. Take your time, and drive safe.**", "zh": "完全不急，慢慢来，开车注意安全。", "sp": "A", "gap": false, "start": 98.448, "end": 102.096, "words": [[98.553, 98.711], [98.724, 98.948], [98.961, 99.04], [99.053, 99.29], [99.737, 99.882], [99.895, 100.001], [100.014, 100.435], [100.764, 100.843], [100.856, 101.198], [101.211, 101.698]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

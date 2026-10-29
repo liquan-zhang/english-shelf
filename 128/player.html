@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Setting Up Internet and Utilities · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "128", "type": "dialogue", "title": "Setting Up Internet and Utilities", "meta": "B2 · 约 310 词 · 场景：开通宽带与安装爽约", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Customer Service", "name_zh": "客服", "voice": "en-GB-RyanNeural"}}, "gist": [{"q": "「你」最后选了什么套餐？合约条件是什么？", "a": "千兆宽带，每月四十五块，合约二十四个月，免安装费、送路由器；提前解约有逐月递减的违约费。"}, {"q": "安装那天出了什么问题？客服怎么解释？", "a": "师傅到一点半都没来；客服说记录显示师傅进不了楼，可能被楼下保安拦了。"}, {"q": "客服给出了哪些补救措施？", "a": "改约到明天上午第一个时段，免第一个月月费，把手机号加到工单并提前在保安处登记，再发一封确认邮件。"}], "dictation": [{"id": "s0_3_0", "text": "What's the difference in practice? We mostly stream videos, and I work from home sometimes."}, {"id": "s0_7_0", "text": "What happens if I need to cancel early? We might move overseas next year."}, {"id": "s1_4_0", "text": "I took the morning off for this. What can you do to make it right?"}, {"id": "s1_8_0", "text": "Thanks. And could you put that in writing? An email would be fine."}], "shadow": {"speaker": "A", "text": "Hi, I had an installation booked for this morning, nine to one. It's now half past one, and nobody's turned up.", "marked": "Hi, / I had an <b>installation</b> booked / for this <b>morning</b>, / <b>nine</b> to <b>one</b>. //<br>It's now <b>half past one</b>, / and <b>nobody's</b> turned up. //"}, "prompts": [{"q": "你打电话给电力公司开户。说明搬家日期、地址类型，问需要什么材料、押金多少、多久能开通。", "ref": "Hi, I'm moving into a condo next Monday, and I'd like to open a new electricity and water account. What documents do I need? I have my passport, employment pass, and the tenancy agreement. Is there a deposit for foreigners, and roughly how much is it? And will the power be on by the time I move in?", "ref_zh": "你好，我下周一搬进一个公寓，想开新的水电账户。需要什么材料？我有护照、工作准证和租房合同。外国人需要交押金吗，大概多少？我入住的时候电能通上吗？", "id": "ref0"}, {"q": "宽带装好后晚上经常断网。打电话投诉，说明情况，并要求上门检查或换路由器。", "ref": "Hi, my broadband was installed last week, but it keeps dropping in the evenings, usually between eight and eleven. I've already restarted the router several times, and it doesn't help. I work from home, so this is a real problem. Could you send a technician to check the line, or replace the router?", "ref_zh": "你好，我的宽带上周刚装好，但晚上老是断，一般在八点到十一点之间。我已经重启路由器好几次了，没用。我在家办公，这真的很影响。能派师傅来检查线路，或者换个路由器吗？", "id": "ref1"}], "words": [{"w": "broadband", "ipa": "/ˈbrɔːdbænd/", "zh": "宽带", "ex": "Our broadband is much faster since we upgraded.", "id": "w0"}, {"w": "contract", "ipa": "/ˈkɑːntrækt/", "zh": "合约，合同", "ex": "My phone contract ends in June.", "id": "w1"}, {"w": "installation fee", "ipa": "/ˌɪnstəˈleɪʃən fiː/", "zh": "安装费", "ex": "They waived the installation fee for new customers.", "id": "w2"}, {"w": "router", "ipa": "/ˈraʊtər/", "zh": "路由器", "ex": "Try moving the router to the middle of the flat.", "id": "w3"}, {"w": "cancel", "ipa": "/ˈkænsəl/", "zh": "取消，解约", "ex": "I'd like to cancel my gym membership.", "id": "w4"}, {"w": "access", "ipa": "/ˈækses/", "zh": "进入（的权限）", "ex": "Visitors need a card to get access to the lift.", "id": "w5"}, {"w": "security guard", "ipa": "/sɪˈkjʊrəti ɡɑːrd/", "zh": "保安", "ex": "Leave the parcel with the security guard at the gate.", "id": "w6"}, {"w": "waive", "ipa": "/weɪv/", "zh": "免除（费用）", "ex": "The bank agreed to waive the late fee this time.", "id": "w7"}, {"w": "confirmation", "ipa": "/ˌkɑːnfərˈmeɪʃən/", "zh": "确认（函）", "ex": "I haven't received a confirmation email yet.", "id": "w8"}, {"w": "sign up for", "ipa": "/saɪn ʌp fɔːr/", "zh": "报名，办理开通", "ex": "We signed up for swimming classes for our son.", "id": "w9"}], "sections": [{"heading": "1. Choosing a Plan", "heading_zh": "1. 选套餐", "rows": [[{"id": "s0_0_0", "md": "Thanks for calling. My name's Oliver. How can I help you today?", "text": "Thanks for calling. My name's Oliver. How can I help you today?", "zh": "感谢来电，我是奥利弗。今天有什么可以帮您？", "sp": "B"}], [{"id": "s0_1_0", "md": "Hi, I've just moved into a new flat, and I'd like to __sign up for__ home ==broadband==.", "text": "Hi, I've just moved into a new flat, and I'd like to sign up for home broadband.", "zh": "你好，我刚搬进新房子，想办家庭宽带。", "sp": "A"}], [{"id": "s0_2_0", "md": "Sure. We have a one gig plan at forty-five dollars a month, or two gig at fifty-five.", "text": "Sure. We have a one gig plan at forty-five dollars a month, or two gig at fifty-five.", "zh": "好的。我们有千兆套餐每月四十五块，两千兆每月五十五块。", "sp": "B"}], [{"id": "s0_3_0", "md": "**What's the difference in practice? We mostly stream videos, and I work from home sometimes.**", "text": "What's the difference in practice? We mostly stream videos, and I work from home sometimes.", "zh": "实际用起来有什么区别？我们主要看视频，我偶尔在家办公。", "sp": "A"}], [{"id": "s0_4_0", "md": "Honestly, one gig is plenty for a family. Two gig only matters if lots of devices are downloading at once.", "text": "Honestly, one gig is plenty for a family. Two gig only matters if lots of devices are downloading at once.", "zh": "说实话，一个家庭千兆完全够用。只有很多设备同时下载时，两千兆才有意义。", "sp": "B"}], [{"id": "s0_5_0", "md": "Okay, one gig then. How long is the ==contract==, and is there an ==installation fee==?", "text": "Okay, one gig then. How long is the contract, and is there an installation fee?", "zh": "好，那就千兆。合约多长？有安装费吗？", "sp": "A"}], [{"id": "s0_6_0", "md": "It's a twenty-four month contract. Installation is free, and the ==router== is included.", "text": "It's a twenty-four month contract. Installation is free, and the router is included.", "zh": "合约二十四个月。安装免费，送路由器。", "sp": "B"}], [{"id": "s0_7_0", "md": "What happens if I need to ==cancel== early? We might move overseas next year.", "text": "What happens if I need to cancel early? We might move overseas next year.", "zh": "如果要提前解约怎么办？我们明年可能搬去国外。", "sp": "A"}], [{"id": "s0_8_0", "md": "There's an early termination charge, but it goes down every month. I'll email you the details.", "text": "There's an early termination charge, but it goes down every month. I'll email you the details.", "zh": "会有提前解约费，但每个月递减。我把详情发到您邮箱。", "sp": "B"}], [{"id": "s0_9_0", "md": "**That's fine. When's the earliest you can send someone to install it?**", "text": "That's fine. When's the earliest you can send someone to install it?", "zh": "可以。最早什么时候能派人来安装？", "sp": "A"}], [{"id": "s0_10_0", "md": "This Saturday, between nine and one. Someone will need to be home.", "text": "This Saturday, between nine and one. Someone will need to be home.", "zh": "这周六，九点到一点之间。家里需要有人。", "sp": "B"}]]}, {"heading": "2. The Technician Doesn't Show Up", "heading_zh": "2. 师傅没来", "rows": [[{"id": "s1_0_0", "md": "Hi, I had an installation booked for this morning, nine to one. It's now half past one, and __nobody's turned up__.", "text": "Hi, I had an installation booked for this morning, nine to one. It's now half past one, and nobody's turned up.", "zh": "你好，我约了今天上午九点到一点安装。现在已经一点半了，一个人都没来。", "sp": "A"}], [{"id": "s1_1_0", "md": "I'm really sorry about that. Let me check. It says the technician couldn't get ==access== to the building.", "text": "I'm really sorry about that. Let me check. It says the technician couldn't get access to the building.", "zh": "非常抱歉。我查一下。记录上说师傅进不了楼。", "sp": "B"}], [{"id": "s1_2_0", "md": "That's strange. I was home all morning, and nobody called me.", "text": "That's strange. I was home all morning, and nobody called me.", "zh": "奇怪了。我整个上午都在家，也没人给我打电话。", "sp": "A"}], [{"id": "s1_3_0", "md": "He may have been stopped by the ==security guard== downstairs. I do apologise.", "text": "He may have been stopped by the security guard downstairs. I do apologise.", "zh": "他可能被楼下保安拦住了。真的很抱歉。", "sp": "B"}], [{"id": "s1_4_0", "md": "**I took the morning off for this. What can you do to make it right?**", "text": "I took the morning off for this. What can you do to make it right?", "zh": "我为这事请了一上午假。你们打算怎么补救？", "sp": "A"}], [{"id": "s1_5_0", "md": "I can rebook you for the first slot tomorrow morning and ==waive== your first month's fee.", "text": "I can rebook you for the first slot tomorrow morning and waive your first month's fee.", "zh": "我可以帮您改约到明天上午第一个时段，并免掉第一个月的月费。", "sp": "B"}], [{"id": "s1_6_0", "md": "Tomorrow works. Could you make sure he calls me when he arrives, so I can __let him in__?", "text": "Tomorrow works. Could you make sure he calls me when he arrives, so I can let him in?", "zh": "明天可以。能确保他到了给我打电话吗？我好下去接他进来。", "sp": "A"}], [{"id": "s1_7_0", "md": "Absolutely. I'll add your mobile number to the job, and register him with security in advance.", "text": "Absolutely. I'll add your mobile number to the job, and register him with security in advance.", "zh": "没问题。我会把您的手机号加到工单上，并提前帮他在保安处登记。", "sp": "B"}], [{"id": "s1_8_0", "md": "Thanks. And could you __put that in writing__? An email would be fine.", "text": "Thanks. And could you put that in writing? An email would be fine.", "zh": "谢谢。这些能给我书面确认吗？发邮件就行。", "sp": "A"}], [{"id": "s1_9_0", "md": "Of course. You'll get a ==confirmation== email within the hour.", "text": "Of course. You'll get a confirmation email within the hour.", "zh": "当然。一小时内您会收到确认邮件。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Choosing a Plan", "zh": "1. 选套餐", "start": 0.0, "end": 1.872, "words": [[0.105, 0.342], [0.671, 1.013], [1.026, 1.066], [1.079, 1.487]]}, {"kind": "s", "id": "s0_0_0", "md": "Thanks for calling. My name's Oliver. How can I help you today?", "zh": "感谢来电，我是奥利弗。今天有什么可以帮您？", "sp": "B", "gap": false, "start": 1.872, "end": 8.328, "words": [[1.972, 2.38], [2.393, 2.485], [2.498, 2.985], [3.896, 4.132], [4.146, 4.527], [4.54, 5.001], [5.909, 6.146], [6.159, 6.317], [6.33, 6.409], [6.422, 6.698], [6.711, 6.817], [6.83, 7.409]]}, {"kind": "s", "id": "s0_1_0", "md": "Hi, I've just moved into a new flat, and I'd like to __sign up for__ home ==broadband==.", "zh": "你好，我刚搬进新房子，想办家庭宽带。", "sp": "A", "gap": false, "start": 8.328, "end": 13.344, "words": [[8.446, 8.723], [9.131, 9.288], [9.302, 9.525], [9.539, 9.802], [9.815, 10.038], [10.052, 10.091], [10.104, 10.315], [10.328, 10.789], [11.117, 11.17], [11.183, 11.275], [11.289, 11.433], [11.446, 11.512], [11.525, 11.828], [11.841, 11.973], [11.986, 12.131], [12.144, 12.328], [12.341, 12.96]]}, {"kind": "s", "id": "s0_2_0", "md": "Sure. We have a one gig plan at forty-five dollars a month, or two gig at fifty-five.", "zh": "好的。我们有千兆套餐每月四十五块，两千兆每月五十五块。", "sp": "B", "gap": false, "start": 13.344, "end": 20.784, "words": [[13.444, 13.97], [14.881, 15.078], [15.091, 15.289], [15.302, 15.341], [15.355, 15.631], [15.644, 15.881], [15.894, 16.197], [16.21, 16.328], [16.341, 17.065], [17.078, 17.381], [17.394, 17.447], [17.46, 17.894], [18.131, 18.236], [18.249, 18.539], [18.552, 18.815], [18.828, 18.92], [18.933, 19.854]]}, {"kind": "s", "id": "s0_3_0", "md": "**What's the difference in practice? We mostly stream videos, and I work from home sometimes.**", "zh": "实际用起来有什么区别？我们主要看视频，我偶尔在家办公。", "sp": "A", "gap": false, "start": 20.784, "end": 26.256, "words": [[20.889, 21.047], [21.06, 21.166], [21.179, 21.521], [21.534, 21.613], [21.626, 22.258], [22.705, 22.797], [22.81, 23.179], [23.192, 23.494], [23.508, 24.113], [24.31, 24.416], [24.429, 24.481], [24.495, 24.718], [24.731, 24.889], [24.902, 25.126], [25.139, 25.863]]}, {"kind": "s", "id": "s0_4_0", "md": "Honestly, one gig is plenty for a family. Two gig only matters if lots of devices are downloading at once.", "zh": "说实话，一个家庭千兆完全够用。只有很多设备同时下载时，两千兆才有意义。", "sp": "B", "gap": false, "start": 26.256, "end": 34.272, "words": [[26.356, 26.895], [27.145, 27.33], [27.343, 27.58], [27.593, 27.724], [27.738, 28.106], [28.119, 28.277], [28.29, 28.343], [28.356, 28.869], [29.78, 30.043], [30.056, 30.253], [30.267, 30.53], [30.543, 30.924], [30.938, 31.056], [31.069, 31.359], [31.372, 31.438], [31.451, 31.99], [32.003, 32.069], [32.082, 32.74], [32.753, 32.846], [32.859, 33.359]]}, {"kind": "s", "id": "s0_5_0", "md": "Okay, one gig then. How long is the ==contract==, and is there an ==installation fee==?", "zh": "好，那就千兆。合约多长？有安装费吗？", "sp": "A", "gap": false, "start": 34.272, "end": 39.624, "words": [[34.39, 34.68], [34.89, 35.114], [35.127, 35.338], [35.351, 35.614], [36.048, 36.193], [36.206, 36.509], [36.522, 36.614], [36.627, 36.719], [36.733, 37.443], [37.759, 37.825], [37.838, 37.943], [37.956, 38.114], [38.127, 38.193], [38.206, 38.904], [38.917, 39.233]]}, {"kind": "s", "id": "s0_6_0", "md": "It's a twenty-four month contract. Installation is free, and the ==router== is included.", "zh": "合约二十四个月。安装免费，送路由器。", "sp": "B", "gap": false, "start": 39.624, "end": 46.512, "words": [[39.724, 39.935], [39.948, 40.027], [40.04, 40.606], [40.619, 40.921], [40.935, 41.671], [42.582, 43.306], [43.319, 43.464], [43.477, 43.871], [44.121, 44.227], [44.24, 44.319], [44.332, 44.674], [44.687, 44.885], [44.898, 45.582]]}, {"kind": "s", "id": "s0_7_0", "md": "What happens if I need to ==cancel== early? We might move overseas next year.", "zh": "如果要提前解约怎么办？我们明年可能搬去国外。", "sp": "A", "gap": false, "start": 46.512, "end": 50.76, "words": [[46.617, 46.723], [46.736, 47.078], [47.091, 47.209], [47.223, 47.262], [47.275, 47.459], [47.473, 47.525], [47.538, 47.933], [47.946, 48.275], [48.709, 48.815], [48.828, 49.025], [49.038, 49.275], [49.288, 49.788], [49.801, 50.091], [50.104, 50.367]]}, {"kind": "s", "id": "s0_8_0", "md": "There's an early termination charge, but it goes down every month. I'll email you the details.", "zh": "会有提前解约费，但每个月递减。我把详情发到您邮箱。", "sp": "B", "gap": false, "start": 50.76, "end": 57.984, "words": [[50.86, 51.084], [51.097, 51.228], [51.242, 51.465], [51.478, 52.163], [52.176, 52.702], [52.913, 53.031], [53.044, 53.136], [53.149, 53.426], [53.439, 53.728], [53.742, 53.939], [53.952, 54.426], [55.336, 55.599], [55.613, 56.007], [56.021, 56.139], [56.152, 56.257], [56.271, 57.06]]}, {"kind": "s", "id": "s0_9_0", "md": "**That's fine. When's the earliest you can send someone to install it?**", "zh": "可以。最早什么时候能派人来安装？", "sp": "A", "gap": false, "start": 57.984, "end": 61.992, "words": [[58.102, 58.273], [58.287, 58.681], [59.116, 59.273], [59.287, 59.405], [59.418, 59.971], [59.984, 60.089], [60.102, 60.234], [60.247, 60.563], [60.576, 60.866], [60.879, 61.01], [61.023, 61.444], [61.458, 61.602]]}, {"kind": "s", "id": "s0_10_0", "md": "This Saturday, between nine and one. Someone will need to be home.", "zh": "这周六，九点到一点之间。家里需要有人。", "sp": "B", "gap": false, "start": 61.992, "end": 67.824, "words": [[62.092, 62.381], [62.395, 62.895], [63.026, 63.46], [63.474, 63.789], [63.803, 63.934], [63.947, 64.329], [65.239, 65.7], [65.713, 65.858], [65.871, 66.108], [66.121, 66.187], [66.2, 66.318], [66.331, 66.897]]}, {"kind": "h", "id": "h1", "md": "2. The Technician Doesn't Show Up", "zh": "2. 师傅没来", "start": 67.824, "end": 70.392, "words": [[67.942, 68.166], [68.495, 68.587], [68.6, 69.166], [69.179, 69.495], [69.508, 69.785], [69.798, 70.008]]}, {"kind": "s", "id": "s1_0_0", "md": "Hi, I had an installation booked for this morning, nine to one. It's now half past one, and __nobody's turned up__.", "zh": "你好，我约了今天上午九点到一点安装。现在已经一点半了，一个人都没来。", "sp": "A", "gap": false, "start": 70.392, "end": 77.616, "words": [[70.51, 70.774], [71.181, 71.3], [71.313, 71.471], [71.484, 71.563], [71.576, 72.26], [72.274, 72.524], [72.537, 72.655], [72.668, 72.826], [72.839, 73.168], [73.563, 73.721], [73.734, 73.813], [73.826, 74.129], [74.563, 74.681], [74.695, 74.892], [74.905, 75.168], [75.181, 75.524], [75.537, 75.826], [76.129, 76.234], [76.247, 76.695], [76.708, 76.997], [77.01, 77.234]]}, {"kind": "s", "id": "s1_1_0", "md": "I'm really sorry about that. Let me check. It says the technician couldn't get ==access== to the building.", "zh": "非常抱歉。我查一下。记录上说师傅进不了楼。", "sp": "B", "gap": false, "start": 77.616, "end": 85.536, "words": [[77.716, 77.953], [77.966, 78.203], [78.216, 78.571], [78.584, 78.9], [78.913, 79.308], [80.219, 80.442], [80.455, 80.574], [80.587, 81.061], [81.969, 82.192], [82.205, 82.39], [82.403, 82.508], [82.521, 83.074], [83.087, 83.35], [83.363, 83.508], [83.521, 83.903], [83.916, 84.008], [84.021, 84.113], [84.127, 84.613]]}, {"kind": "s", "id": "s1_2_0", "md": "That's strange. I was home all morning, and nobody called me.", "zh": "奇怪了。我整个上午都在家，也没人给我打电话。", "sp": "A", "gap": false, "start": 85.536, "end": 89.4, "words": [[85.654, 85.799], [85.812, 86.391], [86.825, 86.891], [86.904, 87.036], [87.049, 87.26], [87.273, 87.418], [87.431, 87.852], [88.102, 88.181], [88.194, 88.523], [88.536, 88.825], [88.839, 88.996]]}, {"kind": "s", "id": "s1_3_0", "md": "He may have been stopped by the ==security guard== downstairs. I do apologise.", "zh": "他可能被楼下保安拦住了。真的很抱歉。", "sp": "B", "gap": false, "start": 89.4, "end": 95.688, "words": [[89.5, 89.684], [89.697, 89.868], [89.882, 90.0], [90.013, 90.171], [90.184, 90.579], [90.592, 90.724], [90.737, 90.842], [90.855, 91.408], [91.421, 91.724], [91.737, 92.579], [93.489, 93.66], [93.674, 93.871], [93.884, 94.779]]}, {"kind": "s", "id": "s1_4_0", "md": "**I took the morning off for this. What can you do to make it right?**", "zh": "我为这事请了一上午假。你们打算怎么补救？", "sp": "A", "gap": false, "start": 95.688, "end": 99.216, "words": [[95.793, 95.859], [95.872, 96.03], [96.043, 96.109], [96.122, 96.425], [96.438, 96.622], [96.635, 96.78], [96.793, 97.162], [97.596, 97.701], [97.714, 97.833], [97.846, 97.925], [97.938, 98.096], [98.109, 98.175], [98.188, 98.425], [98.438, 98.53], [98.543, 98.833]]}, {"kind": "s", "id": "s1_5_0", "md": "I can rebook you for the first slot tomorrow morning and ==waive== your first month's fee.", "zh": "我可以帮您改约到明天上午第一个时段，并免掉第一个月的月费。", "sp": "B", "gap": false, "start": 99.216, "end": 104.472, "words": [[99.316, 99.448], [99.461, 99.645], [99.658, 100.0], [100.013, 100.119], [100.132, 100.224], [100.237, 100.329], [100.342, 100.724], [100.737, 101.026], [101.04, 101.382], [101.395, 101.803], [101.816, 101.948], [101.961, 102.211], [102.224, 102.395], [102.408, 102.777], [102.79, 103.132], [103.145, 103.54]]}, {"kind": "s", "id": "s1_6_0", "md": "Tomorrow works. Could you make sure he calls me when he arrives, so I can __let him in__?", "zh": "明天可以。能确保他到了给我打电话吗？我好下去接他进来。", "sp": "A", "gap": false, "start": 104.472, "end": 109.392, "words": [[104.577, 104.946], [104.959, 105.446], [105.893, 105.998], [106.011, 106.104], [106.117, 106.301], [106.314, 106.511], [106.525, 106.617], [106.63, 106.932], [106.946, 107.038], [107.051, 107.183], [107.196, 107.288], [107.301, 107.985], [108.209, 108.34], [108.354, 108.419], [108.433, 108.577], [108.59, 108.696], [108.709, 108.814], [108.827, 108.998]]}, {"kind": "s", "id": "s1_7_0", "md": "Absolutely. I'll add your mobile number to the job, and register him with security in advance.", "zh": "没问题。我会把您的手机号加到工单上，并提前帮他在保安处登记。", "sp": "B", "gap": false, "start": 109.392, "end": 116.832, "words": [[109.492, 110.413], [111.324, 111.574], [111.587, 111.731], [111.745, 111.876], [111.889, 112.403], [112.416, 112.679], [112.692, 112.784], [112.797, 112.902], [112.916, 113.271], [113.508, 113.626], [113.639, 114.074], [114.087, 114.271], [114.284, 114.416], [114.429, 115.06], [115.074, 115.179], [115.192, 115.916]]}, {"kind": "s", "id": "s1_8_0", "md": "Thanks. And could you __put that in writing__? An email would be fine.", "zh": "谢谢。这些能给我书面确认吗？发邮件就行。", "sp": "A", "gap": false, "start": 116.832, "end": 120.864, "words": [[116.964, 117.371], [117.806, 117.858], [117.871, 118.016], [118.029, 118.108], [118.121, 118.279], [118.293, 118.45], [118.464, 118.556], [118.569, 118.937], [119.371, 119.45], [119.464, 119.793], [119.806, 119.924], [119.937, 120.029], [120.043, 120.464]]}, {"kind": "s", "id": "s1_9_0", "md": "Of course. You'll get a ==confirmation== email within the hour.", "zh": "当然。一小时内您会收到确认邮件。", "sp": "B", "gap": false, "start": 120.864, "end": 126.048, "words": [[120.964, 121.175], [121.188, 121.806], [122.717, 122.953], [122.967, 123.151], [123.164, 123.217], [123.23, 123.861], [123.875, 124.309], [124.322, 124.585], [124.598, 124.717], [124.73, 125.138]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

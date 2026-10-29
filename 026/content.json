@@ -1,0 +1,184 @@
+{
+  "id": "026",
+  "title": "Trade-offs, Not Right Answers",
+  "meta": "B2 · 约 280 词 · 场景：架构讨论",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Argument That Never Ends",
+      "paragraphs": [
+        [
+          "Two senior engineers have spent three meetings arguing about a relational database versus a document store.",
+          "Every week they bring new benchmarks, and every week nobody changes their mind.",
+          "Both are smart, both have good points, and the team is still waiting for a decision.",
+          "The problem is not the people; it is the question."
+        ],
+        [
+          "\"Which one is better?\" has no answer, because better depends on what you need.",
+          "Every architecture choice gives you something and __takes something away__.",
+          "**Once you ask what each option costs, the argument turns into a decision.**"
+        ],
+        [
+          "A cache gives you speed and costs you ==freshness==.",
+          "Splitting into many small services gives teams ==autonomy== and costs you easy debugging.",
+          "Neither side is wrong; they are simply ==optimizing== for different things."
+        ]
+      ],
+      "heading_zh": "1. 永远吵不完的争论",
+      "paragraphs_zh": [
+        [
+          "两位资深工程师已经为关系型数据库和文档数据库吵了三次会。",
+          "每周他们都带着新的 benchmark 来，每周谁也说服不了谁。",
+          "两个人都很聪明，说得也都有道理，可团队还在等一个结论。",
+          "问题不在人，而在问题本身。"
+        ],
+        [
+          "「哪个更好？」这个问题没有答案，因为好不好取决于你需要什么。",
+          "每个架构选择都会给你一些东西，也会拿走一些东西。",
+          "一旦你开始问每个方案的代价是什么，争论就变成了决策。"
+        ],
+        [
+          "缓存给你速度，代价是数据的新鲜度。",
+          "拆成很多小服务，团队获得了自主权，代价是排查问题没那么方便了。",
+          "两边都没错，只是各自优化的目标不同。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Name the Price, Then Pick",
+      "paragraphs": [
+        [
+          "When you present an option, __lead with__ the trade-off instead of the benefit.",
+          "Say, \"This gets us lower latency, and the price is more ==operational== work for on-call.\"",
+          "People trust a proposal more when it is honest about its costs.",
+          "It shows you have already looked for the weak spots yourself."
+        ],
+        [
+          "Next, connect the choice to what the team needs most this quarter.",
+          "If the goal is shipping fast, the simpler option usually wins, even if it is less ==elegant==.",
+          "If the goal is surviving a big traffic spike, you may have to __accept the extra complexity__."
+        ],
+        [
+          "**Saying \"for now, we choose speed over flexibility\" is a decision; saying \"option A is right\" is an opinion.**",
+          "Write down the trade-off and the conditions that would make you ==revisit== it.",
+          "When those conditions change, nobody has to admit they were wrong.",
+          "The context simply moved, and the team __moves with it__."
+        ]
+      ],
+      "heading_zh": "2. 先讲代价，再做选择",
+      "paragraphs_zh": [
+        [
+          "介绍一个方案时，先讲取舍，而不是先讲好处。",
+          "可以说：「这样能把延迟降下来，代价是 on-call 的运维工作会更多。」",
+          "一个方案对自己的代价越坦诚，大家就越信它。",
+          "这说明你自己已经先找过它的软肋了。"
+        ],
+        [
+          "接着，把这个选择和团队这个季度最需要的东西挂上钩。",
+          "如果目标是快速上线，通常是更简单的方案胜出，哪怕它没那么优雅。",
+          "如果目标是扛住一波大流量，你可能就得接受额外的复杂度。"
+        ],
+        [
+          "说「现阶段我们选速度、不选灵活性」是一个决策；说「方案 A 是对的」只是一个观点。",
+          "把这个取舍写下来，再写清楚在什么条件下要重新评估。",
+          "等这些条件变了，没人需要承认自己当初错了。",
+          "只是情况变了，团队跟着调整而已。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "两位工程师争了三次会还没结论，作者认为问题出在哪里？",
+      "a": "不在人，在问题本身：「哪个更好」没有答案，好坏取决于需求。"
+    },
+    {
+      "q": "作者举了哪些取舍的例子？",
+      "a": "缓存换来速度、牺牲数据新鲜度；拆成小服务换来团队自主、牺牲调试便利。"
+    },
+    {
+      "q": "怎样把争论变成决策？",
+      "a": "介绍方案时先讲代价；把选择和本季度最重要的目标挂钩；写下取舍和需要重新评估的条件。"
+    }
+  ],
+  "dictation": [
+    "Once you ask what each option costs, the argument turns into a decision.",
+    "Every architecture choice gives you something and takes something away.",
+    "People trust a proposal more when it is honest about its costs.",
+    "Write down the trade-off and the conditions that would make you revisit it."
+  ],
+  "shadow": {
+    "text": "A cache gives you speed and costs you freshness. Splitting into many small services gives teams autonomy and costs you easy debugging. Neither side is wrong; they are simply optimizing for different things.",
+    "marked": "A <b>cache</b> gives you <b>speed</b> / and costs you <b>freshness</b>. //<br>Splitting into many small services / gives teams <b>autonomy</b> / and costs you <b>easy debugging</b>. //<br><b>Neither</b> side is wrong; / they are simply optimizing / for <b>different</b> things. //"
+  },
+  "prompts": [
+    {
+      "q": "团队在争要不要引入消息队列，双方都在说自己的方案「更好」。用 30 秒把讨论改成讲取舍，并和本季度目标挂钩。",
+      "ref": "Can I suggest we stop asking which one is better? Both options work. A message queue gives us decoupling and smoother traffic peaks, and the price is another system for on-call to run. Direct calls are simpler but more fragile under load. Our main goal this quarter is to ship the new checkout before the holidays, so I'd lean toward direct calls for now and revisit if traffic doubles.",
+      "ref_zh": "我建议咱们别再争哪个更好了。两个方案都行得通。消息队列能解耦，也能把流量高峰削平，代价是 on-call 又多一套系统要维护。直接调用更简单，但高负载下更脆弱。我们这个季度的主要目标是赶在假期前把新的结账流程上线，所以我现阶段倾向直接调用，等流量翻倍了再重新评估。"
+    },
+    {
+      "q": "你推荐一个方案，介绍时主动先讲它的代价，再说明在什么条件下你们会重新评估。",
+      "ref": "Here's my recommendation, starting with what it costs us. If we move the profile data into a cache, reads get about five times faster, but users may see stale data for up to a minute. For profiles, I think that's acceptable. We should revisit this if we ever put account balances in the same cache, because there a minute of stale data would be a real problem.",
+      "ref_zh": "这是我的建议，先说代价。如果把用户资料数据放进缓存，读取速度大概能快五倍，但用户可能会看到最长一分钟前的旧数据。对用户资料来说，我觉得这可以接受。如果哪天我们要把账户余额也放进同一个缓存，就得重新评估，因为那种场景下一分钟的旧数据就是真问题了。"
+    }
+  ],
+  "words": [
+    {
+      "w": "trade-off",
+      "ipa": "/ˈtreɪd ɔːf/",
+      "zh": "取舍、权衡",
+      "ex": "The trade-off is faster reads in exchange for stale data.",
+      "tts_w": "tradeoff"
+    },
+    {
+      "w": "freshness",
+      "ipa": "/ˈfreʃnəs/",
+      "zh": "（数据）新鲜度",
+      "ex": "For pricing, freshness matters more than speed."
+    },
+    {
+      "w": "autonomy",
+      "ipa": "/ɔːˈtɑːnəmi/",
+      "zh": "自主权",
+      "ex": "Separate services give each team autonomy over its release schedule."
+    },
+    {
+      "w": "optimize",
+      "ipa": "/ˈɑːptɪmaɪz/",
+      "zh": "优化、以……为优先",
+      "ex": "Right now we optimize for shipping speed, not cost."
+    },
+    {
+      "w": "operational",
+      "ipa": "/ˌɑːpəˈreɪʃənl/",
+      "zh": "运维的、运营的",
+      "ex": "Another database means more operational load for on-call."
+    },
+    {
+      "w": "elegant",
+      "ipa": "/ˈelɪɡənt/",
+      "zh": "优雅的、简洁巧妙的",
+      "ex": "It's not the most elegant solution, but it ships this week."
+    },
+    {
+      "w": "revisit",
+      "ipa": "/ˌriːˈvɪzɪt/",
+      "zh": "重新审视",
+      "ex": "We'll revisit the sharding decision if traffic doubles."
+    },
+    {
+      "w": "flexibility",
+      "ipa": "/ˌfleksəˈbɪləti/",
+      "zh": "灵活性",
+      "ex": "A plugin system adds flexibility we don't need yet."
+    },
+    {
+      "w": "complexity",
+      "ipa": "/kəmˈpleksəti/",
+      "zh": "复杂度",
+      "ex": "Every new service adds complexity to debugging."
+    }
+  ]
+}

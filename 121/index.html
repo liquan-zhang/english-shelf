@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Seeing a Doctor at a Clinic · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "121", "type": "dialogue", "title": "Seeing a Doctor at a Clinic", "meta": "B2 · 约 270 词 · 场景：全科诊所看病、病假条与复诊", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Doctor", "name_zh": "医生", "voice": "en-US-EmmaNeural"}}, "gist": [{"q": "「你」有哪些症状？持续多久了？", "a": "从周日开始喉咙痛、发烧，晚上约三十八度五，现在还有干咳，晚上更重。"}, {"q": "医生的诊断和处理是什么？", "a": "病毒感染，不用抗生素；开了喉咙药和止咳糖浆，给了两天病假。"}, {"q": "什么情况下要回来复诊？", "a": "再烧三天以上，或者感觉喘不上气，就马上回来。"}], "dictation": [{"id": "s0_1_0", "text": "I've had a sore throat and a fever since Sunday, and now I've started coughing."}, {"id": "s0_5_0", "text": "Mostly dry, but it's worse at night. It's keeping me up."}, {"id": "s1_3_0", "text": "Thanks. And my son is three. Is there a chance he'll catch it from me?"}, {"id": "s1_9_0", "text": "Great. Can I claim this visit with my company's insurance card?"}], "shadow": {"speaker": "A", "text": "Around thirty-eight point five at night. I've been taking paracetamol, but it keeps coming back.", "marked": "Around <b>thirty-eight point five</b> / at <b>night</b>. //<br>I've been taking <b>paracetamol</b>, / but it <b>keeps coming back</b>. //"}, "prompts": [{"q": "孩子半夜发烧还呕吐，你打电话给二十四小时诊所，描述症状并问现在要不要马上带去看。", "ref": "Hi, I'm calling about my three-year-old son. He's had a fever since this evening, about thirty-nine degrees, and he just threw up twice. He's still drinking a little water, but he's very tired. Should I bring him in now, or is it okay to wait until the morning? And do I need to book, or can we just walk in?", "ref_zh": "你好，我打电话是因为我三岁的儿子。他从今天傍晚开始发烧，大概三十九度，刚才吐了两次。他还能喝一点水，但很没精神。我应该现在带他过去，还是可以等到早上？需要预约吗，还是直接过去就行？", "id": "ref0"}, {"q": "你吃了医生开的药三天还没好转，再去诊所复诊。说清楚哪里好了、哪里没好，并问下一步怎么办。", "ref": "Hi, doctor, I came in on Monday with a sore throat and fever. The fever's gone now, which is good, but the cough is actually worse, especially at night, and I'm still very tired. I've been taking the syrup three times a day. Do you think I need a different medicine, or maybe a chest X-ray?", "ref_zh": "医生你好，我周一来过，当时喉咙痛、发烧。现在烧退了，这点挺好，但咳嗽反而更严重了，尤其是晚上，人也还是很累。止咳糖浆我一直一天喝三次。你觉得需要换药吗，或者拍个胸片？", "id": "ref1"}], "words": [{"w": "fever", "ipa": "/ˈfiːvər/", "zh": "发烧", "ex": "My daughter has had a fever since last night.", "id": "w0"}, {"w": "phlegm", "ipa": "/flem/", "zh": "痰", "ex": "This syrup helps loosen the phlegm.", "id": "w1"}, {"w": "allergy", "ipa": "/ˈælərdʒi/", "zh": "过敏", "ex": "Does your son have any food allergies?", "id": "w2"}, {"w": "inflamed", "ipa": "/ɪnˈfleɪmd/", "zh": "发炎的", "ex": "His gums are a bit inflamed.", "id": "w3"}, {"w": "viral", "ipa": "/ˈvaɪrəl/", "zh": "病毒性的", "ex": "It's a viral infection, so it should clear up on its own.", "id": "w4"}, {"w": "medical leave", "ipa": "/ˈmedɪkəl liːv/", "zh": "病假", "ex": "I'm on medical leave until Friday.", "id": "w5"}, {"w": "contagious", "ipa": "/kənˈteɪdʒəs/", "zh": "传染性的", "ex": "Hand, foot and mouth disease is very contagious at preschool.", "id": "w6"}, {"w": "short of breath", "ipa": "/ʃɔːrt əv breθ/", "zh": "呼吸急促，喘不上气", "ex": "I get short of breath when I take the stairs.", "id": "w7"}, {"w": "medical certificate", "ipa": "/ˈmedɪkəl sərˈtɪfɪkət/", "zh": "病假条（新加坡常说 MC）", "ex": "Remember to send your medical certificate to HR.", "id": "w8"}, {"w": "keep (someone) up", "ipa": "/kiːp ʌp/", "zh": "让人睡不着", "ex": "The baby kept us up all night.", "tts_w": "keep up", "id": "w9"}], "sections": [{"heading": "1. Describing the Symptoms", "heading_zh": "1. 描述症状", "rows": [[{"id": "s0_0_0", "md": "Hi, come on in and have a seat. What brings you in today?", "text": "Hi, come on in and have a seat. What brings you in today?", "zh": "你好，进来坐吧。今天哪里不舒服？", "sp": "B"}], [{"id": "s0_1_0", "md": "**I've had a sore throat and a fever since Sunday, and now I've started coughing.**", "text": "I've had a sore throat and a fever since Sunday, and now I've started coughing.", "zh": "我从周日开始喉咙痛、发烧，现在又开始咳嗽了。", "sp": "A"}], [{"id": "s0_2_0", "md": "How high has the ==fever== been? Have you taken anything for it?", "text": "How high has the fever been? Have you taken anything for it?", "zh": "烧到多少度？吃过什么药吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "Around thirty-eight point five at night. I've been taking paracetamol, but it __keeps coming back__.", "text": "Around thirty-eight point five at night. I've been taking paracetamol, but it keeps coming back.", "zh": "晚上大概三十八度五。我一直在吃扑热息痛，但烧总是反复。", "sp": "A"}], [{"id": "s0_4_0", "md": "Is the cough dry, or are you bringing up ==phlegm==?", "text": "Is the cough dry, or are you bringing up phlegm?", "zh": "是干咳，还是有痰？", "sp": "B"}], [{"id": "s0_5_0", "md": "Mostly dry, but it's worse at night. It's __keeping me up__.", "text": "Mostly dry, but it's worse at night. It's keeping me up.", "zh": "主要是干咳，但晚上更严重，咳得我睡不着。", "sp": "A"}], [{"id": "s0_6_0", "md": "Any ==allergies== to medication?", "text": "Any allergies to medication?", "zh": "有药物过敏吗？", "sp": "B"}], [{"id": "s0_7_0", "md": "Not that I know of.", "text": "Not that I know of.", "zh": "据我所知没有。", "sp": "A"}], [{"id": "s0_8_0", "md": "Let me have a listen. Breathe in deeply. Your chest is clear, but your throat is quite ==inflamed==.", "text": "Let me have a listen. Breathe in deeply. Your chest is clear, but your throat is quite inflamed.", "zh": "我听一下。深呼吸。肺部是清的，不过喉咙发炎挺厉害。", "sp": "B"}]]}, {"heading": "2. Medicine and Medical Leave", "heading_zh": "2. 开药和病假", "rows": [[{"id": "s1_0_0", "md": "It looks ==viral==, so antibiotics won't help. I'll give you something for the throat and a cough syrup.", "text": "It looks viral, so antibiotics won't help. I'll give you something for the throat and a cough syrup.", "zh": "看起来是病毒感染，抗生素没用。我给你开点治喉咙的药和止咳糖浆。", "sp": "B"}], [{"id": "s1_1_0", "md": "**Could I get a medical certificate? I don't think I can work like this.**", "text": "Could I get a medical certificate? I don't think I can work like this.", "zh": "能给我开个病假条吗？我这样没法上班。", "sp": "A"}], [{"id": "s1_2_0", "md": "Sure. I'll give you two days of ==medical leave==, today and tomorrow.", "text": "Sure. I'll give you two days of medical leave, today and tomorrow.", "zh": "可以。给你两天病假，今天和明天。", "sp": "B"}], [{"id": "s1_3_0", "md": "Thanks. And my son is three. __Is there a chance__ he'll catch it from me?", "text": "Thanks. And my son is three. Is there a chance he'll catch it from me?", "zh": "谢谢。我儿子三岁，他有可能被我传染吗？", "sp": "A"}], [{"id": "s1_4_0", "md": "It's quite ==contagious==, so wear a mask at home and wash your hands often.", "text": "It's quite contagious, so wear a mask at home and wash your hands often.", "zh": "传染性挺强的，在家戴口罩，勤洗手。", "sp": "B"}], [{"id": "s1_5_0", "md": "**Got it. If I'm not better in a few days, should I come back?**", "text": "Got it. If I'm not better in a few days, should I come back?", "zh": "明白。如果过几天还不好，要再来复诊吗？", "sp": "A"}], [{"id": "s1_6_0", "md": "Yes. If the fever lasts more than three more days, or you feel ==short of breath==, come back straight away.", "text": "Yes. If the fever lasts more than three more days, or you feel short of breath, come back straight away.", "zh": "要。如果再烧三天以上，或者感觉喘不上气，马上回来。", "sp": "B"}], [{"id": "s1_7_0", "md": "Okay. Sorry, how often should I take the cough syrup? I want to __get it right__.", "text": "Okay. Sorry, how often should I take the cough syrup? I want to get it right.", "zh": "好的。不好意思，止咳糖浆多久喝一次？我想别弄错。", "sp": "A"}], [{"id": "s1_8_0", "md": "Ten millilitres three times a day, after meals. The nurse will __go over it__ with you at the counter.", "text": "Ten millilitres three times a day, after meals. The nurse will go over it with you at the counter.", "zh": "每次十毫升，一天三次，饭后喝。护士会在柜台再跟你讲一遍。", "sp": "B"}], [{"id": "s1_9_0", "md": "Great. Can I claim this visit with my company's insurance card?", "text": "Great. Can I claim this visit with my company's insurance card?", "zh": "好的。这次看病能用公司的保险卡报销吗？", "sp": "A"}], [{"id": "s1_10_0", "md": "Yes, just show it when you pay. Get some rest, and drink lots of water.", "text": "Yes, just show it when you pay. Get some rest, and drink lots of water.", "zh": "可以，付钱时出示一下就行。好好休息，多喝水。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Describing the Symptoms", "zh": "1. 描述症状", "start": 0.0, "end": 2.328, "words": [[0.105, 0.355], [0.671, 1.197], [1.211, 1.276], [1.289, 1.934]]}, {"kind": "s", "id": "s0_0_0", "md": "Hi, come on in and have a seat. What brings you in today?", "zh": "你好，进来坐吧。今天哪里不舒服？", "sp": "B", "gap": false, "start": 2.328, "end": 6.312, "words": [[2.42, 2.657], [2.67, 2.907], [2.92, 3.091], [3.104, 3.223], [3.236, 3.328], [3.341, 3.539], [3.552, 3.617], [3.631, 4.131], [4.539, 4.71], [4.723, 5.039], [5.052, 5.196], [5.21, 5.354], [5.367, 5.907]]}, {"kind": "s", "id": "s0_1_0", "md": "**I've had a sore throat and a fever since Sunday, and now I've started coughing.**", "zh": "我从周日开始喉咙痛、发烧，现在又开始咳嗽了。", "sp": "A", "gap": false, "start": 6.312, "end": 10.8, "words": [[6.417, 6.522], [6.536, 6.68], [6.694, 6.733], [6.746, 6.983], [6.996, 7.457], [7.562, 7.654], [7.667, 7.707], [7.72, 8.128], [8.141, 8.378], [8.391, 8.878], [9.18, 9.299], [9.312, 9.536], [9.549, 9.654], [9.667, 9.957], [9.97, 10.417]]}, {"kind": "s", "id": "s0_2_0", "md": "How high has the ==fever== been? Have you taken anything for it?", "zh": "烧到多少度？吃过什么药吗？", "sp": "B", "gap": false, "start": 10.8, "end": 15.024, "words": [[10.879, 11.037], [11.05, 11.274], [11.287, 11.497], [11.511, 11.629], [11.642, 12.076], [12.089, 12.471], [12.879, 13.024], [13.037, 13.155], [13.168, 13.55], [13.563, 14.089], [14.103, 14.392], [14.405, 14.629]]}, {"kind": "s", "id": "s0_3_0", "md": "Around thirty-eight point five at night. I've been taking paracetamol, but it __keeps coming back__.", "zh": "晚上大概三十八度五。我一直在吃扑热息痛，但烧总是反复。", "sp": "A", "gap": false, "start": 15.024, "end": 20.808, "words": [[15.129, 15.432], [15.445, 16.05], [16.063, 16.379], [16.392, 16.682], [16.695, 16.787], [16.8, 17.156], [17.59, 17.708], [17.721, 17.84], [17.853, 18.169], [18.182, 18.906], [19.195, 19.3], [19.313, 19.406], [19.419, 19.682], [19.695, 19.971], [19.985, 20.419]]}, {"kind": "s", "id": "s0_4_0", "md": "Is the cough dry, or are you bringing up ==phlegm==?", "zh": "是干咳，还是有痰？", "sp": "B", "gap": false, "start": 20.808, "end": 24.336, "words": [[20.858, 21.003], [21.016, 21.108], [21.121, 21.463], [21.476, 21.963], [22.463, 22.634], [22.647, 22.766], [22.779, 22.924], [22.937, 23.319], [23.332, 23.463], [23.476, 23.95]]}, {"kind": "s", "id": "s0_5_0", "md": "Mostly dry, but it's worse at night. It's __keeping me up__.", "zh": "主要是干咳，但晚上更严重，咳得我睡不着。", "sp": "A", "gap": false, "start": 24.336, "end": 28.248, "words": [[24.441, 24.77], [24.783, 25.218], [25.507, 25.639], [25.652, 25.757], [25.77, 26.099], [26.112, 26.218], [26.231, 26.625], [27.06, 27.178], [27.191, 27.468], [27.481, 27.625], [27.639, 27.849]]}, {"kind": "s", "id": "s0_6_0", "md": "Any ==allergies== to medication?", "zh": "有药物过敏吗？", "sp": "B", "gap": false, "start": 28.248, "end": 30.576, "words": [[28.34, 28.603], [28.616, 29.195], [29.209, 29.327], [29.34, 30.182]]}, {"kind": "s", "id": "s0_7_0", "md": "Not that I know of.", "zh": "据我所知没有。", "sp": "A", "gap": false, "start": 30.576, "end": 32.448, "words": [[30.681, 30.813], [30.826, 30.944], [30.958, 30.997], [31.01, 31.3], [31.313, 31.484]]}, {"kind": "s", "id": "s0_8_0", "md": "Let me have a listen. Breathe in deeply. Your chest is clear, but your throat is quite ==inflamed==.", "zh": "我听一下。深呼吸。肺部是清的，不过喉咙发炎挺厉害。", "sp": "B", "gap": false, "start": 32.448, "end": 39.336, "words": [[32.527, 32.632], [32.645, 32.764], [32.777, 32.974], [32.987, 33.04], [33.053, 33.672], [34.08, 34.356], [34.369, 34.514], [34.527, 35.132], [35.553, 35.724], [35.737, 36.145], [36.159, 36.316], [36.33, 36.856], [37.04, 37.237], [37.251, 37.409], [37.422, 37.737], [37.751, 37.909], [37.922, 38.224], [38.237, 38.948]]}, {"kind": "h", "id": "h1", "md": "2. Medicine and Medical Leave", "zh": "2. 开药和病假", "start": 39.336, "end": 41.808, "words": [[39.454, 39.744], [39.981, 40.468], [40.573, 40.678], [40.691, 41.073], [41.086, 41.415]]}, {"kind": "s", "id": "s1_0_0", "md": "It looks ==viral==, so antibiotics won't help. I'll give you something for the throat and a cough syrup.", "zh": "看起来是病毒感染，抗生素没用。我给你开点治喉咙的药和止咳糖浆。", "sp": "B", "gap": false, "start": 41.808, "end": 47.952, "words": [[41.9, 42.019], [42.032, 42.282], [42.295, 42.768], [42.795, 42.992], [43.005, 43.874], [43.887, 44.111], [44.124, 44.558], [44.979, 45.111], [45.124, 45.321], [45.334, 45.44], [45.453, 45.9], [45.913, 46.058], [46.071, 46.19], [46.203, 46.611], [46.624, 46.703], [46.716, 46.782], [46.795, 47.097], [47.111, 47.558]]}, {"kind": "s", "id": "s1_1_0", "md": "**Could I get a medical certificate? I don't think I can work like this.**", "zh": "能给我开个病假条吗？我这样没法上班。", "sp": "A", "gap": false, "start": 47.952, "end": 51.696, "words": [[48.057, 48.163], [48.176, 48.241], [48.255, 48.373], [48.386, 48.426], [48.439, 48.807], [48.82, 49.452], [49.886, 49.939], [49.952, 50.11], [50.123, 50.268], [50.281, 50.36], [50.373, 50.505], [50.518, 50.702], [50.715, 50.926], [50.939, 51.307]]}, {"kind": "s", "id": "s1_2_0", "md": "Sure. I'll give you two days of ==medical leave==, today and tomorrow.", "zh": "可以。给你两天病假，今天和明天。", "sp": "B", "gap": false, "start": 51.696, "end": 56.136, "words": [[51.747, 52.247], [52.67, 52.788], [52.801, 52.972], [52.985, 53.13], [53.143, 53.354], [53.367, 53.656], [53.67, 53.775], [53.788, 54.249], [54.262, 54.564], [54.591, 54.959], [54.972, 55.064], [55.078, 55.749]]}, {"kind": "s", "id": "s1_3_0", "md": "Thanks. And my son is three. __Is there a chance__ he'll catch it from me?", "zh": "谢谢。我儿子三岁，他有可能被我传染吗？", "sp": "A", "gap": false, "start": 56.136, "end": 60.312, "words": [[56.268, 56.675], [57.11, 57.189], [57.202, 57.32], [57.333, 57.597], [57.61, 57.741], [57.754, 58.083], [58.518, 58.623], [58.636, 58.768], [58.781, 58.82], [58.833, 59.097], [59.11, 59.241], [59.254, 59.491], [59.504, 59.57], [59.583, 59.754], [59.768, 59.912]]}, {"kind": "s", "id": "s1_4_0", "md": "It's quite ==contagious==, so wear a mask at home and wash your hands often.", "zh": "传染性挺强的，在家戴口罩，勤洗手。", "sp": "B", "gap": false, "start": 60.312, "end": 64.992, "words": [[60.404, 60.562], [60.575, 60.851], [60.865, 61.601], [62.049, 62.194], [62.207, 62.391], [62.404, 62.444], [62.457, 62.838], [62.851, 62.93], [62.944, 63.233], [63.246, 63.365], [63.378, 63.641], [63.654, 63.773], [63.786, 64.101], [64.115, 64.601]]}, {"kind": "s", "id": "s1_5_0", "md": "**Got it. If I'm not better in a few days, should I come back?**", "zh": "明白。如果过几天还不好，要再来复诊吗？", "sp": "A", "gap": false, "start": 64.992, "end": 68.808, "words": [[65.097, 65.268], [65.281, 65.4], [65.834, 65.953], [65.966, 66.071], [66.084, 66.321], [66.334, 66.597], [66.61, 66.689], [66.703, 66.742], [66.755, 66.926], [66.939, 67.387], [67.597, 67.742], [67.755, 67.821], [67.834, 68.018], [68.031, 68.413]]}, {"kind": "s", "id": "s1_6_0", "md": "Yes. If the fever lasts more than three more days, or you feel ==short of breath==, come back straight away.", "zh": "要。如果再烧三天以上，或者感觉喘不上气，马上回来。", "sp": "B", "gap": false, "start": 68.808, "end": 74.856, "words": [[68.874, 69.269], [69.69, 69.808], [69.821, 69.926], [69.94, 70.295], [70.308, 70.65], [70.663, 70.874], [70.887, 71.045], [71.058, 71.269], [71.282, 71.492], [71.505, 71.9], [71.926, 72.058], [72.071, 72.203], [72.216, 72.413], [72.426, 72.69], [72.703, 72.821], [72.834, 73.216], [73.242, 73.453], [73.466, 73.69], [73.703, 74.032], [74.045, 74.466]]}, {"kind": "s", "id": "s1_7_0", "md": "Okay. Sorry, how often should I take the cough syrup? I want to __get it right__.", "zh": "好的。不好意思，止咳糖浆多久喝一次？我想别弄错。", "sp": "A", "gap": false, "start": 74.856, "end": 79.872, "words": [[74.961, 75.303], [75.751, 76.159], [76.461, 76.606], [76.619, 76.909], [76.922, 77.08], [77.093, 77.145], [77.159, 77.395], [77.409, 77.488], [77.501, 77.777], [77.79, 78.224], [78.659, 78.698], [78.711, 78.843], [78.856, 78.909], [78.922, 79.04], [79.053, 79.159], [79.172, 79.474]]}, {"kind": "s", "id": "s1_8_0", "md": "Ten millilitres three times a day, after meals. The nurse will __go over it__ with you at the counter.", "zh": "每次十毫升，一天三次，饭后喝。护士会在柜台再跟你讲一遍。", "sp": "B", "gap": false, "start": 79.872, "end": 86.112, "words": [[79.964, 80.175], [80.188, 80.859], [80.872, 81.096], [81.109, 81.464], [81.477, 81.556], [81.569, 81.925], [81.951, 82.293], [82.306, 82.885], [83.293, 83.359], [83.372, 83.688], [83.701, 83.819], [83.833, 84.069], [84.083, 84.372], [84.385, 84.477], [84.49, 84.675], [84.688, 84.833], [84.846, 84.951], [84.964, 85.056], [85.069, 85.714]]}, {"kind": "s", "id": "s1_9_0", "md": "Great. Can I claim this visit with my company's insurance card?", "zh": "好的。这次看病能用公司的保险卡报销吗？", "sp": "A", "gap": false, "start": 86.112, "end": 90.048, "words": [[86.217, 86.559], [86.994, 87.099], [87.112, 87.204], [87.217, 87.572], [87.586, 87.757], [87.77, 88.059], [88.073, 88.217], [88.23, 88.362], [88.375, 88.862], [88.875, 89.309], [89.323, 89.665]]}, {"kind": "s", "id": "s1_10_0", "md": "Yes, just show it when you pay. Get some rest, and drink lots of water.", "zh": "可以，付钱时出示一下就行。好好休息，多喝水。", "sp": "B", "gap": false, "start": 90.048, "end": 94.824, "words": [[90.127, 90.39], [90.416, 90.64], [90.653, 90.916], [90.93, 91.035], [91.048, 91.193], [91.206, 91.324], [91.337, 91.785], [92.206, 92.39], [92.403, 92.614], [92.627, 93.022], [93.048, 93.153], [93.166, 93.482], [93.495, 93.785], [93.798, 93.916], [93.93, 94.443]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

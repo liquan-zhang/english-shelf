@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Ordering at a Restaurant · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "107", "type": "dialogue", "title": "Ordering at a Restaurant", "meta": "B2 · 约 310 词 · 场景：海鲜餐厅点餐与改单", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Server", "name_zh": "服务员", "voice": "en-SG-LunaNeural"}}, "gist": [{"q": "服务员推荐了什么？「你」对辣度和分量问了什么？", "a": "推荐招牌辣椒蟹和麦片虾；「你」问有多辣，要了微辣，又问中份够不够两大一小吃。"}, {"q": "「你」为什么改单？改成了什么？", "a": "螃蟹是时价，中份大概一百块，比预期贵；厨房还没开做，就改成了七十块左右的小份，并多加两个炸馒头。"}, {"q": "关于孩子，「你」提了哪些要求？", "a": "要不辣的半份蛋炒饭、一杯温水，并请厨房先上炒饭。"}], "dictation": [{"id": "s0_1_0", "text": "I think we're ready. It's our first time here. What would you recommend?"}, {"id": "s0_7_0", "text": "Okay, one medium crab and four fried buns. Could we also get a vegetable dish that isn't too oily?"}, {"id": "s1_2_0", "text": "Hmm, that's more than I expected. Is it too late to change to a smaller one?"}, {"id": "s1_8_0", "text": "That's fine. Could you bring the rice out first? He gets hungry quickly."}], "shadow": {"speaker": "A", "text": "Excuse me, sorry. I just noticed the crab is market price. How much would a medium one be?", "marked": "Excuse me, / <b>sorry</b>. //<br>I just <b>noticed</b> / the crab is <b>market price</b>. //<br>How much / would a <b>medium</b> one be? //"}, "prompts": [{"q": "你对虾过敏，朋友带你去一家东南亚餐厅。点菜前跟服务员说明情况，问哪些菜可以吃、能不能单独做。", "ref": "Before we order, I should mention that I'm allergic to prawns, and it's quite serious. Could you tell me which dishes are safe for me? I know a lot of sauces here use dried shrimp or shrimp paste. If the curry has it, could the kitchen make a separate portion without it? Thanks, I really appreciate it.", "ref_zh": "点菜之前我得说一下，我对虾过敏，而且挺严重的。能告诉我哪些菜我可以吃吗？我知道这里很多酱料会用虾米或虾酱。如果咖喱里有，厨房能单独给我做一份不放的吗？谢谢，非常感谢。", "id": "ref0"}, {"q": "菜上齐了，你发现分量太多吃不完，想问能不能打包，顺便再加一份甜品给孩子。", "ref": "Excuse me, everything was delicious, but we ordered way too much. Could we take the rest of the crab and the rice away? Separate boxes would be great. And could we get one mango pudding for our son? Just one spoon is fine, and could you bring it out after you clear the table?", "ref_zh": "不好意思，菜都很好吃，但我们点太多了。剩下的螃蟹和炒饭能打包吗？分开装最好。再给我儿子来一份芒果布丁？一个勺子就行，收完桌子再上吧。", "id": "ref1"}], "words": [{"w": "signature dish", "ipa": "/ˈsɪɡnətʃər dɪʃ/", "zh": "招牌菜", "ex": "The roast duck is their signature dish.", "id": "w0"}, {"w": "spicy", "ipa": "/ˈspaɪsi/", "zh": "辣的", "ex": "Is the laksa very spicy?", "id": "w1"}, {"w": "mild", "ipa": "/maɪld/", "zh": "微辣的；温和的", "ex": "Could I have the curry mild, please?", "id": "w2"}, {"w": "half portion", "ipa": "/hæf ˈpɔːrʃən/", "zh": "半份", "ex": "Can I order a half portion for my daughter?", "id": "w3"}, {"w": "oily", "ipa": "/ˈɔɪli/", "zh": "油腻的", "ex": "The noodles were a bit too oily for me.", "id": "w4"}, {"w": "market price", "ipa": "/ˈmɑːrkɪt praɪs/", "zh": "时价", "ex": "The lobster is sold at market price.", "id": "w5"}, {"w": "less sweet", "ipa": "/les swiːt/", "zh": "少甜", "ex": "One iced tea, less sweet, please.", "id": "w6"}, {"w": "wet wipes", "ipa": "/wet waɪps/", "zh": "湿纸巾", "ex": "Always keep some wet wipes in the diaper bag.", "id": "w7"}, {"w": "messy", "ipa": "/ˈmesi/", "zh": "弄得脏乱的", "ex": "Eating crab with your hands is fun but messy.", "id": "w8"}], "sections": [{"heading": "1. Asking for Recommendations", "heading_zh": "1. 问推荐", "rows": [[{"id": "s0_0_0", "md": "Hi, are you ready to order, or do you need a few more minutes?", "text": "Hi, are you ready to order, or do you need a few more minutes?", "zh": "您好，可以点菜了吗？还是再看几分钟？", "sp": "B"}], [{"id": "s0_1_0", "md": "**I think we're ready. It's our first time here. What would you recommend?**", "text": "I think we're ready. It's our first time here. What would you recommend?", "zh": "应该可以了。我们第一次来，你推荐什么？", "sp": "A"}], [{"id": "s0_2_0", "md": "Our ==signature== dish is the chilli crab, and the cereal prawns are very popular too.", "text": "Our signature dish is the chilli crab, and the cereal prawns are very popular too.", "zh": "我们的招牌菜是辣椒蟹，麦片虾也很受欢迎。", "sp": "B"}], [{"id": "s0_3_0", "md": "Chilli crab sounds great. How ==spicy== is it, though? My wife can't take much heat.", "text": "Chilli crab sounds great. How spicy is it, though? My wife can't take much heat.", "zh": "辣椒蟹听起来不错。不过有多辣？我太太不太能吃辣。", "sp": "A"}], [{"id": "s0_4_0", "md": "It's more sweet than spicy, but we can make it ==mild== if you like.", "text": "It's more sweet than spicy, but we can make it mild if you like.", "zh": "其实偏甜不算辣，您要的话我们可以做微辣。", "sp": "B"}], [{"id": "s0_5_0", "md": "Mild would be perfect. And how big is a medium crab? __Is it enough for__ two adults and a child?", "text": "Mild would be perfect. And how big is a medium crab? Is it enough for two adults and a child?", "zh": "微辣正好。中份的蟹有多大？够两个大人一个小孩吃吗？", "sp": "A"}], [{"id": "s0_6_0", "md": "A medium one is about one kilo, so it's good for two or three. Most people __order some fried buns__ for the sauce.", "text": "A medium one is about one kilo, so it's good for two or three. Most people order some fried buns for the sauce.", "zh": "中份大概一公斤，两三个人吃刚好。大部分人会点些炸馒头蘸酱。", "sp": "B"}], [{"id": "s0_7_0", "md": "**Okay, one medium crab and four fried buns. Could we also get a vegetable dish that isn't too oily?**", "text": "Okay, one medium crab and four fried buns. Could we also get a vegetable dish that isn't too oily?", "zh": "好，一只中份蟹，四个炸馒头。再来个不太油的蔬菜？", "sp": "A"}], [{"id": "s0_8_0", "md": "I'd suggest the kailan with garlic. It's light and fresh.", "text": "I'd suggest the kailan with garlic. It's light and fresh.", "zh": "推荐蒜蓉芥兰，清淡爽口。", "sp": "B"}], [{"id": "s0_9_0", "md": "Sounds good. And for our son, do you have something plain? Nothing spicy.", "text": "Sounds good. And for our son, do you have something plain? Nothing spicy.", "zh": "好的。给我儿子有没有清淡点的？不要辣。", "sp": "A"}], [{"id": "s0_10_0", "md": "Our egg fried rice isn't spicy at all, and we can do a ==half portion== for him.", "text": "Our egg fried rice isn't spicy at all, and we can do a half portion for him.", "zh": "我们的蛋炒饭一点都不辣，可以给他做半份。", "sp": "B"}]]}, {"heading": "2. Changing the Order", "heading_zh": "2. 改单", "rows": [[{"id": "s1_0_0", "md": "Excuse me, sorry. I just noticed the crab is ==market price==. How much would a medium one be?", "text": "Excuse me, sorry. I just noticed the crab is market price. How much would a medium one be?", "zh": "不好意思，打扰一下。我刚看到螃蟹是时价，中份的大概多少钱？", "sp": "A"}], [{"id": "s1_1_0", "md": "Today it's ninety-eight dollars a kilo, so roughly one hundred dollars.", "text": "Today it's ninety-eight dollars a kilo, so roughly one hundred dollars.", "zh": "今天是一公斤九十八块，所以大概一百块左右。", "sp": "B"}], [{"id": "s1_2_0", "md": "**Hmm, that's more than I expected. Is it too late to change to a smaller one?**", "text": "Hmm, that's more than I expected. Is it too late to change to a smaller one?", "zh": "嗯，比我想的贵。现在换成小一点的还来得及吗？", "sp": "A"}], [{"id": "s1_3_0", "md": "The kitchen hasn't started yet, so no problem. A small one is around seventy.", "text": "The kitchen hasn't started yet, so no problem. A small one is around seventy.", "zh": "厨房还没开始做，没问题。小的大概七十块。", "sp": "B"}], [{"id": "s1_4_0", "md": "Let's go with the small one, then, and __add two more__ fried buns.", "text": "Let's go with the small one, then, and add two more fried buns.", "zh": "那就要小的吧，再加两个炸馒头。", "sp": "A"}], [{"id": "s1_5_0", "md": "Sure. Anything to drink?", "text": "Sure. Anything to drink?", "zh": "好的。要喝点什么吗？", "sp": "B"}], [{"id": "s1_6_0", "md": "Two lime juices, ==less sweet==, and a warm water for our son. Could we also have some ==wet wipes==? Crab gets ==messy==.", "text": "Two lime juices, less sweet, and a warm water for our son. Could we also have some wet wipes? Crab gets messy.", "zh": "两杯青柠汁，少甜，给我儿子一杯温水。能再给些湿纸巾吗？吃螃蟹会弄得很脏。", "sp": "A"}], [{"id": "s1_7_0", "md": "Of course. Just so you know, the wet wipes are fifty cents each.", "text": "Of course. Just so you know, the wet wipes are fifty cents each.", "zh": "当然。提醒一下，湿纸巾是五毛钱一包。", "sp": "B"}], [{"id": "s1_8_0", "md": "**That's fine. Could you bring the rice out first? He gets hungry quickly.**", "text": "That's fine. Could you bring the rice out first? He gets hungry quickly.", "zh": "没问题。炒饭能先上吗？他饿得快。", "sp": "A"}], [{"id": "s1_9_0", "md": "Sure, I'll ask the kitchen to send it out first.", "text": "Sure, I'll ask the kitchen to send it out first.", "zh": "好的，我让厨房先出炒饭。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Asking for Recommendations", "zh": "1. 问推荐", "start": 0.0, "end": 2.736, "words": [[0.105, 0.395], [0.829, 1.211], [1.224, 1.382], [1.395, 2.342]]}, {"kind": "s", "id": "s0_0_0", "md": "Hi, are you ready to order, or do you need a few more minutes?", "zh": "您好，可以点菜了吗？还是再看几分钟？", "sp": "B", "gap": false, "start": 2.736, "end": 8.256, "words": [[2.839, 3.378], [3.654, 3.825], [3.839, 3.997], [4.01, 4.299], [4.312, 4.47], [4.483, 4.997], [5.247, 5.418], [5.431, 5.536], [5.549, 5.681], [5.694, 5.944], [5.957, 6.036], [6.049, 6.312], [6.325, 6.562], [6.575, 7.325]]}, {"kind": "s", "id": "s0_1_0", "md": "**I think we're ready. It's our first time here. What would you recommend?**", "zh": "应该可以了。我们第一次来，你推荐什么？", "sp": "A", "gap": false, "start": 8.256, "end": 12.312, "words": [[8.374, 8.453], [8.467, 8.651], [8.664, 8.795], [8.809, 9.085], [9.519, 9.611], [9.624, 9.73], [9.743, 10.032], [10.045, 10.269], [10.282, 10.572], [11.006, 11.098], [11.111, 11.23], [11.243, 11.335], [11.348, 11.927]]}, {"kind": "s", "id": "s0_2_0", "md": "Our ==signature== dish is the chilli crab, and the cereal prawns are very popular too.", "zh": "我们的招牌菜是辣椒蟹，麦片虾也很受欢迎。", "sp": "B", "gap": false, "start": 12.312, "end": 18.504, "words": [[12.415, 12.651], [12.665, 13.257], [13.27, 13.586], [13.599, 13.744], [13.757, 13.888], [13.901, 14.257], [14.27, 14.704], [14.98, 15.178], [15.191, 15.27], [15.283, 15.73], [15.744, 16.151], [16.165, 16.309], [16.323, 16.599], [16.612, 17.125], [17.138, 17.573]]}, {"kind": "s", "id": "s0_3_0", "md": "Chilli crab sounds great. How ==spicy== is it, though? My wife can't take much heat.", "zh": "辣椒蟹听起来不错。不过有多辣？我太太不太能吃辣。", "sp": "A", "gap": false, "start": 18.504, "end": 23.712, "words": [[18.609, 18.859], [18.872, 19.215], [19.228, 19.491], [19.504, 19.859], [20.293, 20.412], [20.425, 20.925], [20.938, 21.043], [21.057, 21.162], [21.188, 21.425], [21.859, 22.004], [22.017, 22.307], [22.32, 22.543], [22.557, 22.754], [22.767, 22.965], [22.978, 23.32]]}, {"kind": "s", "id": "s0_4_0", "md": "It's more sweet than spicy, but we can make it ==mild== if you like.", "zh": "其实偏甜不算辣，您要的话我们可以做微辣。", "sp": "B", "gap": false, "start": 23.712, "end": 28.776, "words": [[23.815, 24.091], [24.104, 24.315], [24.328, 24.617], [24.63, 24.801], [24.815, 25.578], [25.788, 25.999], [26.012, 26.117], [26.13, 26.341], [26.354, 26.578], [26.591, 26.736], [26.749, 27.051], [27.065, 27.209], [27.223, 27.341], [27.354, 27.841]]}, {"kind": "s", "id": "s0_5_0", "md": "Mild would be perfect. And how big is a medium crab? __Is it enough for__ two adults and a child?", "zh": "微辣正好。中份的蟹有多大？够两个大人一个小孩吃吗？", "sp": "A", "gap": false, "start": 28.776, "end": 35.016, "words": [[28.881, 29.118], [29.131, 29.236], [29.25, 29.355], [29.368, 29.987], [30.421, 30.513], [30.526, 30.737], [30.75, 31.144], [31.223, 31.329], [31.342, 31.381], [31.394, 31.815], [31.829, 32.223], [32.658, 32.776], [32.789, 32.868], [32.881, 33.171], [33.184, 33.342], [33.355, 33.579], [33.592, 33.987], [34.0, 34.079], [34.092, 34.131], [34.144, 34.618]]}, {"kind": "s", "id": "s0_6_0", "md": "A medium one is about one kilo, so it's good for two or three. Most people __order some fried buns__ for the sauce.", "zh": "中份大概一公斤，两三个人吃刚好。大部分人会点些炸馒头蘸酱。", "sp": "B", "gap": false, "start": 35.016, "end": 44.256, "words": [[35.119, 35.237], [35.25, 35.632], [35.645, 35.855], [35.869, 36.026], [36.04, 36.329], [36.342, 36.592], [36.605, 37.211], [37.448, 37.711], [37.724, 37.948], [37.961, 38.171], [38.184, 38.382], [38.395, 38.684], [38.698, 38.869], [38.882, 39.408], [40.332, 40.687], [40.7, 41.029], [41.042, 41.292], [41.305, 41.608], [41.621, 41.937], [41.95, 42.292], [42.305, 42.45], [42.463, 42.542], [42.555, 43.332]]}, {"kind": "s", "id": "s0_7_0", "md": "**Okay, one medium crab and four fried buns. Could we also get a vegetable dish that isn't too oily?**", "zh": "好，一只中份蟹，四个炸馒头。再来个不太油的蔬菜？", "sp": "A", "gap": false, "start": 44.256, "end": 50.856, "words": [[44.361, 44.73], [44.94, 45.164], [45.177, 45.559], [45.572, 45.967], [46.23, 46.309], [46.322, 46.638], [46.651, 46.953], [46.967, 47.44], [47.874, 47.967], [47.98, 48.098], [48.111, 48.388], [48.401, 48.532], [48.545, 48.585], [48.598, 49.124], [49.138, 49.467], [49.48, 49.611], [49.624, 49.861], [49.874, 50.072], [50.085, 50.467]]}, {"kind": "s", "id": "s0_8_0", "md": "I'd suggest the kailan with garlic. It's light and fresh.", "zh": "推荐蒜蓉芥兰，清淡爽口。", "sp": "B", "gap": false, "start": 50.856, "end": 56.448, "words": [[50.959, 51.156], [51.169, 51.682], [51.695, 51.814], [51.827, 52.235], [52.248, 52.472], [52.485, 53.064], [53.988, 54.33], [54.343, 54.659], [54.672, 54.83], [54.843, 55.527]]}, {"kind": "s", "id": "s0_9_0", "md": "Sounds good. And for our son, do you have something plain? Nothing spicy.", "zh": "好的。给我儿子有没有清淡点的？不要辣。", "sp": "A", "gap": false, "start": 56.448, "end": 61.224, "words": [[56.566, 56.777], [56.79, 57.04], [57.474, 57.566], [57.58, 57.751], [57.764, 57.895], [57.909, 58.29], [58.619, 58.698], [58.711, 58.803], [58.816, 58.974], [58.987, 59.29], [59.303, 59.619], [60.053, 60.29], [60.303, 60.843]]}, {"kind": "s", "id": "s0_10_0", "md": "Our egg fried rice isn't spicy at all, and we can do a ==half portion== for him.", "zh": "我们的蛋炒饭一点都不辣，可以给他做半份。", "sp": "B", "gap": false, "start": 61.224, "end": 67.392, "words": [[61.327, 61.616], [61.629, 61.827], [61.84, 62.169], [62.182, 62.511], [62.524, 62.84], [62.853, 63.366], [63.379, 63.55], [63.563, 63.932], [64.182, 64.392], [64.406, 64.511], [64.524, 64.761], [64.774, 64.971], [64.985, 65.037], [65.05, 65.366], [65.379, 65.787], [65.8, 65.958], [65.971, 66.458]]}, {"kind": "h", "id": "h1", "md": "2. Changing the Order", "zh": "2. 改单", "start": 67.392, "end": 69.36, "words": [[67.51, 67.747], [68.089, 68.458], [68.471, 68.537], [68.55, 68.958]]}, {"kind": "s", "id": "s1_0_0", "md": "Excuse me, sorry. I just noticed the crab is ==market price==. How much would a medium one be?", "zh": "不好意思，打扰一下。我刚看到螃蟹是时价，中份的大概多少钱？", "sp": "A", "gap": false, "start": 69.36, "end": 75.144, "words": [[69.465, 69.913], [69.926, 70.044], [70.071, 70.465], [70.899, 70.965], [70.978, 71.189], [71.202, 71.505], [71.518, 71.584], [71.597, 71.939], [71.952, 72.044], [72.057, 72.4], [72.413, 72.886], [73.334, 73.426], [73.439, 73.597], [73.61, 73.728], [73.742, 73.781], [73.794, 74.268], [74.281, 74.478], [74.492, 74.755]]}, {"kind": "s", "id": "s1_1_0", "md": "Today it's ninety-eight dollars a kilo, so roughly one hundred dollars.", "zh": "今天是一公斤九十八块，所以大概一百块左右。", "sp": "B", "gap": false, "start": 75.144, "end": 81.24, "words": [[75.247, 75.615], [75.628, 75.878], [75.891, 76.47], [76.483, 76.931], [76.944, 77.036], [77.049, 77.707], [77.944, 78.273], [78.286, 78.707], [78.72, 78.997], [79.01, 79.47], [79.483, 80.299]]}, {"kind": "s", "id": "s1_2_0", "md": "**Hmm, that's more than I expected. Is it too late to change to a smaller one?**", "zh": "嗯，比我想的贵。现在换成小一点的还来得及吗？", "sp": "A", "gap": false, "start": 81.24, "end": 85.944, "words": [[81.358, 81.569], [81.937, 82.148], [82.161, 82.332], [82.345, 82.477], [82.49, 82.556], [82.569, 83.161], [83.595, 83.714], [83.727, 83.806], [83.819, 84.016], [84.029, 84.266], [84.279, 84.358], [84.372, 84.727], [84.74, 84.845], [84.858, 84.924], [84.937, 85.319], [85.332, 85.556]]}, {"kind": "s", "id": "s1_3_0", "md": "The kitchen hasn't started yet, so no problem. A small one is around seventy.", "zh": "厨房还没开始做，没问题。小的大概七十块。", "sp": "B", "gap": false, "start": 85.944, "end": 93.432, "words": [[86.047, 86.231], [86.244, 86.639], [86.652, 87.073], [87.086, 87.56], [87.573, 88.06], [88.297, 88.612], [88.626, 88.889], [88.902, 89.573], [90.497, 90.602], [90.615, 90.983], [90.997, 91.22], [91.233, 91.404], [91.418, 91.733], [91.747, 92.51]]}, {"kind": "s", "id": "s1_4_0", "md": "Let's go with the small one, then, and __add two more__ fried buns.", "zh": "那就要小的吧，再加两个炸馒头。", "sp": "A", "gap": false, "start": 93.432, "end": 97.896, "words": [[93.537, 93.669], [93.682, 93.8], [93.814, 93.945], [93.958, 94.05], [94.064, 94.432], [94.445, 94.735], [95.129, 95.511], [95.814, 95.919], [95.932, 96.169], [96.182, 96.406], [96.419, 96.629], [96.643, 96.985], [96.998, 97.498]]}, {"kind": "s", "id": "s1_5_0", "md": "Sure. Anything to drink?", "zh": "好的。要喝点什么吗？", "sp": "B", "gap": false, "start": 97.896, "end": 101.856, "words": [[97.999, 98.722], [99.62, 100.133], [100.146, 100.278], [100.291, 100.936]]}, {"kind": "s", "id": "s1_6_0", "md": "Two lime juices, ==less sweet==, and a warm water for our son. Could we also have some ==wet wipes==? Crab gets ==messy==.", "zh": "两杯青柠汁，少甜，给我儿子一杯温水。能再给些湿纸巾吗？吃螃蟹会弄得很脏。", "sp": "A", "gap": false, "start": 101.856, "end": 109.368, "words": [[101.974, 102.132], [102.145, 102.382], [102.395, 102.948], [103.172, 103.435], [103.448, 103.856], [104.185, 104.238], [104.251, 104.33], [104.343, 104.672], [104.685, 104.974], [104.988, 105.145], [105.159, 105.264], [105.277, 105.632], [106.067, 106.159], [106.172, 106.29], [106.303, 106.567], [106.58, 106.777], [106.79, 106.948], [106.961, 107.106], [107.119, 107.672], [108.106, 108.33], [108.343, 108.527], [108.54, 108.974]]}, {"kind": "s", "id": "s1_7_0", "md": "Of course. Just so you know, the wet wipes are fifty cents each.", "zh": "当然。提醒一下，湿纸巾是五毛钱一包。", "sp": "B", "gap": false, "start": 109.368, "end": 116.112, "words": [[109.471, 109.721], [109.734, 110.523], [111.434, 111.723], [111.736, 111.921], [111.934, 112.052], [112.065, 112.565], [112.802, 112.973], [112.986, 113.236], [113.25, 113.671], [113.684, 113.829], [113.842, 114.263], [114.276, 114.71], [114.723, 115.184]]}, {"kind": "s", "id": "s1_8_0", "md": "**That's fine. Could you bring the rice out first? He gets hungry quickly.**", "zh": "没问题。炒饭能先上吗？他饿得快。", "sp": "A", "gap": false, "start": 116.112, "end": 120.6, "words": [[116.23, 116.401], [116.415, 116.809], [117.244, 117.349], [117.362, 117.428], [117.441, 117.612], [117.625, 117.691], [117.704, 118.02], [118.033, 118.178], [118.191, 118.757], [119.204, 119.257], [119.27, 119.428], [119.441, 119.757], [119.77, 120.217]]}, {"kind": "s", "id": "s1_9_0", "md": "Sure, I'll ask the kitchen to send it out first.", "zh": "好的，我让厨房先出炒饭。", "sp": "B", "gap": false, "start": 120.6, "end": 125.088, "words": [[120.703, 121.308], [121.492, 121.716], [121.729, 122.005], [122.018, 122.15], [122.163, 122.597], [122.611, 122.716], [122.729, 123.058], [123.071, 123.282], [123.295, 123.532], [123.545, 124.163]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

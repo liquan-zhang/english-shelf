@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Rolling Back Is Not Failure · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "063", "title": "Rolling Back Is Not Failure", "meta": "B2 · 约 270 词 · 场景：发布回滚", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Forty Minutes Nobody Needed", "heading_zh": "1. 没必要的四十分钟", "rows": [[{"id": "s0_0_0", "md": "Picture a release that goes out at noon.", "text": "Picture a release that goes out at noon.", "zh": "设想一个中午十二点上线的版本。", "sp": null}, {"id": "s0_0_1", "md": "Fifteen minutes later, error rates start to climb, and the engineer who wrote the change says, \"Give me ten minutes, I think I see it.\"", "text": "Fifteen minutes later, error rates start to climb, and the engineer who wrote the change says, \"Give me ten minutes, I think I see it.\"", "zh": "十五分钟后，错误率开始往上爬，写这个改动的工程师说：「给我十分钟，我好像看到问题了。」", "sp": null}, {"id": "s0_0_2", "md": "Ten minutes becomes forty, and users keep hitting errors the whole time.", "text": "Ten minutes becomes forty, and users keep hitting errors the whole time.", "zh": "十分钟变成了四十分钟，用户全程都在报错。", "sp": null}], [{"id": "s0_1_0", "md": "Nobody in that room was ==careless==.", "text": "Nobody in that room was careless.", "zh": "那个屋子里没有谁是马虎的。", "sp": null}, {"id": "s0_1_1", "md": "They delayed the rollback because it felt like admitting the work was bad.", "text": "They delayed the rollback because it felt like admitting the work was bad.", "zh": "他们拖着不回滚，是因为回滚感觉像是承认活儿干砸了。", "sp": null}, {"id": "s0_1_2", "md": "In fact, the change itself was fine; it had one wrong default value.", "text": "In fact, the change itself was fine; it had one wrong default value.", "zh": "其实改动本身没问题；只是有一个默认值写错了。", "sp": null}, {"id": "s0_1_3", "md": "**A rollback is not a verdict on your code; it is a way to buy time.**", "text": "A rollback is not a verdict on your code; it is a way to buy time.", "zh": "回滚不是对你代码的判决；它是一种争取时间的手段。", "sp": null}], [{"id": "s0_2_0", "md": "Fixing forward under pressure is ==tempting==, but it is one of the riskiest things a team can do.", "text": "Fixing forward under pressure is tempting, but it is one of the riskiest things a team can do.", "zh": "顶着压力往前修很诱人，但这是一个团队能干的最冒险的事之一。", "sp": null}, {"id": "s0_2_1", "md": "You are writing new code, with less review, while users are watching.", "text": "You are writing new code, with less review, while users are watching.", "zh": "你在用户眼皮底下写新代码，review 还更少。", "sp": null}, {"id": "s0_2_2", "md": "Rolling back returns you to a ==proven== version, and then you can debug __at your own pace__.", "text": "Rolling back returns you to a proven version, and then you can debug at your own pace.", "zh": "回滚能让你回到一个验证过的版本，然后你可以按自己的节奏慢慢查。", "sp": null}]]}, {"heading": "2. Decide Before You Ship", "heading_zh": "2. 发版前就做好决定", "rows": [[{"id": "s1_0_0", "md": "The fix is to make the rollback decision before the release, when nobody's pride is __on the line__.", "text": "The fix is to make the rollback decision before the release, when nobody's pride is on the line.", "zh": "解决办法是在发版之前就把回滚的决定做好，那时候还没人的面子挂在上面。", "sp": null}, {"id": "s1_0_1", "md": "Write down one or two ==thresholds== in the launch plan.", "text": "Write down one or two thresholds in the launch plan.", "zh": "在上线方案里写下一两条阈值。", "sp": null}, {"id": "s1_0_2", "md": "For example, if the crash rate doubles or checkout errors pass one percent, we roll back first and talk later.", "text": "For example, if the crash rate doubles or checkout errors pass one percent, we roll back first and talk later.", "zh": "比如，崩溃率翻倍，或者下单报错超过百分之一，我们就先回滚，回头再讨论。", "sp": null}], [{"id": "s1_1_0", "md": "**When the rule is agreed in advance, rolling back becomes a procedure, not a confession.**", "text": "When the rule is agreed in advance, rolling back becomes a procedure, not a confession.", "zh": "规则事先定好了，回滚就是走流程，而不是认错。", "sp": null}, {"id": "s1_1_1", "md": "The on-call engineer does not need permission, and the author does not need to ==justify== anything.", "text": "The on-call engineer does not need permission, and the author does not need to justify anything.", "zh": "on-call 工程师不需要请示，代码作者也不需要解释什么。", "sp": null}, {"id": "s1_1_2", "md": "It also makes the post-launch review calmer, because the decision was never personal.", "text": "It also makes the post-launch review calmer, because the decision was never personal.", "zh": "这也让上线后的复盘更心平气和，因为这个决定从来就不针对个人。", "sp": null}], [{"id": "s1_2_0", "md": "Managers __set the tone__ here.", "text": "Managers set the tone here.", "zh": "在这件事上，管理者决定了基调。", "sp": null}, {"id": "s1_2_1", "md": "If you thank the person who ==triggered== a fast rollback, the team learns that speed matters more than pride.", "text": "If you thank the person who triggered a fast rollback, the team learns that speed matters more than pride.", "zh": "如果你感谢那个果断触发回滚的人，团队就会明白速度比面子重要。", "sp": null}, {"id": "s1_2_2", "md": "If your first question is \"Who broke it?\", people will __hold on to__ bad releases far too long.", "text": "If your first question is \"Who broke it?\", people will hold on to bad releases far too long.", "zh": "如果你第一句问的是「谁搞坏的？」，大家就会死扛着有问题的版本，拖太久都不回滚。", "sp": null}]]}], "gist": [{"q": "开头的例子里，团队为什么拖了四十分钟才回滚？", "a": "不是因为粗心，而是回滚感觉像承认自己的代码不好，于是想先在线修。"}, {"q": "作者为什么认为在压力下“往前修”很危险？", "a": "在用户受影响时写新代码，评审更少；回滚能回到已验证的版本，再从容排查。"}, {"q": "怎样让回滚变成例行操作而不是认错？", "a": "发布前在上线方案里写好回滚阈值；管理者感谢快速回滚的人，而不是先问谁搞坏的。"}], "dictation": [{"id": "s0_1_3", "text": "A rollback is not a verdict on your code; it is a way to buy time."}, {"id": "s0_2_1", "text": "You are writing new code, with less review, while users are watching."}, {"id": "s1_1_0", "text": "When the rule is agreed in advance, rolling back becomes a procedure, not a confession."}, {"id": "s1_2_1", "text": "If you thank the person who triggered a fast rollback, the team learns that speed matters more than pride."}], "shadow": {"text": "Fixing forward under pressure is tempting, but it is one of the riskiest things a team can do. You are writing new code, with less review, while users are watching. Rolling back returns you to a proven version, and then you can debug at your own pace.", "marked": "Fixing <b>forward</b> under pressure / is <b>tempting</b>, / but it is one of the <b>riskiest</b> things / a team can do. //<br>You are writing <b>new</b> code, / with <b>less</b> review, / while users are <b>watching</b>. //<br>Rolling <b>back</b> / returns you to a <b>proven</b> version, / and <b>then</b> you can debug / at your <b>own</b> pace. //"}, "prompts": [{"q": "新版本上线后崩溃率翻倍，写代码的同事说“再给我十分钟”。你是 on-call 负责人，用 30 秒说服他先回滚。", "ref": "I hear you, and you might be right about the cause. But crash rate has doubled, and that's the threshold we agreed on in the launch plan. Let's roll back now, get users back to a stable version, and then you can debug without the clock running. This isn't about your code being bad. It's just the cheapest way to buy time.", "ref_zh": "我明白，你对原因的判断可能是对的。但崩溃率已经翻倍了，这正是我们在上线方案里定好的阈值。我们现在就回滚，先让用户回到稳定版本，然后你可以不赶时间地慢慢查。这跟你代码好不好没关系。这只是争取时间最便宜的办法。", "id": "ref0"}, {"q": "下周有个大版本要发。在发布评审会上，用 30 秒提议事先写好回滚标准。", "ref": "Before we sign off, I'd like to add one thing to the launch plan: clear rollback thresholds. Something like, if checkout errors go above one percent, or crash rate doubles for ten minutes, the on-call engineer rolls back without asking anyone. Deciding now, while we're calm, means nobody has to make that call under pressure, and nobody has to defend their code at midnight.", "ref_zh": "在大家签字之前，我想在上线方案里加一条：明确的回滚阈值。比如下单报错超过百分之一，或者崩溃率翻倍持续十分钟，on-call 工程师就直接回滚，不用请示任何人。趁现在大家都冷静把这个定下来，就没人需要在压力下拍板，也没人需要半夜为自己的代码辩护。", "id": "ref1"}], "words": [{"w": "careless", "ipa": "/ˈkerləs/", "zh": "粗心的", "ex": "It wasn't a careless mistake; the test environment just didn't match production.", "id": "w0"}, {"w": "tempting", "ipa": "/ˈtemptɪŋ/", "zh": "诱人的、让人想去做的", "ex": "It's tempting to add one more feature, but let's ship what we have.", "id": "w1"}, {"w": "proven", "ipa": "/ˈpruːvən/", "zh": "经过验证的", "ex": "Let's stick with the proven setup for the holiday traffic.", "id": "w2"}, {"w": "threshold", "ipa": "/ˈθreʃhoʊld/", "zh": "阈值、临界点", "ex": "We page the on-call engineer when latency crosses this threshold.", "id": "w3"}, {"w": "justify", "ipa": "/ˈdʒʌstɪˌfaɪ/", "zh": "为……辩解、证明合理", "ex": "Can we justify two extra engineers for this project?", "id": "w4"}, {"w": "trigger (v.)", "ipa": "/ˈtrɪɡər/", "zh": "触发、发起", "ex": "Any change to the payment config triggers a manual review.", "tts_w": "trigger", "id": "w5"}, {"w": "verdict", "ipa": "/ˈvɜːrdɪkt/", "zh": "裁决、定论", "ex": "One bad sprint is not a verdict on the whole team.", "id": "w6"}, {"w": "procedure", "ipa": "/prəˈsiːdʒər/", "zh": "流程、规程", "ex": "Follow the standard procedure before you touch the production database.", "id": "w7"}, {"w": "confession", "ipa": "/kənˈfeʃən/", "zh": "认错、坦白", "ex": "The postmortem should be a learning tool, not a confession.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Forty Minutes Nobody Needed", "zh": "1. 没必要的四十分钟", "start": 0.0, "end": 2.688, "words": [[0.118, 0.395], [0.737, 0.829], [0.842, 1.158], [1.171, 1.474], [1.487, 1.908], [1.921, 2.303]]}, {"kind": "s", "id": "s0_0_0", "md": "Picture a release that goes out at noon.", "zh": "设想一个中午十二点上线的版本。", "sp": null, "gap": false, "start": 2.688, "end": 5.016, "words": [[2.806, 3.096], [3.109, 3.148], [3.162, 3.609], [3.622, 3.767], [3.78, 4.017], [4.03, 4.162], [4.175, 4.267], [4.28, 4.635]]}, {"kind": "s", "id": "s0_0_1", "md": "Fifteen minutes later, error rates start to climb, and the engineer who wrote the change says, \"Give me ten minutes, I think I see it.\"", "zh": "十五分钟后，错误率开始往上爬，写这个改动的工程师说：「给我十分钟，我好像看到问题了。」", "sp": null, "gap": false, "start": 5.016, "end": 13.584, "words": [[5.2, 5.569], [5.582, 5.858], [5.871, 6.266], [6.661, 6.924], [6.937, 7.174], [7.187, 7.437], [7.45, 7.516], [7.529, 8.042], [8.371, 8.424], [8.437, 8.516], [8.529, 9.148], [9.161, 9.345], [9.358, 9.608], [9.621, 9.713], [9.727, 10.134], [10.148, 10.595], [10.871, 11.029], [11.042, 11.161], [11.174, 11.398], [11.411, 11.937], [12.148, 12.227], [12.24, 12.49], [12.503, 12.595], [12.608, 12.871], [12.884, 13.069]]}, {"kind": "s", "id": "s0_0_2", "md": "Ten minutes becomes forty, and users keep hitting errors the whole time.", "zh": "十分钟变成了四十分钟，用户全程都在报错。", "sp": null, "gap": false, "start": 13.584, "end": 18.24, "words": [[13.689, 13.887], [13.9, 14.202], [14.216, 14.623], [14.637, 15.123], [15.466, 15.61], [15.623, 16.044], [16.058, 16.321], [16.334, 16.676], [16.689, 17.071], [17.084, 17.176], [17.189, 17.452], [17.466, 17.847]]}, {"kind": "s", "id": "s0_1_0", "md": "Nobody in that room was ==careless==.", "zh": "那个屋子里没有谁是马虎的。", "sp": null, "gap": true, "start": 18.24, "end": 20.52, "words": [[18.345, 18.766], [18.779, 18.858], [18.872, 19.095], [19.108, 19.293], [19.306, 19.437], [19.451, 20.122]]}, {"kind": "s", "id": "s0_1_1", "md": "They delayed the rollback because it felt like admitting the work was bad.", "zh": "他们拖着不回滚，是因为回滚感觉像是承认活儿干砸了。", "sp": null, "gap": false, "start": 20.52, "end": 24.552, "words": [[20.625, 20.704], [20.717, 21.073], [21.086, 21.152], [21.165, 21.77], [21.823, 22.112], [22.125, 22.217], [22.231, 22.533], [22.546, 22.717], [22.731, 23.138], [23.152, 23.244], [23.257, 23.52], [23.533, 23.704], [23.717, 24.152]]}, {"kind": "s", "id": "s0_1_2", "md": "In fact, the change itself was fine; it had one wrong default value.", "zh": "其实改动本身没问题；只是有一个默认值写错了。", "sp": null, "gap": false, "start": 24.552, "end": 29.64, "words": [[24.657, 24.762], [24.776, 25.262], [25.486, 25.591], [25.605, 25.947], [25.96, 26.381], [26.394, 26.578], [26.591, 27.026], [27.46, 27.512], [27.526, 27.776], [27.789, 28.078], [28.091, 28.368], [28.381, 28.802], [28.815, 29.249]]}, {"kind": "s", "id": "s0_1_3", "md": "**A rollback is not a verdict on your code; it is a way to buy time.**", "zh": "回滚不是对你代码的判决；它是一种争取时间的手段。", "sp": null, "gap": false, "start": 29.64, "end": 34.032, "words": [[29.745, 29.798], [29.811, 30.403], [30.469, 30.574], [30.587, 30.824], [30.837, 30.877], [30.89, 31.364], [31.377, 31.482], [31.495, 31.627], [31.64, 32.061], [32.482, 32.535], [32.548, 32.627], [32.64, 32.693], [32.706, 32.903], [32.916, 33.048], [33.061, 33.245], [33.258, 33.653]]}, {"kind": "s", "id": "s0_2_0", "md": "Fixing forward under pressure is ==tempting==, but it is one of the riskiest things a team can do.", "zh": "顶着压力往前修很诱人，但这是一个团队能干的最冒险的事之一。", "sp": null, "gap": true, "start": 34.032, "end": 39.48, "words": [[34.203, 34.545], [34.558, 35.019], [35.032, 35.229], [35.243, 35.65], [35.664, 35.782], [35.795, 36.256], [36.585, 36.703], [36.716, 36.782], [36.795, 36.914], [36.927, 37.045], [37.058, 37.124], [37.137, 37.242], [37.256, 37.914], [37.927, 38.203], [38.216, 38.282], [38.295, 38.624], [38.637, 38.808], [38.821, 39.098]]}, {"kind": "s", "id": "s0_2_1", "md": "You are writing new code, with less review, while users are watching.", "zh": "你在用户眼皮底下写新代码，review 还更少。", "sp": null, "gap": false, "start": 39.48, "end": 44.28, "words": [[39.598, 39.743], [39.756, 39.954], [39.967, 40.348], [40.362, 40.598], [40.612, 41.098], [41.48, 41.638], [41.651, 41.901], [41.914, 42.322], [42.769, 42.901], [42.914, 43.362], [43.375, 43.467], [43.48, 43.901]]}, {"kind": "s", "id": "s0_2_2", "md": "Rolling back returns you to a ==proven== version, and then you can debug __at your own pace__.", "zh": "回滚能让你回到一个验证过的版本，然后你可以按自己的节奏慢慢查。", "sp": null, "gap": false, "start": 44.28, "end": 49.536, "words": [[44.385, 44.714], [44.727, 45.03], [45.043, 45.491], [45.504, 45.622], [45.635, 45.793], [45.806, 45.885], [45.898, 46.293], [46.306, 46.741], [47.135, 47.188], [47.201, 47.333], [47.346, 47.451], [47.464, 47.609], [47.622, 48.175], [48.188, 48.267], [48.28, 48.438], [48.451, 48.596], [48.609, 49.148]]}, {"kind": "h", "id": "h1", "md": "2. Decide Before You Ship", "zh": "2. 发版前就做好决定", "start": 49.536, "end": 51.816, "words": [[49.641, 49.878], [50.181, 50.602], [50.615, 50.931], [50.944, 51.023], [51.036, 51.418]]}, {"kind": "s", "id": "s1_0_0", "md": "The fix is to make the rollback decision before the release, when nobody's pride is __on the line__.", "zh": "解决办法是在发版之前就把回滚的决定做好，那时候还没人的面子挂在上面。", "sp": null, "gap": false, "start": 51.816, "end": 57.528, "words": [[51.934, 52.0], [52.013, 52.329], [52.342, 52.448], [52.461, 52.553], [52.566, 52.79], [52.803, 52.895], [52.908, 53.5], [53.513, 54.013], [54.027, 54.369], [54.382, 54.461], [54.474, 55.04], [55.303, 55.487], [55.5, 55.961], [55.974, 56.421], [56.434, 56.54], [56.553, 56.658], [56.671, 56.75], [56.763, 57.132]]}, {"kind": "s", "id": "s1_0_1", "md": "Write down one or two ==thresholds== in the launch plan.", "zh": "在上线方案里写下一两条阈值。", "sp": null, "gap": false, "start": 57.528, "end": 61.008, "words": [[57.633, 57.831], [57.844, 58.133], [58.146, 58.515], [58.62, 58.739], [58.752, 59.028], [59.041, 59.712], [59.725, 59.791], [59.804, 59.883], [59.896, 60.212], [60.225, 60.62]]}, {"kind": "s", "id": "s1_0_2", "md": "For example, if the crash rate doubles or checkout errors pass one percent, we roll back first and talk later.", "zh": "比如，崩溃率翻倍，或者下单报错超过百分之一，我们就先回滚，回头再讨论。", "sp": null, "gap": false, "start": 61.008, "end": 68.664, "words": [[61.166, 61.258], [61.271, 61.784], [62.061, 62.153], [62.166, 62.245], [62.258, 62.64], [62.653, 62.929], [62.942, 63.469], [63.547, 63.666], [63.679, 64.179], [64.245, 64.574], [64.587, 64.929], [64.942, 65.14], [65.153, 65.6], [66.008, 66.179], [66.192, 66.469], [66.482, 66.771], [66.784, 67.324], [67.508, 67.574], [67.587, 67.89], [67.903, 68.271]]}, {"kind": "s", "id": "s1_1_0", "md": "**When the rule is agreed in advance, rolling back becomes a procedure, not a confession.**", "zh": "规则事先定好了，回滚就是走流程，而不是认错。", "sp": null, "gap": true, "start": 68.664, "end": 74.616, "words": [[68.769, 68.861], [68.875, 68.953], [68.967, 69.348], [69.361, 69.467], [69.48, 69.901], [69.914, 70.019], [70.032, 70.677], [71.046, 71.401], [71.414, 71.822], [71.835, 72.23], [72.243, 72.296], [72.309, 72.993], [73.401, 73.532], [73.546, 73.585], [73.598, 74.217]]}, {"kind": "s", "id": "s1_1_1", "md": "The on-call engineer does not need permission, and the author does not need to ==justify== anything.", "zh": "on-call 工程师不需要请示，代码作者也不需要解释什么。", "sp": null, "gap": false, "start": 74.616, "end": 80.376, "words": [[74.721, 74.813], [74.827, 75.287], [75.3, 75.8], [75.813, 75.984], [75.998, 76.313], [76.327, 76.524], [76.537, 77.09], [77.511, 77.563], [77.577, 77.682], [77.695, 78.09], [78.103, 78.261], [78.274, 78.603], [78.616, 78.813], [78.827, 78.905], [78.919, 79.537], [79.55, 79.998]]}, {"kind": "s", "id": "s1_1_2", "md": "It also makes the post-launch review calmer, because the decision was never personal.", "zh": "这也让上线后的复盘更心平气和，因为这个决定从来就不针对个人。", "sp": null, "gap": false, "start": 80.376, "end": 85.584, "words": [[80.481, 80.56], [80.573, 80.889], [80.902, 81.179], [81.192, 81.297], [81.31, 81.955], [81.968, 82.323], [82.337, 82.758], [83.047, 83.35], [83.363, 83.468], [83.481, 84.073], [84.179, 84.337], [84.35, 84.639], [84.652, 85.192]]}, {"kind": "s", "id": "s1_2_0", "md": "Managers __set the tone__ here.", "zh": "在这件事上，管理者决定了基调。", "sp": null, "gap": true, "start": 85.584, "end": 87.408, "words": [[85.689, 86.11], [86.123, 86.308], [86.321, 86.4], [86.413, 86.663], [86.676, 87.018]]}, {"kind": "s", "id": "s1_2_1", "md": "If you thank the person who ==triggered== a fast rollback, the team learns that speed matters more than pride.", "zh": "如果你感谢那个果断触发回滚的人，团队就会明白速度比面子重要。", "sp": null, "gap": false, "start": 87.408, "end": 93.48, "words": [[87.513, 87.632], [87.645, 87.75], [87.763, 88.04], [88.053, 88.145], [88.158, 88.553], [88.566, 88.684], [88.697, 89.145], [89.158, 89.197], [89.211, 89.658], [89.671, 90.224], [90.474, 90.566], [90.579, 90.882], [90.895, 91.184], [91.197, 91.355], [91.369, 91.829], [91.842, 92.237], [92.25, 92.474], [92.487, 92.605], [92.619, 93.079]]}, {"kind": "s", "id": "s1_2_2", "md": "If your first question is \"Who broke it?\", people will __hold on to__ bad releases far too long.", "zh": "如果你第一句问的是「谁搞坏的？」，大家就会死扛着有问题的版本，拖太久都不回滚。", "sp": null, "gap": false, "start": 93.48, "end": 99.36, "words": [[93.585, 93.704], [93.717, 93.848], [93.862, 94.138], [94.151, 94.638], [94.651, 94.914], [95.033, 95.23], [95.243, 95.572], [95.585, 95.73], [96.348, 96.677], [96.691, 96.809], [96.822, 97.072], [97.085, 97.269], [97.283, 97.388], [97.401, 97.677], [97.691, 98.164], [98.177, 98.427], [98.441, 98.638], [98.651, 98.967]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Explaining a System to Non-Engineers · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "013", "title": "Explaining a System to Non-Engineers", "meta": "B2 · 约 280 词 · 场景：跨职能沟通", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. They Need Decisions, Not Diagrams", "heading_zh": "1. 他们要的是决策，不是架构图", "rows": [[{"id": "s0_0_0", "md": "When a sales lead asks why the new feature is taking so long, most engineers reach for a diagram.", "text": "When a sales lead asks why the new feature is taking so long, most engineers reach for a diagram.", "zh": "销售负责人问新功能为什么拖了这么久，大多数工程师第一反应是去画架构图。", "sp": null}, {"id": "s0_0_1", "md": "Queues, services, databases, arrows going everywhere.", "text": "Queues, services, databases, arrows going everywhere.", "zh": "队列、服务、数据库，箭头满天飞。", "sp": null}, {"id": "s0_0_2", "md": "Ten minutes later, the sales lead is ==politely== nodding and understands even less than before.", "text": "Ten minutes later, the sales lead is politely nodding and understands even less than before.", "zh": "十分钟后，销售负责人礼貌地点着头，懂的比之前还少。", "sp": null}], [{"id": "s0_1_0", "md": "The mistake is answering a question they did not ask.", "text": "The mistake is answering a question they did not ask.", "zh": "错就错在回答了一个对方没问的问题。", "sp": null}, {"id": "s0_1_1", "md": "They do not want to know how the system works.", "text": "They do not want to know how the system works.", "zh": "他们并不想知道系统是怎么运作的。", "sp": null}, {"id": "s0_1_2", "md": "They want to know what it means for their customers, their deadline, and their ==promises==.", "text": "They want to know what it means for their customers, their deadline, and their promises.", "zh": "他们想知道的是，这对他们的客户、他们的 deadline、他们许下的承诺意味着什么。", "sp": null}, {"id": "s0_1_3", "md": "**Explain the system only as deeply as the decision in front of them requires.**", "text": "Explain the system only as deeply as the decision in front of them requires.", "zh": "系统讲到多深，只取决于他们眼前要做的决定需要多深。", "sp": null}], [{"id": "s0_2_0", "md": "This is not about ==dumbing== things down for people who are less smart.", "text": "This is not about dumbing things down for people who are less smart.", "zh": "这不是因为对方不够聪明，所以要讲得浅显一点。", "sp": null}, {"id": "s0_2_1", "md": "It is about __translating__ your world into theirs, which is a skill in its own right.", "text": "It is about translating your world into theirs, which is a skill in its own right.", "zh": "而是把你的世界翻译成他们的世界，这本身就是一项本事。", "sp": null}]]}, {"heading": "2. Outcome, Picture, Impact", "heading_zh": "2. 结果、画面、影响", "rows": [[{"id": "s1_0_0", "md": "Start with the outcome they care about.", "text": "Start with the outcome they care about.", "zh": "先讲他们关心的结果。", "sp": null}, {"id": "s1_0_1", "md": "\"Right now, a customer's order can take up to a minute to show up in their history.\"", "text": "\"Right now, a customer's order can take up to a minute to show up in their history.\"", "zh": "「现在，客户下的单最长要一分钟才能在历史订单里看到。」", "sp": null}], [{"id": "s1_1_0", "md": "Then give one picture, not five.", "text": "Then give one picture, not five.", "zh": "然后给一个画面，不是五个。", "sp": null}, {"id": "s1_1_1", "md": "\"Think of it like a busy restaurant kitchen; orders come in faster than the cooks can handle, so they ==pile up== at the counter.\"", "text": "\"Think of it like a busy restaurant kitchen; orders come in faster than the cooks can handle, so they pile up at the counter.\"", "zh": "「可以把它想象成一个忙碌的餐厅后厨：单子进来的速度比厨师做得快，就在出餐口堆起来了。」", "sp": null}, {"id": "s1_1_2", "md": "**One good analogy beats ten accurate details.**", "text": "One good analogy beats ten accurate details.", "zh": "一个好的类比，胜过十个准确的细节。", "sp": null}, {"id": "s1_1_3", "md": "Pick something from daily life, and stop as soon as the picture works, before the ==analogy== starts to break.", "text": "Pick something from daily life, and stop as soon as the picture works, before the analogy starts to break.", "zh": "从日常生活里挑个例子，画面一立住就停，别等到类比开始站不住脚。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, connect it back to their world.", "text": "Finally, connect it back to their world.", "zh": "最后，把它跟他们的世界连起来。", "sp": null}, {"id": "s1_2_1", "md": "\"Adding more cooks takes about three weeks, which is why the promotion should start after the holidays.\"", "text": "\"Adding more cooks takes about three weeks, which is why the promotion should start after the holidays.\"", "zh": "「再加厨师大概要三周，所以促销最好放在节后开始。」", "sp": null}, {"id": "s1_2_2", "md": "Now they can __plan around it__, which is what they really needed.", "text": "Now they can plan around it, which is what they really needed.", "zh": "这样他们就能据此做计划了，这才是他们真正需要的。", "sp": null}], [{"id": "s1_3_0", "md": "Watch your ==jargon== along the way.", "text": "Watch your jargon along the way.", "zh": "过程中注意少用黑话。", "sp": null}, {"id": "s1_3_1", "md": "Words like \"latency\" or \"throughput\" feel normal to you, but each one is a small wall.", "text": "Words like \"latency\" or \"throughput\" feel normal to you, but each one is a small wall.", "zh": "像「延迟」「吞吐量」这种词你觉得很平常，但每一个对他们来说都是一道小墙。", "sp": null}, {"id": "s1_3_2", "md": "At the end, ask them to __say it back__ in their own words.", "text": "At the end, ask them to say it back in their own words.", "zh": "最后，请他们用自己的话复述一遍。", "sp": null}, {"id": "s1_3_3", "md": "If they can explain it to their boss, you have done your job ==properly==.", "text": "If they can explain it to their boss, you have done your job properly.", "zh": "如果他们能讲给自己的老板听，你的活儿就干到位了。", "sp": null}]]}], "gist": [{"q": "工程师向非技术同事解释系统时常犯的错误是什么？", "a": "回答了对方没问的问题，讲系统怎么运作，而对方只想知道对客户、截止时间和承诺意味着什么。"}, {"q": "作者建议的三步解释结构是什么？", "a": "先讲对方关心的结果；再用一个生活化的类比；最后连回对方的工作，让他能据此做计划。"}, {"q": "怎么检验对方真的听懂了？", "a": "请对方用自己的话复述，能讲给自己老板听就说明讲清楚了。"}], "dictation": [{"id": "s0_1_3", "text": "Explain the system only as deeply as the decision in front of them requires."}, {"id": "s1_1_2", "text": "One good analogy beats ten accurate details."}, {"id": "s0_1_1", "text": "They do not want to know how the system works."}, {"id": "s1_2_2", "text": "Now they can plan around it, which is what they really needed."}], "shadow": {"text": "Then give one picture, not five. \"Think of it like a busy restaurant kitchen; orders come in faster than the cooks can handle, so they pile up at the counter.\" One good analogy beats ten accurate details.", "marked": "Then give <b>one</b> picture, / not <b>five</b>. //<br>\"Think of it like a busy restaurant <b>kitchen</b>; / orders come in <b>faster</b> / than the cooks can handle, / so they <b>pile up</b> at the counter.\" //<br>One <b>good</b> analogy / beats <b>ten</b> accurate details. //"}, "prompts": [{"q": "市场部同事问你：为什么大促那天 App 会变慢？用 30 秒按“结果、类比、对他的影响”向她解释，不用技术术语。", "ref": "Good question. What users notice is that pages take a few seconds longer to load during big sales. Think of it like a shop with only four checkout counters. On a normal day that's fine, but on sale day the lines get really long. We're adding more counters, but it takes a few weeks. So for the next campaign, starting at different times in different regions would really help.", "ref_zh": "好问题。用户能感觉到的是，大促期间页面加载会慢上几秒。可以把它想象成一家只有四个收银台的店。平时没问题，但到了大促那天，队就排得特别长。我们正在加收银台，但需要几周时间。所以下次活动，如果不同地区错开时间开始，会很有帮助。", "id": "ref0"}, {"q": "财务同事问为什么要花钱做“数据库迁移”。用 30 秒用一个类比解释，并说明不做会有什么后果。", "ref": "Fair question, since nothing visible changes for users. Our current database is like an old warehouse that's almost full. We can still squeeze things in, but every month it gets slower to find anything, and one day the shelves will simply run out. Moving to the new one costs us about two months of work now. If we wait, we'll be forced to move during a crisis, which is much more expensive.", "ref_zh": "这个问题问得在理，毕竟用户那边看不到任何变化。我们现在的数据库就像一个快塞满的旧仓库。东西还能硬塞进去，但每个月找东西都更慢，总有一天货架会直接用完。现在搬到新仓库，大概要花两个月的工作量。如果等下去，我们就会被迫在出事的时候搬，那代价就大多了。", "id": "ref1"}], "words": [{"w": "politely", "ipa": "/pəˈlaɪtli/", "zh": "礼貌地", "ex": "She politely declined the extra scope for this sprint.", "id": "w0"}, {"w": "promise (n.)", "ipa": "/ˈprɑːmɪs/", "zh": "承诺", "ex": "We can't make promises to the client until load testing is done.", "tts_w": "promise", "id": "w1"}, {"w": "dumb down", "ipa": "/dʌm daʊn/", "zh": "（贬义）把内容讲得过于浅显", "ex": "You don't need to dumb it down; just skip the internal names.", "id": "w2"}, {"w": "pile up", "ipa": "/paɪl ʌp/", "zh": "堆积", "ex": "Messages pile up in the queue when the consumer is down.", "id": "w3"}, {"w": "analogy", "ipa": "/əˈnælədʒi/", "zh": "类比", "ex": "The traffic jam analogy helped the PM understand the backlog.", "id": "w4"}, {"w": "jargon", "ipa": "/ˈdʒɑːrɡən/", "zh": "行话、术语", "ex": "Keep the jargon out of the customer email.", "id": "w5"}, {"w": "properly", "ipa": "/ˈprɑːpərli/", "zh": "恰当地、好好地", "ex": "We never properly tested the failover path.", "id": "w6"}, {"w": "translate", "ipa": "/trænsˈleɪt/", "zh": "转化、翻译", "ex": "Can you translate these metrics into what they mean for revenue?", "id": "w7"}, {"w": "say it back", "ipa": "/seɪ ɪt bæk/", "zh": "复述", "ex": "I asked the new hire to say it back, just to make sure we were aligned.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. They Need Decisions, Not Diagrams", "zh": "1. 他们要的是决策，不是架构图", "start": 0.0, "end": 3.408, "words": [[0.105, 0.395], [0.75, 0.855], [0.868, 1.079], [1.092, 1.803], [2.0, 2.224], [2.237, 3.026]]}, {"kind": "s", "id": "s0_0_0", "md": "When a sales lead asks why the new feature is taking so long, most engineers reach for a diagram.", "zh": "销售负责人问新功能为什么拖了这么久，大多数工程师第一反应是去画架构图。", "sp": null, "gap": false, "start": 3.408, "end": 9.624, "words": [[3.513, 3.619], [3.632, 3.684], [3.697, 4.105], [4.119, 4.342], [4.355, 4.776], [4.79, 4.921], [4.934, 5.013], [5.026, 5.276], [5.29, 5.75], [5.763, 5.869], [5.882, 6.211], [6.224, 6.461], [6.474, 6.895], [7.303, 7.553], [7.566, 8.079], [8.092, 8.408], [8.421, 8.592], [8.605, 8.658], [8.671, 9.237]]}, {"kind": "s", "id": "s0_0_1", "md": "Queues, services, databases, arrows going everywhere.", "zh": "队列、服务、数据库，箭头满天飞。", "sp": null, "gap": false, "start": 9.624, "end": 14.112, "words": [[9.742, 10.216], [10.44, 11.137], [11.321, 12.098], [12.479, 12.821], [12.835, 13.124], [13.137, 13.729]]}, {"kind": "s", "id": "s0_0_2", "md": "Ten minutes later, the sales lead is ==politely== nodding and understands even less than before.", "zh": "十分钟后，销售负责人礼貌地点着头，懂的比之前还少。", "sp": null, "gap": false, "start": 14.112, "end": 20.304, "words": [[14.23, 14.375], [14.388, 14.665], [14.678, 15.033], [15.323, 15.415], [15.428, 15.796], [15.809, 16.165], [16.244, 16.362], [16.375, 16.967], [16.98, 17.546], [17.559, 17.678], [17.691, 18.507], [18.665, 18.994], [19.007, 19.257], [19.27, 19.401], [19.415, 19.915]]}, {"kind": "s", "id": "s0_1_0", "md": "The mistake is answering a question they did not ask.", "zh": "错就错在回答了一个对方没问的问题。", "sp": null, "gap": true, "start": 20.304, "end": 23.664, "words": [[20.422, 20.462], [20.475, 20.922], [21.08, 21.238], [21.265, 21.699], [21.712, 21.764], [21.778, 22.278], [22.291, 22.383], [22.396, 22.567], [22.58, 22.804], [22.817, 23.278]]}, {"kind": "s", "id": "s0_1_1", "md": "They do not want to know how the system works.", "zh": "他们并不想知道系统是怎么运作的。", "sp": null, "gap": false, "start": 23.664, "end": 26.064, "words": [[23.769, 23.822], [23.835, 23.94], [23.953, 24.164], [24.177, 24.309], [24.322, 24.375], [24.388, 24.559], [24.572, 24.69], [24.703, 24.796], [24.809, 25.177], [25.19, 25.664]]}, {"kind": "s", "id": "s0_1_2", "md": "They want to know what it means for their customers, their deadline, and their ==promises==.", "zh": "他们想知道的是，这对他们的客户、他们的 deadline、他们许下的承诺意味着什么。", "sp": null, "gap": false, "start": 26.064, "end": 30.816, "words": [[26.182, 26.248], [26.261, 26.406], [26.419, 26.472], [26.485, 26.669], [26.682, 26.827], [26.84, 26.946], [26.959, 27.314], [27.327, 27.446], [27.459, 27.59], [27.603, 28.301], [28.498, 28.669], [28.682, 29.248], [29.538, 29.59], [29.603, 29.722], [29.735, 30.432]]}, {"kind": "s", "id": "s0_1_3", "md": "**Explain the system only as deeply as the decision in front of them requires.**", "zh": "系统讲到多深，只取决于他们眼前要做的决定需要多深。", "sp": null, "gap": false, "start": 30.816, "end": 35.928, "words": [[30.921, 31.434], [31.448, 31.54], [31.553, 32.026], [32.158, 32.592], [32.605, 32.75], [32.816, 33.329], [33.342, 33.461], [33.474, 33.566], [33.579, 34.105], [34.119, 34.224], [34.237, 34.592], [34.605, 34.671], [34.684, 34.829], [34.842, 35.54]]}, {"kind": "s", "id": "s0_2_0", "md": "This is not about ==dumbing== things down for people who are less smart.", "zh": "这不是因为对方不够聪明，所以要讲得浅显一点。", "sp": null, "gap": true, "start": 35.928, "end": 39.6, "words": [[36.046, 36.191], [36.204, 36.31], [36.323, 36.533], [36.546, 36.875], [36.889, 37.178], [37.191, 37.481], [37.494, 37.77], [37.783, 37.928], [37.941, 38.257], [38.27, 38.349], [38.362, 38.467], [38.481, 38.731], [38.744, 39.204]]}, {"kind": "s", "id": "s0_2_1", "md": "It is about __translating__ your world into theirs, which is a skill in its own right.", "zh": "而是把你的世界翻译成他们的世界，这本身就是一项本事。", "sp": null, "gap": false, "start": 39.6, "end": 44.664, "words": [[39.705, 39.784], [39.797, 39.889], [39.903, 40.192], [40.205, 40.982], [40.995, 41.166], [41.179, 41.613], [41.626, 41.876], [41.889, 42.416], [42.639, 42.824], [42.837, 42.942], [42.955, 43.008], [43.021, 43.482], [43.495, 43.574], [43.587, 43.732], [43.745, 43.916], [43.929, 44.271]]}, {"kind": "h", "id": "h1", "md": "2. Outcome, Picture, Impact", "zh": "2. 结果、画面、影响", "start": 44.664, "end": 47.592, "words": [[44.782, 45.046], [45.388, 45.874], [46.085, 46.559], [46.598, 47.19]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with the outcome they care about.", "zh": "先讲他们关心的结果。", "sp": null, "gap": false, "start": 47.592, "end": 49.896, "words": [[47.71, 48.0], [48.013, 48.145], [48.158, 48.289], [48.303, 48.724], [48.737, 48.855], [48.868, 49.105], [49.118, 49.513]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Right now, a customer's order can take up to a minute to show up in their history.\"", "zh": "「现在，客户下的单最长要一分钟才能在历史订单里看到。」", "sp": null, "gap": false, "start": 49.896, "end": 55.224, "words": [[50.08, 50.146], [50.225, 50.541], [50.975, 51.028], [51.041, 51.554], [51.567, 51.883], [51.896, 52.028], [52.041, 52.304], [52.317, 52.488], [52.501, 52.659], [52.672, 52.725], [52.738, 53.133], [53.146, 53.238], [53.251, 53.607], [53.62, 53.83], [53.922, 54.001], [54.014, 54.185], [54.199, 54.712]]}, {"kind": "s", "id": "s1_1_0", "md": "Then give one picture, not five.", "zh": "然后给一个画面，不是五个。", "sp": null, "gap": true, "start": 55.224, "end": 57.648, "words": [[55.342, 55.448], [55.461, 55.645], [55.658, 55.842], [55.856, 56.277], [56.592, 56.777], [56.79, 57.263]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Think of it like a busy restaurant kitchen; orders come in faster than the cooks can handle, so they ==pile up== at the counter.\"", "zh": "「可以把它想象成一个忙碌的餐厅后厨：单子进来的速度比厨师做得快，就在出餐口堆起来了。」", "sp": null, "gap": false, "start": 57.648, "end": 65.112, "words": [[57.898, 57.937], [58.016, 58.122], [58.135, 58.253], [58.266, 58.451], [58.464, 58.569], [58.648, 59.016], [59.03, 59.569], [59.582, 60.03], [60.451, 60.727], [60.74, 60.924], [60.937, 61.043], [61.056, 61.569], [61.582, 61.714], [61.727, 61.819], [61.832, 62.161], [62.174, 62.306], [62.319, 62.753], [63.135, 63.214], [63.227, 63.345], [63.359, 63.74], [63.753, 63.911], [63.924, 64.003], [64.016, 64.095], [64.109, 64.595]]}, {"kind": "s", "id": "s1_1_2", "md": "**One good analogy beats ten accurate details.**", "zh": "一个好的类比，胜过十个准确的细节。", "sp": null, "gap": false, "start": 65.112, "end": 68.808, "words": [[65.23, 65.441], [65.454, 65.625], [65.638, 66.165], [66.178, 66.744], [66.836, 67.178], [67.296, 67.73], [67.744, 68.415]]}, {"kind": "s", "id": "s1_1_3", "md": "Pick something from daily life, and stop as soon as the picture works, before the ==analogy== starts to break.", "zh": "从日常生活里挑个例子，画面一立住就停，别等到类比开始站不住脚。", "sp": null, "gap": false, "start": 68.808, "end": 75.336, "words": [[68.926, 69.071], [69.084, 69.466], [69.479, 69.65], [69.663, 70.005], [70.019, 70.505], [70.821, 70.887], [70.9, 71.216], [71.229, 71.347], [71.361, 71.663], [71.676, 71.795], [71.808, 71.9], [71.913, 72.321], [72.334, 72.808], [73.032, 73.387], [73.4, 73.479], [73.492, 74.097], [74.111, 74.44], [74.453, 74.532], [74.545, 74.953]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, connect it back to their world.", "zh": "最后，把它跟他们的世界连起来。", "sp": null, "gap": true, "start": 75.336, "end": 78.024, "words": [[75.507, 75.968], [76.218, 76.56], [76.573, 76.665], [76.678, 76.928], [76.941, 77.033], [77.047, 77.218], [77.231, 77.626]]}, {"kind": "s", "id": "s1_2_1", "md": "\"Adding more cooks takes about three weeks, which is why the promotion should start after the holidays.\"", "zh": "「再加厨师大概要三周，所以促销最好放在节后开始。」", "sp": null, "gap": false, "start": 78.024, "end": 84.096, "words": [[78.195, 78.3], [78.379, 78.603], [78.616, 79.011], [79.024, 79.313], [79.327, 79.59], [79.603, 79.932], [79.945, 80.524], [80.748, 80.919], [80.932, 81.037], [81.05, 81.208], [81.221, 81.314], [81.327, 81.853], [81.866, 82.064], [82.077, 82.537], [82.55, 82.8], [82.813, 82.879], [82.892, 83.59]]}, {"kind": "s", "id": "s1_2_2", "md": "Now they can __plan around it__, which is what they really needed.", "zh": "这样他们就能据此做计划了，这才是他们真正需要的。", "sp": null, "gap": false, "start": 84.096, "end": 87.432, "words": [[84.201, 84.306], [84.32, 84.438], [84.451, 84.596], [84.609, 84.899], [84.912, 85.293], [85.307, 85.438], [85.741, 85.886], [85.899, 85.991], [86.004, 86.135], [86.149, 86.28], [86.293, 86.609], [86.622, 87.043]]}, {"kind": "s", "id": "s1_3_0", "md": "Watch your ==jargon== along the way.", "zh": "过程中注意少用黑话。", "sp": null, "gap": true, "start": 87.432, "end": 89.352, "words": [[87.537, 87.735], [87.748, 87.866], [87.879, 88.235], [88.248, 88.537], [88.55, 88.643], [88.656, 88.971]]}, {"kind": "s", "id": "s1_3_1", "md": "Words like \"latency\" or \"throughput\" feel normal to you, but each one is a small wall.", "zh": "像「延迟」「吞吐量」这种词你觉得很平常，但每一个对他们来说都是一道小墙。", "sp": null, "gap": false, "start": 89.352, "end": 95.784, "words": [[89.457, 89.72], [89.734, 89.984], [90.076, 90.76], [90.931, 91.115], [91.141, 91.773], [92.076, 92.418], [92.431, 92.786], [92.799, 92.931], [92.944, 93.168], [93.47, 93.641], [93.707, 93.891], [93.905, 94.326], [94.484, 94.589], [94.602, 94.668], [94.681, 95.049], [95.063, 95.391]]}, {"kind": "s", "id": "s1_3_2", "md": "At the end, ask them to __say it back__ in their own words.", "zh": "最后，请他们用自己的话复述一遍。", "sp": null, "gap": false, "start": 95.784, "end": 99.456, "words": [[95.889, 95.995], [96.008, 96.113], [96.126, 96.574], [96.981, 97.218], [97.231, 97.35], [97.363, 97.429], [97.442, 97.679], [97.692, 97.784], [97.797, 98.1], [98.113, 98.179], [98.192, 98.35], [98.363, 98.521], [98.534, 99.073]]}, {"kind": "s", "id": "s1_3_3", "md": "If they can explain it to their boss, you have done your job ==properly==.", "zh": "如果他们能讲给自己的老板听，你的活儿就干到位了。", "sp": null, "gap": false, "start": 99.456, "end": 103.176, "words": [[99.561, 99.653], [99.667, 99.785], [99.798, 99.93], [99.943, 100.338], [100.351, 100.417], [100.43, 100.509], [100.522, 100.693], [100.706, 101.193], [101.456, 101.522], [101.535, 101.653], [101.667, 101.838], [101.851, 101.956], [101.969, 102.259], [102.272, 102.798]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

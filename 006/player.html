@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Asking the Question Everyone Is Afraid to Ask · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "006", "title": "Asking the Question Everyone Is Afraid to Ask", "meta": "B2 · 约 270 词 · 场景：会议提问", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Question in Everyone's Head", "heading_zh": "1. 每个人心里的那个问题", "rows": [[{"id": "s0_0_0", "md": "In almost every big meeting, there is one question that half the room is thinking and nobody is asking.", "text": "In almost every big meeting, there is one question that half the room is thinking and nobody is asking.", "zh": "几乎每个大会上，都有一个问题是半屋子人心里在想、却没人问出口的。", "sp": null}, {"id": "s0_0_1", "md": "\"Who is actually going to maintain this after launch?\"", "text": "\"Who is actually going to maintain this after launch?\"", "zh": "「上线之后到底谁来维护这个东西？」", "sp": null}, {"id": "s0_0_2", "md": "\"Do we have the data to back up that growth number?\"", "text": "\"Do we have the data to back up that growth number?\"", "zh": "「这个增长数字有数据撑着吗？」", "sp": null}, {"id": "s0_0_3", "md": "\"Didn't we try this two years ago?\"", "text": "\"Didn't we try this two years ago?\"", "zh": "「这个我们两年前不是试过吗？」", "sp": null}], [{"id": "s0_1_0", "md": "People stay quiet for ==understandable== reasons.", "text": "People stay quiet for understandable reasons.", "zh": "大家不吭声，原因也可以理解。", "sp": null}, {"id": "s0_1_1", "md": "They worry the question sounds ==naive==, or that it will __make the presenter look bad__ in front of leadership.", "text": "They worry the question sounds naive, or that it will make the presenter look bad in front of leadership.", "zh": "他们担心问题显得太幼稚，或者让讲的人在老板面前下不来台。", "sp": null}, {"id": "s0_1_2", "md": "So everyone nods, and the ==assumption== survives another month.", "text": "So everyone nods, and the assumption survives another month.", "zh": "于是大家都点头，这个假设又多活了一个月。", "sp": null}], [{"id": "s0_2_0", "md": "**The scary question is usually the one with the most value.**", "text": "The scary question is usually the one with the most value.", "zh": "最让人发怵的问题，通常也最有价值。", "sp": null}, {"id": "s0_2_1", "md": "If you are confused, you are rarely the only one.", "text": "If you are confused, you are rarely the only one.", "zh": "如果你有疑惑，很少只有你一个人疑惑。", "sp": null}, {"id": "s0_2_2", "md": "Asking it early saves the team from __building on a weak foundation__.", "text": "Asking it early saves the team from building on a weak foundation.", "zh": "早点问出来，能避免团队在一个不牢靠的地基上往上盖楼。", "sp": null}]]}, {"heading": "2. How to Ask It Without Starting a Fight", "heading_zh": "2. 怎么问才不会吵起来", "rows": [[{"id": "s1_0_0", "md": "First, own the confusion.", "text": "First, own the confusion.", "zh": "第一，把困惑揽到自己身上。", "sp": null}, {"id": "s1_0_1", "md": "Phrases like \"Help me understand\" or \"I might be missing something\" __lower the temperature__.", "text": "Phrases like \"Help me understand\" or \"I might be missing something\" lower the temperature.", "zh": "像「帮我理解一下」或者「可能是我漏了什么」这样的说法，能让气氛降降温。", "sp": null}, {"id": "s1_0_2", "md": "They make it clear you are curious, not ==accusing== anyone.", "text": "They make it clear you are curious, not accusing anyone.", "zh": "这表明你是好奇，而不是在指责谁。", "sp": null}], [{"id": "s1_1_0", "md": "Second, connect the question to a consequence.", "text": "Second, connect the question to a consequence.", "zh": "第二，把问题和后果挂上钩。", "sp": null}, {"id": "s1_1_1", "md": "Instead of \"Is this number real?\", try \"If the growth is closer to five percent, does the plan still work?\"", "text": "Instead of \"Is this number real?\", try \"If the growth is closer to five percent, does the plan still work?\"", "zh": "别问「这个数字靠谱吗？」，试试问「如果增长只有百分之五左右，这个方案还成立吗？」", "sp": null}, {"id": "s1_1_2", "md": "Now you are testing the plan, not the person.", "text": "Now you are testing the plan, not the person.", "zh": "这样你检验的是方案，而不是人。", "sp": null}], [{"id": "s1_2_0", "md": "Third, ask about ==ownership== and history directly, because those are the topics people avoid most.", "text": "Third, ask about ownership and history directly, because those are the topics people avoid most.", "zh": "第三，直接问归属和历史，因为这是大家最爱回避的话题。", "sp": null}, {"id": "s1_2_1", "md": "\"Who will be on call for this?\" sounds simple, but it often reveals that nobody has thought about it.", "text": "\"Who will be on call for this?\" sounds simple, but it often reveals that nobody has thought about it.", "zh": "「这个谁来 on-call？」听起来很简单，但经常会暴露出根本没人想过这件事。", "sp": null}, {"id": "s1_2_2", "md": "**Simple questions expose missing plans faster than clever ones.**", "text": "Simple questions expose missing plans faster than clever ones.", "zh": "简单的问题比聪明的问题更快暴露计划里的缺口。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, if the room goes quiet, do not rush to fill it.", "text": "Finally, if the room goes quiet, do not rush to fill it.", "zh": "最后，如果全场安静下来，别急着去填。", "sp": null}, {"id": "s1_3_1", "md": "Give the presenter a moment to think.", "text": "Give the presenter a moment to think.", "zh": "给讲的人一点时间想一想。", "sp": null}, {"id": "s1_3_2", "md": "A ==genuine== answer, even \"We don't know yet,\" is worth far more than a confident ==dodge==.", "text": "A genuine answer, even \"We don't know yet,\" is worth far more than a confident dodge.", "zh": "一个真诚的回答，哪怕是「我们还不知道」，也比一个自信的打太极值钱得多。", "sp": null}, {"id": "s1_3_3", "md": "Either way, the team now knows where the real risk sits, and that is exactly why you asked.", "text": "Either way, the team now knows where the real risk sits, and that is exactly why you asked.", "zh": "不管答案是什么，团队现在都知道真正的风险在哪儿了，而这正是你问这个问题的原因。", "sp": null}]]}], "gist": [{"q": "大家为什么不敢问那个关键问题？", "a": "怕问题显得幼稚，或怕在领导面前让讲者难堪，于是都点头，错误假设就继续存在。"}, {"q": "作者给出了哪些提问技巧，让尖锐问题不变成冲突？", "a": "先承认自己没搞懂；把问题和后果挂钩，检验方案而不是人；直接问归属和历史；问完别急着填补沉默。"}, {"q": "为什么作者说“谁来值班”这种简单问题很有价值？", "a": "简单问题往往能暴露出根本没人考虑过的缺失计划。"}], "dictation": [{"id": "s0_2_0", "text": "The scary question is usually the one with the most value."}, {"id": "s1_2_2", "text": "Simple questions expose missing plans faster than clever ones."}, {"id": "s0_2_1", "text": "If you are confused, you are rarely the only one."}, {"id": "s1_1_2", "text": "Now you are testing the plan, not the person."}], "shadow": {"text": "Second, connect the question to a consequence. Instead of \"Is this number real?\", try \"If the growth is closer to five percent, does the plan still work?\" Now you are testing the plan, not the person.", "marked": "<b>Second</b>, / connect the question / to a <b>consequence</b>. //<br>Instead of \"Is this number <b>real</b>?\", / try \"If the growth is closer to <b>five</b> percent, / does the plan <b>still</b> work?\" //<br>Now you are testing the <b>plan</b>, / <b>not</b> the person. //"}, "prompts": [{"q": "另一个团队在大会上展示新平台方案，很亮眼，但没人提谁来长期维护。用 30 秒问出这个问题，语气好奇而不是指责。", "ref": "This looks great, and I can see a lot of teams using it. Help me understand one thing, though. After the launch, who's going to own the platform day to day? I'm thinking about on-call, upgrades, and support questions from other teams. If that's already planned, great. If not, it might be worth deciding before we sign up more users.", "ref_zh": "这个看起来很棒，我能想到很多团队都会用。不过有一点想请你帮我理解一下。上线之后，平台的日常运维谁来负责？我想的是 on-call、升级，还有其他团队来问的支持问题。如果已经规划好了，那很好。如果还没有，可能值得在接入更多用户之前先定下来。", "id": "ref0"}, {"q": "PM 的方案基于“用户增长百分之三十”的假设，你觉得太乐观。用 30 秒把质疑和后果挂钩，而不是直接说数字不对。", "ref": "I might be missing something, so let me ask it this way. The plan assumes thirty percent growth next quarter. If we only get half of that, what happens? Do we still need the extra servers, and does the hiring plan still make sense? I'm not saying the number is wrong. I just want to know the plan survives if we land a bit lower.", "ref_zh": "可能是我漏了什么，那我换个方式问。这个方案假设下季度增长百分之三十。如果只有一半，会怎么样？额外的服务器还需要吗？招聘计划还说得通吗？我不是说这个数字不对。我只是想确认，就算结果低一点，这个方案也扛得住。", "id": "ref1"}], "words": [{"w": "understandable", "ipa": "/ˌʌndərˈstændəbəl/", "zh": "可以理解的", "ex": "The delay is understandable given the vendor issue.", "id": "w0"}, {"w": "naive", "ipa": "/naɪˈiːv/", "zh": "天真的、幼稚的", "ex": "This might be a naive question, but why do we need two queues?", "id": "w1"}, {"w": "assumption", "ipa": "/əˈsʌmpʃən/", "zh": "假设、前提", "ex": "The whole capacity plan rests on one assumption about peak traffic.", "id": "w2"}, {"w": "accuse", "ipa": "/əˈkjuːz/", "zh": "指责、指控", "ex": "Nobody is accusing your team; we just want to understand the timeline.", "id": "w3"}, {"w": "ownership", "ipa": "/ˈoʊnərʃɪp/", "zh": "归属、负责", "ex": "Ownership of the shared library is unclear right now.", "id": "w4"}, {"w": "genuine", "ipa": "/ˈdʒenjuɪn/", "zh": "真实的、真诚的", "ex": "I have a genuine question about how the retry logic works.", "id": "w5"}, {"w": "dodge (n.)", "ipa": "/dɑːdʒ/", "zh": "回避、搪塞", "ex": "Saying \"it depends\" felt like a dodge, so I asked again.", "tts_w": "dodge", "id": "w6"}, {"w": "consequence", "ipa": "/ˈkɑːnsəˌkwens/", "zh": "后果", "ex": "One consequence of skipping the review was a broken checkout page.", "id": "w7"}, {"w": "expose", "ipa": "/ɪkˈspoʊz/", "zh": "暴露、揭示", "ex": "The load test exposed a memory leak in the gateway.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Question in Everyone's Head", "zh": "1. 每个人心里的那个问题", "start": 0.0, "end": 2.952, "words": [[0.118, 0.395], [0.711, 0.816], [0.829, 1.355], [1.474, 1.632], [1.737, 2.21], [2.224, 2.566]]}, {"kind": "s", "id": "s0_0_0", "md": "In almost every big meeting, there is one question that half the room is thinking and nobody is asking.", "zh": "几乎每个大会上，都有一个问题是半屋子人心里在想、却没人问出口的。", "sp": null, "gap": false, "start": 2.952, "end": 9.168, "words": [[3.057, 3.202], [3.215, 3.636], [3.768, 4.044], [4.057, 4.294], [4.307, 4.702], [5.005, 5.123], [5.136, 5.241], [5.255, 5.518], [5.531, 5.991], [6.005, 6.136], [6.149, 6.465], [6.478, 6.544], [6.557, 6.886], [6.899, 7.044], [7.057, 7.505], [7.518, 7.649], [7.663, 8.084], [8.097, 8.215], [8.228, 8.768]]}, {"kind": "s", "id": "s0_0_1", "md": "\"Who is actually going to maintain this after launch?\"", "zh": "「上线之后到底谁来维护这个东西？」", "sp": null, "gap": false, "start": 9.168, "end": 12.168, "words": [[9.392, 9.444], [9.444, 9.563], [9.576, 9.931], [9.944, 10.142], [10.155, 10.194], [10.207, 10.76], [10.773, 10.971], [10.984, 11.247], [11.26, 11.773]]}, {"kind": "s", "id": "s0_0_2", "md": "\"Do we have the data to back up that growth number?\"", "zh": "「这个增长数字有数据撑着吗？」", "sp": null, "gap": false, "start": 12.168, "end": 15.0, "words": [[12.352, 12.379], [12.379, 12.484], [12.497, 12.668], [12.681, 12.773], [12.786, 13.05], [13.063, 13.168], [13.181, 13.497], [13.51, 13.655], [13.668, 13.852], [13.865, 14.155], [14.168, 14.471]]}, {"kind": "s", "id": "s0_0_3", "md": "\"Didn't we try this two years ago?\"", "zh": "「这个我们两年前不是试过吗？」", "sp": null, "gap": false, "start": 15.0, "end": 17.112, "words": [[15.184, 15.237], [15.316, 15.395], [15.408, 15.645], [15.658, 15.829], [15.842, 16.053], [16.066, 16.368], [16.382, 16.697]]}, {"kind": "s", "id": "s0_1_0", "md": "People stay quiet for ==understandable== reasons.", "zh": "大家不吭声，原因也可以理解。", "sp": null, "gap": true, "start": 17.112, "end": 20.16, "words": [[17.23, 17.48], [17.494, 17.77], [17.783, 18.244], [18.257, 18.494], [18.507, 19.204], [19.217, 19.77]]}, {"kind": "s", "id": "s0_1_1", "md": "They worry the question sounds ==naive==, or that it will __make the presenter look bad__ in front of leadership.", "zh": "他们担心问题显得太幼稚，或者让讲的人在老板面前下不来台。", "sp": null, "gap": false, "start": 20.16, "end": 26.112, "words": [[20.278, 20.371], [20.384, 20.66], [20.673, 20.778], [20.792, 21.357], [21.371, 21.792], [21.805, 22.41], [22.857, 22.923], [22.936, 23.068], [23.081, 23.147], [23.16, 23.265], [23.278, 23.489], [23.502, 23.581], [23.594, 24.042], [24.055, 24.292], [24.305, 24.647], [24.66, 24.752], [24.765, 25.028], [25.042, 25.134], [25.147, 25.713]]}, {"kind": "s", "id": "s0_1_2", "md": "So everyone nods, and the ==assumption== survives another month.", "zh": "于是大家都点头，这个假设又多活了一个月。", "sp": null, "gap": false, "start": 26.112, "end": 30.24, "words": [[26.217, 26.467], [26.48, 26.928], [26.941, 27.48], [27.717, 27.822], [27.836, 27.928], [27.941, 28.546], [28.559, 29.099], [29.112, 29.415], [29.428, 29.836]]}, {"kind": "s", "id": "s0_2_0", "md": "**The scary question is usually the one with the most value.**", "zh": "最让人发怵的问题，通常也最有价值。", "sp": null, "gap": true, "start": 30.24, "end": 33.864, "words": [[30.358, 30.411], [30.424, 30.753], [30.766, 31.293], [31.424, 31.595], [31.608, 32.069], [32.082, 32.201], [32.214, 32.516], [32.529, 32.648], [32.661, 32.727], [32.74, 33.029], [33.043, 33.464]]}, {"kind": "s", "id": "s0_2_1", "md": "If you are confused, you are rarely the only one.", "zh": "如果你有疑惑，很少只有你一个人疑惑。", "sp": null, "gap": false, "start": 33.864, "end": 37.152, "words": [[33.969, 34.101], [34.114, 34.232], [34.246, 34.364], [34.377, 35.075], [35.377, 35.482], [35.496, 35.693], [35.706, 36.048], [36.061, 36.18], [36.193, 36.456], [36.469, 36.772]]}, {"kind": "s", "id": "s0_2_2", "md": "Asking it early saves the team from __building on a weak foundation__.", "zh": "早点问出来，能避免团队在一个不牢靠的地基上往上盖楼。", "sp": null, "gap": false, "start": 37.152, "end": 41.352, "words": [[37.257, 37.639], [37.652, 37.77], [37.876, 38.191], [38.205, 38.599], [38.613, 38.718], [38.731, 39.126], [39.139, 39.349], [39.363, 39.757], [39.77, 39.889], [39.902, 39.981], [39.994, 40.244], [40.257, 40.955]]}, {"kind": "h", "id": "h1", "md": "2. How to Ask It Without Starting a Fight", "zh": "2. 怎么问才不会吵起来", "start": 41.352, "end": 44.424, "words": [[41.47, 41.681], [42.207, 42.286], [42.299, 42.391], [42.405, 42.707], [42.72, 42.799], [42.813, 43.181], [43.194, 43.563], [43.576, 43.615], [43.628, 44.036]]}, {"kind": "s", "id": "s1_0_0", "md": "First, own the confusion.", "zh": "第一，把困惑揽到自己身上。", "sp": null, "gap": false, "start": 44.424, "end": 46.488, "words": [[44.582, 44.937], [45.319, 45.398], [45.411, 45.49], [45.503, 46.108]]}, {"kind": "s", "id": "s1_0_1", "md": "Phrases like \"Help me understand\" or \"I might be missing something\" __lower the temperature__.", "zh": "像「帮我理解一下」或者「可能是我漏了什么」这样的说法，能让气氛降降温。", "sp": null, "gap": false, "start": 46.488, "end": 52.344, "words": [[46.672, 47.08], [47.093, 47.317], [47.527, 47.738], [47.751, 47.883], [47.896, 48.554], [48.988, 49.199], [49.488, 49.514], [49.527, 49.777], [49.791, 49.896], [49.909, 50.291], [50.304, 50.725], [51.041, 51.264], [51.277, 51.37], [51.383, 51.962]]}, {"kind": "s", "id": "s1_0_2", "md": "They make it clear you are curious, not ==accusing== anyone.", "zh": "这表明你是好奇，而不是在指责谁。", "sp": null, "gap": false, "start": 52.344, "end": 55.896, "words": [[52.462, 52.528], [52.541, 52.739], [52.752, 52.831], [52.844, 53.107], [53.12, 53.239], [53.252, 53.37], [53.383, 54.068], [54.436, 54.581], [54.594, 55.055], [55.068, 55.502]]}, {"kind": "s", "id": "s1_1_0", "md": "Second, connect the question to a consequence.", "zh": "第二，把问题和后果挂上钩。", "sp": null, "gap": true, "start": 55.896, "end": 59.112, "words": [[56.014, 56.488], [56.778, 57.093], [57.107, 57.199], [57.212, 57.646], [57.659, 57.791], [57.804, 57.87], [57.883, 58.712]]}, {"kind": "s", "id": "s1_1_1", "md": "Instead of \"Is this number real?\", try \"If the growth is closer to five percent, does the plan still work?\"", "zh": "别问「这个数字靠谱吗？」，试试问「如果增长只有百分之五左右，这个方案还成立吗？」", "sp": null, "gap": false, "start": 59.112, "end": 66.312, "words": [[59.217, 59.638], [59.651, 59.901], [59.967, 60.165], [60.178, 60.454], [60.467, 60.849], [60.862, 61.204], [61.717, 61.98], [62.007, 62.138], [62.151, 62.23], [62.244, 62.638], [62.651, 62.77], [62.783, 63.23], [63.244, 63.296], [63.309, 63.651], [63.665, 64.178], [64.507, 64.651], [64.665, 64.757], [64.77, 65.073], [65.086, 65.401], [65.415, 65.783]]}, {"kind": "s", "id": "s1_1_2", "md": "Now you are testing the plan, not the person.", "zh": "这样你检验的是方案，而不是人。", "sp": null, "gap": false, "start": 66.312, "end": 69.192, "words": [[66.417, 66.575], [66.588, 66.694], [66.707, 66.812], [66.825, 67.22], [67.233, 67.312], [67.325, 67.746], [68.154, 68.286], [68.299, 68.378], [68.391, 68.812]]}, {"kind": "s", "id": "s1_2_0", "md": "Third, ask about ==ownership== and history directly, because those are the topics people avoid most.", "zh": "第三，直接问归属和历史，因为这是大家最爱回避的话题。", "sp": null, "gap": true, "start": 69.192, "end": 75.6, "words": [[69.337, 69.85], [70.245, 70.481], [70.495, 70.784], [70.797, 71.324], [71.429, 71.521], [71.534, 71.916], [71.929, 72.481], [72.771, 73.074], [73.087, 73.31], [73.324, 73.376], [73.389, 73.481], [73.495, 73.942], [73.955, 74.297], [74.31, 74.666], [74.679, 75.205]]}, {"kind": "s", "id": "s1_2_1", "md": "\"Who will be on call for this?\" sounds simple, but it often reveals that nobody has thought about it.", "zh": "「这个谁来 on-call？」听起来很简单，但经常会暴露出根本没人想过这件事。", "sp": null, "gap": false, "start": 75.6, "end": 81.432, "words": [[75.771, 75.797], [75.797, 75.916], [75.929, 76.061], [76.074, 76.205], [76.218, 76.508], [76.521, 76.679], [76.692, 77.087], [77.35, 77.679], [77.692, 78.087], [78.468, 78.587], [78.6, 78.679], [78.692, 79.061], [79.074, 79.56], [79.574, 79.745], [79.758, 80.218], [80.232, 80.35], [80.363, 80.587], [80.6, 80.889], [80.903, 81.047]]}, {"kind": "s", "id": "s1_2_2", "md": "**Simple questions expose missing plans faster than clever ones.**", "zh": "简单的问题比聪明的问题更快暴露计划里的缺口。", "sp": null, "gap": false, "start": 81.432, "end": 85.56, "words": [[81.537, 81.879], [81.893, 82.379], [82.393, 82.932], [82.945, 83.314], [83.327, 83.708], [83.721, 84.248], [84.261, 84.393], [84.406, 84.708], [84.721, 85.156]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, if the room goes quiet, do not rush to fill it.", "zh": "最后，如果全场安静下来，别急着去填。", "sp": null, "gap": true, "start": 85.56, "end": 89.688, "words": [[85.731, 86.178], [86.481, 86.573], [86.586, 86.652], [86.665, 86.981], [86.994, 87.257], [87.271, 87.757], [88.034, 88.165], [88.178, 88.455], [88.468, 88.705], [88.718, 88.797], [88.81, 89.126], [89.139, 89.297]]}, {"kind": "s", "id": "s1_3_1", "md": "Give the presenter a moment to think.", "zh": "给讲的人一点时间想一想。", "sp": null, "gap": false, "start": 89.688, "end": 91.968, "words": [[89.793, 89.912], [89.925, 90.004], [90.017, 90.53], [90.543, 90.583], [90.596, 90.991], [91.004, 91.083], [91.096, 91.583]]}, {"kind": "s", "id": "s1_3_2", "md": "A ==genuine== answer, even \"We don't know yet,\" is worth far more than a confident ==dodge==.", "zh": "一个真诚的回答，哪怕是「我们还不知道」，也比一个自信的打太极值钱得多。", "sp": null, "gap": false, "start": 91.968, "end": 97.968, "words": [[92.073, 92.152], [92.165, 92.6], [92.613, 93.06], [93.494, 93.771], [93.797, 93.955], [93.968, 94.231], [94.244, 94.442], [94.455, 94.797], [95.244, 95.376], [95.389, 95.626], [95.639, 95.994], [96.007, 96.336], [96.35, 96.481], [96.494, 96.547], [96.56, 97.113], [97.126, 97.586]]}, {"kind": "s", "id": "s1_3_3", "md": "Either way, the team now knows where the real risk sits, and that is exactly why you asked.", "zh": "不管答案是什么，团队现在都知道真正的风险在哪儿了，而这正是你问这个问题的原因。", "sp": null, "gap": false, "start": 97.968, "end": 103.848, "words": [[98.073, 98.31], [98.323, 98.665], [98.902, 98.994], [99.007, 99.297], [99.31, 99.534], [99.547, 99.955], [99.968, 100.086], [100.1, 100.179], [100.192, 100.56], [100.573, 100.836], [100.85, 101.376], [101.692, 101.81], [101.823, 101.994], [102.007, 102.1], [102.113, 102.613], [102.626, 102.81], [102.823, 102.981], [102.994, 103.468]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

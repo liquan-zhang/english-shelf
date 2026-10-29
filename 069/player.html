@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Telling Customers What Went Wrong · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "069", "title": "Telling Customers What Went Wrong", "meta": "B2 · 约 270 词 · 场景：对外故障说明", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. What Customers Actually Want", "heading_zh": "1. 客户真正想要什么", "rows": [[{"id": "s0_0_0", "md": "After a serious outage, the hardest message to write is the one that goes to customers.", "text": "After a serious outage, the hardest message to write is the one that goes to customers.", "zh": "一次严重故障之后，最难写的就是发给客户的那封信。", "sp": null}, {"id": "s0_0_1", "md": "The ==temptation== is to say as little as possible.", "text": "The temptation is to say as little as possible.", "zh": "最大的诱惑是能少说就少说。", "sp": null}, {"id": "s0_0_2", "md": "Phrases like \"some users may have experienced issues\" feel safe to legal teams and frustrating to everyone else.", "text": "Phrases like \"some users may have experienced issues\" feel safe to legal teams and frustrating to everyone else.", "zh": "像「部分用户可能遇到了问题」这种说法，法务觉得稳妥，其他人看了只会窝火。", "sp": null}], [{"id": "s0_1_0", "md": "Customers rarely expect a system that never fails.", "text": "Customers rarely expect a system that never fails.", "zh": "客户很少指望系统永远不出问题。", "sp": null}, {"id": "s0_1_1", "md": "What they expect is honesty about what happened and confidence that it won't happen the same way again.", "text": "What they expect is honesty about what happened and confidence that it won't happen the same way again.", "zh": "他们期待的是你坦诚说明发生了什么，并且相信同样的事不会再以同样的方式发生。", "sp": null}, {"id": "s0_1_2", "md": "**People forgive an outage much faster than they forgive feeling misled.**", "text": "People forgive an outage much faster than they forgive feeling misled.", "zh": "人们原谅一次故障，比原谅被糊弄的感觉要快得多。", "sp": null}], [{"id": "s0_2_0", "md": "==Evasive== language also creates more work, not less.", "text": "Evasive language also creates more work, not less.", "zh": "闪烁其词的措辞也只会带来更多工作，而不是更少。", "sp": null}, {"id": "s0_2_1", "md": "Support teams get flooded with tickets asking the exact questions your message ==dodged==.", "text": "Support teams get flooded with tickets asking the exact questions your message dodged.", "zh": "客服会被工单淹没，问的恰恰是你那封信回避掉的问题。", "sp": null}, {"id": "s0_2_2", "md": "Every vague sentence you save in the statement comes back as fifty angry emails.", "text": "Every vague sentence you save in the statement comes back as fifty angry emails.", "zh": "声明里你每省掉一句含糊话，最后都会变成五十封愤怒的邮件找回来。", "sp": null}]]}, {"heading": "2. Own It, Explain It, Fix It", "heading_zh": "2. 认下来、讲清楚、改到位", "rows": [[{"id": "s1_0_0", "md": "Start by __taking ownership__ in the first sentence.", "text": "Start by taking ownership in the first sentence.", "zh": "第一句话就把责任认下来。", "sp": null}, {"id": "s1_0_1", "md": "\"Yesterday, between two and four in the afternoon, many of you could not log in, and that was our fault.\"", "text": "\"Yesterday, between two and four in the afternoon, many of you could not log in, and that was our fault.\"", "zh": "「昨天下午两点到四点，很多用户无法登录，这是我们的责任。」", "sp": null}, {"id": "s1_0_2", "md": "Active voice and a clear time window show that you are not hiding.", "text": "Active voice and a clear time window show that you are not hiding.", "zh": "用主动语态，加上清晰的时间窗口，表明你没有在藏着掖着。", "sp": null}], [{"id": "s1_1_0", "md": "Then explain the cause in plain language, without internal jargon.", "text": "Then explain the cause in plain language, without internal jargon.", "zh": "然后用大白话解释原因，不要用内部黑话。", "sp": null}, {"id": "s1_1_1", "md": "\"A configuration change sent all login traffic to a single server, which became ==overloaded==.\"", "text": "\"A configuration change sent all login traffic to a single server, which became overloaded.\"", "zh": "「一次配置变更把所有登录流量都打到了一台服务器上，导致它过载。」", "sp": null}, {"id": "s1_1_2", "md": "Customers do not need the full technical story, but they need enough to believe you understand it.", "text": "Customers do not need the full technical story, but they need enough to believe you understand it.", "zh": "客户不需要完整的技术细节，但需要足够的信息来相信你搞明白了。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, list what you have already changed, not just what you will ==investigate==.", "text": "Finally, list what you have already changed, not just what you will investigate.", "zh": "最后，列出你已经改了什么，而不只是你打算调查什么。", "sp": null}, {"id": "s1_2_1", "md": "Concrete steps, like extra checks before every configuration change, are far more ==reassuring== than promises to __do better__.", "text": "Concrete steps, like extra checks before every configuration change, are far more reassuring than promises to do better.", "zh": "具体的措施，比如每次配置变更前增加检查，比承诺「我们会做得更好」让人安心得多。", "sp": null}, {"id": "s1_2_2", "md": "**An apology without a specific change is just a nicer way of saying nothing.**", "text": "An apology without a specific change is just a nicer way of saying nothing.", "zh": "没有具体改动的道歉，只是一种更好听的什么都没说。", "sp": null}], [{"id": "s1_3_0", "md": "Send the message within a day, while customers are still paying attention.", "text": "Send the message within a day, while customers are still paying attention.", "zh": "一天之内把信发出去，趁客户还在关注。", "sp": null}, {"id": "s1_3_1", "md": "A perfect explanation two weeks later reads like an afterthought, even if every detail in it is right.", "text": "A perfect explanation two weeks later reads like an afterthought, even if every detail in it is right.", "zh": "两周后才发一份完美的解释，读起来就像事后补的，哪怕里面每个细节都是对的。", "sp": null}]]}], "gist": [{"q": "写给客户的故障说明，常见的诱惑是什么？为什么不好？", "a": "尽量少说、用含糊措辞；客户会觉得被误导，客服还会被追问同样问题的工单淹没。"}, {"q": "客户真正想从故障说明里得到什么？", "a": "诚实说明发生了什么，并相信同样的问题不会以同样方式再发生。"}, {"q": "一份好的说明包含哪三步？", "a": "第一句就承担责任（主动语态+明确时间段）；用大白话解释原因；列出已经做出的具体改变，而不只是承诺调查。"}], "dictation": [{"id": "s0_1_2", "text": "People forgive an outage much faster than they forgive feeling misled."}, {"id": "s1_0_2", "text": "Active voice and a clear time window show that you are not hiding."}, {"id": "s1_1_2", "text": "Customers do not need the full technical story, but they need enough to believe you understand it."}, {"id": "s1_2_2", "text": "An apology without a specific change is just a nicer way of saying nothing."}], "shadow": {"text": "Customers rarely expect a system that never fails. What they expect is honesty about what happened and confidence that it won't happen the same way again. People forgive an outage much faster than they forgive feeling misled.", "marked": "Customers <b>rarely</b> expect a system / that <b>never</b> fails. //<br>What they <b>expect</b> / is <b>honesty</b> about what happened / and <b>confidence</b> / that it won't happen the <b>same</b> way again. //<br>People <b>forgive</b> an outage / much <b>faster</b> / than they forgive feeling <b>misled</b>. //"}, "prompts": [{"q": "昨天的同步故障影响了一个大客户。你和对方负责人开电话会，用 30 秒说明发生了什么、原因和已做的改变。", "ref": "Thanks for making time. I want to be direct: yesterday, from nine to eleven in the morning, your team's files didn't sync, and that was our fault. A database upgrade on our side slowed every write request until they timed out. We've already rolled it back, and we've added a load test that every upgrade must pass first. I'm sorry for the disruption to your team.", "ref_zh": "谢谢您抽时间。我直说吧：昨天上午九点到十一点，贵团队的文件没有同步，这是我们的责任。我们这边的一次数据库升级拖慢了所有写请求，直到超时。我们已经回滚了，并且加了一项压测，以后每次升级都必须先通过。给您团队带来的影响，我很抱歉。", "id": "ref0"}, {"q": "法务给的对外声明草稿写着“部分用户可能遇到了问题”。用 30 秒说服他们改得更直接。", "ref": "I understand why the draft is careful, and I don't want us to admit anything we can't support. But 'some users may have experienced issues' will make customers angrier, because they know exactly what happened to them. If we state the time window and say clearly that it was our configuration error, support gets fewer tickets, and we look honest. Can we review a more direct version together?", "ref_zh": "我理解这份草稿为什么写得这么谨慎，我也不希望我们承认任何站不住的东西。但「部分用户可能遇到了问题」只会让客户更生气，因为他们很清楚自己遇到了什么。如果我们写明时间窗口，并清楚说明是我们的配置错误，客服工单会更少，我们也显得坦诚。我们能一起过一下一个更直接的版本吗？", "id": "ref1"}], "words": [{"w": "temptation", "ipa": "/tempˈteɪʃən/", "zh": "诱惑、冲动", "ex": "There's a temptation to blame the cloud provider, but the bug was ours.", "id": "w0"}, {"w": "evasive", "ipa": "/ɪˈveɪsɪv/", "zh": "含糊其辞的、回避的", "ex": "The vendor gave an evasive answer about their uptime last quarter.", "id": "w1"}, {"w": "dodge (v.)", "ipa": "/dɑːdʒ/", "zh": "回避、躲开（问题）", "ex": "He dodged the question about the delay and talked about new features.", "tts_w": "dodge", "id": "w2"}, {"w": "overloaded", "ipa": "/ˌoʊvərˈloʊdɪd/", "zh": "过载的", "ex": "The search cluster got overloaded when the campaign went live.", "id": "w3"}, {"w": "investigate", "ipa": "/ɪnˈvestɪˌɡeɪt/", "zh": "调查、排查", "ex": "We're still investigating why only Android users were affected.", "id": "w4"}, {"w": "reassuring", "ipa": "/ˌriːəˈʃʊrɪŋ/", "zh": "令人安心的", "ex": "It was reassuring to see the error rate drop right after the fix.", "id": "w5"}, {"w": "jargon", "ipa": "/ˈdʒɑːrɡən/", "zh": "行话、术语", "ex": "Please cut the jargon before this goes to the customer.", "id": "w6"}, {"w": "ownership", "ipa": "/ˈoʊnərˌʃɪp/", "zh": "担当、主人翁意识", "ex": "I like how she took ownership of the incident review.", "id": "w7"}, {"w": "mislead", "ipa": "/mɪsˈliːd/", "zh": "误导", "ex": "That chart could mislead people because the axis doesn't start at zero.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. What Customers Actually Want", "zh": "1. 客户真正想要什么", "start": 0.0, "end": 2.568, "words": [[0.105, 0.329], [0.724, 0.882], [0.895, 1.382], [1.395, 1.79], [1.803, 2.184]]}, {"kind": "s", "id": "s0_0_0", "md": "After a serious outage, the hardest message to write is the one that goes to customers.", "zh": "一次严重故障之后，最难写的就是发给客户的那封信。", "sp": null, "gap": false, "start": 2.568, "end": 8.256, "words": [[2.673, 2.976], [2.989, 3.042], [3.055, 3.581], [3.594, 4.134], [4.331, 4.41], [4.423, 4.857], [4.871, 5.265], [5.279, 5.397], [5.41, 5.792], [5.884, 6.015], [6.029, 6.147], [6.16, 6.568], [6.581, 6.752], [6.765, 7.042], [7.055, 7.147], [7.16, 7.857]]}, {"kind": "s", "id": "s0_0_1", "md": "The ==temptation== is to say as little as possible.", "zh": "最大的诱惑是能少说就少说。", "sp": null, "gap": false, "start": 8.256, "end": 11.496, "words": [[8.374, 8.44], [8.453, 9.164], [9.243, 9.361], [9.374, 9.467], [9.48, 9.874], [9.888, 10.059], [10.072, 10.335], [10.348, 10.44], [10.453, 11.098]]}, {"kind": "s", "id": "s0_0_2", "md": "Phrases like \"some users may have experienced issues\" feel safe to legal teams and frustrating to everyone else.", "zh": "像「部分用户可能遇到了问题」这种说法，法务觉得稳妥，其他人看了只会窝火。", "sp": null, "gap": false, "start": 11.496, "end": 19.296, "words": [[11.68, 12.128], [12.141, 12.378], [12.614, 12.878], [12.891, 13.299], [13.312, 13.509], [13.522, 13.654], [13.667, 14.378], [14.391, 14.891], [15.049, 15.404], [15.417, 15.785], [15.799, 15.904], [15.917, 16.272], [16.285, 16.799], [16.996, 17.141], [17.154, 17.812], [17.825, 17.97], [17.983, 18.417], [18.43, 18.904]]}, {"kind": "s", "id": "s0_1_0", "md": "Customers rarely expect a system that never fails.", "zh": "客户很少指望系统永远不出问题。", "sp": null, "gap": true, "start": 19.296, "end": 22.92, "words": [[19.401, 19.888], [19.901, 20.309], [20.322, 20.757], [20.77, 20.809], [20.822, 21.388], [21.546, 21.691], [21.704, 21.941], [21.954, 22.533]]}, {"kind": "s", "id": "s0_1_1", "md": "What they expect is honesty about what happened and confidence that it won't happen the same way again.", "zh": "他们期待的是你坦诚说明发生了什么，并且相信同样的事不会再以同样的方式发生。", "sp": null, "gap": false, "start": 22.92, "end": 28.512, "words": [[23.025, 23.157], [23.17, 23.288], [23.302, 23.802], [23.815, 23.933], [23.946, 24.459], [24.473, 24.736], [24.749, 24.894], [24.907, 25.407], [25.42, 25.512], [25.525, 26.183], [26.196, 26.328], [26.341, 26.459], [26.473, 26.709], [26.723, 27.117], [27.131, 27.223], [27.236, 27.538], [27.552, 27.696], [27.709, 28.117]]}, {"kind": "s", "id": "s0_1_2", "md": "**People forgive an outage much faster than they forgive feeling misled.**", "zh": "人们原谅一次故障，比原谅被糊弄的感觉要快得多。", "sp": null, "gap": false, "start": 28.512, "end": 32.952, "words": [[28.63, 28.907], [28.92, 29.236], [29.249, 29.38], [29.525, 29.907], [29.92, 30.236], [30.249, 30.88], [30.894, 31.012], [31.025, 31.144], [31.157, 31.591], [31.604, 32.012], [32.025, 32.551]]}, {"kind": "s", "id": "s0_2_0", "md": "==Evasive== language also creates more work, not less.", "zh": "闪烁其词的措辞也只会带来更多工作，而不是更少。", "sp": null, "gap": true, "start": 32.952, "end": 36.912, "words": [[33.057, 33.491], [33.505, 33.952], [34.084, 34.413], [34.426, 34.86], [34.873, 35.162], [35.176, 35.518], [35.807, 36.044], [36.057, 36.531]]}, {"kind": "s", "id": "s0_2_1", "md": "Support teams get flooded with tickets asking the exact questions your message ==dodged==.", "zh": "客服会被工单淹没，问的恰恰是你那封信回避掉的问题。", "sp": null, "gap": false, "start": 36.912, "end": 42.288, "words": [[37.017, 37.438], [37.451, 37.767], [37.78, 37.938], [37.951, 38.386], [38.399, 38.57], [38.583, 39.03], [39.162, 39.609], [39.623, 39.688], [39.701, 40.267], [40.28, 40.807], [40.82, 40.938], [40.951, 41.359], [41.373, 41.899]]}, {"kind": "s", "id": "s0_2_2", "md": "Every vague sentence you save in the statement comes back as fifty angry emails.", "zh": "声明里你每省掉一句含糊话，最后都会变成五十封愤怒的邮件找回来。", "sp": null, "gap": false, "start": 42.288, "end": 47.568, "words": [[42.393, 42.656], [42.67, 42.985], [42.999, 43.406], [43.42, 43.512], [43.525, 43.893], [43.906, 43.972], [43.985, 44.051], [44.064, 44.604], [44.643, 44.92], [44.933, 45.341], [45.446, 45.591], [45.604, 46.156], [46.17, 46.538], [46.551, 47.17]]}, {"kind": "h", "id": "h1", "md": "2. Own It, Explain It, Fix It", "zh": "2. 认下来、讲清楚、改到位", "start": 47.568, "end": 50.712, "words": [[47.686, 47.923], [48.41, 48.594], [48.607, 48.752], [48.963, 49.45], [49.463, 49.594], [49.818, 50.121], [50.134, 50.318]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by __taking ownership__ in the first sentence.", "zh": "第一句话就把责任认下来。", "sp": null, "gap": false, "start": 50.712, "end": 53.952, "words": [[50.817, 51.146], [51.159, 51.278], [51.291, 51.738], [51.804, 52.357], [52.449, 52.515], [52.528, 52.607], [52.62, 52.962], [52.975, 53.554]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Yesterday, between two and four in the afternoon, many of you could not log in, and that was our fault.\"", "zh": "「昨天下午两点到四点，很多用户无法登录，这是我们的责任。」", "sp": null, "gap": false, "start": 53.952, "end": 60.408, "words": [[54.136, 54.649], [54.913, 55.32], [55.334, 55.584], [55.597, 55.689], [55.702, 55.978], [55.991, 56.057], [56.07, 56.163], [56.176, 56.741], [57.202, 57.413], [57.426, 57.491], [57.505, 57.636], [57.649, 57.82], [57.834, 58.057], [58.07, 58.334], [58.347, 58.623], [59.07, 59.149], [59.163, 59.307], [59.32, 59.452], [59.465, 59.557], [59.57, 59.991]]}, {"kind": "s", "id": "s1_0_2", "md": "Active voice and a clear time window show that you are not hiding.", "zh": "用主动语态，加上清晰的时间窗口，表明你没有在藏着掖着。", "sp": null, "gap": false, "start": 60.408, "end": 64.2, "words": [[60.513, 60.842], [60.855, 61.329], [61.434, 61.553], [61.566, 61.619], [61.632, 61.934], [61.947, 62.224], [62.237, 62.553], [62.566, 62.803], [62.816, 62.934], [62.947, 63.04], [63.053, 63.132], [63.145, 63.395], [63.408, 63.816]]}, {"kind": "s", "id": "s1_1_0", "md": "Then explain the cause in plain language, without internal jargon.", "zh": "然后用大白话解释原因，不要用内部黑话。", "sp": null, "gap": true, "start": 64.2, "end": 68.52, "words": [[64.318, 64.424], [64.437, 64.884], [64.897, 65.003], [65.016, 65.45], [65.463, 65.582], [65.595, 65.937], [65.95, 66.542], [66.805, 67.213], [67.226, 67.647], [67.661, 68.121]]}, {"kind": "s", "id": "s1_1_1", "md": "\"A configuration change sent all login traffic to a single server, which became ==overloaded==.\"", "zh": "「一次配置变更把所有登录流量都打到了一台服务器上，导致它过载。」", "sp": null, "gap": false, "start": 68.52, "end": 75.024, "words": [[68.652, 68.678], [68.678, 69.533], [69.546, 69.941], [69.954, 70.257], [70.428, 70.704], [70.717, 71.086], [71.099, 71.612], [71.625, 71.757], [71.77, 71.849], [71.862, 72.257], [72.27, 72.744], [73.059, 73.217], [73.231, 73.77], [73.954, 74.612]]}, {"kind": "s", "id": "s1_1_2", "md": "Customers do not need the full technical story, but they need enough to believe you understand it.", "zh": "客户不需要完整的技术细节，但需要足够的信息来相信你搞明白了。", "sp": null, "gap": false, "start": 75.024, "end": 80.784, "words": [[75.129, 75.642], [75.656, 75.827], [75.84, 76.142], [76.156, 76.392], [76.406, 76.498], [76.511, 76.892], [76.906, 77.392], [77.406, 77.879], [78.156, 78.287], [78.3, 78.419], [78.432, 78.682], [78.695, 79.024], [79.037, 79.142], [79.156, 79.511], [79.524, 79.656], [79.669, 80.195], [80.208, 80.379]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, list what you have already changed, not just what you will ==investigate==.", "zh": "最后，列出你已经改了什么，而不只是你打算调查什么。", "sp": null, "gap": true, "start": 80.784, "end": 85.536, "words": [[80.968, 81.442], [81.745, 81.955], [81.968, 82.073], [82.087, 82.179], [82.192, 82.337], [82.35, 82.692], [82.705, 83.297], [83.6, 83.797], [83.81, 84.034], [84.047, 84.166], [84.179, 84.258], [84.271, 84.416], [84.429, 85.152]]}, {"kind": "s", "id": "s1_2_1", "md": "Concrete steps, like extra checks before every configuration change, are far more ==reassuring== than promises to __do better__.", "zh": "具体的措施，比如每次配置变更前增加检查，比承诺「我们会做得更好」让人安心得多。", "sp": null, "gap": false, "start": 85.536, "end": 93.696, "words": [[85.641, 86.062], [86.075, 86.654], [86.865, 87.089], [87.207, 87.549], [87.562, 87.904], [87.918, 88.444], [88.497, 88.76], [88.773, 89.589], [89.602, 90.036], [90.418, 90.549], [90.562, 90.839], [90.852, 91.075], [91.089, 91.707], [91.72, 91.852], [91.865, 92.523], [92.536, 92.654], [92.668, 92.865], [92.878, 93.299]]}, {"kind": "s", "id": "s1_2_2", "md": "**An apology without a specific change is just a nicer way of saying nothing.**", "zh": "没有具体改动的道歉，只是一种更好听的什么都没说。", "sp": null, "gap": false, "start": 93.696, "end": 98.472, "words": [[93.788, 93.854], [93.867, 94.485], [94.499, 94.893], [94.907, 94.946], [94.959, 95.525], [95.538, 95.999], [96.183, 96.301], [96.314, 96.564], [96.578, 96.604], [96.617, 97.078], [97.091, 97.275], [97.288, 97.367], [97.38, 97.722], [97.735, 98.091]]}, {"kind": "s", "id": "s1_3_0", "md": "Send the message within a day, while customers are still paying attention.", "zh": "一天之内把信发出去，趁客户还在关注。", "sp": null, "gap": true, "start": 98.472, "end": 102.912, "words": [[98.59, 98.801], [98.814, 98.88], [98.893, 99.34], [99.354, 99.683], [99.696, 99.761], [99.775, 100.104], [100.538, 100.696], [100.709, 101.235], [101.248, 101.406], [101.419, 101.709], [101.722, 101.998], [102.011, 102.511]]}, {"kind": "s", "id": "s1_3_1", "md": "A perfect explanation two weeks later reads like an afterthought, even if every detail in it is right.", "zh": "两周后才发一份完美的解释，读起来就像事后补的，哪怕里面每个细节都是对的。", "sp": null, "gap": false, "start": 102.912, "end": 109.488, "words": [[103.017, 103.083], [103.096, 103.583], [103.649, 104.372], [104.386, 104.636], [104.649, 104.965], [104.978, 105.294], [105.307, 105.623], [105.636, 105.794], [105.807, 105.886], [105.899, 106.596], [107.017, 107.241], [107.254, 107.399], [107.557, 107.859], [107.873, 108.373], [108.386, 108.504], [108.517, 108.609], [108.623, 108.741], [108.754, 109.096]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

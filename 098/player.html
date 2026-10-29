@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Building a Team Culture Across Offices · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "098", "title": "Building a Team Culture Across Offices", "meta": "B2 · 约 270 词 · 场景：跨办公室团队文化", "voice": "en-IN-PrabhatNeural", "rate": "-5%", "sections": [{"heading": "1. The Main Office Problem", "heading_zh": "1. 主办公室问题", "rows": [[{"id": "s0_0_0", "md": "Every ==distributed== team has a ==gravity== problem.", "text": "Every distributed team has a gravity problem.", "zh": "每个分布式团队都有一个「引力」问题。", "sp": null}, {"id": "s0_0_1", "md": "The office where the manager sits becomes the main office, and every other office slowly feels like a ==satellite==.", "text": "The office where the manager sits becomes the main office, and every other office slowly feels like a satellite.", "zh": "经理坐的那个办公室会变成主办公室，其他办公室慢慢就觉得自己像卫星。", "sp": null}], [{"id": "s0_1_0", "md": "You can see it in small things.", "text": "You can see it in small things.", "zh": "从一些小事上就能看出来。", "sp": null}, {"id": "s0_1_1", "md": "Decisions happen in a corridor in Singapore, and the team in Hyderabad reads about them a day later.", "text": "Decisions happen in a corridor in Singapore, and the team in Hyderabad reads about them a day later.", "zh": "决定是在新加坡的走廊里定的，海得拉巴的团队一天后才从文字里看到。", "sp": null}, {"id": "s0_1_2", "md": "Jokes, nicknames and stories are all local, so people in other offices always feel one step behind.", "text": "Jokes, nicknames and stories are all local, so people in other offices always feel one step behind.", "zh": "玩笑、外号和故事都是本地的，所以其他办公室的人总觉得慢了半拍。", "sp": null}, {"id": "s0_1_3", "md": "Nobody planned it that way, but nobody stopped it either.", "text": "Nobody planned it that way, but nobody stopped it either.", "zh": "没人有意这样安排，但也没人去阻止。", "sp": null}], [{"id": "s0_2_0", "md": "**Culture is not what you write on a slide; it is what people in every office experience on an ordinary Tuesday.**", "text": "Culture is not what you write on a slide; it is what people in every office experience on an ordinary Tuesday.", "zh": "文化不是你写在 PPT 上的东西；而是每个办公室的人在一个普通周二的真实感受。", "sp": null}, {"id": "s0_2_1", "md": "If that experience depends on which city you sit in, you do not have one team.", "text": "If that experience depends on which city you sit in, you do not have one team.", "zh": "如果这种感受取决于你坐在哪个城市，那你们就不是一个团队。", "sp": null}, {"id": "s0_2_2", "md": "You have several teams sharing a name.", "text": "You have several teams sharing a name.", "zh": "而是几个共用一个名字的团队。", "sp": null}]]}, {"heading": "2. Small Rituals That Travel", "heading_zh": "2. 能跨地域的小仪式", "rows": [[{"id": "s1_0_0", "md": "Start with decisions.", "text": "Start with decisions.", "zh": "先从决策入手。", "sp": null}, {"id": "s1_0_1", "md": "Make it a rule that nothing is final until it is written in the shared channel, even if it was agreed over lunch in one office.", "text": "Make it a rule that nothing is final until it is written in the shared channel, even if it was agreed over lunch in one office.", "zh": "定一条规矩：任何事在写进共享频道之前都不算最终定下，哪怕是在某个办公室吃午饭时已经谈好的。", "sp": null}, {"id": "s1_0_2", "md": "This one habit removes most of the ==insider== advantage.", "text": "This one habit removes most of the insider advantage.", "zh": "光这一个习惯，就能消掉大部分「自己人」的信息优势。", "sp": null}], [{"id": "s1_1_0", "md": "Next, create rituals that work across time zones.", "text": "Next, create rituals that work across time zones.", "zh": "然后，建立一些能跨时区的仪式。", "sp": null}, {"id": "s1_1_1", "md": "Try a weekly thread where everyone posts one win, a monthly demo where each office presents, or a ==shout-out== at the start of every all-hands.", "text": "Try a weekly thread where everyone posts one win, a monthly demo where each office presents, or a shout-out at the start of every all-hands.", "zh": "可以试试每周开一个帖子让每人发一条成果，每月办一次各办公室轮流上台的 demo，或者每次全员会开场先点名表扬。", "sp": null}, {"id": "s1_1_2", "md": "These small moments make people in other cities ==visible== to each other.", "text": "These small moments make people in other cities visible to each other.", "zh": "这些小时刻能让不同城市的人彼此被看见。", "sp": null}], [{"id": "s1_2_0", "md": "Be careful with language.", "text": "Be careful with language.", "zh": "说话用词要小心。", "sp": null}, {"id": "s1_2_1", "md": "Saying \"the India team\" or \"the remote folks\" __draws lines__ you may not intend.", "text": "Saying \"the India team\" or \"the remote folks\" draws lines you may not intend.", "zh": "说「印度团队」或者「远程的那帮人」，会划出一些你可能并不想划的界线。", "sp": null}, {"id": "s1_2_2", "md": "**Talk about the work and the people, not the locations.**", "text": "Talk about the work and the people, not the locations.", "zh": "聊工作、聊人，别聊地点。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, when there is a travel budget, send engineers, not just managers.", "text": "Finally, when there is a travel budget, send engineers, not just managers.", "zh": "最后，有差旅预算的时候，派工程师去，而不只是派经理。", "sp": null}, {"id": "s1_3_1", "md": "Two days of working __side by side__ builds more trust than a year of video calls, and those engineers __bring the stories home__.", "text": "Two days of working side by side builds more trust than a year of video calls, and those engineers bring the stories home.", "zh": "并肩工作两天建立起来的信任，比一年的视频会议还多，而且这些工程师会把故事带回去。", "sp": null}]]}], "gist": [{"q": "什么是分布式团队的“引力问题”？", "a": "经理所在的办公室成了主办公室，其他办公室慢慢变成卫星，决策、笑话和故事都在本地发生，别处总慢一步。"}, {"q": "作者如何定义团队文化？", "a": "不是写在幻灯片上的东西，而是每个办公室的人在普通周二的真实体验；体验取决于所在城市，就不算一个团队。"}, {"q": "文中提出了哪些具体做法？", "a": "决定必须写进共享频道才算数；建立跨时区仪式（每周晒成果、月度各办公室演示、全员会点名表扬）；说人和事，不说地点；差旅预算让工程师也去面对面合作。"}], "dictation": [{"id": "s0_2_0", "text": "Culture is not what you write on a slide; it is what people in every office experience on an ordinary Tuesday."}, {"id": "s1_0_2", "text": "This one habit removes most of the insider advantage."}, {"id": "s1_1_2", "text": "These small moments make people in other cities visible to each other."}, {"id": "s1_2_2", "text": "Talk about the work and the people, not the locations."}], "shadow": {"text": "Start with decisions. Make it a rule that nothing is final until it is written in the shared channel, even if it was agreed over lunch in one office. This one habit removes most of the insider advantage.", "marked": "Start with <b>decisions</b>. //<br>Make it a <b>rule</b> / that <b>nothing</b> is final / until it is <b>written</b> in the shared channel, / even if it was agreed over <b>lunch</b> / in <b>one</b> office. //<br>This one <b>habit</b> / removes most of the <b>insider</b> advantage. //"}, "prompts": [{"q": "你注意到最近很多决定是在新加坡办公室午饭时定下的，海得拉巴的同事事后才知道。你在周会上提出新规则，30 秒。", "ref": "I want to raise something I've noticed, and I'm part of the problem. A few recent decisions were made over lunch here in Singapore, and our colleagues in Hyderabad only heard about them later. From now on, let's agree that nothing is final until it's written in the team channel. If it's not in the channel, it hasn't been decided.", "ref_zh": "我想提一件最近注意到的事，而且我自己也有份。最近有几个决定是在新加坡这边吃午饭时定下的，海得拉巴的同事事后才知道。从现在开始，我们约定：任何事在写进团队频道之前都不算最终定下。没进频道，就等于没定。", "id": "ref0"}, {"q": "你在月度全员会开场给班加罗尔的同事一个 shout-out。", "ref": "Before we start, I want to give a big shout-out to Deepa and the Bangalore crew. Last week, while most of us were asleep, they found the memory leak that had been crashing our upload service for a month. They didn't just patch it, they wrote up exactly how they found it. Deepa, maybe you could share that story at the next demo?", "ref_zh": "开始之前，我想大大表扬一下 Deepa 和班加罗尔的伙伴们。上周，在我们大多数人睡觉的时候，他们找到了那个让上传服务崩了一个月的内存泄漏。他们不只是打了补丁，还把排查过程原原本本写了下来。Deepa，下次 demo 的时候要不要给大家讲讲这个故事？", "id": "ref1"}], "words": [{"w": "distributed", "ipa": "/dɪˈstrɪbjətɪd/", "zh": "分布式的、分散在各地的", "ex": "Running a distributed team means writing more and meeting less.", "id": "w0"}, {"w": "gravity", "ipa": "/ˈɡrævəti/", "zh": "引力、吸引力", "ex": "Headquarters has a natural gravity, so we have to push decisions outward.", "id": "w1"}, {"w": "satellite", "ipa": "/ˈsætəˌlaɪt/", "zh": "卫星；附属的（办公室）", "ex": "Nobody wants to work in a satellite office that only gets leftover tasks.", "id": "w2"}, {"w": "insider", "ipa": "/ɪnˈsaɪdər/", "zh": "内部人士、圈内人", "ex": "Hallway decisions give insiders an unfair advantage.", "id": "w3"}, {"w": "shout-out", "ipa": "/ˈʃaʊt aʊt/", "zh": "公开点名表扬、致谢", "ex": "Big shout-out to the Sydney team for fixing the alert overnight.", "id": "w4"}, {"w": "visible", "ipa": "/ˈvɪzəbəl/", "zh": "可见的、显眼的", "ex": "Make the work of the support team more visible to leadership.", "id": "w5"}, {"w": "ritual", "ipa": "/ˈrɪtʃuəl/", "zh": "惯例、仪式", "ex": "Our Friday demo has become a team ritual.", "id": "w6"}, {"w": "all-hands", "ipa": "/ˈɔːl hændz/", "zh": "全员大会", "ex": "The new strategy will be announced at the all-hands.", "id": "w7"}, {"w": "side by side", "ipa": "/saɪd baɪ saɪd/", "zh": "并肩、一起", "ex": "Working side by side for a week solved months of confusion.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Main Office Problem", "zh": "1. 主办公室问题", "start": 0.0, "end": 3.096, "words": [[0.103, 0.445], [0.603, 0.747], [0.747, 1.103], [1.195, 1.603], [1.603, 2.168]]}, {"kind": "s", "id": "s0_0_0", "md": "Every ==distributed== team has a ==gravity== problem.", "zh": "每个分布式团队都有一个「引力」问题。", "sp": null, "gap": false, "start": 3.096, "end": 7.2, "words": [[3.199, 3.528], [3.528, 4.291], [4.357, 4.764], [4.764, 5.107], [5.107, 5.159], [5.159, 5.699], [5.725, 6.278]]}, {"kind": "s", "id": "s0_0_1", "md": "The office where the manager sits becomes the main office, and every other office slowly feels like a ==satellite==.", "zh": "经理坐的那个办公室会变成主办公室，其他办公室慢慢就觉得自己像卫星。", "sp": null, "gap": false, "start": 7.2, "end": 16.296, "words": [[7.303, 7.447], [7.553, 8.013], [8.013, 8.395], [8.395, 8.539], [8.539, 9.092], [9.092, 9.447], [9.5, 10.026], [10.026, 10.184], [10.184, 10.566], [10.645, 11.145], [11.566, 11.816], [11.895, 12.263], [12.342, 12.658], [12.763, 13.171], [13.224, 13.724], [13.737, 14.21], [14.211, 14.513], [14.513, 14.605], [14.605, 15.342]]}, {"kind": "s", "id": "s0_1_0", "md": "You can see it in small things.", "zh": "从一些小事上就能看出来。", "sp": null, "gap": true, "start": 16.296, "end": 19.464, "words": [[16.399, 16.517], [16.557, 16.846], [16.846, 17.162], [17.175, 17.346], [17.412, 17.583], [17.583, 18.03], [18.043, 18.517]]}, {"kind": "s", "id": "s0_1_1", "md": "Decisions happen in a corridor in Singapore, and the team in Hyderabad reads about them a day later.", "zh": "决定是在新加坡的走廊里定的，海得拉巴的团队一天后才从文字里看到。", "sp": null, "gap": false, "start": 19.464, "end": 27.672, "words": [[19.567, 20.185], [20.185, 20.646], [20.738, 20.856], [20.856, 20.909], [20.909, 21.514], [21.632, 21.817], [21.817, 22.488], [22.948, 23.119], [23.119, 23.277], [23.277, 23.711], [23.764, 23.935], [23.935, 24.646], [24.685, 25.132], [25.185, 25.54], [25.54, 25.909], [25.935, 26.027], [26.04, 26.251], [26.277, 26.725]]}, {"kind": "s", "id": "s0_1_2", "md": "Jokes, nicknames and stories are all local, so people in other offices always feel one step behind.", "zh": "玩笑、外号和故事都是本地的，所以其他办公室的人总觉得慢了半拍。", "sp": null, "gap": false, "start": 27.672, "end": 36.744, "words": [[27.775, 28.248], [28.393, 29.038], [29.117, 29.34], [29.34, 29.959], [30.038, 30.275], [30.38, 30.59], [30.59, 31.104], [31.472, 31.683], [31.709, 32.196], [32.288, 32.446], [32.511, 32.827], [32.919, 33.485], [33.59, 34.143], [34.143, 34.432], [34.472, 34.801], [34.801, 35.169], [35.169, 35.788]]}, {"kind": "s", "id": "s0_1_3", "md": "Nobody planned it that way, but nobody stopped it either.", "zh": "没人有意这样安排，但也没人去阻止。", "sp": null, "gap": false, "start": 36.744, "end": 41.664, "words": [[36.847, 37.281], [37.294, 37.702], [37.715, 37.847], [37.847, 38.149], [38.149, 38.478], [38.755, 39.018], [39.018, 39.544], [39.544, 39.978], [40.057, 40.215], [40.281, 40.702]]}, {"kind": "s", "id": "s0_2_0", "md": "**Culture is not what you write on a slide; it is what people in every office experience on an ordinary Tuesday.**", "zh": "文化不是你写在 PPT 上的东西；而是每个办公室的人在一个普通周二的真实感受。", "sp": null, "gap": true, "start": 41.664, "end": 50.688, "words": [[41.767, 42.267], [42.372, 42.543], [42.543, 42.872], [42.885, 43.201], [43.201, 43.359], [43.359, 43.727], [43.793, 43.964], [43.964, 44.017], [44.017, 44.503], [44.767, 44.885], [45.003, 45.174], [45.175, 45.451], [45.451, 45.977], [46.082, 46.253], [46.346, 46.74], [46.819, 47.227], [47.293, 48.043], [48.135, 48.359], [48.385, 48.543], [48.609, 49.175], [49.201, 49.727]]}, {"kind": "s", "id": "s0_2_1", "md": "If that experience depends on which city you sit in, you do not have one team.", "zh": "如果这种感受取决于你坐在哪个城市，那你们就不是一个团队。", "sp": null, "gap": false, "start": 50.688, "end": 57.456, "words": [[50.791, 50.975], [50.975, 51.264], [51.33, 52.12], [52.159, 52.725], [52.817, 53.014], [53.014, 53.37], [53.409, 53.856], [53.856, 54.014], [54.014, 54.304], [54.317, 54.541], [54.856, 55.001], [55.001, 55.159], [55.159, 55.475], [55.475, 55.791], [55.791, 56.133], [56.185, 56.58]]}, {"kind": "s", "id": "s0_2_2", "md": "You have several teams sharing a name.", "zh": "而是几个共用一个名字的团队。", "sp": null, "gap": false, "start": 57.456, "end": 61.056, "words": [[57.559, 57.717], [57.73, 58.072], [58.072, 58.585], [58.585, 58.98], [59.032, 59.545], [59.585, 59.69], [59.69, 60.151]]}, {"kind": "h", "id": "h1", "md": "2. Small Rituals That Travel", "zh": "2. 能跨地域的小仪式", "start": 61.056, "end": 64.224, "words": [[61.159, 61.303], [61.435, 61.882], [61.882, 62.488], [62.488, 62.79], [62.79, 63.317]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with decisions.", "zh": "先从决策入手。", "sp": null, "gap": false, "start": 64.224, "end": 66.888, "words": [[64.327, 64.774], [64.827, 65.103], [65.182, 65.958]]}, {"kind": "s", "id": "s1_0_1", "md": "Make it a rule that nothing is final until it is written in the shared channel, even if it was agreed over lunch in one office.", "zh": "定一条规矩：任何事在写进共享频道之前都不算最终定下，哪怕是在某个办公室吃午饭时已经谈好的。", "sp": null, "gap": false, "start": 66.888, "end": 77.328, "words": [[66.991, 67.293], [67.372, 67.517], [67.556, 67.622], [67.622, 68.043], [68.043, 68.333], [68.385, 68.938], [69.004, 69.241], [69.241, 69.675], [69.714, 70.227], [70.333, 70.464], [70.491, 70.688], [70.688, 71.083], [71.188, 71.306], [71.306, 71.425], [71.425, 71.872], [71.885, 72.451], [72.727, 73.083], [73.162, 73.372], [73.385, 73.517], [73.517, 73.859], [73.925, 74.425], [74.517, 74.833], [74.833, 75.28], [75.359, 75.53], [75.53, 75.82], [75.899, 76.412]]}, {"kind": "s", "id": "s1_0_2", "md": "This one habit removes most of the ==insider== advantage.", "zh": "光这一个习惯，就能消掉大部分「自己人」的信息优势。", "sp": null, "gap": false, "start": 77.328, "end": 82.392, "words": [[77.431, 77.667], [77.667, 78.023], [78.023, 78.457], [78.51, 79.102], [79.167, 79.575], [79.641, 79.773], [79.786, 79.983], [79.983, 80.602], [80.681, 81.391]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, create rituals that work across time zones.", "zh": "然后，建立一些能跨时区的仪式。", "sp": null, "gap": true, "start": 82.392, "end": 87.36, "words": [[82.495, 82.876], [83.153, 83.534], [83.587, 84.245], [84.245, 84.56], [84.56, 84.942], [85.021, 85.521], [85.56, 85.903], [85.903, 86.416]]}, {"kind": "s", "id": "s1_1_1", "md": "Try a weekly thread where everyone posts one win, a monthly demo where each office presents, or a ==shout-out== at the start of every all-hands.", "zh": "可以试试每周开一个帖子让每人发一条成果，每月办一次各办公室轮流上台的 demo，或者每次全员会开场先点名表扬。", "sp": null, "gap": false, "start": 87.36, "end": 98.76, "words": [[87.463, 87.765], [87.857, 87.95], [87.963, 88.476], [88.476, 88.884], [88.884, 89.252], [89.344, 89.936], [89.936, 90.463], [90.489, 90.778], [90.778, 91.16], [91.542, 91.607], [91.607, 92.121], [92.121, 92.555], [92.555, 92.91], [93.028, 93.318], [93.397, 93.778], [93.778, 94.371], [94.673, 94.871], [94.871, 94.923], [94.923, 95.528], [95.607, 95.844], [95.844, 95.989], [95.989, 96.423], [96.436, 96.634], [96.699, 97.081], [97.134, 97.844]]}, {"kind": "s", "id": "s1_1_2", "md": "These small moments make people in other cities ==visible== to each other.", "zh": "这些小时刻能让不同城市的人彼此被看见。", "sp": null, "gap": false, "start": 98.76, "end": 104.832, "words": [[98.863, 99.218], [99.271, 99.665], [99.665, 100.205], [100.231, 100.586], [100.586, 101.113], [101.218, 101.376], [101.442, 101.797], [101.797, 102.363], [102.402, 102.942], [102.955, 103.126], [103.192, 103.494], [103.507, 103.876]]}, {"kind": "s", "id": "s1_2_0", "md": "Be careful with language.", "zh": "说话用词要小心。", "sp": null, "gap": true, "start": 104.832, "end": 107.664, "words": [[104.935, 105.106], [105.132, 105.764], [105.764, 106.027], [106.093, 106.685]]}, {"kind": "s", "id": "s1_2_1", "md": "Saying \"the India team\" or \"the remote folks\" __draws lines__ you may not intend.", "zh": "说「印度团队」或者「远程的那帮人」，会划出一些你可能并不想划的界线。", "sp": null, "gap": false, "start": 107.664, "end": 114.384, "words": [[107.767, 108.227], [108.319, 108.503], [108.582, 109.043], [109.043, 109.477], [109.622, 109.898], [109.964, 110.082], [110.082, 110.53], [110.53, 111.03], [111.253, 111.609], [111.609, 112.096], [112.096, 112.267], [112.28, 112.49], [112.49, 112.819], [112.885, 113.424]]}, {"kind": "s", "id": "s1_2_2", "md": "**Talk about the work and the people, not the locations.**", "zh": "聊工作、聊人，别聊地点。", "sp": null, "gap": false, "start": 114.384, "end": 119.016, "words": [[114.487, 114.723], [114.723, 115.079], [115.079, 115.25], [115.25, 115.684], [115.816, 116.0], [116.0, 116.145], [116.145, 116.658], [116.816, 117.158], [117.158, 117.316], [117.316, 118.092]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, when there is a travel budget, send engineers, not just managers.", "zh": "最后，有差旅预算的时候，派工程师去，而不只是派经理。", "sp": null, "gap": true, "start": 119.016, "end": 126.216, "words": [[119.119, 119.671], [119.987, 120.263], [120.263, 120.632], [120.724, 120.895], [120.908, 120.974], [120.987, 121.487], [121.487, 121.987], [122.29, 122.658], [122.75, 123.527], [123.777, 124.119], [124.132, 124.513], [124.527, 125.277]]}, {"kind": "s", "id": "s1_3_1", "md": "Two days of working __side by side__ builds more trust than a year of video calls, and those engineers __bring the stories home__.", "zh": "并肩工作两天建立起来的信任，比一年的视频会议还多，而且这些工程师会把故事带回去。", "sp": null, "gap": false, "start": 126.216, "end": 136.272, "words": [[126.319, 126.424], [126.45, 126.858], [126.924, 127.148], [127.148, 127.687], [127.687, 128.108], [128.108, 128.345], [128.345, 128.753], [128.753, 129.24], [129.292, 129.648], [129.648, 130.055], [130.161, 130.49], [130.49, 130.569], [130.569, 130.937], [131.029, 131.279], [131.292, 131.753], [131.753, 132.319], [132.608, 132.805], [132.805, 133.2], [133.266, 133.963], [134.003, 134.253], [134.253, 134.398], [134.398, 134.963], [134.963, 135.371]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+{
+  "id": "095",
+  "title": "Understanding Indirect Feedback Across Cultures",
+  "meta": "B2 · 约 280 词 · 场景：听懂委婉反馈",
+  "voice": "en-SG-LunaNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. When \"Interesting\" Means No",
+      "paragraphs": [
+        [
+          "A British colleague reads your proposal and says, \"That's an interesting approach, maybe worth a bit more thought.\"",
+          "You leave the call happy.",
+          "Two weeks later, you discover he thought the plan had serious problems."
+        ],
+        [
+          "In many cultures, criticism is ==wrapped== in polite language.",
+          "In some teams in Asia, \"Let me check\" can be a soft way to ==decline==.",
+          "In other places, like the Netherlands, people may say \"This won't work\" and mean nothing personal by it.",
+          "Neither style is wrong, but if you only hear the words, you will misjudge both."
+        ],
+        [
+          "**With indirect feedback, the softer the words, the more carefully you should listen.**",
+          "Phrases like \"a few small concerns\", \"perhaps\", or \"have you considered\" are often polite packaging for real ==reservations==.",
+          "Treat them as an invitation to ask one more question."
+        ]
+      ],
+      "heading_zh": "1. 当「有意思」的意思是不行",
+      "paragraphs_zh": [
+        [
+          "一位英国同事看了你的方案，说：「这个思路挺有意思的，也许值得再多想想。」",
+          "你开开心心地下了会。",
+          "两周后，你才发现他觉得这个方案问题很大。"
+        ],
+        [
+          "在很多文化里，批评是裹在客气话里的。",
+          "在亚洲的一些团队里，「我看一下」可能是一种委婉的拒绝。",
+          "而在别的地方，比如荷兰，人们可能直接说「这样行不通」，而且没有任何针对个人的意思。",
+          "两种风格都没错，但如果你只听字面，两边都会判断错。"
+        ],
+        [
+          "面对委婉的反馈，话说得越软，你越要仔细听。",
+          "像「有几个小顾虑」「也许」「你有没有考虑过」这类说法，往往是真实保留意见的客气包装。",
+          "把它们当成再多问一句的邀请。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Decode, Then Ask",
+      "paragraphs": [
+        [
+          "First, listen for ==softeners==.",
+          "Words like \"slightly\", \"quite\", and \"just a thought\" make feedback sound smaller than it is.",
+          "When you hear several of them in a row, assume the concern is bigger than it sounds."
+        ],
+        [
+          "Second, ask a question that makes directness safe.",
+          "\"If this were your project, what is the first thing you would change?\"",
+          "This invites a clear answer without forcing anyone to sound ==harsh==."
+        ],
+        [
+          "Third, ==calibrate== with a scale.",
+          "\"On a scale from one to ten, how confident are you that this will work?\"",
+          "**Numbers cut through politeness in a way that adjectives never do.**"
+        ],
+        [
+          "And remember that it works both ways.",
+          "Your own direct comments may sound harsher to some teammates than you intend, so __soften the delivery__, not the content.",
+          "A simple \"I might be wrong, but\" can make a hard point much easier to hear."
+        ]
+      ],
+      "heading_zh": "2. 先解码，再追问",
+      "paragraphs_zh": [
+        [
+          "第一，留意那些软化词。",
+          "像「稍微」「挺」「只是个想法」这类词，会让反馈听起来比实际轻。",
+          "如果一连听到好几个，就默认这个顾虑比听上去要大。"
+        ],
+        [
+          "第二，问一个让对方可以放心直说的问题。",
+          "「如果这是你的项目，你第一个要改的是什么？」",
+          "这样能引出一个明确的答案，又不逼任何人说话难听。"
+        ],
+        [
+          "第三，用打分来校准。",
+          "「从一到十打分，你对这个方案能成有几分把握？」",
+          "数字能穿透客气，这是形容词永远做不到的。"
+        ],
+        [
+          "还要记住，这是双向的。",
+          "你自己的直接评论，在有些队友听来可能比你本意更凶，所以要软化的是表达方式，而不是内容。",
+          "一句简单的「我可能说得不对，但是……」，就能让一个难听的观点好入耳得多。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "开头英国同事的例子说明了什么？",
+      "a": "“很有意思、也许值得再想想”听起来是肯定，实际意思是方案有严重问题；很多文化把批评包在礼貌语言里。"
+    },
+    {
+      "q": "作者给出的判断原则是什么？",
+      "a": "间接反馈里，措辞越柔和，越要认真听；连续出现多个弱化词，就假设问题比听起来更大。"
+    },
+    {
+      "q": "听到委婉反馈后可以怎么问？反过来自己要注意什么？",
+      "a": "问“如果是你的项目，第一件要改的是什么”，或用一到十分的量表问信心；自己直接的意见可能显得更凶，要软化表达方式而不是内容。"
+    }
+  ],
+  "dictation": [
+    "With indirect feedback, the softer the words, the more carefully you should listen.",
+    "In many cultures, criticism is wrapped in polite language.",
+    "Numbers cut through politeness in a way that adjectives never do.",
+    "A simple \"I might be wrong, but\" can make a hard point much easier to hear."
+  ],
+  "shadow": {
+    "text": "Third, calibrate with a scale. \"On a scale from one to ten, how confident are you that this will work?\" Numbers cut through politeness in a way that adjectives never do.",
+    "marked": "Third, <b>calibrate</b> with a <b>scale</b>. //<br>\"On a scale from <b>one</b> to <b>ten</b>, / how <b>confident</b> are you / that this will <b>work</b>?\" //<br><b>Numbers</b> cut through politeness / in a way that <b>adjectives</b> / <b>never</b> do. //"
+  },
+  "prompts": [
+    {
+      "q": "英国同事看了你的方案后说：It's a brave idea, I have a couple of small concerns. 你意识到这可能是强烈的保留意见。用一个问题让他说实话。",
+      "ref": "Thanks, I appreciate that. I have a feeling those small concerns might be bigger than they sound, so I'd really like to hear them. If this were your project, what's the first thing you would change? And honestly, on a scale from one to ten, how confident are you that it would work as it is?",
+      "ref_zh": "谢谢，很感谢。我感觉那几个小顾虑可能比听上去要大，所以真的很想听听。如果这是你的项目，你第一个要改的是什么？还有说实话，从一到十打分，你觉得照现在这样能成有几分把握？"
+    },
+    {
+      "q": "你上次给吉隆坡团队的反馈被转述为“太凶”。这次要表达同样的意见（关键流程缺少测试），但更柔和。",
+      "ref": "I might be wrong here, but I'd like to share one thought on testing. From what I can see, a few important paths in the checkout flow don't have tests yet. I know the timeline has been tight. Could we look at those paths together this week and pick the two or three that matter most?",
+      "ref_zh": "我可能说得不对，但关于测试我想说一点。从我看到的情况，结账流程里有几条重要路径还没有测试。我知道排期一直很紧。这周我们能不能一起过一下这些路径，挑出最要紧的两三条？"
+    }
+  ],
+  "words": [
+    {
+      "w": "wrap (v.)",
+      "ipa": "/ræp/",
+      "zh": "包裹、包装",
+      "ex": "She wrapped the criticism in so much praise that he missed it.",
+      "tts_w": "wrap"
+    },
+    {
+      "w": "decline",
+      "ipa": "/dɪˈklaɪn/",
+      "zh": "婉拒",
+      "ex": "They declined our request for extra review time."
+    },
+    {
+      "w": "reservation",
+      "ipa": "/ˌrezərˈveɪʃən/",
+      "zh": "保留意见、疑虑",
+      "ex": "I have some reservations about launching before the holidays."
+    },
+    {
+      "w": "softener",
+      "ipa": "/ˈsɔːfənər/",
+      "zh": "缓和语、弱化词",
+      "ex": "\"Just a thought\" is a softener, but the point behind it may be serious."
+    },
+    {
+      "w": "harsh",
+      "ipa": "/hɑːrʃ/",
+      "zh": "严厉的、刺耳的",
+      "ex": "That review comment sounded harsh, even if it was accurate."
+    },
+    {
+      "w": "calibrate",
+      "ipa": "/ˈkæləˌbreɪt/",
+      "zh": "校准、调整判断",
+      "ex": "Let's calibrate: what does a good result look like to you?"
+    },
+    {
+      "w": "understatement",
+      "ipa": "/ˌʌndərˈsteɪtmənt/",
+      "zh": "轻描淡写、保守说法",
+      "ex": "Calling that outage 'a bit unfortunate' was a British understatement."
+    },
+    {
+      "w": "cut through",
+      "ipa": "/kʌt θruː/",
+      "zh": "穿透、直达要点",
+      "ex": "One clear chart cut through an hour of debate."
+    },
+    {
+      "w": "indirect",
+      "ipa": "/ˌɪndəˈrekt/",
+      "zh": "间接的、委婉的",
+      "ex": "His feedback was indirect, so I asked a follow-up question."
+    }
+  ]
+}

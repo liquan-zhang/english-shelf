@@ -1,0 +1,192 @@
+{
+  "id": "003",
+  "title": "How to Interrupt Politely",
+  "meta": "B2 · 约 280 词 · 场景：会议控场",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Interrupting Is a Service",
+      "paragraphs": [
+        [
+          "Many of us were taught that interrupting is rude.",
+          "So when a colleague spends ten minutes on a side topic, we sit and wait, and the real agenda gets ==squeezed== into the last five minutes.",
+          "Everyone leaves annoyed, including the person who was talking."
+        ],
+        [
+          "Think about who pays for that politeness.",
+          "Eight people lose ten minutes each, and the decision you needed gets __pushed to next week__.",
+          "**Letting a meeting drift is not polite; it just spreads the cost around.**"
+        ],
+        [
+          "A good interruption is ==brief==, warm, and useful.",
+          "It protects the group's time without ==embarrassing== the speaker.",
+          "The trick is to __cut in__ on the topic, not on the person."
+        ]
+      ],
+      "heading_zh": "1. 打断也是一种付出",
+      "paragraphs_zh": [
+        [
+          "我们很多人从小被教育，打断别人是不礼貌的。",
+          "所以同事在一个跑题的话题上讲了十分钟，我们就坐着等，真正的议程被挤到最后五分钟。",
+          "最后每个人都一肚子火，包括刚才那个讲话的人。"
+        ],
+        [
+          "想想这份客气是谁在买单。",
+          "八个人每人损失十分钟，本该做的决定又被推到了下周。",
+          "放任会议跑偏并不是礼貌，只是把代价摊给了所有人。"
+        ],
+        [
+          "好的打断要简短、友善、有用。",
+          "它既保护了大家的时间，又不会让讲话的人难堪。",
+          "诀窍是打断话题，而不是打断人。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. The Name, Thanks, Bridge Pattern",
+      "paragraphs": [
+        [
+          "Start with the person's name.",
+          "Hearing their name makes people pause ==naturally==, so you don't have to raise your voice.",
+          "\"Priya, sorry to jump in here.\""
+        ],
+        [
+          "Then give them credit for the point.",
+          "\"That's a really good question about the logging format.\"",
+          "This ==signals== that you are not dismissing them, only __changing the timing__."
+        ],
+        [
+          "Finally, build a bridge back to the agenda.",
+          "\"Can we __park it__ for the end, so we can finish the rollout plan first?\"",
+          "**Always offer the topic a home, a later slot, a separate thread, or a follow-up call.**",
+          "People let go much more easily when they know their idea will not just disappear."
+        ],
+        [
+          "On video calls, timing is harder, because a small delay makes everyone talk over each other.",
+          "Use the raise hand button or a short message in the chat first, then speak when there is a gap.",
+          "If you ==chair== the meeting, say at the start that you will keep things on track, so nobody takes it personally later."
+        ]
+      ],
+      "heading_zh": "2. 叫名字、致谢、搭桥",
+      "paragraphs_zh": [
+        [
+          "先叫对方的名字。",
+          "人听到自己的名字会自然停下来，你不用提高嗓门。",
+          "「Priya，不好意思插一句。」"
+        ],
+        [
+          "然后肯定一下对方的观点。",
+          "「关于日志格式，这个问题提得很好。」",
+          "这是在表明你没有否定他，只是换个时间讨论。"
+        ],
+        [
+          "最后，搭一座桥回到议程上。",
+          "「这个我们能不能放到最后聊，先把上线方案过完？」",
+          "一定要给这个话题安排个去处，比如后面的时间、单独拉个群，或者另约个会。",
+          "大家知道自己的想法不会就这么没了，放手就容易得多。"
+        ],
+        [
+          "开视频会时时机更难把握，因为稍有延迟大家就会抢话。",
+          "先用举手按钮或者在聊天框里发条短消息，等有空当了再开口。",
+          "如果你是主持人，开场就说清楚你会把控节奏，这样之后没人会往心里去。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者为什么说放任跑题并不礼貌？",
+      "a": "每个人都在为这份“礼貌”买单：八个人各浪费十分钟，该做的决定被推到下周，只是把成本分摊开了。"
+    },
+    {
+      "q": "礼貌打断的三步模式是什么？",
+      "a": "先叫对方名字让他自然停下；肯定他的观点；再搭桥回到议程，比如把话题挪到会后。"
+    },
+    {
+      "q": "为什么要给被打断的话题“安排一个去处”？",
+      "a": "对方知道自己的想法不会就此消失，才更容易放手。"
+    }
+  ],
+  "dictation": [
+    "Letting a meeting drift is not polite; it just spreads the cost around.",
+    "Always offer the topic a home, a later slot, a separate thread, or a follow-up call.",
+    "The trick is to cut in on the topic, not on the person.",
+    "People let go much more easily when they know their idea will not just disappear."
+  ],
+  "shadow": {
+    "text": "Finally, build a bridge back to the agenda. \"Can we park it for the end, so we can finish the rollout plan first?\"",
+    "marked": "<b>Finally</b>, / build a <b>bridge</b> / back to the <b>agenda</b>. //<br>\"Can we <b>park</b> it / for the <b>end</b>, / so we can <b>finish</b> the rollout plan <b>first</b>?\" //"
+  },
+  "prompts": [
+    {
+      "q": "上线评审会上，一位同事开始详细讲他对日志格式的意见，已经说了五分钟，离会议结束只剩十五分钟。用 30 秒礼貌打断他，并给这个话题安排去处。",
+      "ref": "Arjun, sorry to jump in. That's a fair point about the log format, and I think it deserves a proper discussion. We only have fifteen minutes left, though, and we still need a go or no-go on the release. Could we park the logging question and pick it up in a separate thread this afternoon? I'll start the thread myself right after this call.",
+      "ref_zh": "Arjun，不好意思插一句。你说的日志格式确实有道理，也值得好好讨论。不过我们只剩十五分钟了，还得定这次发布上不上。日志的问题能不能先放一放，下午单独拉个群聊？会一结束我就去拉群。"
+    },
+    {
+      "q": "线上会议，你作为主持人在开场时先打个招呼：今天议程紧，你可能会打断大家。用 30 秒说得友好又不让人尴尬。",
+      "ref": "Before we start, a quick heads-up. We have three big items today and only forty-five minutes. So if a topic starts to run long, I might jump in and suggest we move it to the end or to a follow-up. Please don't take it personally, it's just to protect everyone's time. And feel free to do the same to me if I start rambling.",
+      "ref_zh": "开始之前先提个醒。我们今天有三个大议题，只有四十五分钟。所以如果某个话题聊得太久，我可能会插一句，建议挪到最后或者会后再跟进。大家别往心里去，只是为了保护每个人的时间。如果我自己讲着讲着跑题了，你们也尽管打断我。"
+    }
+  ],
+  "words": [
+    {
+      "w": "squeeze",
+      "ipa": "/skwiːz/",
+      "zh": "挤压、硬塞进",
+      "ex": "We squeezed the security review into the last day of the sprint."
+    },
+    {
+      "w": "brief",
+      "ipa": "/briːf/",
+      "zh": "简短的",
+      "ex": "Keep the status update brief, two minutes per team."
+    },
+    {
+      "w": "embarrass",
+      "ipa": "/ɪmˈbærəs/",
+      "zh": "使难堪",
+      "ex": "I didn't want to embarrass him by pointing out the bug in front of the client."
+    },
+    {
+      "w": "naturally",
+      "ipa": "/ˈnætʃərəli/",
+      "zh": "自然地",
+      "ex": "Once the tests were green, the conversation naturally moved to the launch date."
+    },
+    {
+      "w": "signal (v.)",
+      "ipa": "/ˈsɪɡnəl/",
+      "zh": "表明、示意",
+      "ex": "Moving the deadline signals that quality matters more than speed.",
+      "tts_w": "signal"
+    },
+    {
+      "w": "chair (v.)",
+      "ipa": "/tʃer/",
+      "zh": "主持（会议）",
+      "ex": "Who's chairing the incident review tomorrow?",
+      "tts_w": "chair"
+    },
+    {
+      "w": "park (v.)",
+      "ipa": "/pɑːrk/",
+      "zh": "暂时搁置（话题）",
+      "ex": "Let's park the pricing question until we have data.",
+      "tts_w": "park"
+    },
+    {
+      "w": "cut in",
+      "ipa": "/kʌt ɪn/",
+      "zh": "插话、打断",
+      "ex": "Sorry to cut in, but the build just failed again."
+    },
+    {
+      "w": "dismiss",
+      "ipa": "/dɪsˈmɪs/",
+      "zh": "不予理会、轻视",
+      "ex": "Don't dismiss that alert; it fired before the last outage too."
+    }
+  ]
+}

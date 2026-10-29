@@ -1,0 +1,87 @@
+{
+  "id": "123",
+  "type": "dialogue",
+  "title": "Booking and Visiting the Dentist",
+  "meta": "B2 · 约 300 词 · 场景：预约牙医与结账报销",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Dental Receptionist", "name_zh": "牙科前台", "voice": "en-GB-SoniaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Booking on the Phone",
+      "heading_zh": "1. 电话预约",
+      "lines": [
+        {"sp": "B", "en": "Good morning, Bright Smile Dental. How can I help?", "zh": "早上好，这里是亮笑牙科。有什么可以帮您？"},
+        {"sp": "A", "en": "Hi, I'd like to __book an appointment__. I've got a ==toothache== on the lower left side.", "zh": "你好，我想预约一下。我左下边的牙疼。"},
+        {"sp": "B", "en": "Sorry to hear that. Is the pain constant, or only when you eat something?", "zh": "真遗憾。是一直疼，还是只在吃东西的时候疼？"},
+        {"sp": "A", "en": "**It's fine most of the time, but it really hurts when I drink something cold.**", "zh": "大部分时间没事，但一喝冷的就特别疼。"},
+        {"sp": "B", "en": "That could be ==sensitivity== or a small ==cavity==. Doctor Tan has a slot tomorrow at eleven fifteen.", "zh": "可能是牙齿敏感，也可能是有个小蛀牙。陈医生明天十一点一刻有空。"},
+        {"sp": "A", "en": "Do you have anything after six? I'd rather not __take time off__ work.", "zh": "六点以后有吗？我不太想请假。"},
+        {"sp": "B", "en": "Our latest slot is six thirty on Thursday. Would that suit you?", "zh": "我们最晚的号是周四六点半。您看行吗？"},
+        {"sp": "A", "en": "Thursday works. Roughly how much is a checkup, and do you take insurance?", "zh": "周四可以。检查大概多少钱？你们接受保险吗？"},
+        {"sp": "B", "en": "A consultation and X ray is about one hundred and twenty dollars. We can bill some insurers directly, so please bring your card.", "zh": "问诊加拍片大约一百二十块。部分保险公司我们可以直接结算，所以请带上保险卡。"},
+        {"sp": "A", "en": "Will do. And what if the pain gets worse before then?", "zh": "好的。那如果在那之前疼得更厉害了呢？"},
+        {"sp": "B", "en": "Just call us. We keep a few ==emergency== slots every morning.", "zh": "直接给我们打电话。我们每天早上都留了几个急诊号。"}
+      ]
+    },
+    {
+      "heading": "2. Paying After Treatment",
+      "heading_zh": "2. 治疗后结账",
+      "lines": [
+        {"sp": "B", "en": "So Doctor Tan did one ==filling== today. The total comes to three hundred and forty dollars.", "zh": "陈医生今天给您补了一颗牙。一共三百四十块。"},
+        {"sp": "A", "en": "Oh, that's more than I expected. Could you __walk me through__ the charges?", "zh": "哦，比我想的贵。能给我讲讲都收了哪些费用吗？"},
+        {"sp": "B", "en": "Of course. It's the consultation, two X rays, and a white filling, which costs more than a silver one.", "zh": "当然。有问诊费、两张片子，还有一个白色补牙材料，比银色的贵一些。"},
+        {"sp": "A", "en": "I see. Does my insurance cover the filling, or just the checkup?", "zh": "明白了。我的保险报补牙吗，还是只报检查？"},
+        {"sp": "B", "en": "Your plan covers basic fillings up to two hundred dollars a year. You'd pay the ==balance== of one hundred and forty.", "zh": "您的保险每年最多报两百块的基础补牙。剩下的一百四十块需要您自付。"},
+        {"sp": "A", "en": "**Could I get an itemised receipt? I'd like to claim the rest from my company.**", "zh": "能给我开一张明细收据吗？剩下的我想找公司报销。"},
+        {"sp": "B", "en": "No problem. I'll email it to you along with the ==treatment notes==.", "zh": "没问题。我连同治疗记录一起发到您邮箱。"},
+        {"sp": "A", "en": "Thanks. The dentist also mentioned a ==scaling== and polish. Can I __hold off on__ that for a few weeks?", "zh": "谢谢。牙医还提到要洗牙抛光。能过几周再做吗？"},
+        {"sp": "B", "en": "Sure, it's not urgent. Shall I __put you down for__ next month?", "zh": "可以，不着急。帮您约在下个月？"},
+        {"sp": "A", "en": "**Let's do that. Something in the evening again, please.**", "zh": "好的。还是麻烦约晚上的时间。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」的牙是什么症状？最后约在什么时候？", "a": "左下牙平时没事，喝冷的就很疼；因为不想请假，约在周四晚上六点半。"},
+    {"q": "账单为什么比预期贵？保险报了多少？", "a": "包括问诊、两张片子和较贵的白色补牙材料，共三百四十块；保险报两百，自付一百四十。"},
+    {"q": "「你」结账时提了哪两个请求？", "a": "要一张明细收据找公司报销剩下的钱；洗牙推迟到下个月，约晚上。"}
+  ],
+  "dictation": [
+    "It's fine most of the time, but it really hurts when I drink something cold.",
+    "Do you have anything after six? I'd rather not take time off work.",
+    "Oh, that's more than I expected. Could you walk me through the charges?",
+    "Could I get an itemised receipt? I'd like to claim the rest from my company."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Could I get an itemised receipt? I'd like to claim the rest from my company.",
+    "marked": "Could I get an <b>itemised</b> receipt? //<br>I'd like to <b>claim</b> the rest / from my <b>company</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "孩子第一次看牙医，你打电话预约。说明孩子年龄、问有没有儿童牙医、问周末时间和大概费用。",
+      "ref": "Hi, I'd like to book a first dental checkup for my son. He's three and a half, and he's a bit nervous about doctors. Do you have a dentist who's good with young kids? We'd prefer a Saturday morning if possible. And roughly how much does a first visit cost?",
+      "ref_zh": "你好，我想给我儿子约第一次牙科检查。他三岁半，有点怕看医生。你们有擅长看小孩的牙医吗？如果可以的话想约周六上午。第一次大概多少钱？"
+    },
+    {
+      "q": "牙医建议你做一个很贵的治疗。你想先了解有没有别的方案，并且不想今天就决定。",
+      "ref": "Thanks for explaining. Before I decide, could you tell me if there are any other options? Maybe something less expensive, even if it doesn't last as long? I'd also like to check with my insurance first. Could you give me a written quote, and I'll call you back by the end of the week?",
+      "ref_zh": "谢谢你的解释。在我决定之前，能告诉我还有没有其他方案吗？比如便宜一点的，哪怕没那么持久也行。我也想先问问保险公司。能给我一份书面报价吗？我这周末之前给你回电话。"
+    }
+  ],
+  "words": [
+    {"w": "toothache", "ipa": "/ˈtuːθeɪk/", "zh": "牙疼", "ex": "I had a terrible toothache all weekend."},
+    {"w": "sensitivity", "ipa": "/ˌsensəˈtɪvəti/", "zh": "（牙齿）敏感", "ex": "This toothpaste helps with sensitivity to cold drinks."},
+    {"w": "cavity", "ipa": "/ˈkævəti/", "zh": "蛀牙，龋洞", "ex": "Too many sweets can give kids cavities."},
+    {"w": "emergency", "ipa": "/ɪˈmɜːrdʒənsi/", "zh": "紧急情况，急诊", "ex": "Call this number only in an emergency."},
+    {"w": "filling", "ipa": "/ˈfɪlɪŋ/", "zh": "补牙；补牙材料", "ex": "One of my old fillings fell out last night."},
+    {"w": "balance", "ipa": "/ˈbæləns/", "zh": "余额，差额", "ex": "You can pay the balance when you pick it up."},
+    {"w": "treatment notes", "ipa": "/ˈtriːtmənt noʊts/", "zh": "治疗记录", "ex": "The insurer asked for a copy of the treatment notes."},
+    {"w": "scaling", "ipa": "/ˈskeɪlɪŋ/", "zh": "洗牙（刮牙石）", "ex": "I get a scaling and polish every six months."},
+    {"w": "itemised", "ipa": "/ˈaɪtəmaɪzd/", "zh": "逐项列明的", "ex": "Could you send me an itemised bill?"},
+    {"w": "hold off on", "ipa": "/hoʊld ɔːf ɑːn/", "zh": "推迟，先不做", "ex": "Let's hold off on buying a car until next year."}
+  ]
+}

@@ -1,0 +1,183 @@
+{
+  "id": "025",
+  "title": "Asking Why Five Times",
+  "meta": "B2 · 约 260 词 · 场景：根因分析",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Following the Chain",
+      "paragraphs": [
+        [
+          "Start with the ==symptom==: the checkout service returned errors for twenty minutes.",
+          "Why did that happen?",
+          "Because the database ran out of connections."
+        ],
+        [
+          "Why did it run out?",
+          "Because a new batch job opened connections and never closed them.",
+          "Why did that reach production?",
+          "Because our tests run against a tiny database where the ==leak== never shows up."
+        ],
+        [
+          "One more why, and you reach something worth fixing: nobody owns the test data, so it has not been updated in a year.",
+          "**The first answer tells you what broke; the last one tells you why it will break again.**",
+          "Fixing the job is a ==patch==, while fixing the test setup __closes the door on__ a whole family of bugs."
+        ]
+      ],
+      "heading_zh": "1. 顺着链条往下问",
+      "paragraphs_zh": [
+        [
+          "先从现象说起：结账服务报错了二十分钟。",
+          "为什么会这样？",
+          "因为数据库连接被耗尽了。"
+        ],
+        [
+          "为什么会耗尽？",
+          "因为一个新的批处理任务打开连接后一直没关。",
+          "为什么这个问题会被带到生产环境？",
+          "因为我们的测试跑在一个很小的数据库上，连接泄漏在那里根本暴露不出来。"
+        ],
+        [
+          "再问一个为什么，就能挖到真正值得修的东西：测试数据没人负责，所以一年都没更新过。",
+          "第一个答案告诉你什么坏了；最后一个答案告诉你它为什么还会再坏。",
+          "修好那个任务只是打个补丁，而修好测试环境，能把一整类 bug 都堵死。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Three Ways to Get It Wrong",
+      "paragraphs": [
+        [
+          "The most common mistake is stopping at a person.",
+          "\"The job leaked because Ken forgot to close the connection\" is a __dead end__.",
+          "People forget things; the real question is why the system let the mistake __slip through__."
+        ],
+        [
+          "The second mistake is following only one chain.",
+          "Real incidents usually have several ==contributing== causes, so __branch out__ when an answer has two parts.",
+          "A missing alert and a slow rollback can each deserve their own line of whys."
+        ],
+        [
+          "The third mistake is taking the number five too literally.",
+          "**Stop when you reach a cause you can actually change, whether that takes three whys or seven.**",
+          "Going further usually ends in ==abstract== answers like \"we need better communication.\""
+        ],
+        [
+          "Finally, write the chain down where everyone can see it.",
+          "A visible chain keeps the discussion ==grounded== and stops people from jumping to their favorite theory."
+        ]
+      ],
+      "heading_zh": "2. 三种常见的误区",
+      "paragraphs_zh": [
+        [
+          "最常见的错误是追到某个人就停下了。",
+          "「任务泄漏是因为 Ken 忘了关连接」，这就走进死胡同了。",
+          "人总会忘事；真正要问的是，系统为什么让这个错误溜了过去。"
+        ],
+        [
+          "第二个错误是只顺着一条链往下问。",
+          "真实的事故通常有好几个共同起作用的原因，所以一个答案包含两部分时，就要分叉往下追。",
+          "缺失的告警和缓慢的回滚，可能各自都值得单独追一串为什么。"
+        ],
+        [
+          "第三个错误是把「五」这个数字看得太死。",
+          "追到一个你真正能改变的原因就停下，不管那需要问三次还是七次。",
+          "再往下追，通常只会得到「我们需要加强沟通」这种空泛的答案。"
+        ],
+        [
+          "最后，把这条链写在大家都能看到的地方。",
+          "链条摆在眼前，讨论就能落到实处，也能防止大家直接跳到自己偏爱的那套理论上。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "文中的例子里，第一个答案和最后一个答案分别是什么？",
+      "a": "第一个：数据库连接耗尽；最后一个：没人负责测试数据，一年没更新，所以泄漏在测试里发现不了。"
+    },
+    {
+      "q": "为什么修测试环境比修那个任务更有价值？",
+      "a": "修任务只是打补丁，修测试环境能堵住一整类 bug。"
+    },
+    {
+      "q": "五个为什么常见的三种用错方式是什么？",
+      "a": "停在某个人身上；只追一条链（不分叉）；死守「五」这个数字，应该在找到能改的原因时就停。"
+    }
+  ],
+  "dictation": [
+    "The first answer tells you what broke; the last one tells you why it will break again.",
+    "Stop when you reach a cause you can actually change, whether that takes three whys or seven.",
+    "People forget things; the real question is why the system let the mistake slip through.",
+    "The most common mistake is stopping at a person."
+  ],
+  "shadow": {
+    "text": "The most common mistake is stopping at a person. \"The job leaked because Ken forgot to close the connection\" is a dead end. People forget things; the real question is why the system let the mistake slip through.",
+    "marked": "The most <b>common</b> mistake / is stopping at a <b>person</b>. //<br>\"The job leaked / because <b>Ken forgot</b> to close the connection\" / is a <b>dead end</b>. //<br>People <b>forget</b> things; / the <b>real</b> question is / why the <b>system</b> let the mistake / <b>slip through</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "复盘会上大家停在「是小王忘了加超时」。用 30 秒把讨论推进一层：不针对个人，追问系统为什么没拦住。",
+      "ref": "I agree the timeout was missing, but let's not stop there, because anyone could forget a timeout. The more useful question is why nothing caught it. Our client library doesn't set a default, and the code review checklist doesn't mention it. If we add a default timeout to the library, this whole class of mistakes goes away, not just this one.",
+      "ref_zh": "我同意是缺了超时设置，但别停在这儿，因为谁都可能忘了设超时。更有价值的问题是，为什么没有任何环节拦住它。我们的客户端库没有默认值，code review 检查清单里也没提这一点。如果我们在库里加一个默认超时，消失的就是这一整类错误，而不只是这一次。"
+    },
+    {
+      "q": "有人提议把复盘结论写成「加强沟通」。用 30 秒说明这个结论太抽象，并提议再问一层为什么。",
+      "ref": "I'm not sure better communication is something we can act on. Let's ask one more why. Why didn't the payments team know about the schema change? Because the change was announced in a channel they don't follow. So a concrete fix could be that any schema change automatically notifies every service that reads that table. That's something we can build and check next month.",
+      "ref_zh": "我不确定「加强沟通」是我们能落地的东西。我们再问一个为什么。支付团队为什么不知道这次表结构变更？因为变更是在一个他们没关注的频道里通知的。所以一个具体的改法可以是：任何表结构变更都自动通知所有读这张表的服务。这是我们下个月就能做出来、也能验证的事。"
+    }
+  ],
+  "words": [
+    {
+      "w": "symptom",
+      "ipa": "/ˈsɪmptəm/",
+      "zh": "症状、表面现象",
+      "ex": "High latency is the symptom; the slow query is the cause."
+    },
+    {
+      "w": "leak (n.)",
+      "ipa": "/liːk/",
+      "zh": "泄漏",
+      "ex": "A connection leak in the worker slowly drained the pool.",
+      "tts_w": "leak"
+    },
+    {
+      "w": "patch (n.)",
+      "ipa": "/pætʃ/",
+      "zh": "补丁、临时修补",
+      "ex": "The restart is a patch; we still need a real fix.",
+      "tts_w": "patch"
+    },
+    {
+      "w": "contributing",
+      "ipa": "/kənˈtrɪbjuːtɪŋ/",
+      "zh": "促成的、起作用的",
+      "ex": "The missing alert was a contributing factor, not the root cause."
+    },
+    {
+      "w": "abstract",
+      "ipa": "/æbˈstrækt/",
+      "zh": "抽象的",
+      "ex": "\"Improve quality\" is too abstract to be an action item."
+    },
+    {
+      "w": "grounded",
+      "ipa": "/ˈɡraʊndɪd/",
+      "zh": "有依据的、脚踏实地的",
+      "ex": "Let's keep the discussion grounded in the logs."
+    },
+    {
+      "w": "literally",
+      "ipa": "/ˈlɪtərəli/",
+      "zh": "字面上地",
+      "ex": "Don't take the template too literally; skip sections that don't apply."
+    },
+    {
+      "w": "incident",
+      "ipa": "/ˈɪnsɪdənt/",
+      "zh": "事故",
+      "ex": "We opened an incident as soon as error rates crossed the threshold."
+    }
+  ]
+}

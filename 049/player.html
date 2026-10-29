@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Building Trust Before You Need It · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "049", "title": "Building Trust Before You Need It", "meta": "B2 · 约 260 词 · 场景：跨团队关系", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Trust Works Like a Bank Account", "heading_zh": "1. 信任就像一个银行账户", "rows": [[{"id": "s0_0_0", "md": "The worst time to meet the database team is during an outage at midnight.", "text": "The worst time to meet the database team is during an outage at midnight.", "zh": "认识数据库团队最糟糕的时机，就是半夜出故障的时候。", "sp": null}, {"id": "s0_0_1", "md": "You need them urgently, they have never heard your name, and every question sounds like a ==demand==.", "text": "You need them urgently, they have never heard your name, and every question sounds like a demand.", "zh": "你急着要找他们，他们从没听过你的名字，你问的每个问题听起来都像是在提要求。", "sp": null}, {"id": "s0_0_2", "md": "Even good engineers become careful and slow with strangers.", "text": "Even good engineers become careful and slow with strangers.", "zh": "再好的工程师，面对陌生人也会变得谨慎、动作变慢。", "sp": null}], [{"id": "s0_1_0", "md": "Think of trust as a bank account.", "text": "Think of trust as a bank account.", "zh": "把信任想象成一个银行账户。", "sp": null}, {"id": "s0_1_1", "md": "Every kept promise, shared insight, or small favor is a ==deposit==.", "text": "Every kept promise, shared insight, or small favor is a deposit.", "zh": "每一次兑现承诺、分享洞察、帮个小忙，都是一笔存款。", "sp": null}, {"id": "s0_1_2", "md": "Every urgent request is a ==withdrawal==.", "text": "Every urgent request is a withdrawal.", "zh": "每一个紧急请求都是一次取款。", "sp": null}, {"id": "s0_1_3", "md": "**If you only show up when you need something, your account is always empty.**", "text": "If you only show up when you need something, your account is always empty.", "zh": "如果你只在有求于人的时候才出现，你的账户永远是空的。", "sp": null}], [{"id": "s0_2_0", "md": "The good news is that deposits are cheap.", "text": "The good news is that deposits are cheap.", "zh": "好消息是，存款很便宜。", "sp": null}, {"id": "s0_2_1", "md": "They take minutes, not weeks, and they ==compound== over time.", "text": "They take minutes, not weeks, and they compound over time.", "zh": "只需要几分钟，而不是几周，而且会随着时间复利增长。", "sp": null}, {"id": "s0_2_2", "md": "You just have to make them when nothing is on fire.", "text": "You just have to make them when nothing is on fire.", "zh": "你只需要在没出事的时候去存。", "sp": null}]]}, {"heading": "2. Small Deposits That Add Up", "heading_zh": "2. 积少成多的小额存款", "rows": [[{"id": "s1_0_0", "md": "Start by keeping small promises ==precisely==.", "text": "Start by keeping small promises precisely.", "zh": "先从精确地兑现小承诺开始。", "sp": null}, {"id": "s1_0_1", "md": "If you say you will send the logs by three, send them by three.", "text": "If you say you will send the logs by three, send them by three.", "zh": "如果你说三点前发日志，那就三点前发。", "sp": null}, {"id": "s1_0_2", "md": "People judge your big commitments by how you handle the tiny ones.", "text": "People judge your big commitments by how you handle the tiny ones.", "zh": "别人是根据你怎么处理小事，来判断你的大承诺靠不靠谱的。", "sp": null}], [{"id": "s1_1_0", "md": "Next, share information before anyone asks.", "text": "Next, share information before anyone asks.", "zh": "接着，在别人开口之前就主动同步信息。", "sp": null}, {"id": "s1_1_1", "md": "If your team plans a change that will __double the traffic__ to their service, tell them a month ahead, not the day before.", "text": "If your team plans a change that will double the traffic to their service, tell them a month ahead, not the day before.", "zh": "如果你们团队计划做一个会让他们服务流量翻倍的改动，提前一个月告诉他们，而不是前一天。", "sp": null}, {"id": "s1_1_2", "md": "That kind of early warning is rare, and people __remember who gave it__.", "text": "That kind of early warning is rare, and people remember who gave it.", "zh": "这种提前预警很少见，人们会记住是谁给的。", "sp": null}], [{"id": "s1_2_0", "md": "Show up when they are in trouble, too.", "text": "Show up when they are in trouble, too.", "zh": "他们遇到麻烦的时候，你也要出现。", "sp": null}, {"id": "s1_2_1", "md": "When their system has an incident, offer a dashboard, a theory, or simply __an extra pair of eyes__.", "text": "When their system has an incident, offer a dashboard, a theory, or simply an extra pair of eyes.", "zh": "他们的系统出故障时，主动提供一个 dashboard、一个猜测，或者只是多一双眼睛帮着看。", "sp": null}, {"id": "s1_2_2", "md": "**Helping in their crisis is the fastest way to earn help in yours.**", "text": "Helping in their crisis is the fastest way to earn help in yours.", "zh": "在他们危机时出手相助，是你在自己危机时得到帮助的最快方式。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, make the relationship personal in a ==professional== way.", "text": "Finally, make the relationship personal in a professional way.", "zh": "最后，以职业的方式让关系变得私人一点。", "sp": null}, {"id": "s1_3_1", "md": "A short coffee chat, a thank-you in their channel, or a question about their roadmap all count.", "text": "A short coffee chat, a thank-you in their channel, or a question about their roadmap all count.", "zh": "一次简短的咖啡聊天、在他们群里说声谢谢、问问他们的 roadmap，这些都算。", "sp": null}, {"id": "s1_3_2", "md": "None of this is ==manipulation==; it is simply what good colleagues do when there is nothing to gain yet.", "text": "None of this is manipulation; it is simply what good colleagues do when there is nothing to gain yet.", "zh": "这些都不是在耍手段；这只是好同事在还没有任何好处可图的时候会做的事。", "sp": null}]]}], "gist": [{"q": "作者用什么比喻来描述信任？", "a": "银行账户：守住的承诺、分享的信息、小忙是存款，紧急求助是取款；只在需要时出现，账户永远是空的。"}, {"q": "作者建议的「小额存款」有哪些？", "a": "精确兑现小承诺；主动提前同步会影响对方的变更；对方出事故时去帮忙；喝咖啡、公开感谢、关心对方路线图。"}, {"q": "为什么要在平时而不是出事时建立信任？", "a": "出事时对方不认识你，每个问题都像命令；平时存款成本低、会累积，危机时才取得出来。"}], "dictation": [{"id": "s0_1_3", "text": "If you only show up when you need something, your account is always empty."}, {"id": "s1_0_2", "text": "People judge your big commitments by how you handle the tiny ones."}, {"id": "s1_2_2", "text": "Helping in their crisis is the fastest way to earn help in yours."}, {"id": "s1_0_1", "text": "If you say you will send the logs by three, send them by three."}], "shadow": {"text": "Think of trust as a bank account. Every kept promise, shared insight, or small favor is a deposit. Every urgent request is a withdrawal.", "marked": "Think of <b>trust</b> / as a <b>bank account</b>. //<br>Every <b>kept</b> promise, / <b>shared</b> insight, / or <b>small</b> favor / is a <b>deposit</b>. //<br>Every <b>urgent</b> request / is a <b>withdrawal</b>. //"}, "prompts": [{"q": "你们下个月要做一个营销活动，预计会让风控团队的服务流量翻倍。用 30 秒提前给对方负责人打个招呼。", "ref": "Hi Lena, nothing urgent, I just wanted to give you an early heads-up. Next month we're running a campaign that could roughly double the calls to your risk service for about a week. I'll share our traffic forecast once it's ready. Is there anything you'd need from us to prepare, like load test data or a contact on call during the campaign?", "ref_zh": "Lena 你好，不着急，只是想提前跟你打个招呼。下个月我们要做一个活动，大概有一周时间，打到你们风控服务的调用量可能会翻一倍左右。流量预估出来后我会发给你。你们需要我们提供什么来做准备吗？比如压测数据，或者活动期间我们这边 on-call 的联系人？", "id": "ref0"}, {"q": "另一个团队正在处理一个线上事故，和你们没直接关系。用 30 秒在他们的事故频道里主动提供帮助。", "ref": "Hi all, sorry you're dealing with this. We saw a similar spike in connection errors last month, and it turned out to be a pool size setting after a config change. Not sure it's the same thing, but I can share the dashboard we used to find it. If an extra pair of eyes would help, I'm free for the next hour.", "ref_zh": "大家好，辛苦了。我们上个月也遇到过类似的连接错误突增，最后发现是一次配置变更后连接池大小设置的问题。不确定是不是同一回事，但我可以把我们当时用来定位的 dashboard 分享出来。如果需要多一双眼睛帮忙看，接下来一个小时我都有空。", "id": "ref1"}], "words": [{"w": "demand", "ipa": "/dɪˈmænd/", "zh": "要求、强求", "ex": "Phrase it as a question so it doesn't sound like a demand.", "id": "w0"}, {"w": "deposit", "ipa": "/dɪˈpɑːzɪt/", "zh": "存款", "ex": "Every on-time delivery is a deposit in your trust account.", "id": "w1"}, {"w": "withdrawal", "ipa": "/wɪðˈdrɔːəl/", "zh": "取款、撤回", "ex": "Asking them to work the weekend is a big withdrawal.", "id": "w2"}, {"w": "compound (v.)", "ipa": "/kəmˈpaʊnd/", "zh": "复利般累积", "ex": "Small improvements in test speed compound over a year.", "tts_w": "compound", "id": "w3"}, {"w": "precisely", "ipa": "/prɪˈsaɪsli/", "zh": "精确地、恰好", "ex": "The job failed precisely when the backup started.", "id": "w4"}, {"w": "professional", "ipa": "/prəˈfeʃənl/", "zh": "职业的、得体的", "ex": "Keep the incident channel professional, even under pressure.", "id": "w5"}, {"w": "manipulation", "ipa": "/məˌnɪpjuˈleɪʃən/", "zh": "操纵", "ex": "Sharing data early isn't manipulation; it's good planning.", "id": "w6"}, {"w": "incident", "ipa": "/ˈɪnsɪdənt/", "zh": "事故", "ex": "We opened an incident as soon as the error rate passed the threshold.", "id": "w7"}, {"w": "insight", "ipa": "/ˈɪnsaɪt/", "zh": "洞察、见解", "ex": "Her insight into the query planner saved us a week.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Trust Works Like a Bank Account", "zh": "1. 信任就像一个银行账户", "start": 0.0, "end": 2.616, "words": [[0.105, 0.303], [0.684, 1.026], [1.039, 1.289], [1.303, 1.447], [1.461, 1.526], [1.539, 1.803], [1.816, 2.224]]}, {"kind": "s", "id": "s0_0_0", "md": "The worst time to meet the database team is during an outage at midnight.", "zh": "认识数据库团队最糟糕的时机，就是半夜出故障的时候。", "sp": null, "gap": false, "start": 2.616, "end": 6.84, "words": [[2.734, 2.8], [2.813, 3.077], [3.09, 3.313], [3.327, 3.419], [3.432, 3.642], [3.655, 3.748], [3.761, 4.274], [4.287, 4.642], [4.827, 4.919], [4.932, 5.234], [5.248, 5.366], [5.445, 5.787], [5.8, 5.892], [5.905, 6.458]]}, {"kind": "s", "id": "s0_0_1", "md": "You need them urgently, they have never heard your name, and every question sounds like a ==demand==.", "zh": "你急着要找他们，他们从没听过你的名字，你问的每个问题听起来都像是在提要求。", "sp": null, "gap": false, "start": 6.84, "end": 12.624, "words": [[6.945, 7.05], [7.064, 7.261], [7.274, 7.419], [7.524, 8.051], [8.366, 8.472], [8.485, 8.603], [8.616, 8.972], [8.985, 9.222], [9.235, 9.353], [9.366, 9.695], [10.09, 10.208], [10.34, 10.603], [10.616, 11.129], [11.143, 11.458], [11.472, 11.59], [11.603, 11.643], [11.656, 12.235]]}, {"kind": "s", "id": "s0_0_2", "md": "Even good engineers become careful and slow with strangers.", "zh": "再好的工程师，面对陌生人也会变得谨慎、动作变慢。", "sp": null, "gap": false, "start": 12.624, "end": 16.608, "words": [[12.729, 12.979], [12.992, 13.229], [13.242, 13.782], [13.795, 14.163], [14.177, 14.716], [14.927, 14.992], [15.006, 15.4], [15.413, 15.532], [15.545, 16.229]]}, {"kind": "s", "id": "s0_1_0", "md": "Think of trust as a bank account.", "zh": "把信任想象成一个银行账户。", "sp": null, "gap": true, "start": 16.608, "end": 18.744, "words": [[16.74, 16.884], [16.897, 16.99], [17.003, 17.463], [17.476, 17.569], [17.582, 17.634], [17.647, 17.911], [17.924, 18.345]]}, {"kind": "s", "id": "s0_1_1", "md": "Every kept promise, shared insight, or small favor is a ==deposit==.", "zh": "每一次兑现承诺、分享洞察、帮个小忙，都是一笔存款。", "sp": null, "gap": false, "start": 18.744, "end": 23.832, "words": [[18.849, 19.099], [19.112, 19.415], [19.428, 20.112], [20.336, 20.612], [20.626, 21.112], [21.573, 21.678], [21.691, 22.02], [22.033, 22.494], [22.599, 22.731], [22.744, 22.797], [22.81, 23.441]]}, {"kind": "s", "id": "s0_1_2", "md": "Every urgent request is a ==withdrawal==.", "zh": "每一个紧急请求都是一次取款。", "sp": null, "gap": false, "start": 23.832, "end": 26.544, "words": [[23.937, 24.2], [24.214, 24.543], [24.556, 25.148], [25.371, 25.45], [25.464, 25.516], [25.529, 26.161]]}, {"kind": "s", "id": "s0_1_3", "md": "**If you only show up when you need something, your account is always empty.**", "zh": "如果你只在有求于人的时候才出现，你的账户永远是空的。", "sp": null, "gap": false, "start": 26.544, "end": 31.2, "words": [[26.649, 26.768], [26.781, 26.912], [26.926, 27.162], [27.176, 27.491], [27.505, 27.676], [27.689, 27.807], [27.82, 27.926], [27.939, 28.202], [28.215, 28.676], [29.044, 29.176], [29.189, 29.636], [29.873, 30.031], [30.044, 30.452], [30.465, 30.82]]}, {"kind": "s", "id": "s0_2_0", "md": "The good news is that deposits are cheap.", "zh": "好消息是，存款很便宜。", "sp": null, "gap": true, "start": 31.2, "end": 33.648, "words": [[31.318, 31.384], [31.397, 31.582], [31.595, 31.963], [31.976, 32.068], [32.082, 32.213], [32.226, 32.792], [32.805, 32.884], [32.897, 33.266]]}, {"kind": "s", "id": "s0_2_1", "md": "They take minutes, not weeks, and they ==compound== over time.", "zh": "只需要几分钟，而不是几周，而且会随着时间复利增长。", "sp": null, "gap": false, "start": 33.648, "end": 37.848, "words": [[33.766, 33.845], [33.859, 34.109], [34.122, 34.701], [34.951, 35.24], [35.253, 35.74], [35.977, 36.069], [36.082, 36.201], [36.214, 36.859], [36.872, 37.056], [37.069, 37.451]]}, {"kind": "s", "id": "s0_2_2", "md": "You just have to make them when nothing is on fire.", "zh": "你只需要在没出事的时候去存。", "sp": null, "gap": false, "start": 37.848, "end": 40.584, "words": [[37.953, 38.019], [38.032, 38.216], [38.23, 38.387], [38.401, 38.48], [38.493, 38.716], [38.73, 38.887], [38.901, 39.098], [39.111, 39.427], [39.44, 39.545], [39.559, 39.703], [39.716, 40.19]]}, {"kind": "h", "id": "h1", "md": "2. Small Deposits That Add Up", "zh": "2. 积少成多的小额存款", "start": 40.584, "end": 43.032, "words": [[40.689, 40.939], [41.268, 41.545], [41.558, 42.097], [42.11, 42.268], [42.281, 42.426], [42.439, 42.637]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by keeping small promises ==precisely==.", "zh": "先从精确地兑现小承诺开始。", "sp": null, "gap": false, "start": 43.032, "end": 45.912, "words": [[43.137, 43.427], [43.44, 43.585], [43.598, 43.953], [43.966, 44.282], [44.295, 44.795], [44.808, 45.519]]}, {"kind": "s", "id": "s1_0_1", "md": "If you say you will send the logs by three, send them by three.", "zh": "如果你说三点前发日志，那就三点前发。", "sp": null, "gap": false, "start": 45.912, "end": 49.728, "words": [[46.017, 46.136], [46.149, 46.241], [46.254, 46.504], [46.517, 46.609], [46.623, 46.741], [46.754, 46.978], [46.991, 47.057], [47.07, 47.412], [47.425, 47.583], [47.596, 48.004], [48.399, 48.596], [48.609, 48.715], [48.728, 48.925], [48.938, 49.346]]}, {"kind": "s", "id": "s1_0_2", "md": "People judge your big commitments by how you handle the tiny ones.", "zh": "别人是根据你怎么处理小事，来判断你的大承诺靠不靠谱的。", "sp": null, "gap": false, "start": 49.728, "end": 53.736, "words": [[49.846, 50.136], [50.149, 50.452], [50.465, 50.61], [50.623, 50.833], [50.846, 51.452], [51.465, 51.623], [51.636, 51.794], [51.807, 51.952], [51.965, 52.386], [52.399, 52.478], [52.491, 52.82], [52.833, 53.333]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, share information before anyone asks.", "zh": "接着，在别人开口之前就主动同步信息。", "sp": null, "gap": true, "start": 53.736, "end": 57.168, "words": [[53.841, 54.236], [54.499, 54.736], [54.749, 55.354], [55.368, 55.802], [55.815, 56.144], [56.157, 56.775]]}, {"kind": "s", "id": "s1_1_1", "md": "If your team plans a change that will __double the traffic__ to their service, tell them a month ahead, not the day before.", "zh": "如果你们团队计划做一个会让他们服务流量翻倍的改动，提前一个月告诉他们，而不是前一天。", "sp": null, "gap": false, "start": 57.168, "end": 63.84, "words": [[57.273, 57.392], [57.405, 57.523], [57.536, 57.773], [57.786, 58.115], [58.129, 58.181], [58.194, 58.615], [58.629, 58.734], [58.747, 58.879], [58.892, 59.221], [59.234, 59.313], [59.326, 59.813], [59.826, 59.918], [59.931, 60.089], [60.102, 60.668], [60.957, 61.115], [61.129, 61.26], [61.273, 61.313], [61.326, 61.655], [61.668, 62.05], [62.457, 62.642], [62.655, 62.747], [62.76, 62.931], [62.944, 63.457]]}, {"kind": "s", "id": "s1_1_2", "md": "That kind of early warning is rare, and people __remember who gave it__.", "zh": "这种提前预警很少见，人们会记住是谁给的。", "sp": null, "gap": false, "start": 63.84, "end": 67.968, "words": [[63.958, 64.051], [64.064, 64.274], [64.287, 64.393], [64.498, 64.774], [64.787, 65.222], [65.235, 65.366], [65.379, 65.774], [66.182, 66.235], [66.248, 66.59], [66.603, 66.958], [66.972, 67.09], [67.103, 67.393], [67.406, 67.577]]}, {"kind": "s", "id": "s1_2_0", "md": "Show up when they are in trouble, too.", "zh": "他们遇到麻烦的时候，你也要出现。", "sp": null, "gap": true, "start": 67.968, "end": 70.296, "words": [[68.073, 68.31], [68.323, 68.481], [68.494, 68.6], [68.613, 68.718], [68.731, 68.85], [68.863, 68.942], [68.955, 69.35], [69.6, 69.902]]}, {"kind": "s", "id": "s1_2_1", "md": "When their system has an incident, offer a dashboard, a theory, or simply __an extra pair of eyes__.", "zh": "他们的系统出故障时，主动提供一个 dashboard、一个猜测，或者只是多一双眼睛帮着看。", "sp": null, "gap": false, "start": 70.296, "end": 76.68, "words": [[70.414, 70.507], [70.52, 70.651], [70.664, 71.085], [71.099, 71.309], [71.322, 71.414], [71.428, 71.954], [72.257, 72.572], [72.585, 72.638], [72.651, 73.296], [73.691, 73.73], [73.743, 74.283], [74.599, 74.717], [74.73, 75.072], [75.085, 75.178], [75.191, 75.48], [75.493, 75.717], [75.73, 75.809], [75.822, 76.296]]}, {"kind": "s", "id": "s1_2_2", "md": "**Helping in their crisis is the fastest way to earn help in yours.**", "zh": "在他们危机时出手相助，是你在自己危机时得到帮助的最快方式。", "sp": null, "gap": false, "start": 76.68, "end": 80.832, "words": [[76.785, 77.075], [77.088, 77.154], [77.167, 77.312], [77.325, 77.943], [78.048, 78.167], [78.18, 78.272], [78.285, 78.904], [78.917, 79.167], [79.18, 79.338], [79.351, 79.601], [79.614, 79.864], [79.877, 79.97], [79.983, 80.443]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, make the relationship personal in a ==professional== way.", "zh": "最后，以职业的方式让关系变得私人一点。", "sp": null, "gap": true, "start": 80.832, "end": 84.936, "words": [[81.003, 81.45], [81.766, 81.924], [81.937, 82.016], [82.029, 82.753], [82.766, 83.332], [83.464, 83.543], [83.556, 83.608], [83.621, 84.253], [84.266, 84.556]]}, {"kind": "s", "id": "s1_3_1", "md": "A short coffee chat, a thank-you in their channel, or a question about their roadmap all count.", "zh": "一次简短的咖啡聊天、在他们群里说声谢谢、问问他们的 roadmap，这些都算。", "sp": null, "gap": false, "start": 84.936, "end": 90.936, "words": [[85.041, 85.081], [85.094, 85.41], [85.423, 85.818], [85.831, 86.226], [86.633, 86.673], [86.686, 87.16], [87.173, 87.239], [87.252, 87.397], [87.41, 87.831], [88.239, 88.318], [88.331, 88.383], [88.397, 88.818], [88.831, 89.081], [89.094, 89.291], [89.304, 89.818], [89.91, 90.107], [90.12, 90.541]]}, {"kind": "s", "id": "s1_3_2", "md": "None of this is ==manipulation==; it is simply what good colleagues do when there is nothing to gain yet.", "zh": "这些都不是在耍手段；这只是好同事在还没有任何好处可图的时候会做的事。", "sp": null, "gap": false, "start": 90.936, "end": 97.512, "words": [[91.054, 91.265], [91.278, 91.397], [91.41, 91.752], [91.87, 91.989], [92.002, 92.857], [93.278, 93.331], [93.344, 93.462], [93.475, 93.831], [93.844, 94.107], [94.12, 94.383], [94.397, 94.936], [94.949, 95.318], [95.436, 95.594], [95.607, 95.765], [95.778, 95.897], [95.91, 96.331], [96.344, 96.436], [96.449, 96.765], [96.778, 97.12]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

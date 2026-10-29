@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Asking Your Manager for What You Need · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "033", "title": "Asking Your Manager for What You Need", "meta": "B2 · 约 260 词 · 场景：向经理要资源", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. A Hint Is Not a Request", "heading_zh": "1. 暗示不等于请求", "rows": [[{"id": "s0_0_0", "md": "For three months, your team has been one engineer short.", "text": "For three months, your team has been one engineer short.", "zh": "三个月来，你们团队一直缺一个工程师。", "sp": null}, {"id": "s0_0_1", "md": "You mention it __in passing__, your manager nods, and nothing happens.", "text": "You mention it in passing, your manager nods, and nothing happens.", "zh": "你顺嘴提了一句，经理点了点头，然后就没下文了。", "sp": null}, {"id": "s0_0_2", "md": "It is ==tempting== to decide that they simply don't care.", "text": "It is tempting to decide that they simply don't care.", "zh": "你很容易就会认定，他根本不在乎。", "sp": null}], [{"id": "s0_1_0", "md": "More often, the request never became a real request.", "text": "More often, the request never became a real request.", "zh": "但更常见的情况是，这个请求从来就没真正变成一个请求。", "sp": null}, {"id": "s0_1_1", "md": "\"We're a bit ==stretched==\" sounds like a ==remark==, not something that needs a decision.", "text": "\"We're a bit stretched\" sounds like a remark, not something that needs a decision.", "zh": "「我们人手有点紧」听起来像是随口一说，而不是一件需要做决定的事。", "sp": null}, {"id": "s0_1_2", "md": "Your manager hears twenty remarks like that every week and can only __act on__ a few.", "text": "Your manager hears twenty remarks like that every week and can only act on a few.", "zh": "你的经理每周都会听到二十句这样的话，只能对其中几句采取行动。", "sp": null}, {"id": "s0_1_3", "md": "The ones that get action are the ones that arrive with a clear question attached.", "text": "The ones that get action are the ones that arrive with a clear question attached.", "zh": "真正能推动起来的，是那些附带了明确问题的。", "sp": null}], [{"id": "s0_2_0", "md": "**A complaint describes a problem; a request asks someone to decide something.**", "text": "A complaint describes a problem; a request asks someone to decide something.", "zh": "抱怨是在描述一个问题；请求是在请某人做一个决定。", "sp": null}, {"id": "s0_2_1", "md": "If you want a decision, you have to make it easy to make.", "text": "If you want a decision, you have to make it easy to make.", "zh": "如果你想要一个决定，就得让这个决定容易做。", "sp": null}, {"id": "s0_2_2", "md": "That means being specific about what you need, by when, and why it matters to them.", "text": "That means being specific about what you need, by when, and why it matters to them.", "zh": "这意味着要说清楚你需要什么、什么时候要，以及这件事为什么对他很重要。", "sp": null}]]}, {"heading": "2. Making It Easy to Say Yes", "heading_zh": "2. 让对方容易答应", "rows": [[{"id": "s1_0_0", "md": "Start with a goal your manager already owns.", "text": "Start with a goal your manager already owns.", "zh": "从一个你经理本来就要负责的目标说起。", "sp": null}, {"id": "s1_0_1", "md": "\"You told leadership we would launch in the new market by June.\"", "text": "\"You told leadership we would launch in the new market by June.\"", "zh": "「你跟管理层说过，我们六月前会在新市场上线。」", "sp": null}, {"id": "s1_0_2", "md": "Now your ask is about their ==commitment==, not your comfort.", "text": "Now your ask is about their commitment, not your comfort.", "zh": "这样你的请求就关乎他的承诺，而不是你过得舒不舒服。", "sp": null}, {"id": "s1_0_3", "md": "Managers fight hardest for the things they have already promised to their own boss.", "text": "Managers fight hardest for the things they have already promised to their own boss.", "zh": "经理最会去争取的，就是那些他已经向自己老板承诺过的事情。", "sp": null}], [{"id": "s1_1_0", "md": "Then name the ==resource== exactly.", "text": "Then name the resource exactly.", "zh": "然后把需要的资源说得清清楚楚。", "sp": null}, {"id": "s1_1_1", "md": "Not \"more help,\" but \"one backend engineer for six weeks, or a two-week delay on the reporting feature.\"", "text": "Not \"more help,\" but \"one backend engineer for six weeks, or a two-week delay on the reporting feature.\"", "zh": "不是「多来点人帮忙」，而是「要一个后端工程师支援六周，或者把报表功能推迟两周」。", "sp": null}, {"id": "s1_1_2", "md": "Two clear options let your manager ==weigh== them instead of just saying yes or no.", "text": "Two clear options let your manager weigh them instead of just saying yes or no.", "zh": "给出两个清晰的选项，经理就能去权衡，而不只是回答行或不行。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, state the cost of doing nothing.", "text": "Finally, state the cost of doing nothing.", "zh": "最后，讲明白什么都不做的代价。", "sp": null}, {"id": "s1_2_1", "md": "\"Without either, the launch will probably slip by a month, and on-call will __stretch thin__ again.\"", "text": "\"Without either, the launch will probably slip by a month, and on-call will stretch thin again.\"", "zh": "「两样都没有的话，上线很可能要推迟一个月，on-call 的人手又会捉襟见肘。」", "sp": null}, {"id": "s1_2_2", "md": "**Clear costs turn a favor into a business decision.**", "text": "Clear costs turn a favor into a business decision.", "zh": "代价讲清楚了，求人帮忙就变成了一个业务决策。", "sp": null}], [{"id": "s1_3_0", "md": "If the answer is still no, ask what would change it.", "text": "If the answer is still no, ask what would change it.", "zh": "如果答案还是不行，就问问什么条件下能改变。", "sp": null}, {"id": "s1_3_1", "md": "Then __put a date on__ the follow-up, so the conversation does not quietly disappear.", "text": "Then put a date on the follow-up, so the conversation does not quietly disappear.", "zh": "然后给后续跟进定个日期，免得这次谈话就这么不了了之。", "sp": null}]]}], "gist": [{"q": "为什么团队缺人三个月，经理却没有行动？", "a": "你只是顺口提过，「有点忙不过来」听起来像随口一说，不是一个需要决策的请求。"}, {"q": "作者怎么区分抱怨和请求？", "a": "抱怨只描述问题；请求是请对方做一个决定，要说清要什么、什么时候要、为什么对他重要。"}, {"q": "让经理容易答应的请求包含哪几部分？", "a": "从经理自己承诺的目标说起；把资源说具体并给两个选项；说明不做的代价；被拒绝就问什么能改变结论，并约定跟进时间。"}], "dictation": [{"id": "s0_2_0", "text": "A complaint describes a problem; a request asks someone to decide something."}, {"id": "s1_2_2", "text": "Clear costs turn a favor into a business decision."}, {"id": "s1_0_2", "text": "Now your ask is about their commitment, not your comfort."}, {"id": "s1_3_0", "text": "If the answer is still no, ask what would change it."}], "shadow": {"text": "Then name the resource exactly. Not \"more help,\" but \"one backend engineer for six weeks, or a two-week delay on the reporting feature.\" Two clear options let your manager weigh them instead of just saying yes or no.", "marked": "Then name the resource <b>exactly</b>. //<br><b>Not</b> \"more help,\" / but \"<b>one</b> backend engineer for <b>six weeks</b>, / <b>or</b> a two-week delay / on the reporting feature.\" //<br>Two <b>clear</b> options / let your manager <b>weigh</b> them / instead of just saying <b>yes</b> or <b>no</b>. //"}, "prompts": [{"q": "团队人手不够，一季度的目标可能完不成。在一对一里用 30 秒向经理提出具体请求：挂钩他的目标、给两个选项、说清不做的代价。", "ref": "I need a decision from you on staffing. You committed to the new payment flow by the end of March. With the current team, we'll finish in late April. I see two options: borrow one engineer from the platform team for six weeks, or move the refund feature to the next quarter. If we do neither, we'll miss the date and the on-call load will stay high.", "ref_zh": "人手的事我需要你拍个板。你承诺了三月底上线新的支付流程。按现在的团队，我们要到四月下旬才能做完。我看有两个选项：从平台团队借一个工程师六周，或者把退款功能挪到下个季度。如果两个都不选，我们会错过这个时间点，on-call 的压力也会一直这么高。", "id": "ref0"}, {"q": "你需要预算请外部安全团队做一次渗透测试，经理上次说「再看看」。用 30 秒重新提出，并约定跟进时间。", "ref": "I want to come back to the security test we discussed. The launch is in five weeks, and the external team needs two weeks to schedule us, so if we wait much longer, we lose the option. Without a test, we'd be shipping a new payment page with no outside review. If budget is the issue, can you tell me what would change your answer? Could we decide by Thursday?", "ref_zh": "我想再跟你聊聊之前说的安全测试。上线还有五周，外部团队需要两周来排期，所以如果再拖下去，我们就没这个选项了。不做测试的话，我们上线一个全新的支付页面，却没有任何外部评审。如果卡在预算上，你能告诉我什么条件下你会改变决定吗？我们能在周四前定下来吗？", "id": "ref1"}], "words": [{"w": "tempting", "ipa": "/ˈtemptɪŋ/", "zh": "诱人的、让人想……的", "ex": "It's tempting to skip the tests, but we'll pay for it later.", "id": "w0"}, {"w": "stretched", "ipa": "/stretʃt/", "zh": "（人手）紧张的", "ex": "The team is stretched after two people left.", "id": "w1"}, {"w": "remark", "ipa": "/rɪˈmɑːrk/", "zh": "随口的评论", "ex": "His remark about the deadline turned out to be a real warning.", "id": "w2"}, {"w": "commitment", "ipa": "/kəˈmɪtmənt/", "zh": "承诺", "ex": "We made a commitment to the partner to launch in June.", "id": "w3"}, {"w": "resource", "ipa": "/ˈriːsɔːrs/", "zh": "资源（人力、预算等）", "ex": "We need one more resource on the backend to hit the date.", "id": "w4"}, {"w": "weigh (v.)", "ipa": "/weɪ/", "zh": "权衡", "ex": "Let's weigh the cost of a delay against the cost of more headcount.", "tts_w": "weigh", "id": "w5"}, {"w": "favor", "ipa": "/ˈfeɪvər/", "zh": "帮忙、人情", "ex": "I don't want this to feel like a favor; it's a priority call.", "id": "w6"}, {"w": "in passing", "ipa": "/ɪn ˈpæsɪŋ/", "zh": "顺便、随口", "ex": "She mentioned the outage in passing, so nobody followed up.", "id": "w7"}, {"w": "slip (v.)", "ipa": "/slɪp/", "zh": "（进度）延误", "ex": "If the design review moves, the launch will slip too.", "tts_w": "slip", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. A Hint Is Not a Request", "zh": "1. 暗示不等于请求", "start": 0.0, "end": 2.592, "words": [[0.118, 0.342], [0.763, 0.803], [0.816, 1.105], [1.224, 1.329], [1.342, 1.526], [1.539, 1.566], [1.579, 2.211]]}, {"kind": "s", "id": "s0_0_0", "md": "For three months, your team has been one engineer short.", "zh": "三个月来，你们团队一直缺一个工程师。", "sp": null, "gap": false, "start": 2.592, "end": 6.168, "words": [[2.737, 2.842], [2.855, 3.118], [3.131, 3.645], [3.947, 4.066], [4.079, 4.329], [4.342, 4.474], [4.487, 4.684], [4.697, 4.908], [4.921, 5.355], [5.368, 5.776]]}, {"kind": "s", "id": "s0_0_1", "md": "You mention it __in passing__, your manager nods, and nothing happens.", "zh": "你顺嘴提了一句，经理点了点头，然后就没下文了。", "sp": null, "gap": false, "start": 6.168, "end": 10.464, "words": [[6.273, 6.365], [6.379, 6.734], [6.747, 6.813], [6.826, 6.931], [6.944, 7.51], [7.76, 7.852], [7.865, 8.326], [8.339, 8.852], [9.076, 9.194], [9.207, 9.484], [9.497, 10.076]]}, {"kind": "s", "id": "s0_0_2", "md": "It is ==tempting== to decide that they simply don't care.", "zh": "你很容易就会认定，他根本不在乎。", "sp": null, "gap": false, "start": 10.464, "end": 13.56, "words": [[10.569, 10.648], [10.661, 10.806], [10.819, 11.201], [11.214, 11.306], [11.319, 11.846], [11.859, 11.99], [12.003, 12.122], [12.135, 12.503], [12.517, 12.753], [12.767, 13.175]]}, {"kind": "s", "id": "s0_1_0", "md": "More often, the request never became a real request.", "zh": "但更常见的情况是，这个请求从来就没真正变成一个请求。", "sp": null, "gap": true, "start": 13.56, "end": 17.52, "words": [[13.665, 13.863], [13.876, 14.271], [14.639, 14.718], [14.731, 15.31], [15.323, 15.665], [15.678, 16.047], [16.06, 16.139], [16.152, 16.468], [16.481, 17.126]]}, {"kind": "s", "id": "s0_1_1", "md": "\"We're a bit ==stretched==\" sounds like a ==remark==, not something that needs a decision.", "zh": "「我们人手有点紧」听起来像是随口一说，而不是一件需要做决定的事。", "sp": null, "gap": false, "start": 17.52, "end": 22.32, "words": [[17.717, 17.783], [17.783, 17.836], [17.849, 18.033], [18.046, 18.625], [18.796, 19.138], [19.152, 19.27], [19.283, 19.323], [19.336, 19.967], [20.362, 20.546], [20.559, 20.915], [20.928, 21.073], [21.086, 21.323], [21.336, 21.375], [21.388, 21.941]]}, {"kind": "s", "id": "s0_1_2", "md": "Your manager hears twenty remarks like that every week and can only __act on__ a few.", "zh": "你的经理每周都会听到二十句这样的话，只能对其中几句采取行动。", "sp": null, "gap": false, "start": 22.32, "end": 27.384, "words": [[22.425, 22.517], [22.531, 22.978], [22.991, 23.307], [23.32, 23.636], [23.649, 24.123], [24.136, 24.346], [24.359, 24.57], [24.662, 24.938], [24.952, 25.307], [25.531, 25.609], [25.623, 25.78], [25.794, 26.123], [26.136, 26.425], [26.438, 26.544], [26.557, 26.596], [26.609, 26.991]]}, {"kind": "s", "id": "s0_1_3", "md": "The ones that get action are the ones that arrive with a clear question attached.", "zh": "真正能推动起来的，是那些附带了明确问题的。", "sp": null, "gap": false, "start": 27.384, "end": 32.04, "words": [[27.502, 27.568], [27.581, 27.858], [27.871, 28.029], [28.042, 28.187], [28.2, 28.713], [28.779, 28.924], [28.937, 29.042], [29.055, 29.41], [29.423, 29.555], [29.568, 30.068], [30.081, 30.226], [30.239, 30.292], [30.305, 30.647], [30.66, 31.068], [31.081, 31.647]]}, {"kind": "s", "id": "s0_2_0", "md": "**A complaint describes a problem; a request asks someone to decide something.**", "zh": "抱怨是在描述一个问题；请求是在请某人做一个决定。", "sp": null, "gap": true, "start": 32.04, "end": 36.792, "words": [[32.145, 32.211], [32.224, 32.685], [32.698, 33.211], [33.224, 33.277], [33.29, 33.79], [34.198, 34.211], [34.224, 34.803], [34.816, 35.145], [35.158, 35.461], [35.474, 35.566], [35.579, 36.0], [36.014, 36.408]]}, {"kind": "s", "id": "s0_2_1", "md": "If you want a decision, you have to make it easy to make.", "zh": "如果你想要一个决定，就得让这个决定容易做。", "sp": null, "gap": false, "start": 36.792, "end": 40.176, "words": [[36.897, 37.003], [37.016, 37.108], [37.121, 37.279], [37.292, 37.331], [37.345, 37.871], [38.187, 38.266], [38.279, 38.424], [38.437, 38.516], [38.529, 38.739], [38.753, 38.858], [39.016, 39.266], [39.279, 39.371], [39.384, 39.792]]}, {"kind": "s", "id": "s0_2_2", "md": "That means being specific about what you need, by when, and why it matters to them.", "zh": "这意味着要说清楚你需要什么、什么时候要，以及这件事为什么对他很重要。", "sp": null, "gap": false, "start": 40.176, "end": 45.264, "words": [[40.294, 40.387], [40.4, 40.636], [40.65, 40.886], [40.9, 41.544], [41.558, 41.834], [41.847, 42.005], [42.018, 42.137], [42.15, 42.597], [42.847, 43.018], [43.031, 43.492], [43.768, 43.847], [43.86, 44.071], [44.084, 44.163], [44.176, 44.544], [44.558, 44.663], [44.676, 44.873]]}, {"kind": "h", "id": "h1", "md": "2. Making It Easy to Say Yes", "zh": "2. 让对方容易答应", "start": 45.264, "end": 48.024, "words": [[45.382, 45.606], [45.975, 46.251], [46.264, 46.369], [46.488, 46.751], [46.764, 46.843], [46.856, 47.093], [47.106, 47.632]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with a goal your manager already owns.", "zh": "从一个你经理本来就要负责的目标说起。", "sp": null, "gap": false, "start": 48.024, "end": 50.904, "words": [[48.129, 48.379], [48.392, 48.537], [48.55, 48.603], [48.616, 48.892], [48.906, 49.024], [49.037, 49.629], [49.642, 50.063], [50.077, 50.524]]}, {"kind": "s", "id": "s1_0_1", "md": "\"You told leadership we would launch in the new market by June.\"", "zh": "「你跟管理层说过，我们六月前会在新市场上线。」", "sp": null, "gap": false, "start": 50.904, "end": 54.6, "words": [[51.088, 51.154], [51.154, 51.43], [51.443, 51.943], [51.957, 52.062], [52.075, 52.246], [52.259, 52.707], [52.72, 52.799], [52.812, 52.878], [52.891, 53.101], [53.115, 53.575], [53.588, 53.786], [53.799, 54.18]]}, {"kind": "s", "id": "s1_0_2", "md": "Now your ask is about their ==commitment==, not your comfort.", "zh": "这样你的请求就关乎他的承诺，而不是你过得舒不舒服。", "sp": null, "gap": false, "start": 54.6, "end": 58.128, "words": [[54.705, 54.863], [54.876, 55.087], [55.1, 55.455], [55.468, 55.561], [55.574, 55.85], [55.863, 56.021], [56.034, 56.6], [56.982, 57.126], [57.139, 57.258], [57.271, 57.745]]}, {"kind": "s", "id": "s1_0_3", "md": "Managers fight hardest for the things they have already promised to their own boss.", "zh": "经理最会去争取的，就是那些他已经向自己老板承诺过的事情。", "sp": null, "gap": false, "start": 58.128, "end": 62.904, "words": [[58.233, 58.76], [58.773, 59.089], [59.102, 59.562], [59.575, 59.681], [59.694, 59.786], [59.799, 60.167], [60.181, 60.286], [60.299, 60.444], [60.523, 60.917], [60.931, 61.496], [61.51, 61.589], [61.602, 61.786], [61.799, 61.957], [61.97, 62.523]]}, {"kind": "s", "id": "s1_1_0", "md": "Then name the ==resource== exactly.", "zh": "然后把需要的资源说得清清楚楚。", "sp": null, "gap": true, "start": 62.904, "end": 65.016, "words": [[63.009, 63.115], [63.128, 63.312], [63.325, 63.417], [63.43, 63.996], [64.009, 64.628]]}, {"kind": "s", "id": "s1_1_1", "md": "Not \"more help,\" but \"one backend engineer for six weeks, or a two-week delay on the reporting feature.\"", "zh": "不是「多来点人帮忙」，而是「要一个后端工程师支援六周，或者把报表功能推迟两周」。", "sp": null, "gap": false, "start": 65.016, "end": 72.552, "words": [[65.121, 65.45], [65.753, 66.055], [66.069, 66.477], [66.727, 66.99], [67.069, 67.345], [67.358, 67.819], [67.832, 68.345], [68.358, 68.516], [68.529, 68.832], [68.845, 69.332], [69.621, 69.766], [69.779, 69.832], [69.845, 70.345], [70.358, 70.832], [70.845, 70.95], [70.963, 71.042], [71.055, 71.542], [71.555, 72.055]]}, {"kind": "s", "id": "s1_1_2", "md": "Two clear options let your manager ==weigh== them instead of just saying yes or no.", "zh": "给出两个清晰的选项，经理就能去权衡，而不只是回答行或不行。", "sp": null, "gap": false, "start": 72.552, "end": 77.232, "words": [[72.67, 72.841], [72.855, 73.118], [73.131, 73.565], [73.578, 73.71], [73.723, 73.828], [73.841, 74.289], [74.302, 74.486], [74.499, 74.71], [74.815, 75.236], [75.249, 75.342], [75.355, 75.631], [75.644, 76.039], [76.052, 76.447], [76.46, 76.565], [76.578, 76.855]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, state the cost of doing nothing.", "zh": "最后，讲明白什么都不做的代价。", "sp": null, "gap": true, "start": 77.232, "end": 80.064, "words": [[77.39, 77.824], [78.114, 78.416], [78.429, 78.522], [78.535, 78.929], [78.943, 79.021], [79.035, 79.285], [79.298, 79.666]]}, {"kind": "s", "id": "s1_2_1", "md": "\"Without either, the launch will probably slip by a month, and on-call will __stretch thin__ again.\"", "zh": "「两样都没有的话，上线很可能要推迟一个月，on-call 的人手又会捉襟见肘。」", "sp": null, "gap": false, "start": 80.064, "end": 85.944, "words": [[80.275, 80.525], [80.603, 80.959], [81.209, 81.301], [81.314, 81.617], [81.63, 81.761], [81.775, 82.288], [82.301, 82.656], [82.669, 82.84], [82.853, 82.906], [82.919, 83.393], [83.643, 83.827], [83.84, 84.38], [84.393, 84.525], [84.538, 84.959], [84.972, 85.143], [85.156, 85.525]]}, {"kind": "s", "id": "s1_2_2", "md": "**Clear costs turn a favor into a business decision.**", "zh": "代价讲清楚了，求人帮忙就变成了一个业务决策。", "sp": null, "gap": false, "start": 85.944, "end": 89.52, "words": [[86.049, 86.326], [86.339, 86.852], [86.865, 87.089], [87.102, 87.154], [87.168, 87.694], [87.76, 88.076], [88.089, 88.181], [88.194, 88.602], [88.615, 89.141]]}, {"kind": "s", "id": "s1_3_0", "md": "If the answer is still no, ask what would change it.", "zh": "如果答案还是不行，就问问什么条件下能改变。", "sp": null, "gap": true, "start": 89.52, "end": 92.616, "words": [[89.625, 89.73], [89.744, 89.823], [89.836, 90.191], [90.204, 90.309], [90.323, 90.586], [90.599, 90.902], [91.204, 91.467], [91.481, 91.573], [91.586, 91.704], [91.717, 92.046], [92.059, 92.217]]}, {"kind": "s", "id": "s1_3_1", "md": "Then __put a date on__ the follow-up, so the conversation does not quietly disappear.", "zh": "然后给后续跟进定个日期，免得这次谈话就这么不了了之。", "sp": null, "gap": false, "start": 92.616, "end": 97.68, "words": [[92.734, 92.866], [92.879, 93.037], [93.05, 93.129], [93.142, 93.419], [93.432, 93.524], [93.537, 93.603], [93.616, 94.195], [94.577, 94.682], [94.695, 94.787], [94.8, 95.616], [95.629, 95.827], [95.84, 96.129], [96.142, 96.642], [96.655, 97.3]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

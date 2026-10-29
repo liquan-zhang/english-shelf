@@ -1,0 +1,173 @@
+{
+  "id": "071",
+  "title": "Saying What You Will Not Do This Quarter",
+  "meta": "B2 · 约 280 词 · 场景：季度规划",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. A Plan Is Mostly No",
+      "paragraphs": [
+        [
+          "Every quarterly plan looks reasonable when it lists what the team will build.",
+          "The trouble starts in week three, when a new request arrives and nobody knows whether it fits.",
+          "Without a clear boundary, everything quietly becomes a priority, and the team ends the quarter with ten things half done."
+        ],
+        [
+          "**A plan only means something when it also says what you are not doing.**",
+          "That list is uncomfortable to write, because every item on it belongs to someone who cares about it.",
+          "But leaving it ==implicit== does not avoid the conflict; it only moves the conflict to a worse moment, usually the quarterly review."
+        ],
+        [
+          "An ==explicit== not-doing list protects the team.",
+          "When someone asks for something new, you can point to the list and ask what they would like to __swap out__.",
+          "The conversation shifts from pressure to ==negotiation==, which is a much healthier place to be."
+        ]
+      ],
+      "heading_zh": "1. 计划的大半是说不",
+      "paragraphs_zh": [
+        [
+          "每份季度规划在列出团队要做什么的时候，看起来都挺合理。",
+          "麻烦从第三周开始，新需求来了，没人知道它该不该塞进去。",
+          "没有清晰的边界，所有事都会悄悄变成优先级，团队到季度末手里是十件做了一半的事。"
+        ],
+        [
+          "一份计划只有同时写明不做什么，才有意义。",
+          "这份清单写起来很难受，因为上面每一项背后都有一个在乎它的人。",
+          "但不明说并不能回避冲突；它只是把冲突挪到一个更糟的时间点，通常是季度复盘。"
+        ],
+        [
+          "一份明确的不做清单能保护团队。",
+          "有人提新需求时，你可以指着清单问他想拿哪一项来换。",
+          "对话就从施压变成了谈判，这是一个健康得多的状态。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Saying Not Now Without Burning Bridges",
+      "paragraphs": [
+        [
+          "Don't let people find out from a slide in a big meeting.",
+          "__Reach out__ to the owners of the biggest ==deprioritized== items before the plan is published.",
+          "A short private call beats a public surprise every time."
+        ],
+        [
+          "Be specific about why the item didn't make the cut.",
+          "\"We're not doing the export feature this quarter because the latency work affects every customer, and we only have two backend engineers.\"",
+          "A reason tied to real ==constraints== is much easier to accept than a reason that sounds like personal taste."
+        ],
+        [
+          "Finally, tell them what would change your answer.",
+          "\"If the latency work finishes early, export is first in line.\"",
+          "**Not now, with a condition, sounds very different from never.**",
+          "It keeps the door open and keeps the ==stakeholder== on your side for the next round of planning."
+        ]
+      ],
+      "heading_zh": "2. 说「现在不做」又不伤关系",
+      "paragraphs_zh": [
+        [
+          "别让人在大会上从一页 PPT 里才知道。",
+          "在计划发布之前，先私下找那些被降优先级的大项负责人聊一聊。",
+          "一通简短的私聊，永远好过当众给人一个意外。"
+        ],
+        [
+          "要具体说明这一项为什么没排进来。",
+          "「这个季度不做导出功能，是因为延迟优化影响所有客户，而我们只有两个后端工程师。」",
+          "跟真实约束挂钩的理由，比听起来像个人喜好的理由容易接受得多。"
+        ],
+        [
+          "最后，告诉他们什么情况下你的答案会变。",
+          "「如果延迟优化提前做完，导出功能第一个排上。」",
+          "带条件的「现在不做」，跟「永远不做」听起来完全不一样。",
+          "它让门一直开着，也让这位相关方在下一轮规划时还站在你这边。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么季度计划必须写出“不做什么”？",
+      "a": "否则新需求来了没人知道是否在范围内，所有事都悄悄变成优先级；不写只是把冲突推迟到更糟的时刻。"
+    },
+    {
+      "q": "明确的“不做清单”对团队有什么用？",
+      "a": "有人提新需求时可以指着清单问要换掉哪一项，把施压变成协商。"
+    },
+    {
+      "q": "怎样告诉别人“这季度不做”而不伤关系？",
+      "a": "发布前私下先沟通；用真实约束说明原因；告诉对方什么条件下会改变答案，“暂不做+条件”不同于“永远不做”。"
+    }
+  ],
+  "dictation": [
+    "A plan only means something when it also says what you are not doing.",
+    "When someone asks for something new, you can point to the list and ask what they would like to swap out.",
+    "A reason tied to real constraints is much easier to accept than a reason that sounds like personal taste.",
+    "Not now, with a condition, sounds very different from never."
+  ],
+  "shadow": {
+    "text": "Finally, tell them what would change your answer. \"If the latency work finishes early, export is first in line.\" Not now, with a condition, sounds very different from never.",
+    "marked": "<b>Finally</b>, / tell them what would <b>change</b> your answer. //<br>\"If the latency work finishes <b>early</b>, / export is <b>first</b> in line.\" //<br>Not <b>now</b>, / with a <b>condition</b>, / sounds very <b>different</b> / from <b>never</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "运营负责人很想要的“批量导入”这季度排不上。用 30 秒在一对一里告诉她：不做的原因和什么情况下会做。",
+      "ref": "I wanted to tell you this before the plan goes out. Bulk import didn't make it into this quarter. The main reason is that we're putting both backend engineers on the payment latency issue, which affects every customer. I know that's disappointing. If the latency work wraps up early, bulk import is the first thing we pick up, and I'll let you know by mid-quarter either way.",
+      "ref_zh": "我想在计划发出去之前先跟你说一声。批量导入没排进这个季度。主要原因是我们要把两个后端工程师都放到支付延迟的问题上，这个影响所有客户。我知道这挺让人失望的。如果延迟优化提前收尾，批量导入就是我们第一个接的事，不管怎样，季度中我都会给你个准信。"
+    },
+    {
+      "q": "季度中一个兄弟团队临时塞来新需求。用 30 秒指着“不做清单”回应，把讨论变成取舍。",
+      "ref": "Thanks for bringing this to us early. As you can see in our plan, we committed to three projects, and we listed what we're not doing to make room for them. I'm open to taking this on, but something has to come out. Looking at the list, would you rather we delay the search improvements or the reporting work? Let's agree on that first.",
+      "ref_zh": "谢谢你这么早就来找我们。你也看到了，我们的计划里承诺了三个项目，也列了为了腾出精力不做哪些事。我愿意接这个需求，但总得拿掉点什么。看看这份清单，你更愿意我们推迟搜索优化，还是报表那块？我们先把这个对齐。"
+    }
+  ],
+  "words": [
+    {
+      "w": "implicit",
+      "ipa": "/ɪmˈplɪsɪt/",
+      "zh": "隐含的、未明说的",
+      "ex": "There was an implicit expectation that we'd support the old version too."
+    },
+    {
+      "w": "explicit",
+      "ipa": "/ɪkˈsplɪsɪt/",
+      "zh": "明确的、明说的",
+      "ex": "Let's make the scope explicit in the doc so nobody is surprised."
+    },
+    {
+      "w": "negotiation",
+      "ipa": "/nɪˌɡoʊʃiˈeɪʃən/",
+      "zh": "协商、谈判",
+      "ex": "Scope is always a negotiation between product and engineering."
+    },
+    {
+      "w": "deprioritize",
+      "ipa": "/ˌdiːpraɪˈɔːrəˌtaɪz/",
+      "zh": "降低优先级",
+      "ex": "We deprioritized dark mode to focus on crash fixes."
+    },
+    {
+      "w": "constraint",
+      "ipa": "/kənˈstreɪnt/",
+      "zh": "限制、约束条件",
+      "ex": "Our main constraint is that only two people know this codebase."
+    },
+    {
+      "w": "stakeholder",
+      "ipa": "/ˈsteɪkˌhoʊldər/",
+      "zh": "利益相关方",
+      "ex": "Let's update the key stakeholders before the plan goes public."
+    },
+    {
+      "w": "boundary",
+      "ipa": "/ˈbaʊndəri/",
+      "zh": "边界、界限",
+      "ex": "We need a clear boundary between what our team owns and what the platform team owns."
+    },
+    {
+      "w": "swap out",
+      "ipa": "/swɑːp aʊt/",
+      "zh": "换掉、替换出去",
+      "ex": "If you want this feature, which project should we swap out?"
+    }
+  ]
+}

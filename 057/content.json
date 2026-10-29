@@ -1,0 +1,187 @@
+{
+  "id": "057",
+  "title": "Helping a Strong Engineer Grow into a Lead",
+  "meta": "B2 · 约 280 词 · 场景：培养骨干",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. When Strength Becomes a Bottleneck",
+      "paragraphs": [
+        [
+          "Every team has one: the engineer who can fix anything.",
+          "When production breaks, people page her first, and when a design looks risky, she rewrites it over the weekend.",
+          "Naturally, she is the first person you think of for the next lead role."
+        ],
+        [
+          "Here is the problem.",
+          "The habits that made her ==exceptional== as an engineer can hold her back as a lead.",
+          "If she keeps solving every hard problem herself, the team stops learning, and she becomes the ==bottleneck== for everything.",
+          "**As an engineer, she was measured by what she built; as a lead, she is measured by what her team builds.**"
+        ],
+        [
+          "Most strong engineers do not see this shift on their own.",
+          "They feel ==guilty== when they are not coding and ==anxious== when someone else writes code more slowly than they would."
+        ]
+      ],
+      "heading_zh": "1. 当长处变成瓶颈",
+      "paragraphs_zh": [
+        [
+          "每个团队都有这么一个人：什么都能修的工程师。",
+          "线上一出问题，大家第一个 page 她；设计一看有风险，她周末就给重写了。",
+          "很自然地，下一个 lead 的位置你第一个想到的就是她。"
+        ],
+        [
+          "问题就在这里。",
+          "那些让她成为出色工程师的习惯，可能会拖累她当 lead。",
+          "如果她继续自己解决每一个难题，团队就不再成长，而她会成为所有事情的瓶颈。",
+          "作为工程师，衡量她的是她做出了什么；作为 lead，衡量她的是她的团队做出了什么。"
+        ],
+        [
+          "大多数强工程师自己意识不到这个转变。",
+          "不写代码的时候他们会内疚，别人写代码比自己慢的时候他们会焦虑。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Designing the Transition",
+      "paragraphs": [
+        [
+          "Start by naming the shift out loud.",
+          "Tell her directly that her success now depends on how many people can do what she does.",
+          "Saying it clearly __gives her permission__ to step back from the keyboard."
+        ],
+        [
+          "Then give her a project that is too big to do alone.",
+          "A cross-team migration with three engineers is ideal, because she simply cannot write all the code.",
+          "She will have to plan, ==delegate==, and review, whether she likes it or not."
+        ],
+        [
+          "Next, change what you praise.",
+          "Stop celebrating the heroic late-night fix, and start recognizing the moment she __walked a junior through__ it instead.",
+          "People grow toward whatever their manager ==notices==."
+        ],
+        [
+          "Finally, expect a dip.",
+          "Her ==output== will drop for a few months, and she may feel less useful than before.",
+          "**Tell her the dip is normal, and stay close enough to help her through it.**"
+        ]
+      ],
+      "heading_zh": "2. 设计这次转型",
+      "paragraphs_zh": [
+        [
+          "先把这个转变明确说出来。",
+          "直接告诉她，她现在的成功取决于有多少人能做到她能做的事。",
+          "把话说清楚，就等于允许她从键盘前退后一步。"
+        ],
+        [
+          "然后，给她一个一个人干不完的项目。",
+          "一个配三个工程师的跨团队迁移就很理想，因为她根本不可能把所有代码都写了。",
+          "不管她愿不愿意，她都得去规划、分工和 review。"
+        ],
+        [
+          "接着，改变你表扬的东西。",
+          "别再庆祝深夜英雄式的救火，开始认可她带着初级工程师一起搞定问题的那一刻。",
+          "经理注意到什么，人就会往什么方向成长。"
+        ],
+        [
+          "最后，做好产出下滑的准备。",
+          "接下来几个月她的产出会下降，她可能会觉得自己不如以前有用了。",
+          "告诉她这种下滑很正常，并且待在离她足够近的地方，帮她度过这段时间。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么最强的工程师当 lead 时会出问题？",
+      "a": "让她优秀的习惯（自己解决所有难题）会让团队停止学习，她变成一切的瓶颈；工程师按自己做了什么衡量，lead 按团队做了什么衡量。"
+    },
+    {
+      "q": "作者建议给她什么样的项目？为什么？",
+      "a": "一个大到一个人做不完的项目，比如三个人参与的跨团队迁移，逼她去规划、委派和评审。"
+    },
+    {
+      "q": "转型期经理还应该做什么？",
+      "a": "明确说出角色的转变；改变表扬的对象（表扬她带新人而不是熬夜救火）；预期产出会下滑一段时间，告诉她这很正常并陪她度过。"
+    }
+  ],
+  "dictation": [
+    "As an engineer, she was measured by what she built; as a lead, she is measured by what her team builds.",
+    "Then give her a project that is too big to do alone.",
+    "People grow toward whatever their manager notices.",
+    "Tell her the dip is normal, and stay close enough to help her through it."
+  ],
+  "shadow": {
+    "text": "Then give her a project that is too big to do alone. A cross-team migration with three engineers is ideal, because she simply cannot write all the code. She will have to plan, delegate, and review, whether she likes it or not.",
+    "marked": "Then give her a project / that is <b>too big</b> to do <b>alone</b>. //<br>A <b>cross-team</b> migration with <b>three</b> engineers is <b>ideal</b>, / because she simply <b>cannot</b> write all the code. //<br>She will have to <b>plan</b>, / <b>delegate</b>, / and <b>review</b>, / whether she <b>likes</b> it or not. //"
+  },
+  "prompts": [
+    {
+      "q": "你团队最强的工程师刚被提拔为小组负责人，但他还是什么都自己写。用 30 秒在一对一里跟他讲清角色的转变。",
+      "ref": "First, congratulations, you really earned this. I want to be honest about one thing that changes now. Until last month, your impact was the code you wrote, and it was excellent. From now on, your impact is what the three people on your team can deliver. So when you're tempted to fix something yourself, ask whether someone else could learn by doing it. I'd rather see you slower and the team stronger.",
+      "ref_zh": "首先，恭喜你，这是你实打实挣来的。有一件从现在开始会变的事，我想跟你说实话。到上个月为止，你的影响力是你写的代码，而且写得非常好。从现在起，你的影响力是你团队里这三个人能交付什么。所以当你忍不住想自己动手修的时候，先问问自己，有没有别人可以通过做这件事学到东西。我宁愿看到你慢一点、团队强一点。"
+    },
+    {
+      "q": "这位新 lead 担心自己写代码少了、产出下降，觉得自己没用。用 30 秒安慰并鼓励他。",
+      "ref": "What you're feeling is completely normal, and almost every new lead goes through it. Your own commits are down, yes. But look at what happened this month. Mei shipped her first feature without help, and the design review you ran caught two real problems. That's your output now, it just shows up in other people's work. Give it a few months, and you'll see it clearly.",
+      "ref_zh": "你现在的感受完全正常，几乎每个新 lead 都会经历。没错，你自己的 commit 少了。但看看这个月发生了什么。Mei 第一次没靠别人帮忙就上线了自己的功能，你主持的设计评审抓到了两个真问题。这些就是你现在的产出，只是它体现在别人的工作里。再给它几个月，你就会看得很清楚。"
+    }
+  ],
+  "words": [
+    {
+      "w": "exceptional",
+      "ipa": "/ɪkˈsepʃənl/",
+      "zh": "杰出的、非凡的",
+      "ex": "Her debugging skills are exceptional; she found the leak in an hour."
+    },
+    {
+      "w": "bottleneck",
+      "ipa": "/ˈbɑːtlnek/",
+      "zh": "瓶颈",
+      "ex": "If every review goes through one person, he becomes the bottleneck."
+    },
+    {
+      "w": "guilty",
+      "ipa": "/ˈɡɪlti/",
+      "zh": "内疚的",
+      "ex": "Don't feel guilty about skipping the coding task; planning is your job now."
+    },
+    {
+      "w": "anxious",
+      "ipa": "/ˈæŋkʃəs/",
+      "zh": "焦虑的",
+      "ex": "The team is anxious about the launch date moving again."
+    },
+    {
+      "w": "delegate",
+      "ipa": "/ˈdelɪɡeɪt/",
+      "zh": "委派、授权",
+      "ex": "Try to delegate the on-call schedule to someone on the team."
+    },
+    {
+      "w": "notice",
+      "ipa": "/ˈnoʊtɪs/",
+      "zh": "注意到",
+      "ex": "Did anyone notice the error rate went up after the deploy?"
+    },
+    {
+      "w": "output",
+      "ipa": "/ˈaʊtpʊt/",
+      "zh": "产出",
+      "ex": "Team output went up after we cut the number of meetings."
+    },
+    {
+      "w": "heroic",
+      "ipa": "/hɪˈroʊɪk/",
+      "zh": "英雄式的",
+      "ex": "We shouldn't depend on heroic weekend fixes to hit a deadline."
+    },
+    {
+      "w": "dip",
+      "ipa": "/dɪp/",
+      "zh": "短暂下滑",
+      "ex": "Expect a small dip in velocity while the new hires ramp up."
+    }
+  ]
+}

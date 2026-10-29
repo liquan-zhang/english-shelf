@@ -1,0 +1,187 @@
+{
+  "id": "046",
+  "title": "When Another Team Misses Their Deadline",
+  "meta": "B2 · 约 260 词 · 场景：依赖延期",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Message Nobody Wants",
+      "paragraphs": [
+        [
+          "Two days before your release, the identity team writes, \"Sorry, the new login service will be late.\"",
+          "Your feature depends on it, your stakeholders expect a launch, and your team is already frustrated.",
+          "The tempting reaction is to __vent in the group chat__ or forward the message to your manager with a sharp comment."
+        ],
+        [
+          "Resist both.",
+          "Blame feels good for about ten minutes, and then it makes everything harder.",
+          "The other team will become ==defensive==, share less, and protect themselves instead of helping you."
+        ],
+        [
+          "**A missed deadline is a planning problem first, and a people problem much later, if ever.**",
+          "Your real job right now is to replace a ==broken== date with a ==reliable== one."
+        ]
+      ],
+      "heading_zh": "1. 没人想收到的消息",
+      "paragraphs_zh": [
+        [
+          "离你的发布还有两天，账号团队发来消息：「抱歉，新的登录服务要延期了。」",
+          "你的功能依赖它，你的干系人都在等上线，你的团队已经很烦躁了。",
+          "这时候最想做的，是在群里发泄一通，或者把消息转给你老板，再附上一句难听的评论。"
+        ],
+        [
+          "两样都忍住。",
+          "甩锅大概能爽十分钟，然后一切都会变得更难办。",
+          "对方团队会变得防备，信息给得更少，忙着保护自己而不是帮你。"
+        ],
+        [
+          "错过 deadline 首先是个规划问题，就算是人的问题，那也是很久以后的事，甚至可能根本不是。",
+          "你现在真正要做的，是把一个已经失效的日期换成一个靠谱的日期。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Re-plan Before You React",
+      "paragraphs": [
+        [
+          "Start with two calm questions.",
+          "\"What is the new date, and how confident are you in it?\"",
+          "The second question matters more, because a date with low ==confidence== is just a hope."
+        ],
+        [
+          "Next, ask what is blocking them.",
+          "Sometimes the answer is something you can __help with__, like test data or a review from your side.",
+          "Offering help early turns you from a victim into a partner."
+        ],
+        [
+          "While they work on their part, __build a plan B__ for yours.",
+          "Could you ship behind a feature flag and switch it on later?",
+          "Could you launch with the old login flow for now?",
+          "**Never let another team's date be the only thing standing between you and a launch.**"
+        ],
+        [
+          "Finally, update your stakeholders with facts, not feelings.",
+          "Explain the new date, its confidence, and your fallback.",
+          "If the dependency slips again, then escalate, but bring the ==timeline== and options, not ==accusations==."
+        ]
+      ],
+      "heading_zh": "2. 先重新规划，再做反应",
+      "paragraphs_zh": [
+        [
+          "先冷静地问两个问题。",
+          "「新的日期是什么时候？你们对这个日期有多大把握？」",
+          "第二个问题更重要，因为一个没把握的日期只是个愿望。"
+        ],
+        [
+          "接着，问问是什么卡住了他们。",
+          "有时候答案是你能帮上忙的，比如测试数据，或者你这边的一个 review。",
+          "早点主动提供帮助，能让你从受害者变成合作伙伴。"
+        ],
+        [
+          "在他们搞定自己那部分的同时，你给自己这部分准备一个 B 计划。",
+          "能不能先藏在 feature flag 后面发出去，之后再打开？",
+          "能不能先用老的登录流程上线？",
+          "永远别让另一个团队的日期成为你和上线之间唯一的障碍。"
+        ],
+        [
+          "最后，向干系人同步事实，而不是情绪。",
+          "讲清楚新日期、把握有多大，以及你的兜底方案。",
+          "如果依赖方又延期了，那就升级，但要带着时间线和选项去，而不是带着指责。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "依赖方延期时，作者不建议做什么？为什么？",
+      "a": "不要在群里发泄或带着情绪转给老板；指责只让对方变得防御，少共享信息，只顾自保。"
+    },
+    {
+      "q": "作者建议先问对方哪两个问题？哪个更重要？",
+      "a": "新的日期是什么、你们有多大把握；第二个更重要，没有把握的日期只是愿望。"
+    },
+    {
+      "q": "等对方的同时，你自己该做什么？",
+      "a": "准备 plan B，比如用功能开关先上线再打开，或先用旧登录流程；向干系人同步事实、新日期、把握度和备选方案；再次延期才升级，带时间线和选项而非指责。"
+    }
+  ],
+  "dictation": [
+    "A missed deadline is a planning problem first, and a people problem much later, if ever.",
+    "The second question matters more, because a date with low confidence is just a hope.",
+    "Never let another team's date be the only thing standing between you and a launch.",
+    "Offering help early turns you from a victim into a partner."
+  ],
+  "shadow": {
+    "text": "Start with two calm questions. \"What is the new date, and how confident are you in it?\" The second question matters more, because a date with low confidence is just a hope.",
+    "marked": "Start with two <b>calm</b> questions. //<br>\"What is the <b>new</b> date, / and how <b>confident</b> are you in it?\" //<br>The <b>second</b> question matters more, / because a date with <b>low</b> confidence / is just a <b>hope</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "支付团队告诉你他们的接口要晚一周交付，而你们下周要上线。用 30 秒回复对方：不指责，问清新日期和把握度，并主动提供帮助。",
+      "ref": "Thanks for the heads-up, I appreciate hearing it now rather than on launch day. Can you help me understand two things? What's the new date, and how confident are you in it? Also, is anything blocking you that we could help with? We can lend you an engineer for testing, or prepare the mock data you need.",
+      "ref_zh": "谢谢提前告诉我，现在知道总比上线当天才知道好。能帮我搞清楚两件事吗？新日期是哪天，你们有多大把握？另外，有没有什么卡住你们、是我们能帮上忙的？我们可以借一个工程师给你们做测试，或者准备你们需要的 mock 数据。"
+    },
+    {
+      "q": "依赖延期导致你们的上线要推迟。用 30 秒向业务方同步：事实、新日期、把握度和你的备选方案。",
+      "ref": "Quick update on the checkout launch. The new login service we depend on is running about a week late. Their new date is the fourteenth, and they're fairly confident, since the remaining work is mostly testing. In the meantime, we'll ship our part behind a feature flag, so we can switch it on the same day their service is ready. If their date slips again, I'll flag it immediately.",
+      "ref_zh": "同步一下结账功能上线的情况。我们依赖的新登录服务大概要晚一周。他们的新日期是十四号，把握还比较大，因为剩下的主要是测试工作。在这期间，我们会先把我们这部分藏在 feature flag 后面发出去，这样他们的服务一就绪，我们当天就能打开。如果他们的日期再延，我会第一时间同步。"
+    }
+  ],
+  "words": [
+    {
+      "w": "defensive",
+      "ipa": "/dɪˈfensɪv/",
+      "zh": "防御性的、戒备的",
+      "ex": "He got defensive when we asked why the tests were skipped."
+    },
+    {
+      "w": "broken",
+      "ipa": "/ˈbroʊkən/",
+      "zh": "失效的、坏掉的",
+      "ex": "The old date is broken, so let's agree on a new one."
+    },
+    {
+      "w": "reliable",
+      "ipa": "/rɪˈlaɪəbl/",
+      "zh": "可靠的",
+      "ex": "We need a reliable estimate, not an optimistic one."
+    },
+    {
+      "w": "confidence",
+      "ipa": "/ˈkɑːnfɪdəns/",
+      "zh": "把握、信心",
+      "ex": "How much confidence do you have in the Friday date?"
+    },
+    {
+      "w": "timeline",
+      "ipa": "/ˈtaɪmlaɪn/",
+      "zh": "时间线",
+      "ex": "I've attached a timeline of every delay since March."
+    },
+    {
+      "w": "accusation",
+      "ipa": "/ˌækjuˈzeɪʃən/",
+      "zh": "指责、控诉",
+      "ex": "Keep the postmortem free of accusations; focus on the process."
+    },
+    {
+      "w": "stakeholder",
+      "ipa": "/ˈsteɪkhoʊldər/",
+      "zh": "利益相关方",
+      "ex": "I'll send the stakeholders a short update this afternoon."
+    },
+    {
+      "w": "fallback",
+      "ipa": "/ˈfɔːlbæk/",
+      "zh": "备选方案、兜底",
+      "ex": "Our fallback is to keep the old login flow for another month."
+    },
+    {
+      "w": "dependency",
+      "ipa": "/dɪˈpendənsi/",
+      "zh": "依赖项",
+      "ex": "This dependency is the biggest risk on our launch plan."
+    }
+  ]
+}

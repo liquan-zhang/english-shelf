@@ -1,0 +1,189 @@
+{
+  "id": "011",
+  "title": "Opening a Tech Demo with the Problem, Not the Feature",
+  "meta": "B2 · 约 260 词 · 场景：技术演示",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Nobody Cares About the Button Yet",
+      "paragraphs": [
+        [
+          "Most tech demos open the same way.",
+          "\"So this is our new deployment dashboard, and here you can see the config panel.\"",
+          "Within a minute, half the audience is checking their messages."
+        ],
+        [
+          "The team is proud of what they built, so they start with the thing itself.",
+          "But the audience has not yet felt the pain that the thing removes.",
+          "Without that pain, every feature looks like a nice ==extra==, not a ==necessity==."
+        ],
+        [
+          "**People do not remember features; they remember the problem that went away.**",
+          "If you open with the problem, every screen that follows __lands harder__, because people already know why it matters.",
+          "You turn a product tour into a short story with a ==tension== and a ==payoff==."
+        ]
+      ],
+      "heading_zh": "1. 现在还没人关心那个按钮",
+      "paragraphs_zh": [
+        [
+          "大多数技术 demo 的开场都一个样。",
+          "「这是我们新的部署看板，这里可以看到配置面板。」",
+          "不到一分钟，半数听众就开始看消息了。"
+        ],
+        [
+          "团队为自己做出来的东西骄傲，所以一上来就展示东西本身。",
+          "但听众还没感受过这个东西要解决的痛点。",
+          "没有这份痛，每个功能看起来都只是锦上添花，而不是刚需。"
+        ],
+        [
+          "人们记不住功能，他们记住的是消失了的那个问题。",
+          "如果你从问题讲起，后面每一屏都会更有冲击力，因为大家已经知道它为什么重要。",
+          "你就把一次产品导览变成了一个有冲突、有回报的小故事。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Before, Moment, After",
+      "paragraphs": [
+        [
+          "Start with a concrete \"before.\"",
+          "\"Last month, rolling back a bad release took forty minutes and three people on a call at midnight.\"",
+          "Use a real ==incident==, a real number, and if possible a real name from the room."
+        ],
+        [
+          "Then show the moment of change, live and fast.",
+          "\"Here's the same rollback today,\" __click once__, and let the screen speak for a few seconds.",
+          "**Silence after a good moment is more powerful than any explanation.**"
+        ],
+        [
+          "Only now do you explain how it works.",
+          "Keep it to the two or three features that made that moment possible, and __leave the rest__ for questions.",
+          "Your audience is ==curious== at this point, so they will actually listen."
+        ],
+        [
+          "Close by ==circling== back to the problem.",
+          "\"Forty minutes became thirty seconds, and nobody needs to wake up.\"",
+          "That one line is what people will __repeat to their teams__ afterward."
+        ]
+      ],
+      "heading_zh": "2. 之前、转折、之后",
+      "paragraphs_zh": [
+        [
+          "先讲一个具体的「之前」。",
+          "「上个月回滚一个有问题的版本，花了四十分钟，半夜拉了三个人上会。」",
+          "用真实的事故、真实的数字，可能的话再加上在场某个人的真名。"
+        ],
+        [
+          "然后现场快速展示转折的那一刻。",
+          "「这是今天做同样的回滚」，点一下，让屏幕自己说话几秒钟。",
+          "精彩时刻之后的沉默，比任何解释都有力量。"
+        ],
+        [
+          "直到这时候，才去讲它是怎么做到的。",
+          "只讲让那一刻成为可能的两三个功能，其余的留到提问环节。",
+          "这时候听众已经好奇了，所以他们会真的听进去。"
+        ],
+        [
+          "结尾再绕回到那个问题上。",
+          "「四十分钟变成了三十秒，而且没人需要半夜爬起来。」",
+          "这句话就是大家会后会转述给自己团队的那句。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么从功能讲起的演示容易让人走神？",
+      "a": "观众还没感受到这个东西要解决的痛点，功能看起来只是锦上添花。"
+    },
+    {
+      "q": "作者提出的演示结构是什么？",
+      "a": "先讲具体的“之前”（真实事故、数字、人）；再现场快速展示改变的瞬间；然后只讲两三个关键功能；最后回到问题收尾。"
+    },
+    {
+      "q": "演示中出现精彩瞬间之后，作者建议怎么做？",
+      "a": "停下来沉默几秒，让屏幕自己说话，这比任何解释都有力。"
+    }
+  ],
+  "dictation": [
+    "People do not remember features; they remember the problem that went away.",
+    "Silence after a good moment is more powerful than any explanation.",
+    "Use a real incident, a real number, and if possible a real name from the room.",
+    "Only now do you explain how it works."
+  ],
+  "shadow": {
+    "text": "Start with a concrete \"before.\" \"Last month, rolling back a bad release took forty minutes and three people on a call at midnight.\"",
+    "marked": "Start with a <b>concrete</b> \"before.\" //<br>\"<b>Last</b> month, / rolling back a bad release / took <b>forty</b> minutes / and <b>three</b> people on a call / at <b>midnight</b>.\" //"
+  },
+  "prompts": [
+    {
+      "q": "你要向几个业务团队演示新的日志检索工具。用 30 秒开场：先讲一个具体的“之前”痛点，再引出演示。",
+      "ref": "Let me start with a quick story. Two weeks ago, a customer reported failed payments, and it took our on-call engineer almost an hour just to find the right logs. She had to search four different systems by hand. Today I want to show you what that same search looks like now. Watch the clock, because it's going to be a lot shorter.",
+      "ref_zh": "我先讲个小故事。两周前，有客户反馈支付失败，我们的 on-call 工程师光是找到对应的日志就花了将近一个小时。她得在四个不同的系统里手动搜。今天我想给大家看看，现在做同样的搜索是什么样子。大家盯着时间，因为这次会短得多。"
+    },
+    {
+      "q": "演示刚展示完一键回滚。用 30 秒收尾：回到最初的问题，给出一句让人记得住的对比。",
+      "ref": "So let's go back to where we started. Last month, a bad release cost us forty minutes, three engineers, and one very unhappy night. What you just saw took under thirty seconds, and it was one click. Nobody had to wake up. If you only remember one thing from today, remember that rollbacks are no longer scary, so we can afford to ship more often.",
+      "ref_zh": "我们回到开头。上个月，一次有问题的发布让我们搭进去了四十分钟、三个工程师，还有一个非常糟心的夜晚。刚才大家看到的，不到三十秒，点一下就搞定了。没有人需要半夜爬起来。如果今天大家只记住一件事，那就记住回滚不再可怕了，所以我们可以更频繁地发版。"
+    }
+  ],
+  "words": [
+    {
+      "w": "extra (n.)",
+      "ipa": "/ˈekstrə/",
+      "zh": "附加的东西、额外项",
+      "ex": "Dark mode is a nice extra, but it's not blocking the launch.",
+      "tts_w": "extra"
+    },
+    {
+      "w": "necessity",
+      "ipa": "/nəˈsesəti/",
+      "zh": "必需品、必要",
+      "ex": "For a payments team, audit logs are a necessity."
+    },
+    {
+      "w": "tension",
+      "ipa": "/ˈtenʃən/",
+      "zh": "张力、紧张感",
+      "ex": "There's real tension between shipping fast and keeping the API stable."
+    },
+    {
+      "w": "payoff",
+      "ipa": "/ˈpeɪˌɔːf/",
+      "zh": "回报、高潮",
+      "ex": "The payoff of the refactor is that new features take days, not weeks."
+    },
+    {
+      "w": "incident",
+      "ipa": "/ˈɪnsɪdənt/",
+      "zh": "事故、事件",
+      "ex": "We wrote a postmortem for every major incident this quarter."
+    },
+    {
+      "w": "curious",
+      "ipa": "/ˈkjʊriəs/",
+      "zh": "好奇的",
+      "ex": "I'm curious how the new scheduler handles retries."
+    },
+    {
+      "w": "land (v.)",
+      "ipa": "/lænd/",
+      "zh": "（信息）被接受、产生效果",
+      "ex": "The joke didn't land, but the demo did.",
+      "tts_w": "land"
+    },
+    {
+      "w": "roll back",
+      "ipa": "/roʊl bæk/",
+      "zh": "回滚",
+      "ex": "We rolled back the release after the error rate doubled."
+    },
+    {
+      "w": "circle back",
+      "ipa": "/ˈsɜːrkəl bæk/",
+      "zh": "回到（某话题）",
+      "ex": "Let's circle back to the pricing question once we have the numbers."
+    }
+  ]
+}

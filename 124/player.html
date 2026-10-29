@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Taking Your Child to the Doctor · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "124", "type": "dialogue", "title": "Taking Your Child to the Doctor", "meta": "B2 · 约 300 词 · 场景：带孩子看发烧与用药", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Doctor", "name_zh": "医生", "voice": "en-IN-PrabhatNeural"}}, "gist": [{"q": "孩子有哪些症状？医生诊断是什么？", "a": "从昨晚发烧，最高三十九度二，吃得很少，有点咳嗽，早上吐了一次，一直拽左耳；诊断是耳朵感染。"}, {"q": "「你」为什么打断医生开药？", "a": "孩子上次吃阿莫西林全身起疹子，可能过敏，医生于是换了别的药并记入病历。"}, {"q": "药怎么吃？什么情况要回来复诊？", "a": "每次五毫升，一天两次，饭后用喂药器喂；三天后还烧或特别没精神就马上回来。"}], "dictation": [{"id": "s0_1_0", "text": "She's had a fever since last night, and she's barely eating anything."}, {"id": "s0_5_0", "text": "A bit of a cough, and she threw up once this morning. She also keeps pulling at her left ear."}, {"id": "s1_3_0", "text": "How much should I give her each time, and does it need to be taken with food?"}, {"id": "s1_1_0", "text": "Sorry, before you do that. She had a rash all over her body the last time she took amoxicillin."}], "shadow": {"speaker": "A", "text": "Sorry, before you do that. She had a rash all over her body the last time she took amoxicillin.", "marked": "<b>Sorry</b>, / before you <b>do</b> that. //<br>She had a <b>rash</b> / all over her <b>body</b> / the <b>last</b> time she took <b>amoxicillin</b>. //"}, "prompts": [{"q": "孩子摔了一跤，额头肿了个包，你打电话问诊所要不要马上带来。说清经过、现在的状态，并问该注意什么。", "ref": "Hi, my son is two. About twenty minutes ago he fell off the sofa and hit his forehead on the floor. He cried straight away, and now there's a big bump, but he's playing normally. He hasn't vomited. Should I bring him in now, or just watch him at home? What signs should I look out for?", "ref_zh": "你好，我儿子两岁。大概二十分钟前他从沙发上摔下来，额头撞到地上。他当时马上就哭了，现在起了个大包，但玩得挺正常，没有吐。我需要现在带他过来，还是在家观察就行？要注意哪些迹象？", "id": "ref0"}, {"q": "医生开了三种药，你记不住。请医生再确认一遍每种药的用法和顺序，并问能不能和退烧药一起吃。", "ref": "Sorry, Doctor, that's a lot to remember. Could we go through them one more time? Which one is for the cough, and which one is for the runny nose? Do they all need to be taken after meals? And if she gets a fever tonight, is it okay to give her paracetamol together with these?", "ref_zh": "不好意思医生，要记的太多了。能再过一遍吗？哪个是治咳嗽的，哪个是治流鼻涕的？都需要饭后吃吗？还有，如果她今晚发烧，可以跟这些药一起吃退烧药吗？", "id": "ref1"}], "words": [{"w": "temperature", "ipa": "/ˈtemprətʃər/", "zh": "体温", "ex": "Let me take your temperature before you see the doctor.", "id": "w0"}, {"w": "vomiting", "ipa": "/ˈvɑːmɪtɪŋ/", "zh": "呕吐", "ex": "If the vomiting doesn't stop, take him to the hospital.", "id": "w1"}, {"w": "diarrhoea", "ipa": "/ˌdaɪəˈriːə/", "zh": "腹泻", "ex": "She's had diarrhoea since she ate that seafood.", "id": "w2"}, {"w": "infection", "ipa": "/ɪnˈfekʃən/", "zh": "感染", "ex": "Keep the cut clean so it doesn't get an infection.", "id": "w3"}, {"w": "antibiotic", "ipa": "/ˌæntibaɪˈɑːtɪk/", "zh": "抗生素", "ex": "Finish the whole course of antibiotics, even if you feel better.", "id": "w4"}, {"w": "rash", "ipa": "/ræʃ/", "zh": "皮疹", "ex": "He got a rash after trying the new soap.", "id": "w5"}, {"w": "allergy", "ipa": "/ˈælərdʒi/", "zh": "过敏", "ex": "Does your child have any food allergies?", "id": "w6"}, {"w": "syringe", "ipa": "/səˈrɪndʒ/", "zh": "（喂药用）注射器，喂药器", "ex": "It's easier to give medicine to a baby with a syringe.", "id": "w7"}, {"w": "lethargic", "ipa": "/ləˈθɑːrdʒɪk/", "zh": "无精打采的，昏沉的", "ex": "The heat makes me feel lethargic in the afternoon.", "id": "w8"}, {"w": "pull at", "ipa": "/pʊl æt/", "zh": "拽，扯", "ex": "Babies often pull at their ears when they're teething.", "id": "w9"}], "sections": [{"heading": "1. Describing the Symptoms", "heading_zh": "1. 描述症状", "rows": [[{"id": "s0_0_0", "md": "Hello, come in, have a seat. So what seems to be the problem with this little one?", "text": "Hello, come in, have a seat. So what seems to be the problem with this little one?", "zh": "你好，请进，坐吧。这个小家伙哪里不舒服？", "sp": "B"}], [{"id": "s0_1_0", "md": "**She's had a fever since last night, and she's barely eating anything.**", "text": "She's had a fever since last night, and she's barely eating anything.", "zh": "她从昨晚开始发烧，几乎什么都不吃。", "sp": "A"}], [{"id": "s0_2_0", "md": "How high did her ==temperature== go? Did you give her anything for it?", "text": "How high did her temperature go? Did you give her anything for it?", "zh": "体温最高烧到多少？给她吃过什么药吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "It __went up to__ thirty nine point two. We gave her children's paracetamol at around two in the morning.", "text": "It went up to thirty nine point two. We gave her children's paracetamol at around two in the morning.", "zh": "最高到三十九度二。凌晨两点左右给她吃了儿童退烧药。", "sp": "A"}], [{"id": "s0_4_0", "md": "Okay. Any cough, ==vomiting==, or ==diarrhoea==?", "text": "Okay. Any cough, vomiting, or diarrhoea?", "zh": "好。有咳嗽、呕吐或者拉肚子吗？", "sp": "B"}], [{"id": "s0_5_0", "md": "A bit of a cough, and she threw up once this morning. She also keeps __pulling at__ her left ear.", "text": "A bit of a cough, and she threw up once this morning. She also keeps pulling at her left ear.", "zh": "有点咳嗽，今天早上吐了一次。她还一直拽自己的左耳朵。", "sp": "A"}], [{"id": "s0_6_0", "md": "Let me have a look. Yes, her left ear is red and swollen. It's an ear ==infection==.", "text": "Let me have a look. Yes, her left ear is red and swollen. It's an ear infection.", "zh": "我看一下。对，她左耳又红又肿，是耳朵感染。", "sp": "B"}], [{"id": "s0_7_0", "md": "Is it serious? She goes to childcare. Should I keep her at home?", "text": "Is it serious? She goes to childcare. Should I keep her at home?", "zh": "严重吗？她在上托儿所。要让她在家待着吗？", "sp": "A"}], [{"id": "s0_8_0", "md": "It's very common at this age. Keep her home until she's been fever free for a full day.", "text": "It's very common at this age. Keep her home until she's been fever free for a full day.", "zh": "这个年纪很常见。让她在家待着，等退烧满一整天再去。", "sp": "B"}]]}, {"heading": "2. Getting the Medicine Right", "heading_zh": "2. 把用药弄清楚", "rows": [[{"id": "s1_0_0", "md": "I'll prescribe an ==antibiotic== called amoxicillin, three times a day for a week.", "text": "I'll prescribe an antibiotic called amoxicillin, three times a day for a week.", "zh": "我给她开一种叫阿莫西林的抗生素，一天三次，吃一周。", "sp": "B"}], [{"id": "s1_1_0", "md": "Sorry, before you do that. She had a ==rash== all over her body the last time she took amoxicillin.", "text": "Sorry, before you do that. She had a rash all over her body the last time she took amoxicillin.", "zh": "不好意思，先等一下。她上次吃阿莫西林的时候全身起了疹子。", "sp": "A"}], [{"id": "s1_2_0", "md": "Ah, thank you for telling me. That could be an ==allergy==. I'll note it in her records and give her something different.", "text": "Ah, thank you for telling me. That could be an allergy. I'll note it in her records and give her something different.", "zh": "啊，谢谢你告诉我。那可能是过敏。我记到她的病历里，给她换一种药。", "sp": "B"}], [{"id": "s1_3_0", "md": "**How much should I give her each time, and does it need to be taken with food?**", "text": "How much should I give her each time, and does it need to be taken with food?", "zh": "每次给她吃多少？需要跟饭一起吃吗？", "sp": "A"}], [{"id": "s1_4_0", "md": "Five millilitres twice a day, after meals. Use the ==syringe== in the box, not a kitchen spoon.", "text": "Five millilitres twice a day, after meals. Use the syringe in the box, not a kitchen spoon.", "zh": "每次五毫升，一天两次，饭后吃。用盒子里的喂药器，别用厨房的勺子。", "sp": "B"}], [{"id": "s1_5_0", "md": "Got it. And what if she spits it out?", "text": "Got it. And what if she spits it out?", "zh": "明白。那她要是吐出来怎么办？", "sp": "A"}], [{"id": "s1_6_0", "md": "If she spits most of it out right away, give it again. Otherwise, just wait for the next dose.", "text": "If she spits most of it out right away, give it again. Otherwise, just wait for the next dose.", "zh": "如果刚喂就吐掉了大半，就再喂一次。不然就等下一顿。", "sp": "B"}], [{"id": "s1_7_0", "md": "**Should we come back if the fever doesn't come down?**", "text": "Should we come back if the fever doesn't come down?", "zh": "如果烧一直不退，需要再来吗？", "sp": "A"}], [{"id": "s1_8_0", "md": "Yes. If she's still feverish after three days, or she seems unusually ==lethargic==, bring her back straight away.", "text": "Yes. If she's still feverish after three days, or she seems unusually lethargic, bring her back straight away.", "zh": "要。如果三天后还在发烧，或者看起来特别没精神，马上带她回来。", "sp": "B"}], [{"id": "s1_9_0", "md": "Thanks, Doctor. Could I also __get a letter__ for her childcare?", "text": "Thanks, Doctor. Could I also get a letter for her childcare?", "zh": "谢谢医生。能再给我开一张给托儿所的证明吗？", "sp": "A"}], [{"id": "s1_10_0", "md": "Of course. The nurse will __print it out__ with the medicine.", "text": "Of course. The nurse will print it out with the medicine.", "zh": "当然。护士会连同药一起打印给你。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Describing the Symptoms", "zh": "1. 描述症状", "start": 0.0, "end": 2.328, "words": [[0.105, 0.355], [0.671, 1.197], [1.211, 1.276], [1.289, 1.934]]}, {"kind": "s", "id": "s0_0_0", "md": "Hello, come in, have a seat. So what seems to be the problem with this little one?", "zh": "你好，请进，坐吧。这个小家伙哪里不舒服？", "sp": "B", "gap": false, "start": 2.328, "end": 9.792, "words": [[2.431, 2.838], [3.167, 3.404], [3.417, 3.681], [3.891, 4.181], [4.246, 4.339], [4.339, 4.746], [5.71, 5.92], [5.92, 6.249], [6.249, 6.696], [6.71, 6.802], [6.802, 6.999], [6.999, 7.117], [7.117, 7.644], [7.644, 7.867], [7.867, 8.131], [8.131, 8.499], [8.499, 8.841]]}, {"kind": "s", "id": "s0_1_0", "md": "**She's had a fever since last night, and she's barely eating anything.**", "zh": "她从昨晚开始发烧，几乎什么都不吃。", "sp": "A", "gap": false, "start": 9.792, "end": 13.944, "words": [[9.91, 10.095], [10.108, 10.253], [10.266, 10.305], [10.318, 10.687], [10.7, 10.924], [10.937, 11.279], [11.292, 11.581], [11.884, 11.937], [11.95, 12.226], [12.239, 12.7], [12.779, 13.108], [13.121, 13.555]]}, {"kind": "s", "id": "s0_2_0", "md": "How high did her ==temperature== go? Did you give her anything for it?", "zh": "体温最高烧到多少？给她吃过什么药吗？", "sp": "B", "gap": false, "start": 13.944, "end": 19.776, "words": [[14.047, 14.257], [14.297, 14.612], [14.612, 14.823], [14.823, 15.06], [15.06, 15.691], [15.691, 15.994], [16.931, 17.102], [17.102, 17.233], [17.247, 17.51], [17.51, 17.747], [17.839, 18.339], [18.339, 18.615], [18.615, 18.826]]}, {"kind": "s", "id": "s0_3_0", "md": "It __went up to__ thirty nine point two. We gave her children's paracetamol at around two in the morning.", "zh": "最高到三十九度二。凌晨两点左右给她吃了儿童退烧药。", "sp": "A", "gap": false, "start": 19.776, "end": 25.752, "words": [[19.881, 19.973], [19.987, 20.118], [20.131, 20.223], [20.237, 20.315], [20.329, 20.684], [20.697, 20.96], [20.973, 21.263], [21.276, 21.592], [22.026, 22.144], [22.158, 22.355], [22.368, 22.487], [22.5, 22.986], [23.0, 23.789], [23.881, 23.973], [23.987, 24.315], [24.329, 24.631], [24.71, 24.868], [24.881, 24.947], [24.96, 25.368]]}, {"kind": "s", "id": "s0_4_0", "md": "Okay. Any cough, ==vomiting==, or ==diarrhoea==?", "zh": "好。有咳嗽、呕吐或者拉肚子吗？", "sp": "B", "gap": false, "start": 25.752, "end": 30.408, "words": [[25.855, 26.249], [27.213, 27.449], [27.449, 27.884], [28.028, 28.607], [28.726, 28.936], [28.936, 29.463]]}, {"kind": "s", "id": "s0_5_0", "md": "A bit of a cough, and she threw up once this morning. She also keeps __pulling at__ her left ear.", "zh": "有点咳嗽，今天早上吐了一次。她还一直拽自己的左耳朵。", "sp": "A", "gap": false, "start": 30.408, "end": 35.976, "words": [[30.513, 30.579], [30.592, 30.711], [30.724, 30.776], [30.79, 30.855], [30.869, 31.382], [31.697, 31.763], [31.776, 32.0], [32.013, 32.263], [32.276, 32.447], [32.461, 32.697], [32.711, 32.869], [32.882, 33.263], [33.697, 33.855], [33.869, 34.119], [34.132, 34.434], [34.447, 34.803], [34.816, 34.882], [34.895, 35.013], [35.026, 35.329], [35.342, 35.579]]}, {"kind": "s", "id": "s0_6_0", "md": "Let me have a look. Yes, her left ear is red and swollen. It's an ear ==infection==.", "zh": "我看一下。对，她左耳又红又肿，是耳朵感染。", "sp": "B", "gap": false, "start": 35.976, "end": 45.24, "words": [[36.079, 36.342], [36.355, 36.605], [36.605, 36.934], [37.0, 37.079], [37.079, 37.46], [38.41, 38.818], [39.121, 39.371], [39.371, 39.726], [39.792, 40.121], [40.252, 40.463], [40.463, 40.765], [40.858, 41.081], [41.081, 41.634], [42.568, 42.805], [42.884, 43.16], [43.213, 43.502], [43.594, 44.305]]}, {"kind": "s", "id": "s0_7_0", "md": "Is it serious? She goes to childcare. Should I keep her at home?", "zh": "严重吗？她在上托儿所。要让她在家待着吗？", "sp": "A", "gap": false, "start": 45.24, "end": 49.536, "words": [[45.345, 45.437], [45.451, 45.529], [45.543, 46.201], [46.635, 46.753], [46.766, 46.964], [46.977, 47.056], [47.069, 47.727], [48.161, 48.293], [48.306, 48.372], [48.385, 48.608], [48.622, 48.727], [48.74, 48.806], [48.819, 49.135]]}, {"kind": "s", "id": "s0_8_0", "md": "It's very common at this age. Keep her home until she's been fever free for a full day.", "zh": "这个年纪很常见。让她在家待着，等退烧满一整天再去。", "sp": "B", "gap": false, "start": 49.536, "end": 57.672, "words": [[49.639, 49.862], [49.915, 50.27], [50.27, 50.757], [50.849, 51.086], [51.086, 51.402], [51.481, 51.836], [52.812, 53.102], [53.102, 53.391], [53.391, 53.786], [53.812, 54.299], [54.299, 54.681], [54.694, 54.996], [54.997, 55.444], [55.444, 55.799], [55.799, 56.102], [56.102, 56.141], [56.141, 56.457], [56.457, 56.72]]}, {"kind": "h", "id": "h1", "md": "2. Getting the Medicine Right", "zh": "2. 把用药弄清楚", "start": 57.672, "end": 59.856, "words": [[57.79, 58.04], [58.383, 58.619], [58.633, 58.698], [58.711, 59.146], [59.159, 59.475]]}, {"kind": "s", "id": "s1_0_0", "md": "I'll prescribe an ==antibiotic== called amoxicillin, three times a day for a week.", "zh": "我给她开一种叫阿莫西林的抗生素，一天三次，吃一周。", "sp": "B", "gap": false, "start": 59.856, "end": 66.816, "words": [[59.959, 60.169], [60.169, 60.827], [60.893, 61.13], [61.195, 62.064], [62.064, 62.485], [62.551, 63.564], [63.998, 64.222], [64.222, 64.669], [64.761, 64.853], [64.853, 65.117], [65.13, 65.406], [65.406, 65.445], [65.445, 65.827]]}, {"kind": "s", "id": "s1_1_0", "md": "Sorry, before you do that. She had a ==rash== all over her body the last time she took amoxicillin.", "zh": "不好意思，先等一下。她上次吃阿莫西林的时候全身起了疹子。", "sp": "A", "gap": false, "start": 66.816, "end": 73.056, "words": [[66.921, 67.329], [67.395, 67.711], [67.724, 67.79], [67.803, 67.974], [67.987, 68.276], [68.711, 68.856], [68.869, 68.987], [69.0, 69.053], [69.066, 69.619], [69.737, 70.026], [70.04, 70.237], [70.25, 70.382], [70.395, 70.79], [70.803, 70.908], [70.921, 71.303], [71.316, 71.54], [71.553, 71.698], [71.711, 71.908], [71.921, 72.671]]}, {"kind": "s", "id": "s1_2_0", "md": "Ah, thank you for telling me. That could be an ==allergy==. I'll note it in her records and give her something different.", "zh": "啊，谢谢你告诉我。那可能是过敏。我记到她的病历里，给她换一种药。", "sp": "B", "gap": false, "start": 73.056, "end": 83.784, "words": [[73.159, 73.395], [73.698, 73.974], [73.974, 74.132], [74.132, 74.422], [74.422, 74.803], [74.803, 75.08], [76.056, 76.359], [76.359, 76.609], [76.609, 76.885], [76.938, 77.201], [77.253, 77.859], [78.806, 79.043], [79.043, 79.411], [79.477, 79.635], [79.688, 79.832], [79.832, 80.095], [80.095, 80.806], [80.977, 81.253], [81.267, 81.543], [81.543, 81.793], [81.793, 82.332], [82.332, 82.845]]}, {"kind": "s", "id": "s1_3_0", "md": "**How much should I give her each time, and does it need to be taken with food?**", "zh": "每次给她吃多少？需要跟饭一起吃吗？", "sp": "A", "gap": false, "start": 83.784, "end": 88.08, "words": [[83.902, 84.021], [84.034, 84.205], [84.218, 84.402], [84.416, 84.521], [84.534, 84.718], [84.731, 84.889], [84.902, 85.126], [85.139, 85.573], [85.995, 86.06], [86.073, 86.258], [86.271, 86.363], [86.376, 86.574], [86.587, 86.639], [86.652, 86.758], [86.771, 87.113], [87.126, 87.258], [87.271, 87.692]]}, {"kind": "s", "id": "s1_4_0", "md": "Five millilitres twice a day, after meals. Use the ==syringe== in the box, not a kitchen spoon.", "zh": "每次五毫升，一天两次，饭后吃。用盒子里的喂药器，别用厨房的勺子。", "sp": "B", "gap": false, "start": 88.08, "end": 96.528, "words": [[88.183, 88.538], [88.538, 89.314], [89.341, 89.735], [89.775, 89.841], [89.854, 90.196], [90.419, 90.867], [90.867, 91.354], [92.264, 92.567], [92.567, 92.725], [92.725, 93.238], [93.304, 93.409], [93.409, 93.541], [93.541, 94.027], [94.225, 94.554], [94.58, 94.633], [94.646, 95.106], [95.106, 95.619]]}, {"kind": "s", "id": "s1_5_0", "md": "Got it. And what if she spits it out?", "zh": "明白。那她要是吐出来怎么办？", "sp": "A", "gap": false, "start": 96.528, "end": 98.904, "words": [[96.633, 96.804], [96.817, 96.936], [97.37, 97.449], [97.462, 97.581], [97.594, 97.673], [97.686, 97.817], [97.831, 98.12], [98.133, 98.212], [98.225, 98.515]]}, {"kind": "s", "id": "s1_6_0", "md": "If she spits most of it out right away, give it again. Otherwise, just wait for the next dose.", "zh": "如果刚喂就吐掉了大半，就再喂一次。不然就等下一顿。", "sp": "B", "gap": false, "start": 98.904, "end": 107.64, "words": [[99.007, 99.164], [99.165, 99.428], [99.428, 99.862], [99.875, 100.27], [100.283, 100.48], [100.48, 100.599], [100.651, 100.928], [100.993, 101.336], [101.336, 101.691], [101.941, 102.191], [102.191, 102.322], [102.388, 102.862], [103.772, 104.457], [104.68, 105.049], [105.062, 105.443], [105.443, 105.72], [105.72, 105.851], [105.851, 106.207], [106.286, 106.72]]}, {"kind": "s", "id": "s1_7_0", "md": "**Should we come back if the fever doesn't come down?**", "zh": "如果烧一直不退，需要再来吗？", "sp": "A", "gap": false, "start": 107.64, "end": 110.4, "words": [[107.745, 107.877], [107.89, 107.982], [107.995, 108.193], [108.206, 108.548], [108.561, 108.653], [108.666, 108.758], [108.772, 109.166], [109.179, 109.469], [109.482, 109.653], [109.666, 110.008]]}, {"kind": "s", "id": "s1_8_0", "md": "Yes. If she's still feverish after three days, or she seems unusually ==lethargic==, bring her back straight away.", "zh": "要。如果三天后还在发烧，或者看起来特别没精神，马上带她回来。", "sp": "B", "gap": false, "start": 110.4, "end": 120.648, "words": [[110.503, 110.871], [111.834, 112.005], [112.005, 112.466], [112.532, 112.874], [112.874, 113.492], [113.558, 114.018], [114.032, 114.374], [114.374, 114.808], [115.203, 115.4], [115.413, 115.716], [115.716, 116.163], [116.242, 116.94], [116.979, 117.663], [118.045, 118.334], [118.334, 118.597], [118.597, 118.926], [118.926, 119.347], [119.347, 119.69]]}, {"kind": "s", "id": "s1_9_0", "md": "Thanks, Doctor. Could I also __get a letter__ for her childcare?", "zh": "谢谢医生。能再给我开一张给托儿所的证明吗？", "sp": "A", "gap": false, "start": 120.648, "end": 124.488, "words": [[120.793, 121.148], [121.266, 121.74], [122.174, 122.28], [122.293, 122.411], [122.424, 122.701], [122.714, 122.859], [122.872, 122.911], [122.924, 123.24], [123.253, 123.372], [123.385, 123.477], [123.49, 124.082]]}, {"kind": "s", "id": "s1_10_0", "md": "Of course. The nurse will __print it out__ with the medicine.", "zh": "当然。护士会连同药一起打印给你。", "sp": "B", "gap": false, "start": 124.488, "end": 129.936, "words": [[124.591, 124.801], [124.814, 125.301], [126.238, 126.356], [126.356, 126.777], [126.817, 127.08], [127.08, 127.422], [127.501, 127.659], [127.672, 127.988], [128.041, 128.304], [128.304, 128.435], [128.435, 128.988]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

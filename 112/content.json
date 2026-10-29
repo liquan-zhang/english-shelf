@@ -1,0 +1,85 @@
+{
+  "id": "112",
+  "type": "dialogue",
+  "title": "Ordering Coffee Your Way",
+  "meta": "B2 · 约 250 词 · 场景：咖啡店定制点单与做错饮品",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Barista", "name_zh": "咖啡师", "voice": "en-SG-WayneNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. At the Counter",
+      "heading_zh": "1. 在柜台点单",
+      "lines": [
+        {"sp": "B", "en": "Morning! What can I get started for you?", "zh": "早！想喝点什么？"},
+        {"sp": "A", "en": "**Can I get a large latte with oat milk, please?**", "zh": "请给我一杯大杯燕麦奶拿铁。"},
+        {"sp": "B", "en": "Sure. Oat milk is an extra eighty cents. Is that okay?", "zh": "好的。燕麦奶要加八毛钱，可以吗？"},
+        {"sp": "A", "en": "That's fine. And could you __make it__ ==extra hot==? I've got a long walk to the office.", "zh": "没问题。能做得特别烫一点吗？我走到公司要挺久。"},
+        {"sp": "B", "en": "No problem. Any ==syrup==? We have vanilla, caramel and hazelnut.", "zh": "没问题。要加糖浆吗？有香草、焦糖和榛子的。"},
+        {"sp": "A", "en": "Just __half a pump__ of vanilla. I don't like it too sweet.", "zh": "香草的，只要半泵。我不喜欢太甜。"},
+        {"sp": "B", "en": "Half a pump, got it. Would you like an extra ==shot==? It's quite a mild blend.", "zh": "半泵，记下了。要不要多加一份浓缩？我们这款豆子味道比较淡。"},
+        {"sp": "A", "en": "Oh, yes, __go ahead__. I need it today. And one plain croissant, __for here__.", "zh": "哦，好，加吧。今天确实需要。再要一个原味可颂，在这儿吃。"},
+        {"sp": "B", "en": "Alright, that's eight forty altogether. Can I get a name for the cup?", "zh": "好的，一共八块四。杯子上写什么名字？"},
+        {"sp": "A", "en": "It's Lee. L, E, E. Can I pay by card?", "zh": "Lee。L、E、E。能刷卡吗？"},
+        {"sp": "B", "en": "Of course, just tap here whenever you're ready.", "zh": "当然，准备好了在这儿拍一下就行。"}
+      ]
+    },
+    {
+      "heading": "2. The Wrong Drink",
+      "heading_zh": "2. 饮品做错了",
+      "lines": [
+        {"sp": "A", "en": "Sorry, __excuse me__. I think this might be the wrong drink. It tastes like regular milk.", "zh": "不好意思，打扰一下。我觉得这杯可能做错了，喝着像普通牛奶。"},
+        {"sp": "B", "en": "Oh, let me check the ==label==. You're right, this one's for another order. My apologies.", "zh": "哦，我看看标签。您说得对，这杯是别人的单。抱歉。"},
+        {"sp": "A", "en": "No worries. I just can't have dairy, so I wanted to __double-check__.", "zh": "没关系。我只是不能喝乳制品，所以想确认一下。"},
+        {"sp": "B", "en": "Totally understand. I'll ==remake== it now, oat milk, extra hot, half vanilla, extra shot.", "zh": "完全理解。我马上重做：燕麦奶、特别烫、半泵香草、多加一份浓缩。"},
+        {"sp": "A", "en": "**That's the one. Could you also put a lid on it? I'll take it to go after all.**", "zh": "就是这个。能帮我加个盖子吗？我还是打包带走吧。"},
+        {"sp": "B", "en": "Sure thing. And since you had to wait, the croissant is ==on the house== today.", "zh": "没问题。让您久等了，今天可颂算我们请的。"},
+        {"sp": "A", "en": "Oh, you don't have to do that. But thank you, that's really nice of you.", "zh": "哎，不用这样的。不过谢谢，你人真好。"},
+        {"sp": "B", "en": "Here you go. Careful, it's very hot. Have a good day at work!", "zh": "给您。小心，很烫。祝您上班顺利！"},
+        {"sp": "A", "en": "**Thanks, you too. See you tomorrow.**", "zh": "谢谢，你也是。明天见。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」点的咖啡有哪些定制要求？", "a": "大杯燕麦奶拿铁，特别烫，半泵香草糖浆，多加一份浓缩。"},
+    {"q": "拿到咖啡后出了什么问题？「你」为什么特别在意？", "a": "拿错成别人的普通牛奶拿铁；因为「你」不能喝乳制品。"},
+    {"q": "咖啡师最后怎么处理的？", "a": "按要求重做一杯，并且那个可颂免费送了。"}
+  ],
+  "dictation": [
+    "Can I get a large latte with oat milk, please?",
+    "Just half a pump of vanilla. I don't like it too sweet.",
+    "Sorry, excuse me. I think this might be the wrong drink. It tastes like regular milk.",
+    "That's the one. Could you also put a lid on it? I'll take it to go after all."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "No worries. I just can't have dairy, so I wanted to double-check.",
+    "marked": "No <b>worries</b>. //<br>I just <b>can't</b> have <b>dairy</b>, / so I wanted to <b>double</b>-check. //"
+  },
+  "prompts": [
+    {
+      "q": "你在咖啡店想点一杯冰美式，但要少冰、不加糖，另外问问有没有低咖啡因的选项。用 30 秒点单。",
+      "ref": "Hi, can I get an iced Americano, please? Less ice, and no sugar or syrup at all. Actually, do you have a decaf option? I've already had two coffees today. If you do, I'll go with decaf. And could I get it in a medium size? Thanks.",
+      "ref_zh": "你好，请给我一杯冰美式。少冰，完全不要糖或糖浆。对了，你们有低咖啡因的吗？我今天已经喝了两杯咖啡了。有的话我就换低因的。中杯就行，谢谢。"
+    },
+    {
+      "q": "你在外卖平台点的咖啡送到后发现是热的，而你点的是冰的。打电话给店里，说明情况并提出你想怎么处理。",
+      "ref": "Hi, I just got a delivery from your shop under the name Lee. I ordered an iced latte, but this one is hot. I think the order got mixed up. Would it be possible to send the right one, or could you refund the drink instead? Either is fine with me, I just want to sort it out.",
+      "ref_zh": "你好，我刚收到你们店的外卖，名字是 Lee。我点的是冰拿铁，送来的是热的，应该是弄混了。能重新送一杯对的吗？或者这杯给我退款也行。两种都可以，我就是想把事情处理好。"
+    }
+  ],
+  "words": [
+    {"w": "extra hot", "ipa": "/ˈekstrə hɑːt/", "zh": "特别烫（咖啡定制）", "ex": "Can I get my flat white extra hot, please?"},
+    {"w": "syrup", "ipa": "/ˈsɪrəp/", "zh": "糖浆", "ex": "No syrup for me, thanks. I'm cutting down on sugar."},
+    {"w": "shot", "ipa": "/ʃɑːt/", "zh": "一份浓缩咖啡", "ex": "I'll have a cappuccino with an extra shot."},
+    {"w": "half a pump", "ipa": "/hæf ə pʌmp/", "zh": "半泵（糖浆）", "ex": "Just half a pump of caramel, please."},
+    {"w": "label", "ipa": "/ˈleɪbəl/", "zh": "标签", "ex": "Check the label on the cup before you take it."},
+    {"w": "remake (v.)", "ipa": "/ˌriːˈmeɪk/", "zh": "重做", "ex": "Sorry, we'll remake your drink right away.", "tts_w": "remake"},
+    {"w": "on the house", "ipa": "/ɑːn ðə haʊs/", "zh": "店家请客，免费", "ex": "The dessert is on the house tonight."},
+    {"w": "dairy", "ipa": "/ˈderi/", "zh": "乳制品", "ex": "My son can't have dairy, so we always ask for soy milk."},
+    {"w": "double-check", "ipa": "/ˌdʌbəl ˈtʃek/", "zh": "再确认一下", "ex": "Let me double-check the address before I pay."}
+  ]
+}

@@ -1,0 +1,183 @@
+{
+  "id": "066",
+  "title": "Reversible and Irreversible Decisions",
+  "meta": "B2 · 约 260 词 · 场景：技术决策",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Ask What It Costs to Undo",
+      "paragraphs": [
+        [
+          "Many teams spend the same amount of debate on every decision.",
+          "A button color gets three meetings, and so does a database migration.",
+          "That is a ==mismatch==, and it slows everything down."
+        ],
+        [
+          "A better first question is simple: if we get this wrong, what does it cost to undo?",
+          "Changing a feature flag costs minutes.",
+          "Changing a public API that partners have built on can cost a year.",
+          "**The cost of undoing a decision, not its size, should decide how long you debate it.**"
+        ],
+        [
+          "Most daily choices are ==reversible==.",
+          "Which library to try, how to name a config, which test to write first.",
+          "For these, a quick decision by one ==accountable== person beats a perfect decision by committee.",
+          "If it turns out wrong, you __change course__ next week and lose very little."
+        ]
+      ],
+      "heading_zh": "1. 先问撤回的代价",
+      "paragraphs_zh": [
+        [
+          "很多团队对每个决定都花同样多的时间争论。",
+          "一个按钮颜色开三次会，一次数据库迁移也开三次会。",
+          "这就是错配，它会拖慢所有事情。"
+        ],
+        [
+          "更好的第一个问题很简单：如果我们做错了，撤回要付出什么代价？",
+          "改一个 feature flag 只要几分钟。",
+          "改一个合作方已经接入的公开 API，可能要花一年。",
+          "决定该讨论多久，取决于撤回它的代价，而不是它看起来有多大。"
+        ],
+        [
+          "日常大多数选择都是可逆的。",
+          "试哪个库、配置怎么命名、先写哪个测试。",
+          "对这类事，由一个负责人快速拍板，胜过一个委员会做出完美决定。",
+          "就算错了，下周换个方向就行，损失很小。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Where to Slow Down",
+      "paragraphs": [
+        [
+          "A few decisions really are hard to take back.",
+          "Data schemas, public contracts, deleting user data, and anything that ==alters== what users have been promised.",
+          "These __deserve the extra meeting__, a written proposal, and a second reviewer."
+        ],
+        [
+          "The trick is to say out loud which kind of decision you are in.",
+          "\"This is easy to undo, so let's pick one today and look at it again next sprint.\"",
+          "Or: \"This one is ==permanent== once partners integrate, so I want a design review first.\""
+        ],
+        [
+          "**Labeling the decision out loud ends a lot of pointless debate.**",
+          "People relax when they know a choice can be ==revisited==.",
+          "And they __take it seriously__ when you tell them it cannot.",
+          "Over time, the team learns to move fast on most things and carefully on the few that matter."
+        ]
+      ],
+      "heading_zh": "2. 哪里该慢下来",
+      "paragraphs_zh": [
+        [
+          "有少数决定确实很难收回。",
+          "数据 schema、对外的接口约定、删除用户数据，以及任何会改变对用户承诺的事。",
+          "这些值得多开一次会、写一份书面方案，再加一个 reviewer。"
+        ],
+        [
+          "诀窍是把你面对的是哪一类决定说出来。",
+          "「这个很容易撤回，我们今天就选一个，下个迭代再回头看。」",
+          "或者：「这个一旦合作方接入就改不了了，所以我想先过一次设计评审。」"
+        ],
+        [
+          "把决定的类型说出来，能省掉大量无谓的争论。",
+          "大家知道一个选择以后还能再改，就会放松下来。",
+          "你告诉他们改不了的时候，他们也会认真对待。",
+          "时间长了，团队就学会了大多数事情快速推进，少数关键的事谨慎处理。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者说团队在决策上常犯什么错？",
+      "a": "对所有决定花同样多的讨论时间，按钮颜色和数据库迁移都开三次会，节奏错配。"
+    },
+    {
+      "q": "判断该讨论多久，应该看什么？",
+      "a": "看决定撤销的成本，而不是决定看起来多大；可逆的由一个负责人快速拍板。"
+    },
+    {
+      "q": "哪些决定值得放慢？作者建议在会上怎么做？",
+      "a": "数据结构、对外接口、删除数据、改变对用户承诺的事；在会上明确说出这是可逆还是不可逆的决定。"
+    }
+  ],
+  "dictation": [
+    "The cost of undoing a decision, not its size, should decide how long you debate it.",
+    "For these, a quick decision by one accountable person beats a perfect decision by committee.",
+    "Labeling the decision out loud ends a lot of pointless debate.",
+    "Over time, the team learns to move fast on most things and carefully on the few that matter."
+  ],
+  "shadow": {
+    "text": "A better first question is simple: if we get this wrong, what does it cost to undo? Changing a feature flag costs minutes. Changing a public API that partners have built on can cost a year.",
+    "marked": "A better <b>first</b> question is simple: / if we get this <b>wrong</b>, / what does it <b>cost</b> to undo? //<br>Changing a feature <b>flag</b> / costs <b>minutes</b>. //<br>Changing a <b>public</b> API / that partners have built on / can cost a <b>year</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "团队为日志库选型已经争了两周。用 30 秒指出这是可逆决定，并推动今天拍板。",
+      "ref": "Can I step back for a second? We've spent two weeks on this, but switching logging libraries later is maybe two days of work. That makes it a reversible decision. I'd suggest Priya picks one today, since she owns the service, and we check how it's going after one sprint. If it's painful, we switch. Let's save our debate time for the schema changes coming next month.",
+      "ref_zh": "我能先跳出来说一句吗？这件事我们已经讨论了两周，但以后要换日志库，大概也就两天的工作量。这说明它是一个可逆的决定。我建议 Priya 今天选一个，毕竟服务是她负责的，一个迭代之后我们看看效果。要是用着难受，我们再换。把争论的时间留给下个月的 schema 变更吧。"
+    },
+    {
+      "q": "PM 想下周就把新接口开放给外部合作方。用 30 秒说明这是不可逆决定，需要先做设计评审。",
+      "ref": "I'm excited about this too, but I want to flag the type of decision we're making. Once partners build on this API, we basically can't change the response format without breaking them. That makes it close to permanent. So I'd like a short design review and one more reviewer before we open it up. It might cost us a week now, but it could save us a year of support later.",
+      "ref_zh": "我也很期待这个，但我想提醒一下我们在做的是哪一类决定。合作方一旦基于这个 API 开发，我们基本就没法改返回格式了，否则会把他们搞挂。所以这几乎是永久性的。我希望在开放之前先过一次简短的设计评审，再多加一个 reviewer。现在可能会多花一周，但以后可能省下一年的支持成本。"
+    }
+  ],
+  "words": [
+    {
+      "w": "mismatch",
+      "ipa": "/ˈmɪsˌmætʃ/",
+      "zh": "不匹配、错配",
+      "ex": "There's a mismatch between the roadmap and our actual headcount."
+    },
+    {
+      "w": "reversible",
+      "ipa": "/rɪˈvɜːrsəbəl/",
+      "zh": "可逆的、可撤回的",
+      "ex": "This config change is fully reversible, so let's just try it."
+    },
+    {
+      "w": "accountable",
+      "ipa": "/əˈkaʊntəbəl/",
+      "zh": "负责的、须担责的",
+      "ex": "Who is accountable for the final launch decision?"
+    },
+    {
+      "w": "alter",
+      "ipa": "/ˈɔːltər/",
+      "zh": "改变、更改",
+      "ex": "This migration will alter how we store user preferences."
+    },
+    {
+      "w": "permanent",
+      "ipa": "/ˈpɜːrmənənt/",
+      "zh": "永久的",
+      "ex": "Deleting the backups is permanent, so get a second approval."
+    },
+    {
+      "w": "revisit",
+      "ipa": "/riːˈvɪzɪt/",
+      "zh": "重新审视、再讨论",
+      "ex": "Let's revisit the pricing model after we see the first month of data."
+    },
+    {
+      "w": "committee",
+      "ipa": "/kəˈmɪti/",
+      "zh": "委员会（此处指多人共同决策）",
+      "ex": "Design by committee is why this screen has six buttons."
+    },
+    {
+      "w": "integrate",
+      "ipa": "/ˈɪntɪˌɡreɪt/",
+      "zh": "集成、接入",
+      "ex": "Three partners have already integrated with the old endpoint."
+    },
+    {
+      "w": "pointless",
+      "ipa": "/ˈpɔɪntləs/",
+      "zh": "无意义的",
+      "ex": "It's pointless to optimize this query before we know it's slow."
+    }
+  ]
+}

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Reviewing a Proposal You Disagree With · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "028", "title": "Reviewing a Proposal You Disagree With", "meta": "B2 · 约 280 词 · 场景：方案评审", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Make Their Case First", "heading_zh": "1. 先替对方把道理讲出来", "rows": [[{"id": "s0_0_0", "md": "You open the proposal, read the first page, and already know you don't like it.", "text": "You open the proposal, read the first page, and already know you don't like it.", "zh": "你打开这份提案，读完第一页，就已经知道自己不喜欢它了。", "sp": null}, {"id": "s0_0_1", "md": "That reaction might be real ==insight==, or it might just be ==bias== toward your own approach.", "text": "That reaction might be real insight, or it might just be bias toward your own approach.", "zh": "这种反应可能是真知灼见，也可能只是你偏爱自己那套做法。", "sp": null}, {"id": "s0_0_2", "md": "Before you write a single comment, try to __argue for__ the proposal.", "text": "Before you write a single comment, try to argue for the proposal.", "zh": "在写下任何一条评论之前，先试着替这份提案说话。", "sp": null}], [{"id": "s0_1_0", "md": "**If you cannot explain why a smart person would choose this, you are not ready to reject it.**", "text": "If you cannot explain why a smart person would choose this, you are not ready to reject it.", "zh": "如果你讲不出一个聪明人为什么会这么选，你就还没资格否掉它。", "sp": null}, {"id": "s0_1_1", "md": "Write a short summary of the author's goal and their strongest argument.", "text": "Write a short summary of the author's goal and their strongest argument.", "zh": "简短写下作者的目标，以及他们最有力的论据。", "sp": null}, {"id": "s0_1_2", "md": "Then share it: \"Here is my understanding; did I get it right?\"", "text": "Then share it: \"Here is my understanding; did I get it right?\"", "zh": "然后发出去：「这是我的理解，我理解得对吗？」", "sp": null}], [{"id": "s0_2_0", "md": "This step does two things.", "text": "This step does two things.", "zh": "这一步有两个作用。", "sp": null}, {"id": "s0_2_1", "md": "It catches ==misunderstandings== early, because many disagreements are really about different readings of the same page.", "text": "It catches misunderstandings early, because many disagreements are really about different readings of the same page.", "zh": "它能尽早发现误解，因为很多分歧其实只是对同一页内容的理解不同。", "sp": null}, {"id": "s0_2_2", "md": "It also shows the author you __took their work seriously__, which makes them more ==receptive== to what comes next.", "text": "It also shows the author you took their work seriously, which makes them more receptive to what comes next.", "zh": "它也让作者看到你认真对待了他们的工作，这样他们对你后面的意见会更听得进去。", "sp": null}]]}, {"heading": "2. Different Is Not Wrong", "heading_zh": "2. 不一样不等于错", "rows": [[{"id": "s1_0_0", "md": "Next, sort your concerns into two groups.", "text": "Next, sort your concerns into two groups.", "zh": "接下来，把你的顾虑分成两类。", "sp": null}, {"id": "s1_0_1", "md": "Some are ==preferences==: you would have picked another framework or named things differently.", "text": "Some are preferences: you would have picked another framework or named things differently.", "zh": "一类是个人偏好：你可能会选另一个框架，或者换种命名方式。", "sp": null}, {"id": "s1_0_2", "md": "Others are risks: the plan will miss the deadline, or it will lose data under load.", "text": "Others are risks: the plan will miss the deadline, or it will lose data under load.", "zh": "另一类是风险：这个方案会赶不上 deadline，或者高负载下会丢数据。", "sp": null}], [{"id": "s1_1_0", "md": "Only the second group should block the proposal.", "text": "Only the second group should block the proposal.", "zh": "只有第二类才应该卡住这份提案。", "sp": null}, {"id": "s1_1_1", "md": "Label the first group clearly, with something like \"personal preference, feel free to ignore.\"", "text": "Label the first group clearly, with something like \"personal preference, feel free to ignore.\"", "zh": "第一类要明确标出来，比如写一句「个人偏好，可以忽略」。", "sp": null}, {"id": "s1_1_2", "md": "**Reviewers who block on taste soon find that nobody asks them to review anything.**", "text": "Reviewers who block on taste soon find that nobody asks them to review anything.", "zh": "因为个人口味就卡别人的评审人，很快会发现没人再找他们 review 了。", "sp": null}], [{"id": "s1_2_0", "md": "For real risks, be concrete and ==proportionate==.", "text": "For real risks, be concrete and proportionate.", "zh": "对真正的风险，要说得具体，也要把握分寸。", "sp": null}, {"id": "s1_2_1", "md": "Explain the ==impact==, how likely it is, and what would reduce it.", "text": "Explain the impact, how likely it is, and what would reduce it.", "zh": "讲清楚影响有多大、发生的可能性有多高，以及怎么能降低它。", "sp": null}, {"id": "s1_2_2", "md": "A rare edge case does not deserve the same energy as a likely outage.", "text": "A rare edge case does not deserve the same energy as a likely outage.", "zh": "一个很少触发的边界情况，不值得花跟一个大概率故障同样的力气。", "sp": null}, {"id": "s1_2_3", "md": "If the author ==addresses== the risk in a way you would not have chosen, __let it go__.", "text": "If the author addresses the risk in a way you would not have chosen, let it go.", "zh": "如果作者用一种你不会选的方式解决了这个风险，那就随它去吧。", "sp": null}], [{"id": "s1_3_0", "md": "Your job is to make the proposal safe, not to turn it into yours.", "text": "Your job is to make the proposal safe, not to turn it into yours.", "zh": "你的任务是让提案变得安全，不是把它改成你的方案。", "sp": null}, {"id": "s1_3_1", "md": "Authors remember the reviewers who __made their ideas stronger__, and they come back to them.", "text": "Authors remember the reviewers who made their ideas stronger, and they come back to them.", "zh": "作者会记住那些让他们的想法变得更强的评审人，下次还会去找他们。", "sp": null}]]}], "gist": [{"q": "评审一个你不认同的方案，第一步应该做什么？", "a": "先替方案说话：写下作者的目标和最有力的论点，并问作者「我理解得对吗」。"}, {"q": "这一步有什么好处？", "a": "及早发现误解（很多分歧其实是对同一页的不同理解）；让作者感到被认真对待，更愿意听后面的意见。"}, {"q": "作者建议把顾虑分成哪两类？分别怎么处理？", "a": "个人偏好（标注清楚、可忽略，不阻塞）和真实风险（具体、成比例地说明影响、可能性和缓解办法，才可以阻塞）。"}], "dictation": [{"id": "s0_1_0", "text": "If you cannot explain why a smart person would choose this, you are not ready to reject it."}, {"id": "s1_1_2", "text": "Reviewers who block on taste soon find that nobody asks them to review anything."}, {"id": "s1_1_0", "text": "Only the second group should block the proposal."}, {"id": "s1_3_0", "text": "Your job is to make the proposal safe, not to turn it into yours."}], "shadow": {"text": "Next, sort your concerns into two groups. Some are preferences: you would have picked another framework or named things differently. Others are risks: the plan will miss the deadline, or it will lose data under load.", "marked": "Next, / sort your concerns / into <b>two</b> groups. //<br>Some are <b>preferences</b>: / you would have picked <b>another</b> framework / or named things <b>differently</b>. //<br>Others are <b>risks</b>: / the plan will <b>miss</b> the deadline, / or it will <b>lose data</b> under load. //"}, "prompts": [{"q": "另一个团队提议把服务从 Go 迁到 Java，你不认同。评审会上先用 30 秒复述对方方案的目标和最强论点，再确认理解是否正确。", "ref": "Before I share my concerns, let me check that I understand the proposal. The main goal is to put all backend services on one language, so engineers can move between teams and share libraries. The strongest argument, I think, is the hiring data: most of our new hires already know Java. Did I get that right? If so, my questions are really about the migration cost, not the direction.", "ref_zh": "在说我的顾虑之前，我先确认一下我对提案的理解。主要目标是把所有后端服务统一成一种语言，这样工程师可以在团队之间流动，也能共享库。我觉得最有力的论据是招聘数据：我们大部分新人本来就会 Java。我理解得对吗？如果对的话，我的问题其实是关于迁移成本的，而不是方向。", "id": "ref0"}, {"q": "你对一个方案有三条意见，其中两条只是个人偏好，一条是真实风险。用 30 秒把它们区分清楚地讲出来。", "ref": "I have three comments, but only one of them is blocking. The first two are just preferences: I'd name the topics differently, and I'd use a different retry library. Feel free to ignore both. The real concern is data loss. If the consumer crashes after reading a message but before writing to the database, that message is gone. I'd like to see that case handled before we approve.", "ref_zh": "我有三条评论，但只有一条是 blocking。前两条只是个人偏好：topic 我会换个命名，重试库我会用另一个。这两条都可以忽略。真正的顾虑是丢数据。如果 consumer 读到消息后、写数据库之前挂了，这条消息就没了。我希望在批准之前，把这种情况处理掉。", "id": "ref1"}], "words": [{"w": "insight", "ipa": "/ˈɪnsaɪt/", "zh": "洞察、深刻见解", "ex": "Her insight about cold starts changed the whole design.", "id": "w0"}, {"w": "bias", "ipa": "/ˈbaɪəs/", "zh": "偏见、偏向", "ex": "I have a bias toward tools I've used before, so push back if needed.", "id": "w1"}, {"w": "misunderstanding", "ipa": "/ˌmɪsʌndərˈstændɪŋ/", "zh": "误解", "ex": "Half the debate was a misunderstanding about what \"real time\" meant.", "id": "w2"}, {"w": "receptive", "ipa": "/rɪˈseptɪv/", "zh": "乐于接受的", "ex": "The team was more receptive once we showed the cost numbers.", "id": "w3"}, {"w": "preference", "ipa": "/ˈprefərəns/", "zh": "偏好", "ex": "Tabs versus spaces is a preference, not a blocker.", "id": "w4"}, {"w": "proportionate", "ipa": "/prəˈpɔːrʃənət/", "zh": "相称的、成比例的", "ex": "Keep the fix proportionate to the risk; this is an internal tool.", "id": "w5"}, {"w": "impact", "ipa": "/ˈɪmpækt/", "zh": "影响", "ex": "What's the user impact if this job runs an hour late?", "id": "w6"}, {"w": "address (v.)", "ipa": "/əˈdres/", "zh": "处理、应对", "ex": "The new version addresses the timeout issue I raised.", "tts_w": "address", "id": "w7"}, {"w": "concrete", "ipa": "/ˈkɑːŋkriːt/", "zh": "具体的", "ex": "Can you give a concrete example of where this would fail?", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Make Their Case First", "zh": "1. 先替对方把道理讲出来", "start": 0.0, "end": 2.184, "words": [[0.105, 0.316], [0.671, 0.829], [0.842, 0.974], [0.987, 1.276], [1.289, 1.789]]}, {"kind": "s", "id": "s0_0_0", "md": "You open the proposal, read the first page, and already know you don't like it.", "zh": "你打开这份提案，读完第一页，就已经知道自己不喜欢它了。", "sp": null, "gap": false, "start": 2.184, "end": 7.104, "words": [[2.289, 2.421], [2.434, 2.658], [2.671, 2.75], [2.763, 3.355], [3.737, 3.921], [3.934, 4.013], [4.026, 4.368], [4.381, 4.829], [5.145, 5.276], [5.289, 5.618], [5.631, 5.881], [5.895, 6.039], [6.052, 6.289], [6.302, 6.539], [6.552, 6.71]]}, {"kind": "s", "id": "s0_0_1", "md": "That reaction might be real ==insight==, or it might just be ==bias== toward your own approach.", "zh": "这种反应可能是真知灼见，也可能只是你偏爱自己那套做法。", "sp": null, "gap": false, "start": 7.104, "end": 12.456, "words": [[7.222, 7.354], [7.367, 7.893], [7.907, 8.143], [8.157, 8.301], [8.315, 8.578], [8.591, 9.13], [9.578, 9.657], [9.67, 9.736], [9.749, 10.051], [10.117, 10.341], [10.354, 10.499], [10.512, 10.946], [10.959, 11.196], [11.209, 11.341], [11.354, 11.472], [11.486, 12.078]]}, {"kind": "s", "id": "s0_0_2", "md": "Before you write a single comment, try to __argue for__ the proposal.", "zh": "在写下任何一条评论之前，先试着替这份提案说话。", "sp": null, "gap": false, "start": 12.456, "end": 16.248, "words": [[12.574, 12.864], [12.877, 13.009], [13.022, 13.206], [13.219, 13.259], [13.272, 13.614], [13.627, 14.061], [14.351, 14.548], [14.561, 14.653], [14.667, 15.035], [15.048, 15.153], [15.167, 15.245], [15.259, 15.851]]}, {"kind": "s", "id": "s0_1_0", "md": "**If you cannot explain why a smart person would choose this, you are not ready to reject it.**", "zh": "如果你讲不出一个聪明人为什么会这么选，你就还没资格否掉它。", "sp": null, "gap": true, "start": 16.248, "end": 21.576, "words": [[16.353, 16.459], [16.472, 16.577], [16.59, 16.893], [16.906, 17.393], [17.406, 17.603], [17.616, 17.682], [17.695, 18.077], [18.09, 18.472], [18.485, 18.63], [18.643, 18.985], [18.998, 19.366], [19.656, 19.735], [19.748, 19.84], [19.853, 20.195], [20.209, 20.419], [20.432, 20.551], [20.564, 20.998], [21.011, 21.182]]}, {"kind": "s", "id": "s0_1_1", "md": "Write a short summary of the author's goal and their strongest argument.", "zh": "简短写下作者的目标，以及他们最有力的论据。", "sp": null, "gap": false, "start": 21.576, "end": 25.8, "words": [[21.681, 21.826], [21.839, 21.879], [21.892, 22.208], [22.221, 22.694], [22.708, 22.787], [22.8, 22.892], [22.905, 23.365], [23.379, 23.787], [24.023, 24.102], [24.115, 24.247], [24.26, 24.879], [24.892, 25.418]]}, {"kind": "s", "id": "s0_1_2", "md": "Then share it: \"Here is my understanding; did I get it right?\"", "zh": "然后发出去：「这是我的理解，我理解得对吗？」", "sp": null, "gap": false, "start": 25.8, "end": 30.096, "words": [[25.918, 26.024], [26.037, 26.379], [26.392, 26.524], [27.155, 27.326], [27.339, 27.445], [27.458, 27.629], [27.642, 28.366], [28.761, 28.879], [28.892, 28.958], [28.971, 29.116], [29.129, 29.234], [29.247, 29.563]]}, {"kind": "s", "id": "s0_2_0", "md": "This step does two things.", "zh": "这一步有两个作用。", "sp": null, "gap": true, "start": 30.096, "end": 32.16, "words": [[30.201, 30.346], [30.359, 30.714], [30.807, 31.004], [31.017, 31.201], [31.214, 31.767]]}, {"kind": "s", "id": "s0_2_1", "md": "It catches ==misunderstandings== early, because many disagreements are really about different readings of the same page.", "zh": "它能尽早发现误解，因为很多分歧其实只是对同一页内容的理解不同。", "sp": null, "gap": false, "start": 32.16, "end": 39.408, "words": [[32.265, 32.384], [32.397, 32.897], [32.91, 33.936], [33.949, 34.344], [34.607, 34.949], [34.963, 35.357], [35.371, 36.042], [36.055, 36.331], [36.344, 36.713], [36.726, 37.094], [37.107, 37.489], [37.502, 37.976], [37.989, 38.081], [38.094, 38.173], [38.186, 38.463], [38.476, 39.028]]}, {"kind": "s", "id": "s0_2_2", "md": "It also shows the author you __took their work seriously__, which makes them more ==receptive== to what comes next.", "zh": "它也让作者看到你认真对待了他们的工作，这样他们对你后面的意见会更听得进去。", "sp": null, "gap": false, "start": 39.408, "end": 45.672, "words": [[39.513, 39.605], [39.619, 39.947], [39.961, 40.316], [40.329, 40.447], [40.461, 40.842], [40.855, 40.987], [41.0, 41.237], [41.25, 41.382], [41.395, 41.592], [41.605, 42.316], [42.632, 42.79], [42.803, 43.053], [43.066, 43.197], [43.211, 43.434], [43.447, 44.118], [44.132, 44.25], [44.263, 44.461], [44.474, 44.737], [44.75, 45.276]]}, {"kind": "h", "id": "h1", "md": "2. Different Is Not Wrong", "zh": "2. 不一样不等于错", "start": 45.672, "end": 47.808, "words": [[45.79, 46.054], [46.369, 46.672], [46.685, 46.777], [46.79, 47.04], [47.054, 47.409]]}, {"kind": "s", "id": "s1_0_0", "md": "Next, sort your concerns into two groups.", "zh": "接下来，把你的顾虑分成两类。", "sp": null, "gap": false, "start": 47.808, "end": 50.88, "words": [[47.913, 48.334], [48.611, 48.861], [48.874, 49.019], [49.032, 49.532], [49.545, 49.716], [49.729, 49.953], [49.966, 50.492]]}, {"kind": "s", "id": "s1_0_1", "md": "Some are ==preferences==: you would have picked another framework or named things differently.", "zh": "一类是个人偏好：你可能会选另一个框架，或者换种命名方式。", "sp": null, "gap": false, "start": 50.88, "end": 55.416, "words": [[50.985, 51.13], [51.143, 51.235], [51.248, 51.959], [52.262, 52.327], [52.341, 52.433], [52.446, 52.577], [52.591, 52.854], [52.867, 53.209], [53.222, 53.775], [53.893, 53.972], [53.985, 54.248], [54.262, 54.498], [54.512, 55.038]]}, {"kind": "s", "id": "s1_0_2", "md": "Others are risks: the plan will miss the deadline, or it will lose data under load.", "zh": "另一类是风险：这个方案会赶不上 deadline，或者高负载下会丢数据。", "sp": null, "gap": false, "start": 55.416, "end": 60.768, "words": [[55.521, 55.811], [55.824, 55.955], [55.969, 56.587], [56.85, 56.955], [56.969, 57.311], [57.324, 57.455], [57.469, 57.732], [57.745, 57.85], [57.863, 58.377], [58.784, 58.863], [58.877, 58.942], [58.955, 59.1], [59.113, 59.403], [59.416, 59.784], [59.798, 60.021], [60.034, 60.363]]}, {"kind": "s", "id": "s1_1_0", "md": "Only the second group should block the proposal.", "zh": "只有第二类才应该卡住这份提案。", "sp": null, "gap": true, "start": 60.768, "end": 63.624, "words": [[60.873, 61.071], [61.084, 61.176], [61.189, 61.597], [61.61, 61.873], [62.018, 62.202], [62.215, 62.518], [62.531, 62.61], [62.623, 63.229]]}, {"kind": "s", "id": "s1_1_1", "md": "Label the first group clearly, with something like \"personal preference, feel free to ignore.\"", "zh": "第一类要明确标出来，比如写一句「个人偏好，可以忽略」。", "sp": null, "gap": false, "start": 63.624, "end": 69.984, "words": [[63.729, 64.032], [64.045, 64.137], [64.15, 64.598], [64.611, 64.927], [64.94, 65.492], [65.756, 65.9], [65.913, 66.308], [66.321, 66.571], [66.769, 67.229], [67.242, 67.887], [68.15, 68.44], [68.453, 68.756], [68.769, 68.927], [68.94, 69.479]]}, {"kind": "s", "id": "s1_1_2", "md": "**Reviewers who block on taste soon find that nobody asks them to review anything.**", "zh": "因为个人口味就卡别人的评审人，很快会发现没人再找他们 review 了。", "sp": null, "gap": false, "start": 69.984, "end": 75.168, "words": [[70.089, 70.589], [70.602, 70.695], [70.708, 71.076], [71.089, 71.247], [71.26, 71.708], [71.839, 72.116], [72.129, 72.484], [72.497, 72.655], [72.668, 73.208], [73.221, 73.563], [73.576, 73.747], [73.76, 73.879], [73.892, 74.26], [74.273, 74.773]]}, {"kind": "s", "id": "s1_2_0", "md": "For real risks, be concrete and ==proportionate==.", "zh": "对真正的风险，要说得具体，也要把握分寸。", "sp": null, "gap": true, "start": 75.168, "end": 78.72, "words": [[75.339, 75.497], [75.51, 75.76], [75.773, 76.313], [76.51, 76.668], [76.681, 77.352], [77.55, 77.629], [77.642, 78.326]]}, {"kind": "s", "id": "s1_2_1", "md": "Explain the ==impact==, how likely it is, and what would reduce it.", "zh": "讲清楚影响有多大、发生的可能性有多高，以及怎么能降低它。", "sp": null, "gap": false, "start": 78.72, "end": 83.112, "words": [[78.825, 79.299], [79.312, 79.391], [79.404, 80.023], [80.404, 80.523], [80.536, 80.97], [80.983, 81.062], [81.075, 81.47], [81.707, 81.825], [81.838, 81.97], [81.983, 82.102], [82.115, 82.523], [82.536, 82.72]]}, {"kind": "s", "id": "s1_2_2", "md": "A rare edge case does not deserve the same energy as a likely outage.", "zh": "一个很少触发的边界情况，不值得花跟一个大概率故障同样的力气。", "sp": null, "gap": false, "start": 83.112, "end": 87.984, "words": [[83.217, 83.283], [83.296, 83.73], [83.744, 83.941], [83.954, 84.309], [84.323, 84.494], [84.507, 84.823], [84.836, 85.23], [85.244, 85.336], [85.349, 85.691], [85.704, 86.217], [86.454, 86.599], [86.612, 86.665], [86.678, 87.125], [87.138, 87.599]]}, {"kind": "s", "id": "s1_2_3", "md": "If the author ==addresses== the risk in a way you would not have chosen, __let it go__.", "zh": "如果作者用一种你不会选的方式解决了这个风险，那就随它去吧。", "sp": null, "gap": false, "start": 87.984, "end": 92.472, "words": [[88.089, 88.194], [88.208, 88.313], [88.326, 88.695], [88.708, 89.181], [89.195, 89.287], [89.3, 89.668], [89.681, 89.826], [89.839, 89.905], [89.918, 90.195], [90.208, 90.313], [90.326, 90.471], [90.484, 90.681], [90.695, 90.813], [90.826, 91.313], [91.629, 91.721], [91.734, 91.813], [91.826, 92.089]]}, {"kind": "s", "id": "s1_3_0", "md": "Your job is to make the proposal safe, not to turn it into yours.", "zh": "你的任务是让提案变得安全，不是把它改成你的方案。", "sp": null, "gap": true, "start": 92.472, "end": 96.816, "words": [[92.577, 92.696], [92.709, 93.117], [93.196, 93.301], [93.314, 93.406], [93.419, 93.63], [93.643, 93.722], [93.735, 94.288], [94.301, 94.775], [95.09, 95.261], [95.275, 95.354], [95.367, 95.604], [95.617, 95.683], [95.696, 95.906], [95.919, 96.419]]}, {"kind": "s", "id": "s1_3_1", "md": "Authors remember the reviewers who __made their ideas stronger__, and they come back to them.", "zh": "作者会记住那些让他们的想法变得更强的评审人，下次还会去找他们。", "sp": null, "gap": false, "start": 96.816, "end": 101.904, "words": [[96.921, 97.303], [97.316, 97.75], [97.763, 97.856], [97.869, 98.487], [98.5, 98.605], [98.619, 98.908], [98.921, 99.079], [99.092, 99.566], [99.579, 100.211], [100.54, 100.592], [100.605, 100.711], [100.724, 100.895], [100.908, 101.184], [101.198, 101.29], [101.303, 101.5]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

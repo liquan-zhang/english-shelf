@@ -1,0 +1,191 @@
+{
+  "id": "047",
+  "title": "Writing a Request That Gets a Reply",
+  "meta": "B2 · 约 260 词 · 场景：书面求助",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Why Good Requests Get Ignored",
+      "paragraphs": [
+        [
+          "You send a careful message to another team.",
+          "It explains the history, the ==architecture==, and the problem in four long paragraphs.",
+          "A week later, there is still no reply."
+        ],
+        [
+          "The reader was not rude; they were busy.",
+          "They opened your message between two meetings, could not ==locate== the question, and decided to __come back to it later__.",
+          "Later never came.",
+          "**If the reader has to work to find your ask, you have already lost them.**"
+        ],
+        [
+          "A message that gets a reply is not more polite or more detailed.",
+          "It is easier to answer.",
+          "Your goal is to make replying take less than two minutes, ==ideally== from a phone, while __standing in line for coffee__."
+        ]
+      ],
+      "heading_zh": "1. 好请求为什么会被无视",
+      "paragraphs_zh": [
+        [
+          "你给另一个团队发了一条很用心的消息。",
+          "用四大段把历史背景、架构和问题都讲了一遍。",
+          "一周过去了，还是没人回。"
+        ],
+        [
+          "对方不是没礼貌，是太忙了。",
+          "他在两个会中间打开了你的消息，没找到问题在哪儿，就决定待会儿再说。",
+          "然后就没有然后了。",
+          "如果读的人得费劲才能找到你要什么，你就已经失去他了。"
+        ],
+        [
+          "能得到回复的消息，并不是更客气或者更详细。",
+          "而是更容易回答。",
+          "你的目标是让对方两分钟内就能回复，最好是排队买咖啡的时候拿手机就能回。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Four Habits of Requests That Work",
+      "paragraphs": [
+        [
+          "Put the ask in the first line.",
+          "\"Could you approve read access to the orders table by Thursday?\" tells the reader everything they need to decide.",
+          "Context can follow, for anyone who wants it."
+        ],
+        [
+          "Make the question easy to answer.",
+          "Yes or no questions get faster replies than open ones.",
+          "Instead of \"What do you think?\", try \"Is option A okay, or would you prefer B?\""
+        ],
+        [
+          "Include a reason for the ==deadline==.",
+          "\"By Thursday\" sounds ==arbitrary==; \"by Thursday, because the audit starts on Friday\" sounds real.",
+          "A ==genuine== reason __creates urgency__ without pressure."
+        ],
+        [
+          "Finally, keep one request per message, and __address it to__ one named person.",
+          "When a question goes to a whole channel, everyone assumes someone else will answer.",
+          "**A request with a clear owner and a clear deadline is hard to ignore.**",
+          "If you still hear nothing, a short, friendly ==follow-up== after two days is ==perfectly== normal."
+        ]
+      ],
+      "heading_zh": "2. 有效请求的四个习惯",
+      "paragraphs_zh": [
+        [
+          "第一行就写出你要什么。",
+          "「能在周四前帮忙开一下订单表的读权限吗？」这一句就给了对方做决定所需的全部信息。",
+          "背景放在后面，谁想看谁看。"
+        ],
+        [
+          "让问题好回答。",
+          "是非题比开放题回得更快。",
+          "别问「你怎么看？」，换成「方案 A 可以吗，还是你更倾向 B？」"
+        ],
+        [
+          "给 deadline 附上理由。",
+          "「周四前」听起来很随意；「周四前，因为周五审计就开始了」听起来才是真的。",
+          "一个真实的理由能制造紧迫感，又不会让人有压力。"
+        ],
+        [
+          "最后，一条消息只提一个请求，并且点名发给一个具体的人。",
+          "问题一发到整个群里，每个人都以为别人会回。",
+          "有明确负责人、有明确 deadline 的请求，很难被忽视。",
+          "如果还是没回音，两天后发一条简短友好的跟进，完全正常。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为长篇详细的求助为什么没人回？",
+      "a": "读者很忙，在两个会之间打开消息找不到问题，就想稍后再看，结果再也没回来。"
+    },
+    {
+      "q": "一条好的求助消息的目标是什么？",
+      "a": "让对方两分钟内就能回复，最好排队买咖啡时用手机就能答。"
+    },
+    {
+      "q": "有效求助的四个习惯是什么？",
+      "a": "第一行就写请求；问题好回答（是非题或二选一）；给截止时间附上真实理由；一条消息一个请求、发给一个具体的人，没回两天后友好跟进。"
+    }
+  ],
+  "dictation": [
+    "If the reader has to work to find your ask, you have already lost them.",
+    "Yes or no questions get faster replies than open ones.",
+    "When a question goes to a whole channel, everyone assumes someone else will answer.",
+    "A request with a clear owner and a clear deadline is hard to ignore."
+  ],
+  "shadow": {
+    "text": "The reader was not rude; they were busy. They opened your message between two meetings, could not locate the question, and decided to come back to it later. Later never came.",
+    "marked": "The reader was <b>not</b> rude; / they were <b>busy</b>. //<br>They opened your message / <b>between</b> two meetings, / could <b>not</b> locate the question, / and decided to come back to it <b>later</b>. //<br><b>Later</b> / <b>never</b> came. //"
+  },
+  "prompts": [
+    {
+      "q": "你需要安全团队批准一个外部接口的白名单申请。口头练习：用 30 秒说出你会在消息里怎么写，第一句就是请求，带截止时间和理由，让对方容易回答。",
+      "ref": "Hi Priya, could you approve our request to allow traffic from the new partner API by Wednesday? We need it before the integration test on Thursday morning. The details are in the ticket I've linked, including the IP range and the data we'll send. If it helps, it's the same setup you approved for the shipping partner last month. Is Wednesday realistic for you?",
+      "ref_zh": "Priya 你好，能不能在周三前帮忙批一下放行新合作方 API 流量的申请？我们周四上午要做联调测试，在那之前需要搞定。详细信息都在我附的工单里，包括 IP 段和我们要发送的数据。顺便说一下，这跟你上个月给物流合作方批的配置是一样的。周三对你来说现实吗？"
+    },
+    {
+      "q": "你两天前发的求助没人回。用 30 秒说一条友好的跟进消息，不带责怪。",
+      "ref": "Hi Tom, just bringing this back to the top of your inbox, since I know things get buried. We still need a yes or no on extending the test environment until Friday. If you're not the right person for this, could you point me to whoever is? Either answer is fine; we just need to plan the release around it. Thanks a lot.",
+      "ref_zh": "Tom 你好，把这条再顶一下，我知道消息很容易被淹掉。测试环境能不能延长到周五，我们还需要一个明确的答复。如果这事不归你管，能帮我指一下该找谁吗？行或不行都可以，我们只是需要据此安排发布。多谢。"
+    }
+  ],
+  "words": [
+    {
+      "w": "deadline",
+      "ipa": "/ˈdedlaɪn/",
+      "zh": "截止时间",
+      "ex": "The deadline is Thursday because the audit starts Friday."
+    },
+    {
+      "w": "arbitrary",
+      "ipa": "/ˈɑːrbɪtreri/",
+      "zh": "随意的、武断的",
+      "ex": "The cutoff looks arbitrary unless we explain the reason."
+    },
+    {
+      "w": "genuine",
+      "ipa": "/ˈdʒenjuɪn/",
+      "zh": "真实的、真诚的",
+      "ex": "There's a genuine risk of data loss if we skip the backup."
+    },
+    {
+      "w": "follow-up",
+      "ipa": "/ˈfɑːloʊ ʌp/",
+      "zh": "跟进（消息）",
+      "ex": "I'll send a follow-up if we don't hear back by Monday."
+    },
+    {
+      "w": "perfectly",
+      "ipa": "/ˈpɜːrfɪktli/",
+      "zh": "完全地",
+      "ex": "It's perfectly fine to ask for more time on the review."
+    },
+    {
+      "w": "urgency",
+      "ipa": "/ˈɜːrdʒənsi/",
+      "zh": "紧迫感",
+      "ex": "The outage gave the security fix a new sense of urgency."
+    },
+    {
+      "w": "architecture",
+      "ipa": "/ˈɑːrkɪtektʃər/",
+      "zh": "架构",
+      "ex": "Skip the architecture overview and start with the question."
+    },
+    {
+      "w": "locate",
+      "ipa": "/ˈloʊkeɪt/",
+      "zh": "找到、定位",
+      "ex": "It took us an hour to locate the config that caused the outage."
+    },
+    {
+      "w": "ideally",
+      "ipa": "/aɪˈdiːəli/",
+      "zh": "理想情况下",
+      "ex": "Ideally, we'd have the fix reviewed before the weekend."
+    }
+  ]
+}

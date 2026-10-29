@@ -1,0 +1,190 @@
+{
+  "id": "056",
+  "title": "Coaching with Questions",
+  "meta": "B2 · 约 290 词 · 场景：辅导下属",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Answer Trap",
+      "paragraphs": [
+        [
+          "A junior engineer comes to your desk with a slow query.",
+          "You can see the missing index in about ten seconds, so you tell her, and she fixes it.",
+          "It feels efficient, and for today, it is."
+        ],
+        [
+          "But notice what she learned.",
+          "She learned that when something is hard, the fastest path is to ask you.",
+          "Next week she will come back with a ==similar== problem, and the week after that too.",
+          "**Every answer you give for free is a problem you will be asked to solve again.**"
+        ],
+        [
+          "Coaching with questions feels slower at first.",
+          "It __takes patience__ to watch someone struggle with a problem you could solve instantly.",
+          "Yet it builds the one thing an answer cannot: the ==ability== to find the next answer without you, which is the whole ==purpose== of coaching."
+        ]
+      ],
+      "heading_zh": "1. 直接给答案的陷阱",
+      "paragraphs_zh": [
+        [
+          "一位初级工程师拿着一条慢查询来找你。",
+          "你大概十秒钟就看出缺了个索引，于是告诉她，她修好了。",
+          "感觉很高效，就今天来说，也确实是。"
+        ],
+        [
+          "但留意一下她学到了什么。",
+          "她学到的是：遇到难题，最快的路就是来问你。",
+          "下周她会带着类似的问题回来，再下周也一样。",
+          "你白给出去的每一个答案，都是一个你以后还会被要求再解决一遍的问题。"
+        ],
+        [
+          "用提问来辅导，一开始会感觉更慢。",
+          "看着一个人在你瞬间就能解决的问题上挣扎，是需要耐心的。",
+          "但它能培养出一样答案给不了的东西：不靠你也能找到下一个答案的能力，而这正是辅导的全部意义。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Questions That Do the Teaching",
+      "paragraphs": [
+        [
+          "Start with \"What have you tried so far?\"",
+          "It shows respect for her effort and tells you where her thinking stopped.",
+          "Often, simply explaining the problem out loud helps her __spot the issue__ herself."
+        ],
+        [
+          "Then ask questions that point the way without ==spoiling== the answer.",
+          "\"What does the query plan say?\" or \"Which part of the request takes the longest?\"",
+          "Each question narrows the search, but she still makes the ==discovery==."
+        ],
+        [
+          "A powerful one for stuck moments is \"If I weren't here, what would you try next?\"",
+          "People usually have an idea; they just want permission to try it.",
+          "**Your job is to make thinking out loud feel safe, not to grade the answer.**"
+        ],
+        [
+          "Know when to stop, though.",
+          "During an outage, or when she is clearly ==exhausted==, just give the answer and __debrief later__.",
+          "Coaching is an ==investment==, and you make investments when there is time, not in the middle of a fire."
+        ]
+      ],
+      "heading_zh": "2. 用问题来教",
+      "paragraphs_zh": [
+        [
+          "从「你目前都试过什么了？」开始。",
+          "这表示你尊重她的努力，也能让你知道她的思路卡在哪儿。",
+          "很多时候，光是把问题大声讲出来，她自己就能发现问题所在。"
+        ],
+        [
+          "然后，问一些能指方向、但不剧透答案的问题。",
+          "「执行计划怎么说？」或者「请求里哪一部分耗时最长？」",
+          "每个问题都在缩小排查范围，但发现还是由她自己来完成。"
+        ],
+        [
+          "卡住的时候，有个特别管用的问题：「如果我不在，你下一步会试什么？」",
+          "人们通常是有想法的；他们只是想得到允许去试。",
+          "你的工作是让大声思考变得安全，而不是给答案打分。"
+        ],
+        [
+          "不过，要知道什么时候该停。",
+          "线上故障的时候，或者她明显已经累坏了，就直接给答案，事后再复盘。",
+          "辅导是一种投资，投资要在有时间的时候做，而不是在救火的时候。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "直接给答案有什么隐藏的问题？",
+      "a": "对方学到的是遇到难题最快的办法就是问你，下周还会带着类似问题回来；每个白给的答案都是你要再解决一次的问题。"
+    },
+    {
+      "q": "作者推荐了哪些辅导问题？",
+      "a": "你已经试过什么；引导而不揭晓答案的问题（查询计划怎么说、哪部分最慢）；如果我不在，你下一步会试什么。"
+    },
+    {
+      "q": "什么时候不该用提问式辅导？",
+      "a": "线上事故时或对方明显精疲力竭时，直接给答案，事后再复盘；辅导是投资，要在有时间时做。"
+    }
+  ],
+  "dictation": [
+    "Every answer you give for free is a problem you will be asked to solve again.",
+    "It shows respect for her effort and tells you where her thinking stopped.",
+    "People usually have an idea; they just want permission to try it.",
+    "Your job is to make thinking out loud feel safe, not to grade the answer."
+  ],
+  "shadow": {
+    "text": "A powerful one for stuck moments is \"If I weren't here, what would you try next?\" People usually have an idea; they just want permission to try it.",
+    "marked": "A <b>powerful</b> one for <b>stuck</b> moments is / \"If I <b>weren't</b> here, / what would <b>you</b> try next?\" //<br>People <b>usually</b> have an idea; / they just want <b>permission</b> / to <b>try</b> it. //"
+  },
+  "prompts": [
+    {
+      "q": "一位新人来问你：服务的 P99 延迟突然升高，该怎么查？你知道大概原因，但想让他自己找到。用 30 秒用提问引导他。",
+      "ref": "Good catch noticing that. Before I jump in, what have you looked at so far? Okay, so the average looks normal and only the tail is high. What does that usually tell you? Which requests are in that slow tail, and do they have anything in common? Take a look at the traces for ten of them and tell me what you see.",
+      "ref_zh": "发现得好。在我插手之前，你目前都看了些什么？好，所以平均值看着正常，只有长尾高。这通常说明什么？慢的长尾里都是哪些请求，它们有什么共同点吗？挑十个看看它们的 trace，然后告诉我你看到了什么。"
+    },
+    {
+      "q": "下属卡住了，问你该选方案 A 还是方案 B。你想让他自己做决定。用 30 秒回应。",
+      "ref": "I have an opinion, but I'd rather hear yours first. If I weren't around this week, which one would you pick, and why? Tell me what you'd be giving up with that choice. If your reasoning holds up, go with it, and I'll back you in the review. If we see a gap, we'll talk it through together.",
+      "ref_zh": "我有我的看法，但我更想先听听你的。如果这周我不在，你会选哪一个，为什么？说说选了它你会放弃什么。如果你的理由站得住，就按你的来，评审的时候我会支持你。如果我们发现有漏洞，就一起讨论。"
+    }
+  ],
+  "words": [
+    {
+      "w": "similar",
+      "ipa": "/ˈsɪmələr/",
+      "zh": "类似的",
+      "ex": "We had a similar timeout issue on the order service last month."
+    },
+    {
+      "w": "ability",
+      "ipa": "/əˈbɪləti/",
+      "zh": "能力",
+      "ex": "The goal is the ability to debug production issues alone."
+    },
+    {
+      "w": "purpose",
+      "ipa": "/ˈpɜːrpəs/",
+      "zh": "目的",
+      "ex": "The purpose of this review is learning, not blame."
+    },
+    {
+      "w": "spoil",
+      "ipa": "/spɔɪl/",
+      "zh": "剧透、破坏",
+      "ex": "I don't want to spoil it; check the slow query log first."
+    },
+    {
+      "w": "discovery",
+      "ipa": "/dɪˈskʌvəri/",
+      "zh": "发现",
+      "ex": "His discovery of the memory leak saved the release."
+    },
+    {
+      "w": "exhausted",
+      "ipa": "/ɪɡˈzɔːstɪd/",
+      "zh": "精疲力竭的",
+      "ex": "After a twelve-hour incident, the whole team was exhausted.",
+      "tts": "After a twelve hour incident, the whole team was exhausted."
+    },
+    {
+      "w": "investment",
+      "ipa": "/ɪnˈvestmənt/",
+      "zh": "投资",
+      "ex": "Writing good tests is an investment that pays off every release."
+    },
+    {
+      "w": "permission",
+      "ipa": "/pərˈmɪʃən/",
+      "zh": "许可",
+      "ex": "You don't need my permission to roll back a bad deploy."
+    },
+    {
+      "w": "debrief",
+      "ipa": "/ˌdiːˈbriːf/",
+      "zh": "事后复盘",
+      "ex": "Let's debrief tomorrow once the incident is closed."
+    }
+  ]
+}

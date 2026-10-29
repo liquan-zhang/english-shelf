@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Coffee Chats with People Outside Your Team · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "085", "title": "Coffee Chats with People Outside Your Team", "meta": "B2 · 约 270 词 · 场景：跨组咖啡聊天", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Why Bother Leaving Your Team", "heading_zh": "1. 为什么要走出自己的团队", "rows": [[{"id": "s0_0_0", "md": "When you are busy, coffee with someone from another team can feel like a ==luxury==.", "text": "When you are busy, coffee with someone from another team can feel like a luxury.", "zh": "忙起来的时候，跟别的团队的人喝杯咖啡，感觉像是一种奢侈。", "sp": null}, {"id": "s0_0_1", "md": "Your own roadmap is full, and their work seems ==unrelated==.", "text": "Your own roadmap is full, and their work seems unrelated.", "zh": "自己的 roadmap 排得满满的，他们的工作看着也不相干。", "sp": null}], [{"id": "s0_1_0", "md": "But most problems in a large company sit between teams, not inside them.", "text": "But most problems in a large company sit between teams, not inside them.", "zh": "但在大公司里，大多数问题都卡在团队之间，而不是团队内部。", "sp": null}, {"id": "s0_1_1", "md": "The person who already knows the data lead, the legal reviewer, or the platform owner can solve in one message what takes others a week.", "text": "The person who already knows the data lead, the legal reviewer, or the platform owner can solve in one message what takes others a week.", "zh": "一个本来就认识数据负责人、法务审核或者平台 owner 的人，一条消息就能搞定别人要折腾一周的事。", "sp": null}, {"id": "s0_1_2", "md": "**Your network is not who you know; it is who will reply when you need help.**", "text": "Your network is not who you know; it is who will reply when you need help.", "zh": "你的人脉不是你认识谁；而是你需要帮忙的时候，谁会回你消息。", "sp": null}], [{"id": "s0_2_0", "md": "Those relationships are much easier to build before you need them.", "text": "Those relationships are much easier to build before you need them.", "zh": "这种关系，在你用得上之前建立要容易得多。", "sp": null}, {"id": "s0_2_1", "md": "Asking a stranger for a favor in the middle of an ==outage== feels uncomfortable.", "text": "Asking a stranger for a favor in the middle of an outage feels uncomfortable.", "zh": "线上事故处理到一半去找陌生人帮忙，会很别扭。", "sp": null}, {"id": "s0_2_2", "md": "Asking someone you had coffee with last month feels normal.", "text": "Asking someone you had coffee with last month feels normal.", "zh": "去找上个月一起喝过咖啡的人，就很自然。", "sp": null}]]}, {"heading": "2. Making Thirty Minutes Count", "heading_zh": "2. 让三十分钟物有所值", "rows": [[{"id": "s1_0_0", "md": "Go with a light reason, not a hidden ==agenda==.", "text": "Go with a light reason, not a hidden agenda.", "zh": "带一个轻松的理由去，别藏着别的目的。", "sp": null}, {"id": "s1_0_1", "md": "\"I saw your team launched the new search feature, and I'd love to hear how you approached it\" is an easy message to __say yes to__.", "text": "\"I saw your team launched the new search feature, and I'd love to hear how you approached it\" is an easy message to say yes to.", "zh": "「看到你们团队上线了新的搜索功能，很想听听你们是怎么做的」，这种消息对方很容易答应。", "sp": null}], [{"id": "s1_1_0", "md": "During the chat, __lean on__ three kinds of questions.", "text": "During the chat, lean on three kinds of questions.", "zh": "聊的时候，靠三类问题撑着。", "sp": null}, {"id": "s1_1_1", "md": "Ask about their work: \"What's taking up most of your time this quarter?\"", "text": "Ask about their work: \"What's taking up most of your time this quarter?\"", "zh": "问他们的工作：「这个季度你主要在忙什么？」", "sp": null}, {"id": "s1_1_2", "md": "Ask about their path: \"How did you end up on this team?\"", "text": "Ask about their path: \"How did you end up on this team?\"", "zh": "问他们的经历：「你是怎么来到这个团队的？」", "sp": null}, {"id": "s1_1_3", "md": "Ask about their view: \"What do people outside your team usually get wrong about it?\"", "text": "Ask about their view: \"What do people outside your team usually get wrong about it?\"", "zh": "问他们的看法：「外面的人对你们团队最常见的误解是什么？」", "sp": null}], [{"id": "s1_2_0", "md": "**The best coffee chats are two-way, so come ready to give something back.**", "text": "The best coffee chats are two-way, so come ready to give something back.", "zh": "最好的咖啡聊天是双向的，所以要准备好回馈点什么。", "sp": null}, {"id": "s1_2_1", "md": "Share a lesson from your own project, offer an introduction, or __send over__ a useful document afterward.", "text": "Share a lesson from your own project, offer an introduction, or send over a useful document afterward.", "zh": "分享一条自己项目里的经验，主动帮忙引荐，或者事后发一份有用的文档过去。", "sp": null}, {"id": "s1_2_2", "md": "That ==reciprocity== is what turns one chat into a lasting ==connection==.", "text": "That reciprocity is what turns one chat into a lasting connection.", "zh": "正是这种有来有往，让一次聊天变成长久的联系。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, keep it short and __follow through__.", "text": "Finally, keep it short and follow through.", "zh": "最后，聊得短一点，事后要跟进。", "sp": null}, {"id": "s1_3_1", "md": "A one-line message the next day, like \"Thanks again, that tip about the review process saved me hours,\" makes the next coffee much easier to ==arrange==.", "text": "A one-line message the next day, like \"Thanks again, that tip about the review process saved me hours,\" makes the next coffee much easier to arrange.", "zh": "第二天发一句话，比如「再次感谢，你说的评审流程那个技巧帮我省了好几个小时」，下次再约咖啡就容易多了。", "sp": null}]]}], "gist": [{"q": "作者为什么认为值得和组外的人喝咖啡？", "a": "大公司的问题多出在团队之间；认识对口的人能一条消息解决别人一周的事，而关系要在需要之前建立。"}, {"q": "聊天时可以问哪三类问题？", "a": "问对方的工作（这季度最占时间的是什么）、经历（怎么来到这个组）、看法（组外的人常误解什么）。"}, {"q": "怎样让一次聊天变成长期关系？", "a": "双向交流，主动回馈（分享经验、引荐、发资料）；第二天发一句具体的感谢，下次更好约。"}], "dictation": [{"id": "s0_1_2", "text": "Your network is not who you know; it is who will reply when you need help."}, {"id": "s0_2_0", "text": "Those relationships are much easier to build before you need them."}, {"id": "s1_2_0", "text": "The best coffee chats are two-way, so come ready to give something back."}, {"id": "s1_2_2", "text": "That reciprocity is what turns one chat into a lasting connection."}], "shadow": {"text": "The best coffee chats are two-way, so come ready to give something back. Share a lesson from your own project, offer an introduction, or send over a useful document afterward. That reciprocity is what turns one chat into a lasting connection.", "marked": "<b>The best</b> coffee chats are <b>two-way</b>, / so come ready to <b>give</b> something <b>back</b>. //<br>Share a <b>lesson</b> from your own project, / offer an <b>introduction</b>, / or send over a useful <b>document</b> afterward. //<br>That <b>reciprocity</b> / is what turns <b>one</b> chat / into a <b>lasting</b> connection. //"}, "prompts": [{"q": "你在电梯里碰到另一个部门做推荐实验的 TL，你们不认识。用一个轻理由在 30 秒内约他喝咖啡。", "ref": "Hi, sorry to jump in, I lead the media processing team on the third floor. I saw your talk on ranking experiments last month and really liked the part about small samples. Would you be up for a quick coffee sometime next week? I'd love to hear how your team decides which experiments to stop early.", "ref_zh": "你好，不好意思冒昧打扰，我是三楼媒体处理团队的负责人。上个月听了你讲排序实验的分享，特别喜欢讲小样本的那部分。下周找个时间一起喝杯咖啡怎么样？很想听听你们团队是怎么决定哪些实验提前停掉的。", "id": "ref0"}, {"q": "咖啡聊天快结束了，对方给了你很多帮助。用 30 秒表示感谢、回馈一点东西，并约下次。", "ref": "This was really helpful, thank you. The point about getting legal involved early is something I'll take straight back to my team. By the way, you mentioned you're struggling with video transcoding costs. One of my engineers did a deep dive on that last quarter. Want me to introduce you? And let's do this again next month.", "ref_zh": "这次真的很有帮助，谢谢。你说的让法务早点介入，我回去马上就跟团队讲。对了，你提到视频转码成本让你们挺头疼。我们组有个工程师上个季度专门深挖过这块。要不要我给你们牵个线？我们下个月再约一次。", "id": "ref1"}], "words": [{"w": "luxury", "ipa": "/ˈlʌkʃəri/", "zh": "奢侈、难得的享受", "ex": "Long design reviews are a luxury we can't afford this quarter.", "id": "w0"}, {"w": "unrelated", "ipa": "/ˌʌnrɪˈleɪtɪd/", "zh": "无关的", "ex": "The crash looked unrelated to our change, but we checked anyway.", "id": "w1"}, {"w": "outage", "ipa": "/ˈaʊtɪdʒ/", "zh": "（服务）中断、故障", "ex": "The outage lasted forty minutes and affected two regions.", "id": "w2"}, {"w": "agenda", "ipa": "/əˈdʒendə/", "zh": "议程；（隐藏的）目的", "ex": "I don't have a hidden agenda, I just want to understand your roadmap.", "id": "w3"}, {"w": "reciprocity", "ipa": "/ˌresɪˈprɑːsəti/", "zh": "互惠、礼尚往来", "ex": "Good partnerships between teams run on reciprocity.", "id": "w4"}, {"w": "connection", "ipa": "/kəˈnekʃən/", "zh": "联系、人脉", "ex": "She has a strong connection with the infra team, so ask her first.", "id": "w5"}, {"w": "arrange", "ipa": "/əˈreɪndʒ/", "zh": "安排", "ex": "Could you arrange a call with their tech lead next week?", "id": "w6"}, {"w": "follow through", "ipa": "/ˈfɑːloʊ θruː/", "zh": "说到做到、跟进到底", "ex": "He always follows through on what he promises in meetings.", "id": "w7"}, {"w": "lean on", "ipa": "/liːn ɑːn/", "zh": "依靠、借助", "ex": "When the topic gets technical, I lean on our staff engineer.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Why Bother Leaving Your Team", "zh": "1. 为什么要走出自己的团队", "start": 0.0, "end": 2.52, "words": [[0.105, 0.395], [0.737, 0.947], [0.961, 1.382], [1.395, 1.658], [1.671, 1.789], [1.803, 2.132]]}, {"kind": "s", "id": "s0_0_0", "md": "When you are busy, coffee with someone from another team can feel like a ==luxury==.", "zh": "忙起来的时候，跟别的团队的人喝杯咖啡，感觉像是一种奢侈。", "sp": null, "gap": false, "start": 2.52, "end": 7.392, "words": [[2.625, 2.731], [2.744, 2.862], [2.875, 3.007], [3.02, 3.494], [3.77, 4.191], [4.204, 4.362], [4.375, 4.678], [4.691, 4.849], [4.862, 5.204], [5.217, 5.599], [5.744, 5.888], [5.902, 6.231], [6.244, 6.388], [6.402, 6.441], [6.454, 6.994]]}, {"kind": "s", "id": "s0_0_1", "md": "Your own roadmap is full, and their work seems ==unrelated==.", "zh": "自己的 roadmap 排得满满的，他们的工作看着也不相干。", "sp": null, "gap": false, "start": 7.392, "end": 11.352, "words": [[7.51, 7.681], [7.695, 7.866], [7.879, 8.431], [8.51, 8.642], [8.655, 9.05], [9.458, 9.51], [9.524, 9.668], [9.681, 9.892], [9.905, 10.287], [10.3, 10.958]]}, {"kind": "s", "id": "s0_1_0", "md": "But most problems in a large company sit between teams, not inside them.", "zh": "但在大公司里，大多数问题都卡在团队之间，而不是团队内部。", "sp": null, "gap": true, "start": 11.352, "end": 16.128, "words": [[11.47, 11.589], [11.602, 11.878], [11.891, 12.418], [12.431, 12.51], [12.523, 12.576], [12.589, 13.01], [13.023, 13.431], [13.444, 13.707], [13.72, 14.089], [14.102, 14.668], [14.944, 15.128], [15.141, 15.562], [15.576, 15.747]]}, {"kind": "s", "id": "s0_1_1", "md": "The person who already knows the data lead, the legal reviewer, or the platform owner can solve in one message what takes others a week.", "zh": "一个本来就认识数据负责人、法务审核或者平台 owner 的人，一条消息就能搞定别人要折腾一周的事。", "sp": null, "gap": false, "start": 16.128, "end": 24.264, "words": [[16.246, 16.325], [16.339, 16.72], [16.733, 16.904], [16.917, 17.299], [17.312, 17.654], [17.667, 17.799], [17.812, 18.141], [18.154, 18.562], [18.839, 18.944], [18.957, 19.299], [19.312, 19.839], [20.233, 20.286], [20.299, 20.391], [20.404, 20.904], [20.917, 21.194], [21.207, 21.352], [21.365, 21.773], [21.786, 21.931], [21.944, 22.167], [22.181, 22.628], [22.641, 22.799], [22.812, 23.102], [23.115, 23.378], [23.391, 23.444], [23.457, 23.878]]}, {"kind": "s", "id": "s0_1_2", "md": "**Your network is not who you know; it is who will reply when you need help.**", "zh": "你的人脉不是你认识谁；而是你需要帮忙的时候，谁会回你消息。", "sp": null, "gap": false, "start": 24.264, "end": 28.848, "words": [[24.369, 24.474], [24.488, 24.935], [25.08, 25.211], [25.225, 25.514], [25.527, 25.659], [25.672, 25.83], [25.843, 26.146], [26.567, 26.659], [26.672, 26.79], [26.803, 26.882], [26.896, 27.04], [27.053, 27.58], [27.593, 27.764], [27.777, 27.882], [27.896, 28.093], [28.106, 28.461]]}, {"kind": "s", "id": "s0_2_0", "md": "Those relationships are much easier to build before you need them.", "zh": "这种关系，在你用得上之前建立要容易得多。", "sp": null, "gap": true, "start": 28.848, "end": 32.64, "words": [[28.966, 29.151], [29.164, 29.901], [29.914, 30.072], [30.085, 30.427], [30.545, 30.966], [30.98, 31.085], [31.098, 31.361], [31.374, 31.703], [31.716, 31.822], [31.835, 32.058], [32.072, 32.256]]}, {"kind": "s", "id": "s0_2_1", "md": "Asking a stranger for a favor in the middle of an ==outage== feels uncomfortable.", "zh": "线上事故处理到一半去找陌生人帮忙，会很别扭。", "sp": null, "gap": false, "start": 32.64, "end": 37.104, "words": [[32.745, 33.127], [33.14, 33.179], [33.193, 33.719], [33.732, 33.903], [33.916, 33.956], [33.969, 34.403], [34.416, 34.535], [34.548, 34.614], [34.627, 34.956], [34.969, 35.035], [35.048, 35.153], [35.166, 35.587], [35.601, 35.916], [35.929, 36.719]]}, {"kind": "s", "id": "s0_2_2", "md": "Asking someone you had coffee with last month feels normal.", "zh": "去找上个月一起喝过咖啡的人，就很自然。", "sp": null, "gap": false, "start": 37.104, "end": 40.584, "words": [[37.209, 37.578], [37.591, 37.893], [37.907, 37.972], [37.986, 38.13], [38.143, 38.63], [38.643, 38.814], [38.828, 39.183], [39.196, 39.446], [39.459, 39.749], [39.762, 40.183]]}, {"kind": "h", "id": "h1", "md": "2. Making Thirty Minutes Count", "zh": "2. 让三十分钟物有所值", "start": 40.584, "end": 43.128, "words": [[40.702, 40.939], [41.268, 41.61], [41.623, 42.005], [42.018, 42.308], [42.321, 42.729]]}, {"kind": "s", "id": "s1_0_0", "md": "Go with a light reason, not a hidden ==agenda==.", "zh": "带一个轻松的理由去，别藏着别的目的。", "sp": null, "gap": false, "start": 43.128, "end": 46.104, "words": [[43.233, 43.352], [43.365, 43.496], [43.51, 43.549], [43.562, 43.917], [43.931, 44.299], [44.694, 44.852], [44.865, 44.891], [44.904, 45.181], [45.194, 45.707]]}, {"kind": "s", "id": "s1_0_1", "md": "\"I saw your team launched the new search feature, and I'd love to hear how you approached it\" is an easy message to __say yes to__.", "zh": "「看到你们团队上线了新的搜索功能，很想听听你们是怎么做的」，这种消息对方很容易答应。", "sp": null, "gap": false, "start": 46.104, "end": 53.328, "words": [[46.262, 46.288], [46.288, 46.512], [46.525, 46.683], [46.696, 46.986], [46.999, 47.341], [47.354, 47.433], [47.446, 47.67], [47.683, 47.986], [47.999, 48.433], [48.736, 48.801], [48.815, 48.933], [48.946, 49.183], [49.196, 49.288], [49.301, 49.512], [49.525, 49.67], [49.683, 49.854], [49.867, 50.328], [50.341, 50.472], [50.986, 51.104], [51.117, 51.209], [51.222, 51.525], [51.538, 51.959], [51.972, 52.051], [52.065, 52.301], [52.315, 52.657], [52.67, 52.933]]}, {"kind": "s", "id": "s1_1_0", "md": "During the chat, __lean on__ three kinds of questions.", "zh": "聊的时候，靠三类问题撑着。", "sp": null, "gap": true, "start": 53.328, "end": 56.856, "words": [[53.433, 53.644], [53.657, 53.736], [53.749, 54.157], [54.565, 54.762], [54.775, 54.96], [54.973, 55.381], [55.394, 55.683], [55.696, 55.762], [55.775, 56.473]]}, {"kind": "s", "id": "s1_1_1", "md": "Ask about their work: \"What's taking up most of your time this quarter?\"", "zh": "问他们的工作：「这个季度你主要在忙什么？」", "sp": null, "gap": false, "start": 56.856, "end": 60.816, "words": [[56.961, 57.159], [57.172, 57.395], [57.409, 57.567], [57.58, 57.909], [58.343, 58.54], [58.553, 58.895], [58.909, 59.001], [59.014, 59.343], [59.356, 59.409], [59.422, 59.527], [59.54, 59.817], [59.83, 59.988], [60.001, 60.409]]}, {"kind": "s", "id": "s1_1_2", "md": "Ask about their path: \"How did you end up on this team?\"", "zh": "问他们的经历：「你是怎么来到这个团队的？」", "sp": null, "gap": false, "start": 60.816, "end": 64.368, "words": [[60.921, 61.132], [61.145, 61.355], [61.369, 61.513], [61.527, 62.027], [62.54, 62.619], [62.632, 62.777], [62.79, 62.895], [62.908, 63.04], [63.053, 63.184], [63.198, 63.329], [63.342, 63.513], [63.527, 63.842]]}, {"kind": "s", "id": "s1_1_3", "md": "Ask about their view: \"What do people outside your team usually get wrong about it?\"", "zh": "问他们的看法：「外面的人对你们团队最常见的误解是什么？」", "sp": null, "gap": false, "start": 64.368, "end": 69.48, "words": [[64.473, 64.684], [64.697, 64.934], [64.947, 65.118], [65.131, 65.421], [65.934, 66.026], [66.039, 66.144], [66.157, 66.526], [66.539, 67.0], [67.013, 67.118], [67.131, 67.46], [67.736, 68.105], [68.118, 68.368], [68.381, 68.592], [68.605, 68.921], [68.934, 69.065]]}, {"kind": "s", "id": "s1_2_0", "md": "**The best coffee chats are two-way, so come ready to give something back.**", "zh": "最好的咖啡聊天是双向的，所以要准备好回馈点什么。", "sp": null, "gap": true, "start": 69.48, "end": 73.68, "words": [[69.598, 69.677], [69.691, 69.98], [69.993, 70.362], [70.375, 70.717], [70.73, 70.809], [70.822, 71.283], [71.677, 71.809], [71.822, 72.02], [72.033, 72.217], [72.23, 72.322], [72.335, 72.519], [72.533, 72.848], [72.862, 73.283]]}, {"kind": "s", "id": "s1_2_1", "md": "Share a lesson from your own project, offer an introduction, or __send over__ a useful document afterward.", "zh": "分享一条自己项目里的经验，主动帮忙引荐，或者事后发一份有用的文档过去。", "sp": null, "gap": false, "start": 73.68, "end": 79.992, "words": [[73.785, 74.022], [74.035, 74.088], [74.101, 74.483], [74.496, 74.654], [74.667, 74.825], [74.838, 74.969], [74.983, 75.535], [75.943, 76.233], [76.246, 76.312], [76.325, 76.996], [77.456, 77.522], [77.535, 77.785], [77.798, 78.035], [78.048, 78.088], [78.101, 78.575], [78.588, 79.062], [79.075, 79.601]]}, {"kind": "s", "id": "s1_2_2", "md": "That ==reciprocity== is what turns one chat into a lasting ==connection==.", "zh": "正是这种有来有往，让一次聊天变成长久的联系。", "sp": null, "gap": false, "start": 79.992, "end": 84.84, "words": [[80.097, 80.308], [80.321, 81.308], [81.492, 81.597], [81.61, 81.795], [81.808, 82.137], [82.15, 82.453], [82.466, 82.9], [83.005, 83.295], [83.308, 83.387], [83.4, 83.9], [83.913, 84.452]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, keep it short and __follow through__.", "zh": "最后，聊得短一点，事后要跟进。", "sp": null, "gap": true, "start": 84.84, "end": 87.792, "words": [[84.998, 85.432], [85.695, 85.893], [85.906, 85.972], [85.985, 86.38], [86.616, 86.695], [86.708, 87.051], [87.064, 87.406]]}, {"kind": "s", "id": "s1_3_1", "md": "A one-line message the next day, like \"Thanks again, that tip about the review process saved me hours,\" makes the next coffee much easier to ==arrange==.", "zh": "第二天发一句话，比如「再次感谢，你说的评审流程那个技巧帮我省了好几个小时」，下次再约咖啡就容易多了。", "sp": null, "gap": false, "start": 87.792, "end": 97.824, "words": [[87.897, 87.963], [87.976, 88.437], [88.45, 88.858], [88.871, 88.95], [88.963, 89.292], [89.305, 89.621], [89.858, 90.121], [90.318, 90.647], [90.66, 91.108], [91.424, 91.581], [91.595, 91.818], [91.831, 92.108], [92.121, 92.2], [92.213, 92.595], [92.608, 93.239], [93.253, 93.647], [93.66, 93.831], [93.845, 94.345], [94.66, 94.897], [94.91, 95.003], [95.016, 95.305], [95.318, 95.766], [95.779, 96.147], [96.266, 96.647], [96.66, 96.805], [96.818, 97.437]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

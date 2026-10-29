@@ -1,0 +1,233 @@
+{
+  "id": "145",
+  "type": "dialogue",
+  "title": "Inviting Friends Over for Dinner",
+  "meta": "B2 · 约 260 词 · 场景：请朋友来家里吃饭",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Friend",
+      "name_zh": "朋友",
+      "voice": "en-US-AvaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Making the Invitation",
+      "heading_zh": "1. 发出邀请",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "Hey Sarah, it's Lee. Have you got a minute?",
+          "zh": "嘿 Sarah，我是李。你现在方便说两句吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Sure, what's up?",
+          "zh": "当然，怎么了？"
+        },
+        {
+          "sp": "A",
+          "en": "**We'd love to have you and Tom over for dinner. Are you free next Saturday?**",
+          "zh": "我们想请你和 Tom 来家里吃饭。下周六有空吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Oh, that's so sweet! Saturday works, but could we make it a bit later, like seven thirty?",
+          "zh": "哇，太贴心了！周六可以，不过能不能稍微晚一点，比如七点半？"
+        },
+        {
+          "sp": "A",
+          "en": "Seven thirty is perfect. Is there anything you guys don't eat? Any ==dietary== restrictions?",
+          "zh": "七点半正好。你们有什么不吃的吗？有没有饮食上的忌口？"
+        },
+        {
+          "sp": "B",
+          "en": "Tom's ==vegetarian==, but he eats eggs and dairy. I'll eat anything.",
+          "zh": "Tom 吃素，不过蛋和奶制品可以吃。我什么都吃。"
+        },
+        {
+          "sp": "A",
+          "en": "Good to know. We're planning to do hotpot, so we can __make a separate__ vegetable ==broth== for him.",
+          "zh": "好的，记下了。我们打算吃火锅，可以给他单独做一锅素汤底。"
+        },
+        {
+          "sp": "B",
+          "en": "He'll love that. Can we bring anything? Wine, ==dessert==?",
+          "zh": "他肯定喜欢。我们带点什么吧？酒还是甜点？"
+        },
+        {
+          "sp": "A",
+          "en": "__You don't have to__, but a bottle of wine would be nice. __Just bring yourselves__.",
+          "zh": "不用特意带，不过带瓶酒也挺好。人来就行。"
+        },
+        {
+          "sp": "B",
+          "en": "Deal. Send me your address and I'll put it in my calendar.",
+          "zh": "说定了。把地址发我，我记到日历里。"
+        }
+      ]
+    },
+    {
+      "heading": "2. A Last-Minute Change",
+      "heading_zh": "2. 临时变化",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Hi Lee, sorry to call on the day. Our ==babysitter== just cancelled. Would it be okay if we brought Max?",
+          "zh": "嗨李，抱歉当天才打电话。我们的保姆临时取消了，可以带 Max 一起来吗？"
+        },
+        {
+          "sp": "A",
+          "en": "**Of course! The more the merrier. Our son will be thrilled to have a playmate.**",
+          "zh": "当然！人越多越热闹。我儿子有个玩伴会高兴坏的。"
+        },
+        {
+          "sp": "B",
+          "en": "Thank you. One thing, though. Max has a nut ==allergy==, and it's fairly serious.",
+          "zh": "谢谢。不过有一点，Max 对坚果过敏，还挺严重的。"
+        },
+        {
+          "sp": "A",
+          "en": "Thanks for telling me. I'll make sure nothing has peanuts in it. __What about__ sesame?",
+          "zh": "谢谢你告诉我。我保证所有东西都不放花生。那芝麻呢？"
+        },
+        {
+          "sp": "B",
+          "en": "Sesame is fine. Just no peanuts or other nuts, like cashews.",
+          "zh": "芝麻没问题。只要不放花生和其他坚果就行，比如腰果。"
+        },
+        {
+          "sp": "A",
+          "en": "Got it. I'll double-check the hotpot ==sauces==, since some of them have peanuts.",
+          "zh": "明白。我会再检查一下火锅蘸料，有些里面有花生。"
+        },
+        {
+          "sp": "B",
+          "en": "You're a star. Honestly, he'll be happy with rice and noodles.",
+          "zh": "你太好了。说实话，他有米饭和面条就很开心了。"
+        },
+        {
+          "sp": "A",
+          "en": "Also, ==visitor== parking is at the back of the ==block==. Just tell the guard you're visiting unit ten eleven.",
+          "zh": "另外，访客停车位在楼的后面。跟保安说你们去十楼十一号就行。"
+        },
+        {
+          "sp": "B",
+          "en": "Great. We might be ten minutes late with all the extra packing.",
+          "zh": "好的。多带个孩子要收拾东西，我们可能会晚十分钟。"
+        },
+        {
+          "sp": "A",
+          "en": "**No rush at all. Take your time, and drive safe.**",
+          "zh": "完全不急，慢慢来，开车注意安全。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "晚饭定在什么时候？朋友夫妇有什么饮食要求？",
+      "a": "下周六晚上七点半；Tom 吃素，但吃蛋和奶制品，Sarah 什么都吃。"
+    },
+    {
+      "q": "当天发生了什么变化？",
+      "a": "保姆临时取消，他们要带儿子 Max 一起来，而且 Max 对坚果过敏，比较严重。"
+    },
+    {
+      "q": "「你」为 Max 的过敏做了哪些安排？",
+      "a": "保证不放花生和其他坚果，并再检查火锅蘸料；芝麻可以吃。"
+    }
+  ],
+  "dictation": [
+    "We'd love to have you and Tom over for dinner. Are you free next Saturday?",
+    "You don't have to, but a bottle of wine would be nice. Just bring yourselves.",
+    "Of course! The more the merrier. Our son will be thrilled to have a playmate.",
+    "Got it. I'll double-check the hotpot sauces, since some of them have peanuts."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Good to know. We're planning to do hotpot, so we can make a separate vegetable broth for him.",
+    "marked": "Good to <b>know</b>. //<br>We're planning to do <b>hotpot</b>, / so we can make a <b>separate</b> vegetable broth / for <b>him</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你想请新同事一家周末来家里吃饭。发一条语音：说清时间、地点、问忌口，并说明孩子也欢迎来。",
+      "ref": "Hi Priya, it's Lee. We'd love to have you and your family over for lunch next Sunday, around twelve. We're in Tiong Bahru, and I'll send you the address. Please bring the kids too. Our son would love some company. Is there anything you don't eat? Just let me know, and we'll plan around it.",
+      "ref_zh": "嗨 Priya，我是李。下周日中午十二点左右想请你们一家来家里吃午饭。我们住在中峇鲁，地址我稍后发你。孩子一起带来吧，我儿子很想有人陪他玩。你们有什么不吃的吗？告诉我一声，我们照着安排。"
+    },
+    {
+      "q": "朋友到了才说自己最近在戒糖戒碳水，而你准备的是饺子和甜点。灵活应对，让对方不尴尬。",
+      "ref": "Oh, no worries at all. I'm glad you told me. We've got plenty of other things. There's a big salad, some grilled chicken, and steamed fish, so you won't go hungry. Just skip the dumplings and the cake. And next time, I'll know to plan a low carb menu for you.",
+      "ref_zh": "哦，完全没关系，你告诉我就好。我们还有很多别的菜，有一大份沙拉、烤鸡和清蒸鱼，你不会饿着的。饺子和蛋糕跳过就行。下次我就知道给你准备低碳水的菜了。"
+    }
+  ],
+  "words": [
+    {
+      "w": "dietary",
+      "ipa": "/ˈdaɪəteri/",
+      "zh": "饮食的",
+      "ex": "Please let us know about any dietary needs before the event."
+    },
+    {
+      "w": "vegetarian",
+      "ipa": "/ˌvedʒəˈteriən/",
+      "zh": "素食者；素食的",
+      "ex": "Is there a vegetarian option on the menu?"
+    },
+    {
+      "w": "broth",
+      "ipa": "/brɔːθ/",
+      "zh": "汤底，清汤",
+      "ex": "The chicken broth needs to simmer for an hour."
+    },
+    {
+      "w": "dessert",
+      "ipa": "/dɪˈzɜːrt/",
+      "zh": "甜点",
+      "ex": "Let's skip dessert and just get coffee."
+    },
+    {
+      "w": "babysitter",
+      "ipa": "/ˈbeɪbisɪtər/",
+      "zh": "临时保姆",
+      "ex": "We need a babysitter for Friday night."
+    },
+    {
+      "w": "allergy",
+      "ipa": "/ˈælərdʒi/",
+      "zh": "过敏",
+      "ex": "My son has an allergy to shellfish."
+    },
+    {
+      "w": "sauce",
+      "ipa": "/sɔːs/",
+      "zh": "酱料，蘸料",
+      "ex": "Could I have the chilli sauce on the side?"
+    },
+    {
+      "w": "visitor parking",
+      "ipa": "/ˈvɪzɪtər ˈpɑːrkɪŋ/",
+      "zh": "访客停车位",
+      "ex": "Visitor parking is free for the first hour."
+    },
+    {
+      "w": "block",
+      "ipa": "/blɑːk/",
+      "zh": "（组屋、公寓的）一栋楼",
+      "ex": "Our block is the one next to the playground."
+    },
+    {
+      "w": "the more the merrier",
+      "ipa": "/ðə mɔːr ðə ˈmeriər/",
+      "zh": "人越多越热闹",
+      "ex": "Bring your cousins along. The more the merrier!"
+    }
+  ]
+}

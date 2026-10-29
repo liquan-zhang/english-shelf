@@ -1,0 +1,242 @@
+{
+  "id": "105",
+  "type": "dialogue",
+  "title": "Renting a Car for the Weekend",
+  "meta": "B2 · 约 320 词 · 场景：租车保险、押金与还车验车",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Rental Agent",
+      "name_zh": "租车柜台",
+      "voice": "en-US-AvaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Picking Up the Car",
+      "heading_zh": "1. 取车",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Hi there, welcome to Drive Easy. Do you have a booking with us?",
+          "zh": "你好，欢迎来到 Drive Easy。您有预订吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Yes, I booked a ==compact== SUV for the weekend, under Lee. I'm returning it Sunday evening.",
+          "zh": "有，我订了一辆紧凑型 SUV，周末用，名字是 Lee。周日晚上还车。"
+        },
+        {
+          "sp": "B",
+          "en": "Got it. Can I see your driver's license and the card you booked with?",
+          "zh": "好的。能看一下您的驾照和预订用的那张卡吗？"
+        },
+        {
+          "sp": "A",
+          "en": "**Here you go. What exactly does the basic insurance cover?**",
+          "zh": "给你。基础保险具体保什么？"
+        },
+        {
+          "sp": "B",
+          "en": "It covers ==third-party== damage, but you'd still pay an ==excess== of two thousand dollars if our car gets damaged.",
+          "zh": "保第三方损失，但如果我们的车被撞了，您还是要自付两千块。"
+        },
+        {
+          "sp": "A",
+          "en": "Two thousand is quite a lot. How much would it cost to __reduce the excess__?",
+          "zh": "两千挺多的。要降低自付额得花多少钱？"
+        },
+        {
+          "sp": "B",
+          "en": "Our full cover is thirty dollars a day, and it brings the excess down to zero.",
+          "zh": "我们的全险是一天三十块，自付额降到零。"
+        },
+        {
+          "sp": "A",
+          "en": "Okay, __I'll go with__ the full cover. We'll also need a child seat for a three-year-old.",
+          "zh": "好，那我选全险。我们还需要一个三岁孩子用的儿童座椅。"
+        },
+        {
+          "sp": "B",
+          "en": "Sure, that's ten dollars a day. We'll also hold a ==deposit== of five hundred on your card.",
+          "zh": "好的，一天十块。另外我们会在您卡上冻结五百块押金。"
+        },
+        {
+          "sp": "A",
+          "en": "When will the deposit be released?",
+          "zh": "押金什么时候解冻？"
+        },
+        {
+          "sp": "B",
+          "en": "Usually within seven working days after you return the car.",
+          "zh": "一般还车后七个工作日内。"
+        },
+        {
+          "sp": "A",
+          "en": "**Before I drive off, could we walk around the car and note any existing scratches?**",
+          "zh": "开走之前，我们能绕车看一圈，把现有的刮痕记下来吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Absolutely. Let's take photos together so it's all on record.",
+          "zh": "当然。我们一起拍照，都记录在案。"
+        }
+      ]
+    },
+    {
+      "heading": "2. Returning the Car",
+      "heading_zh": "2. 还车",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Welcome back. Let me do a quick ==inspection==. Hmm, there's a scratch on the rear bumper.",
+          "zh": "欢迎回来。我快速检查一下。嗯，后保险杠上有一道刮痕。"
+        },
+        {
+          "sp": "A",
+          "en": "**That scratch was already there. We took a photo of it on Friday.**",
+          "zh": "那道刮痕本来就有。我们周五拍过照。"
+        },
+        {
+          "sp": "B",
+          "en": "Let me see. Oh yes, you're right, it's in our pickup notes too. Sorry about that.",
+          "zh": "我看看。哦对，您说得对，取车记录里也有。不好意思。"
+        },
+        {
+          "sp": "A",
+          "en": "No problem. Also, the tank is about three quarters full. Is that okay?",
+          "zh": "没事。另外油箱大概是四分之三满，可以吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Our policy is full to full, so there'll be a ==refueling== charge of about forty dollars.",
+          "zh": "我们的规定是满油取满油还，所以要收大概四十块的加油费。"
+        },
+        {
+          "sp": "A",
+          "en": "Forty dollars? Is there a petrol station nearby? I'd rather __fill it up__ myself.",
+          "zh": "四十块？附近有加油站吗？我宁愿自己去加满。"
+        },
+        {
+          "sp": "B",
+          "en": "There's one just around the corner. If you're back within twenty minutes, I'll ==waive== the charge.",
+          "zh": "拐角就有一个。二十分钟内回来的话，我就免了这笔费用。"
+        },
+        {
+          "sp": "A",
+          "en": "Great, I'll go now. And could you email me the final ==invoice== once it's __all settled__?",
+          "zh": "好，我现在就去。都结清以后，能把最终账单发到我邮箱吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Will do. You'll get it today, along with the deposit release confirmation.",
+          "zh": "没问题。今天就会发给您，连同押金解冻的确认。"
+        },
+        {
+          "sp": "A",
+          "en": "**Thanks for being so flexible about it.**",
+          "zh": "谢谢你这么通融。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "基础保险和全险有什么区别？「你」选了哪个？",
+      "a": "基础保险车损要自付两千块；全险每天三十块，自付额降到零。「你」选了全险。"
+    },
+    {
+      "q": "还车时发现刮痕，最后怎么解决的？",
+      "a": "那道刮痕取车时就有，「你」周五拍过照，取车记录里也有，所以不用赔。"
+    },
+    {
+      "q": "油没加满会怎样？「你」怎么做的？",
+      "a": "按满油取满油还，要收约四十块加油费；「你」决定自己去附近加油站加满，二十分钟内回来就免收。"
+    }
+  ],
+  "dictation": [
+    "Here you go. What exactly does the basic insurance cover?",
+    "Before I drive off, could we walk around the car and note any existing scratches?",
+    "That scratch was already there. We took a photo of it on Friday.",
+    "Forty dollars? Is there a petrol station nearby? I'd rather fill it up myself."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Before I drive off, could we walk around the car and note any existing scratches?",
+    "marked": "Before I <b>drive off</b>, //<br>could we <b>walk around</b> the car / and note any <b>existing</b> scratches? //"
+  },
+  "prompts": [
+    {
+      "q": "取车时发现车里有很重的烟味，而你带着孩子。礼貌地要求换一辆车，或者问清楚如果不换会不会算你的责任。",
+      "ref": "Sorry, before I take this one, I noticed the car smells quite strongly of smoke. I'm driving with my three-year-old, so I'd really prefer a different car. Do you have another compact SUV available? If not, could you note it on the form, so I'm not charged a cleaning fee when I bring it back?",
+      "ref_zh": "不好意思，开走之前想说一下，这车里烟味很重。我要带三岁的孩子，所以很希望能换一辆。还有别的紧凑型 SUV 吗？如果没有，能不能在单子上备注一下，免得还车时收我清洁费？"
+    },
+    {
+      "q": "周日路上堵车，你会晚两个小时还车。给租车公司打电话，说明情况，问会怎么收费。",
+      "ref": "Hi, this is Lee. I rented a compact SUV from you on Friday, and I'm supposed to return it at six tonight. We're stuck in heavy traffic, so I'll probably be about two hours late. Is that going to be a problem? I'd like to know how you charge for late returns, and whether it's cheaper to extend by a full day.",
+      "ref_zh": "你好，我是 Lee。我周五在你们这儿租了一辆紧凑型 SUV，本来今晚六点还车。我们堵在路上了，估计要晚两个小时左右。会有问题吗？想了解一下晚还车怎么收费，以及直接续租一整天是不是更划算。"
+    }
+  ],
+  "words": [
+    {
+      "w": "compact",
+      "ipa": "/ˈkɑːmpækt/",
+      "zh": "紧凑型的",
+      "ex": "We rented a compact car to save on petrol."
+    },
+    {
+      "w": "third-party",
+      "ipa": "/ˌθɜːrd ˈpɑːrti/",
+      "zh": "第三方的",
+      "ex": "Basic insurance only covers third-party damage."
+    },
+    {
+      "w": "excess",
+      "ipa": "/ˈekses/",
+      "zh": "（保险）自付额",
+      "ex": "The excess on this policy is one thousand dollars."
+    },
+    {
+      "w": "deposit",
+      "ipa": "/dɪˈpɑːzɪt/",
+      "zh": "押金",
+      "ex": "They held a deposit on my credit card."
+    },
+    {
+      "w": "inspection",
+      "ipa": "/ɪnˈspekʃən/",
+      "zh": "检查",
+      "ex": "The car passed the inspection with no problems."
+    },
+    {
+      "w": "refueling",
+      "ipa": "/ˌriːˈfjuːəlɪŋ/",
+      "zh": "加油",
+      "ex": "The refueling charge is much higher than the pump price."
+    },
+    {
+      "w": "fill up",
+      "ipa": "/fɪl ʌp/",
+      "zh": "加满",
+      "ex": "Let's fill up before we get on the highway."
+    },
+    {
+      "w": "waive",
+      "ipa": "/weɪv/",
+      "zh": "免除（费用）",
+      "ex": "The bank agreed to waive the late fee."
+    },
+    {
+      "w": "invoice",
+      "ipa": "/ˈɪnvɔɪs/",
+      "zh": "账单；发票",
+      "ex": "Could you send the invoice to my work email?"
+    }
+  ]
+}

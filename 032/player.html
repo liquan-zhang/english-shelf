@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Making Your Work Visible Without Bragging · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "032", "title": "Making Your Work Visible Without Bragging", "meta": "B2 · 约 270 词 · 场景：成果同步", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Quiet Work Is Invisible Work", "heading_zh": "1. 闷头干的活就是看不见的活", "rows": [[{"id": "s0_0_0", "md": "Many engineers believe that good work speaks for itself.", "text": "Many engineers believe that good work speaks for itself.", "zh": "很多工程师相信，好的工作自己会说话。", "sp": null}, {"id": "s0_0_1", "md": "In a large company, it usually doesn't.", "text": "In a large company, it usually doesn't.", "zh": "在大公司里，通常并不会。", "sp": null}, {"id": "s0_0_2", "md": "Your manager sees a ==fraction== of what you do, and their manager sees even less.", "text": "Your manager sees a fraction of what you do, and their manager sees even less.", "zh": "你的经理只看得到你做的一小部分，他的经理看到的就更少了。", "sp": null}], [{"id": "s0_1_0", "md": "The reason is not unfairness; it is ==bandwidth==.", "text": "The reason is not unfairness; it is bandwidth.", "zh": "原因不是不公平，而是精力有限。", "sp": null}, {"id": "s0_1_1", "md": "Leaders track dozens of projects, and the ones nobody talks about __fall off the radar__.", "text": "Leaders track dozens of projects, and the ones nobody talks about fall off the radar.", "zh": "领导同时盯着几十个项目，没人提起的那些就会从视野里消失。", "sp": null}, {"id": "s0_1_2", "md": "**If you don't tell the story of your work, someone else will tell a shorter version, or nobody will.**", "text": "If you don't tell the story of your work, someone else will tell a shorter version, or nobody will.", "zh": "如果你不讲自己工作的故事，别人就会讲一个缩水版，或者干脆没人讲。", "sp": null}], [{"id": "s0_2_0", "md": "Still, many people hold back because they are afraid of sounding ==arrogant==.", "text": "Still, many people hold back because they are afraid of sounding arrogant.", "zh": "可很多人还是不敢说，因为怕显得自大。", "sp": null}, {"id": "s0_2_1", "md": "That fear is reasonable.", "text": "That fear is reasonable.", "zh": "这种担心是合理的。", "sp": null}, {"id": "s0_2_2", "md": "Nobody enjoys the colleague who turns every update into a __victory lap__.", "text": "Nobody enjoys the colleague who turns every update into a victory lap.", "zh": "没人喜欢那种把每次汇报都变成庆功会的同事。", "sp": null}, {"id": "s0_2_3", "md": "The fix is to change how you share, not whether you share.", "text": "The fix is to change how you share, not whether you share.", "zh": "解决办法是改变分享的方式，而不是不分享。", "sp": null}]]}, {"heading": "2. Teach, Don't Boast", "heading_zh": "2. 分享经验，而不是炫耀", "rows": [[{"id": "s1_0_0", "md": "The trick is to share your work as information that helps other people.", "text": "The trick is to share your work as information that helps other people.", "zh": "诀窍在于，把你的工作当成对别人有帮助的信息来分享。", "sp": null}, {"id": "s1_0_1", "md": "Instead of \"I made the service faster,\" try \"We cut page load time by a third; here is what worked, in case your team has the same problem.\"", "text": "Instead of \"I made the service faster,\" try \"We cut page load time by a third; here is what worked, in case your team has the same problem.\"", "zh": "别说「我把服务优化快了」，试试说「我们把页面加载时间缩短了三分之一；这是有效的做法，万一你们团队也遇到同样的问题可以参考」。", "sp": null}, {"id": "s1_0_2", "md": "The second version is useful, so nobody hears it as bragging.", "text": "The second version is useful, so nobody hears it as bragging.", "zh": "第二种说法是有用的，所以没人会觉得你在炫耀。", "sp": null}], [{"id": "s1_1_0", "md": "Always __lead with the problem__, then the ==outcome==.", "text": "Always lead with the problem, then the outcome.", "zh": "永远先讲问题，再讲结果。", "sp": null}, {"id": "s1_1_1", "md": "\"Users were dropping off at checkout; after the fix, completion went up eight percent.\"", "text": "\"Users were dropping off at checkout; after the fix, completion went up eight percent.\"", "zh": "「用户在结账环节大量流失；修复之后，完成率提升了百分之八。」", "sp": null}, {"id": "s1_1_2", "md": "Numbers do the ==persuading== for you, so you don't need big adjectives.", "text": "Numbers do the persuading for you, so you don't need big adjectives.", "zh": "数字会替你说服别人，你根本用不着那些夸张的形容词。", "sp": null}], [{"id": "s1_2_0", "md": "Give credit generously and by name.", "text": "Give credit generously and by name.", "zh": "大方地把功劳分出去，而且要点名。", "sp": null}, {"id": "s1_2_1", "md": "Saying \"Mei found the root cause\" shows you as someone who ==elevates== the team, which is exactly what leaders look for.", "text": "Saying \"Mei found the root cause\" shows you as someone who elevates the team, which is exactly what leaders look for.", "zh": "说一句「是 Mei 找到了根因」，会让你显得是那种能成就团队的人，而这正是领导看重的。", "sp": null}, {"id": "s1_2_2", "md": "**Credit is not a fixed pie; sharing it usually makes your own slice bigger.**", "text": "Credit is not a fixed pie; sharing it usually makes your own slice bigger.", "zh": "功劳不是一块固定大小的饼；分出去，你自己那块通常反而更大。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, pick the right channel.", "text": "Finally, pick the right channel.", "zh": "最后，选对渠道。", "sp": null}, {"id": "s1_3_1", "md": "A short note in the team channel or a five-minute demo __goes further than__ a long email that nobody opens.", "text": "A short note in the team channel or a five-minute demo goes further than a long email that nobody opens.", "zh": "在团队群里发一条简短的消息，或者做一个五分钟的 demo，比一封没人打开的长邮件管用得多。", "sp": null}, {"id": "s1_3_2", "md": "People remember what they saw working.", "text": "People remember what they saw working.", "zh": "人们会记住自己亲眼看到跑起来的东西。", "sp": null}]]}], "gist": [{"q": "为什么在大公司里「好工作自己会说话」不成立？", "a": "领导的精力（带宽）有限，要跟几十个项目，没人提的项目就会掉出视野。"}, {"q": "怎样分享成果才不像自夸？", "a": "把成果当作对别人有用的信息来分享（讲做法、方便别的团队借鉴）；先讲问题再讲结果，用数字代替形容词。"}, {"q": "作者对「功劳」有什么看法？", "a": "功劳不是固定大小的饼，大方地点名感谢别人，反而让自己显得能成就团队，分到的更多。"}], "dictation": [{"id": "s0_1_2", "text": "If you don't tell the story of your work, someone else will tell a shorter version, or nobody will."}, {"id": "s1_2_2", "text": "Credit is not a fixed pie; sharing it usually makes your own slice bigger."}, {"id": "s0_0_2", "text": "Your manager sees a fraction of what you do, and their manager sees even less."}, {"id": "s1_1_2", "text": "Numbers do the persuading for you, so you don't need big adjectives."}], "shadow": {"text": "Give credit generously and by name. Saying \"Mei found the root cause\" shows you as someone who elevates the team, which is exactly what leaders look for. Credit is not a fixed pie; sharing it usually makes your own slice bigger.", "marked": "Give <b>credit</b> generously / and by <b>name</b>. //<br>Saying \"<b>Mei</b> found the root cause\" / shows you as someone who <b>elevates</b> the team, / which is <b>exactly</b> what leaders look for. //<br>Credit is <b>not</b> a fixed pie; / sharing it usually makes your <b>own</b> slice <b>bigger</b>. //"}, "prompts": [{"q": "你的团队把一个接口的 P99 延迟降了一半。在部门周会上用 30 秒分享，要讲问题、结果、做法，并点名感谢同事。", "ref": "Quick share from our team. Search results were slow for users with large histories, with P ninety-nine latency close to two seconds. Over the past month we cut that in half. Most of the gain came from one change: Arjun noticed we were loading the full history on every request, and moved it to a paginated query. If your service has a similar pattern, we're happy to walk you through it.", "ref_zh": "我们团队简单分享一下。之前历史记录多的用户搜索结果很慢，P99 延迟接近两秒。过去一个月我们把它砍掉了一半。大部分收益来自一个改动：Arjun 发现我们每次请求都在加载完整的历史记录，于是把它改成了分页查询。如果你们的服务也有类似的写法，我们很乐意带你们过一遍。", "id": "ref0"}, {"q": "你觉得自己做的基础设施工作没人看见。用 30 秒在一对一里跟经理提议一个让这类工作被看见的方式，不显得在邀功。", "ref": "I wanted to run an idea by you. A lot of our platform work is invisible when it goes well, like the build time improvements last quarter. Other teams benefit, but they don't know what changed or why. Would it make sense for me to do a short monthly demo for the product teams? It helps them use the tools better, and it keeps leadership aware of what the platform team delivers.", "ref_zh": "我有个想法想听听你的意见。我们很多平台工作做得好的时候反而看不见，比如上个季度的构建时间优化。其他团队是受益了，但他们不知道改了什么、为什么改。我每个月给产品团队做一个简短的 demo，你觉得有没有意义？这既能帮他们把工具用得更好，也能让管理层知道平台团队交付了什么。", "id": "ref1"}], "words": [{"w": "brag", "ipa": "/bræɡ/", "zh": "吹嘘、自夸", "ex": "Sharing the numbers isn't bragging if it helps other teams.", "id": "w0"}, {"w": "fraction", "ipa": "/ˈfrækʃən/", "zh": "一小部分", "ex": "We only tested a fraction of the edge cases.", "id": "w1"}, {"w": "bandwidth", "ipa": "/ˈbændwɪdθ/", "zh": "精力、余力", "ex": "I don't have the bandwidth to take on another project this sprint.", "id": "w2"}, {"w": "arrogant", "ipa": "/ˈærəɡənt/", "zh": "傲慢的", "ex": "I didn't want to sound arrogant, so I let the data speak.", "id": "w3"}, {"w": "outcome", "ipa": "/ˈaʊtkʌm/", "zh": "结果、成效", "ex": "Leadership cares about the outcome, not the number of tickets closed.", "id": "w4"}, {"w": "persuade", "ipa": "/pərˈsweɪd/", "zh": "说服", "ex": "The load test results persuaded the PM to delay the launch.", "tts": "The load test results persuaded the product manager to delay the launch.", "id": "w5"}, {"w": "elevate", "ipa": "/ˈelɪveɪt/", "zh": "提升、成就（他人）", "ex": "Good leads elevate the people around them.", "id": "w6"}, {"w": "generously", "ipa": "/ˈdʒenərəsli/", "zh": "慷慨地、大方地", "ex": "She credited the on-call team generously in the incident summary.", "id": "w7"}, {"w": "radar", "ipa": "/ˈreɪdɑːr/", "zh": "关注范围（雷达）", "ex": "Is the data migration on the director's radar yet?", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Quiet Work Is Invisible Work", "zh": "1. 闷头干的活就是看不见的活", "start": 0.0, "end": 3.144, "words": [[0.105, 0.408], [0.855, 1.224], [1.237, 1.553], [1.737, 1.855], [1.868, 2.382], [2.395, 2.763]]}, {"kind": "s", "id": "s0_0_0", "md": "Many engineers believe that good work speaks for itself.", "zh": "很多工程师相信，好的工作自己会说话。", "sp": null, "gap": false, "start": 3.144, "end": 6.696, "words": [[3.249, 3.512], [3.526, 4.012], [4.026, 4.447], [4.46, 4.657], [4.67, 4.907], [4.92, 5.144], [5.157, 5.578], [5.591, 5.736], [5.749, 6.302]]}, {"kind": "s", "id": "s0_0_1", "md": "In a large company, it usually doesn't.", "zh": "在大公司里，通常并不会。", "sp": null, "gap": false, "start": 6.696, "end": 9.504, "words": [[6.801, 6.88], [6.893, 6.959], [6.972, 7.367], [7.38, 7.867], [8.143, 8.262], [8.275, 8.67], [8.683, 9.117]]}, {"kind": "s", "id": "s0_0_2", "md": "Your manager sees a ==fraction== of what you do, and their manager sees even less.", "zh": "你的经理只看得到你做的一小部分，他的经理看到的就更少了。", "sp": null, "gap": false, "start": 9.504, "end": 14.808, "words": [[9.609, 9.728], [9.741, 10.214], [10.228, 10.517], [10.53, 10.583], [10.596, 11.149], [11.162, 11.254], [11.267, 11.438], [11.451, 11.557], [11.57, 11.938], [12.267, 12.359], [12.372, 12.491], [12.504, 12.991], [13.004, 13.465], [13.636, 13.899], [13.912, 14.412]]}, {"kind": "s", "id": "s0_1_0", "md": "The reason is not unfairness; it is ==bandwidth==.", "zh": "原因不是不公平，而是精力有限。", "sp": null, "gap": true, "start": 14.808, "end": 18.192, "words": [[14.913, 14.979], [14.992, 15.374], [15.387, 15.519], [15.532, 15.861], [15.874, 16.69], [16.966, 17.032], [17.045, 17.163], [17.176, 17.808]]}, {"kind": "s", "id": "s0_1_1", "md": "Leaders track dozens of projects, and the ones nobody talks about __fall off the radar__.", "zh": "领导同时盯着几十个项目，没人提起的那些就会从视野里消失。", "sp": null, "gap": false, "start": 18.192, "end": 23.76, "words": [[18.297, 18.679], [18.692, 19.205], [19.284, 19.653], [19.666, 19.745], [19.758, 20.481], [20.758, 20.85], [20.863, 20.942], [20.955, 21.205], [21.218, 21.587], [21.6, 21.968], [21.981, 22.231], [22.245, 22.574], [22.587, 22.758], [22.771, 22.85], [22.863, 23.363]]}, {"kind": "s", "id": "s0_1_2", "md": "**If you don't tell the story of your work, someone else will tell a shorter version, or nobody will.**", "zh": "如果你不讲自己工作的故事，别人就会讲一个缩水版，或者干脆没人讲。", "sp": null, "gap": false, "start": 23.76, "end": 29.208, "words": [[23.878, 23.984], [23.997, 24.089], [24.102, 24.326], [24.339, 24.563], [24.576, 24.668], [24.681, 25.063], [25.076, 25.155], [25.168, 25.313], [25.326, 25.642], [25.931, 26.247], [26.26, 26.471], [26.484, 26.615], [26.628, 26.839], [26.852, 26.892], [26.905, 27.273], [27.286, 27.721], [28.036, 28.102], [28.115, 28.536], [28.549, 28.826]]}, {"kind": "s", "id": "s0_2_0", "md": "Still, many people hold back because they are afraid of sounding ==arrogant==.", "zh": "可很多人还是不敢说，因为怕显得自大。", "sp": null, "gap": true, "start": 29.208, "end": 33.768, "words": [[29.326, 29.774], [30.09, 30.261], [30.274, 30.603], [30.616, 30.826], [30.84, 31.261], [31.366, 31.668], [31.682, 31.774], [31.787, 31.919], [31.932, 32.353], [32.366, 32.445], [32.458, 32.892], [32.905, 33.379]]}, {"kind": "s", "id": "s0_2_1", "md": "That fear is reasonable.", "zh": "这种担心是合理的。", "sp": null, "gap": false, "start": 33.768, "end": 35.832, "words": [[33.873, 34.018], [34.031, 34.492], [34.65, 34.781], [34.794, 35.439]]}, {"kind": "s", "id": "s0_2_2", "md": "Nobody enjoys the colleague who turns every update into a __victory lap__.", "zh": "没人喜欢那种把每次汇报都变成庆功会的同事。", "sp": null, "gap": false, "start": 35.832, "end": 40.68, "words": [[35.937, 36.385], [36.398, 36.832], [36.845, 36.937], [36.95, 37.398], [37.411, 37.529], [37.543, 37.977], [38.135, 38.477], [38.49, 38.964], [39.056, 39.332], [39.345, 39.398], [39.411, 39.858], [39.871, 40.292]]}, {"kind": "s", "id": "s0_2_3", "md": "The fix is to change how you share, not whether you share.", "zh": "解决办法是改变分享的方式，而不是不分享。", "sp": null, "gap": false, "start": 40.68, "end": 44.184, "words": [[40.798, 40.851], [40.864, 41.154], [41.167, 41.272], [41.285, 41.377], [41.391, 41.733], [41.746, 41.851], [41.864, 41.996], [42.009, 42.417], [42.812, 42.996], [43.009, 43.259], [43.272, 43.351], [43.364, 43.785]]}, {"kind": "h", "id": "h1", "md": "2. Teach, Don't Boast", "zh": "2. 分享经验，而不是炫耀", "start": 44.184, "end": 46.776, "words": [[44.302, 44.46], [44.987, 45.434], [45.671, 45.908], [45.921, 46.381]]}, {"kind": "s", "id": "s1_0_0", "md": "The trick is to share your work as information that helps other people.", "zh": "诀窍在于，把你的工作当成对别人有帮助的信息来分享。", "sp": null, "gap": false, "start": 46.776, "end": 50.808, "words": [[46.894, 46.96], [46.973, 47.289], [47.302, 47.408], [47.421, 47.513], [47.526, 47.855], [47.868, 48.013], [48.026, 48.315], [48.408, 48.526], [48.539, 49.289], [49.381, 49.5], [49.513, 49.776], [49.789, 49.987], [50.0, 50.408]]}, {"kind": "s", "id": "s1_0_1", "md": "Instead of \"I made the service faster,\" try \"We cut page load time by a third; here is what worked, in case your team has the same problem.\"", "zh": "别说「我把服务优化快了」，试试说「我们把页面加载时间缩短了三分之一；这是有效的做法，万一你们团队也遇到同样的问题可以参考」。", "sp": null, "gap": false, "start": 50.808, "end": 59.76, "words": [[50.913, 51.269], [51.282, 51.505], [51.782, 51.834], [51.847, 52.084], [52.097, 52.176], [52.19, 52.637], [52.65, 53.216], [53.519, 53.769], [53.795, 53.966], [53.979, 54.229], [54.242, 54.571], [54.584, 54.847], [54.861, 55.15], [55.163, 55.361], [55.374, 55.44], [55.453, 55.953], [56.4, 56.545], [56.558, 56.663], [56.676, 56.847], [56.861, 57.203], [57.505, 57.597], [57.611, 57.887], [57.9, 58.019], [58.032, 58.321], [58.334, 58.519], [58.532, 58.611], [58.624, 58.913], [58.926, 59.347]]}, {"kind": "s", "id": "s1_0_2", "md": "The second version is useful, so nobody hears it as bragging.", "zh": "第二种说法是有用的，所以没人会觉得你在炫耀。", "sp": null, "gap": false, "start": 59.76, "end": 63.72, "words": [[59.878, 59.931], [59.944, 60.339], [60.352, 60.707], [60.721, 60.878], [60.892, 61.365], [61.76, 61.905], [61.918, 62.339], [62.352, 62.655], [62.668, 62.734], [62.747, 62.852], [62.865, 63.326]]}, {"kind": "s", "id": "s1_1_0", "md": "Always __lead with the problem__, then the ==outcome==.", "zh": "永远先讲问题，再讲结果。", "sp": null, "gap": true, "start": 63.72, "end": 66.552, "words": [[63.838, 64.181], [64.194, 64.391], [64.404, 64.536], [64.549, 64.628], [64.641, 65.115], [65.431, 65.536], [65.549, 65.654], [65.667, 66.154]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Users were dropping off at checkout; after the fix, completion went up eight percent.\"", "zh": "「用户在结账环节大量流失；修复之后，完成率提升了百分之八。」", "sp": null, "gap": false, "start": 66.552, "end": 72.36, "words": [[66.736, 67.026], [67.105, 67.223], [67.236, 67.736], [67.749, 67.999], [68.013, 68.091], [68.105, 68.657], [69.052, 69.249], [69.263, 69.328], [69.341, 69.907], [70.105, 70.684], [70.697, 70.881], [70.894, 71.039], [71.21, 71.368], [71.381, 71.96]]}, {"kind": "s", "id": "s1_1_2", "md": "Numbers do the ==persuading== for you, so you don't need big adjectives.", "zh": "数字会替你说服别人，你根本用不着那些夸张的形容词。", "sp": null, "gap": false, "start": 72.36, "end": 76.488, "words": [[72.465, 72.834], [72.847, 72.978], [72.992, 73.097], [73.11, 73.702], [73.715, 73.926], [73.939, 74.084], [74.465, 74.597], [74.61, 74.715], [74.728, 74.965], [74.978, 75.202], [75.215, 75.399], [75.413, 76.11]]}, {"kind": "s", "id": "s1_2_0", "md": "Give credit generously and by name.", "zh": "大方地把功劳分出去，而且要点名。", "sp": null, "gap": true, "start": 76.488, "end": 79.032, "words": [[76.593, 76.83], [76.843, 77.198], [77.212, 77.909], [78.014, 78.12], [78.133, 78.264], [78.277, 78.646]]}, {"kind": "s", "id": "s1_2_1", "md": "Saying \"Mei found the root cause\" shows you as someone who ==elevates== the team, which is exactly what leaders look for.", "zh": "说一句「是 Mei 找到了根因」，会让你显得是那种能成就团队的人，而这正是领导看重的。", "sp": null, "gap": false, "start": 79.032, "end": 86.568, "words": [[79.15, 79.519], [79.795, 79.966], [79.979, 80.256], [80.269, 80.335], [80.348, 80.703], [80.716, 81.216], [81.348, 81.756], [81.769, 81.966], [81.979, 82.111], [82.124, 82.493], [82.506, 82.703], [82.782, 83.282], [83.295, 83.374], [83.387, 83.782], [84.164, 84.295], [84.308, 84.4], [84.414, 84.979], [84.993, 85.19], [85.203, 85.571], [85.585, 85.769], [85.782, 86.164]]}, {"kind": "s", "id": "s1_2_2", "md": "**Credit is not a fixed pie; sharing it usually makes your own slice bigger.**", "zh": "功劳不是一块固定大小的饼；分出去，你自己那块通常反而更大。", "sp": null, "gap": false, "start": 86.568, "end": 91.488, "words": [[86.673, 86.936], [87.015, 87.134], [87.147, 87.423], [87.436, 87.476], [87.489, 87.91], [87.923, 88.278], [88.779, 89.121], [89.134, 89.226], [89.239, 89.686], [89.7, 89.989], [90.002, 90.16], [90.173, 90.331], [90.344, 90.7], [90.713, 91.108]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, pick the right channel.", "zh": "最后，选对渠道。", "sp": null, "gap": true, "start": 91.488, "end": 93.624, "words": [[91.659, 92.08], [92.343, 92.527], [92.541, 92.62], [92.633, 92.843], [92.856, 93.238]]}, {"kind": "s", "id": "s1_3_1", "md": "A short note in the team channel or a five-minute demo __goes further than__ a long email that nobody opens.", "zh": "在团队群里发一条简短的消息，或者做一个五分钟的 demo，比一封没人打开的长邮件管用得多。", "sp": null, "gap": false, "start": 93.624, "end": 100.32, "words": [[93.729, 93.769], [93.782, 94.098], [94.111, 94.387], [94.4, 94.545], [94.558, 94.65], [94.663, 94.927], [94.94, 95.387], [95.624, 95.729], [95.742, 95.795], [95.808, 96.479], [96.492, 96.808], [96.821, 97.124], [97.137, 97.611], [97.624, 97.756], [97.769, 97.821], [97.835, 98.295], [98.308, 98.782], [98.795, 98.979], [98.992, 99.427], [99.44, 99.94]]}, {"kind": "s", "id": "s1_3_2", "md": "People remember what they saw working.", "zh": "人们会记住自己亲眼看到跑起来的东西。", "sp": null, "gap": false, "start": 100.32, "end": 102.36, "words": [[100.438, 100.675], [100.688, 101.057], [101.07, 101.188], [101.202, 101.294], [101.307, 101.517], [101.531, 101.965]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

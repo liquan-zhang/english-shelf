@@ -1,0 +1,88 @@
+{
+  "id": "131",
+  "type": "dialogue",
+  "title": "Returning Something You Bought",
+  "meta": "B2 · 约 310 词 · 场景：商店退换货与无小票退礼物",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Sales Assistant", "name_zh": "店员", "voice": "en-US-EmmaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. A Faulty Air Fryer",
+      "heading_zh": "1. 坏掉的空气炸锅",
+      "lines": [
+        {"sp": "B", "en": "Hi, how can I help you today?", "zh": "您好，今天有什么可以帮您？"},
+        {"sp": "A", "en": "**Hi, I'd like to return this air fryer. It stopped working after just a few days.**", "zh": "你好，我想退这台空气炸锅。才用了几天就坏了。"},
+        {"sp": "B", "en": "Oh no. Do you have the ==receipt== with you?", "zh": "哎呀。您带小票了吗？"},
+        {"sp": "A", "en": "I have the digital receipt in my email. Here it is. I bought it ten days ago.", "zh": "邮箱里有电子小票，就这个。我是十天前买的。"},
+        {"sp": "B", "en": "Thanks. Unfortunately, our ==refund== policy is seven days. After that, it goes back to the manufacturer for repair under ==warranty==.", "zh": "谢谢。不过我们的退款期是七天。超过七天就只能走厂家保修维修了。"},
+        {"sp": "A", "en": "I understand, but it __broke down__ on the third day. I was away on a business trip, so I couldn't bring it in sooner.", "zh": "我理解，但它第三天就坏了。我当时出差，所以没法早点拿过来。"},
+        {"sp": "B", "en": "I see. What exactly is wrong with it?", "zh": "明白了。具体是什么问题？"},
+        {"sp": "A", "en": "It turns on, but it doesn't heat up at all. It's clearly a ==defect==, not something we did.", "zh": "能开机，但完全不加热。这明显是质量问题，不是我们弄坏的。"},
+        {"sp": "B", "en": "Let me __check with my manager__. One moment, please.", "zh": "我去问一下经理。请稍等。"},
+        {"sp": "B", "en": "Okay, my manager says we can make an ==exception== and swap it for a new one today.", "zh": "好的，经理说可以破例，今天给您换一台新的。"},
+        {"sp": "A", "en": "**That would be great. Could you test the new one before I take it home?**", "zh": "太好了。我带回家之前，能先把新的试一下吗？"}
+      ]
+    },
+    {
+      "heading": "2. A Gift Without a Receipt",
+      "heading_zh": "2. 没有小票的礼物",
+      "lines": [
+        {"sp": "A", "en": "While I'm here, my son got this toy as a gift, but he already has the same one. It's ==unopened==.", "zh": "趁我在这儿，我儿子收到这个玩具当礼物，可他已经有一个一样的了。还没拆封。"},
+        {"sp": "B", "en": "Do you have a gift receipt, by any chance?", "zh": "请问您有礼品小票吗？"},
+        {"sp": "A", "en": "No, I'm afraid not. Is there any way you could still take it back?", "zh": "恐怕没有。还有什么办法能退吗？"},
+        {"sp": "B", "en": "Without a receipt, I can only offer ==store credit== at the current selling price.", "zh": "没有小票的话，我只能按现价给您退成店内消费额度。"},
+        {"sp": "A", "en": "**Would it be possible to put it back on my card instead?**", "zh": "能不能直接退到我的卡上？"},
+        {"sp": "B", "en": "Sorry, card refunds need ==proof of purchase==. But the credit is valid for a year, and you can use it online too.", "zh": "抱歉，退到卡上需要购买凭证。不过额度一年内有效，网上也能用。"},
+        {"sp": "A", "en": "Okay, store credit is fine then. How much is it worth?", "zh": "好吧，那消费额度也行。值多少钱？"},
+        {"sp": "B", "en": "It's on ==promotion== right now, so it's thirty-two ninety.", "zh": "它现在在促销，所以是三十二块九。"},
+        {"sp": "A", "en": "Oh, but it was bought at full price. __Is there anything you can do__?", "zh": "哦，可这是原价买的。能想想办法吗？"},
+        {"sp": "B", "en": "Let me see. I'll __go ahead and__ give you the full price, thirty-nine ninety. Just this once.", "zh": "我看看。那我就按原价给您，三十九块九。就这一次。"},
+        {"sp": "A", "en": "That's really kind of you. Thanks for all your help.", "zh": "你真好。谢谢你帮了这么多。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "空气炸锅出了什么问题？为什么不能直接退款？", "a": "能开机但完全不加热；买了十天，超过了七天退款期，按规定只能走厂家保修。"},
+    {"q": "「你」怎么说服店员？最后怎么处理的？", "a": "说明第三天就坏了、当时在出差、明显是质量问题；经理破例当天换一台新的，「你」还要求先试机。"},
+    {"q": "没有小票的玩具最后怎么退的？", "a": "不能退到卡上，只能退成店内消费额度；「你」指出是原价买的，店员破例按原价三十九块九给额度。"}
+  ],
+  "dictation": [
+    "Hi, I'd like to return this air fryer. It stopped working after just a few days.",
+    "It turns on, but it doesn't heat up at all. It's clearly a defect, not something we did.",
+    "No, I'm afraid not. Is there any way you could still take it back?",
+    "Would it be possible to put it back on my card instead?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "I understand, but it broke down on the third day. I was away on a business trip, so I couldn't bring it in sooner.",
+    "marked": "I <b>understand</b>, / but it broke down / on the <b>third</b> day. //<br>I was <b>away</b> / on a business trip, / so I <b>couldn't</b> bring it in <b>sooner</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你网购的儿童鞋尺码不对，到线下门店想换。说明情况，问能不能在店里换，以及没货怎么办。",
+      "ref": "Hi, I bought these shoes for my son on your website last week, but they're a size too small. He's only tried them on indoors. Can I exchange them here in the store, or do I have to send them back by post? And if you don't have the next size in stock, could I get a refund instead?",
+      "ref_zh": "你好，我上周在你们官网给儿子买了这双鞋，但小了一码。他只在家里试穿过。能在门店直接换吗，还是必须寄回去？如果大一码没货，可以改成退款吗？"
+    },
+    {
+      "q": "你买的衬衫洗了一次就掉色，但店员说洗过的不能退。礼貌而坚定地争取，并要求见经理。",
+      "ref": "I understand you normally don't accept washed items, but I followed the care label exactly. I washed it once in cold water, and the colour came out all over my other clothes. That's a quality problem, not something I did wrong. If you're not able to help, could I please speak to the manager?",
+      "ref_zh": "我理解洗过的东西你们一般不退，但我完全是按洗涤标签操作的。只用冷水洗了一次，颜色就掉得我其他衣服上都是。这是质量问题，不是我操作不当。如果你没法处理，能请经理来一下吗？"
+    }
+  ],
+  "words": [
+    {"w": "receipt", "ipa": "/rɪˈsiːt/", "zh": "小票，收据", "ex": "Do you need a printed receipt, or is an email okay?"},
+    {"w": "refund", "ipa": "/ˈriːfʌnd/", "zh": "退款", "ex": "I asked for a refund because the shoes were too small."},
+    {"w": "warranty", "ipa": "/ˈwɔːrənti/", "zh": "保修", "ex": "The laptop comes with a two year warranty."},
+    {"w": "defect", "ipa": "/ˈdiːfekt/", "zh": "缺陷，质量问题", "ex": "If there's a defect, they'll replace it for free."},
+    {"w": "exception", "ipa": "/ɪkˈsepʃən/", "zh": "例外，破例", "ex": "Normally we don't allow food inside, but we'll make an exception."},
+    {"w": "unopened", "ipa": "/ʌnˈoʊpənd/", "zh": "未拆封的", "ex": "You can return unopened items within thirty days."},
+    {"w": "store credit", "ipa": "/stɔːr ˈkredɪt/", "zh": "店内消费额度", "ex": "They gave me store credit instead of cash."},
+    {"w": "proof of purchase", "ipa": "/pruːf əv ˈpɜːrtʃəs/", "zh": "购买凭证", "ex": "Keep your proof of purchase for warranty claims."},
+    {"w": "promotion", "ipa": "/prəˈmoʊʃən/", "zh": "促销", "ex": "The supermarket has a promotion on durian this week."},
+    {"w": "break down", "ipa": "/breɪk daʊn/", "zh": "（机器）坏掉", "ex": "Our washing machine broke down again."}
+  ]
+}

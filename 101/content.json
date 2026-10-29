@@ -1,0 +1,86 @@
+{
+  "id": "101",
+  "type": "dialogue",
+  "title": "Checking In at a Hotel",
+  "meta": "B2 · 约 280 词 · 场景：酒店入住与客房问题",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Front Desk", "name_zh": "前台", "voice": "en-SG-LunaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. At the Front Desk",
+      "heading_zh": "1. 在前台",
+      "lines": [
+        {"sp": "B", "en": "Good evening, and welcome. Are you checking in?", "zh": "晚上好，欢迎光临。您是要办入住吗？"},
+        {"sp": "A", "en": "Yes, I have a __reservation under the name__ Lee.", "zh": "是的，我用 Lee 这个名字订了房。"},
+        {"sp": "B", "en": "Let me pull that up. A king room for three nights, checking out on Sunday?", "zh": "我查一下。一间大床房，住三晚，周日退房，对吗？"},
+        {"sp": "A", "en": "**That's right. Is it possible to get a room on a higher floor, away from the elevator?**", "zh": "对。有没有可能给我一间高楼层、离电梯远一点的房间？"},
+        {"sp": "B", "en": "Let me check. Yes, I can put you on the eighteenth floor with a city view.", "zh": "我看看。可以，我给您安排在十八楼，城景房。"},
+        {"sp": "B", "en": "May I have your passport and a credit card for ==incidentals==?", "zh": "麻烦出示一下护照，再给一张信用卡用于杂费预授权。"},
+        {"sp": "A", "en": "Sure. How much is the ==deposit==?", "zh": "好的。押金是多少？"},
+        {"sp": "B", "en": "It's one hundred dollars per night, and it's released when you check out.", "zh": "每晚一百元，退房时会解冻。"},
+        {"sp": "A", "en": "Got it. Is breakfast ==included==, and what time does it start?", "zh": "明白。含早餐吗？几点开始？"},
+        {"sp": "B", "en": "Yes, it's included. It's served from six thirty to ten thirty on the second floor.", "zh": "含的。早餐在二楼，六点半到十点半。"},
+        {"sp": "A", "en": "And could I __get a late checkout__ on Sunday? My flight isn't until the evening.", "zh": "另外周日能晚点退房吗？我的航班是晚上的。"},
+        {"sp": "B", "en": "I can give you until one o'clock __at no extra charge__.", "zh": "我可以给您延到一点，不额外收费。"},
+        {"sp": "A", "en": "One o'clock works. Thanks so much.", "zh": "一点可以。太感谢了。"}
+      ]
+    },
+    {
+      "heading": "2. A Problem with the Room",
+      "heading_zh": "2. 房间出了问题",
+      "lines": [
+        {"sp": "A", "en": "Hi, this is Mr. Lee in room eighteen twelve. The air conditioning isn't working, and the room is quite warm.", "zh": "你好，我是一八一二房间的 Lee。空调坏了，房间里挺热的。"},
+        {"sp": "B", "en": "I'm so sorry about that. I'll __send someone up__ right away to take a look.", "zh": "非常抱歉。我马上派人上去看看。"},
+        {"sp": "A", "en": "**Thanks. If it can't be fixed tonight, would it be possible to move to another room?**", "zh": "谢谢。如果今晚修不好，能不能换个房间？"},
+        {"sp": "B", "en": "Of course. If the ==technician== can't fix it in fifteen minutes, we'll ==upgrade== you to a suite on the same floor.", "zh": "当然可以。如果维修师傅十五分钟内修不好，我们就给您升级到同一层的套房。"},
+        {"sp": "A", "en": "That would be great. Could you also send up two extra towels?", "zh": "那太好了。能再送两条毛巾上来吗？"},
+        {"sp": "B", "en": "No problem. And to __make up for__ the trouble, we'll send up a ==complimentary== fruit plate.", "zh": "没问题。为了弥补给您带来的不便，我们会再送一份免费的水果拼盘。"},
+        {"sp": "A", "en": "That's very kind. **Thanks for sorting this out so quickly.**", "zh": "你们太客气了。谢谢这么快就帮我解决。"},
+        {"sp": "B", "en": "My pleasure, Mr. Lee. Enjoy the rest of your evening.", "zh": "不客气，Lee 先生。祝您晚上愉快。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」对房间提了什么要求？前台怎么安排的？", "a": "要高楼层、离电梯远的房间；前台安排在十八楼的城景房。"},
+    {"q": "押金和延迟退房的规则分别是什么？", "a": "押金每晚一百元，退房时解冻；可以免费延迟退房到下午一点。"},
+    {"q": "空调坏了，酒店给出的解决方案是什么？", "a": "马上派维修师傅；十五分钟修不好就升级到同层套房，并免费送水果拼盘。"}
+  ],
+  "dictation": [
+    "That's right. Is it possible to get a room on a higher floor, away from the elevator?",
+    "And could I get a late checkout on Sunday? My flight isn't until the evening.",
+    "Thanks. If it can't be fixed tonight, would it be possible to move to another room?",
+    "That's very kind. Thanks for sorting this out so quickly."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Hi, this is Mr. Lee in room eighteen twelve. The air conditioning isn't working, and the room is quite warm.",
+    "marked": "Hi, / this is Mr. <b>Lee</b> / in room <b>eighteen twelve</b>. //<br>The <b>air conditioning</b> / <b>isn't</b> working, / and the room is quite <b>warm</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "入住时发现订的是两张单人床，你想换成一张大床。用 30 秒跟前台沟通，礼貌但明确。",
+      "ref": "Hi, sorry to bother you. I just got to my room, and it has two single beds, but I booked a king room. Is it possible to switch to a king tonight? If none are free, could you move me tomorrow morning? I'm happy to pack my things and wait in the lobby.",
+      "ref_zh": "你好，不好意思打扰一下。我刚进房间，发现是两张单人床，但我订的是大床房。今晚能换成大床吗？如果没有空房了，明天早上帮我换可以吗？我可以先收拾好东西在大堂等。"
+    },
+    {
+      "q": "隔壁房间半夜很吵，你打电话给前台。说清房号、问题，并提出你希望的处理方式。",
+      "ref": "Hi, this is room eighteen twelve. I'm sorry to call so late, but the room next door has been really loud for about an hour, and I have an early flight. Could someone ask them to keep it down? If that doesn't work, I'd like to move to a quieter room.",
+      "ref_zh": "你好，我是一八一二房间。抱歉这么晚打电话，隔壁房间已经吵了快一个小时了，我明天一早还要赶飞机。能不能请人去提醒他们小声一点？如果不管用，我想换一间安静点的房间。"
+    }
+  ],
+  "words": [
+    {"w": "reservation", "ipa": "/ˌrezərˈveɪʃən/", "zh": "预订", "ex": "I have a reservation for two at seven."},
+    {"w": "incidentals", "ipa": "/ˌɪnsɪˈdentəlz/", "zh": "杂费（酒店预授权用）", "ex": "They put a hold on my card for incidentals."},
+    {"w": "deposit", "ipa": "/dɪˈpɑːzɪt/", "zh": "押金", "ex": "The deposit will be refunded when you return the key."},
+    {"w": "included", "ipa": "/ɪnˈkluːdɪd/", "zh": "包含的", "ex": "Is service charge included in the price?"},
+    {"w": "late checkout", "ipa": "/leɪt ˈtʃekaʊt/", "zh": "延迟退房", "ex": "Could I get a late checkout until two?"},
+    {"w": "technician", "ipa": "/tekˈnɪʃən/", "zh": "维修技师", "ex": "A technician will come by between nine and twelve."},
+    {"w": "upgrade (v.)", "ipa": "/ˌʌpˈɡreɪd/", "zh": "升级", "ex": "They upgraded us to a sea view room for free.", "tts_w": "upgrade"},
+    {"w": "complimentary", "ipa": "/ˌkɑːmpləˈmentəri/", "zh": "免费赠送的", "ex": "The hotel offers complimentary water and coffee in the lobby."},
+    {"w": "make up for", "ipa": "/meɪk ʌp fɔːr/", "zh": "弥补", "ex": "They gave us free drinks to make up for the long wait."}
+  ]
+}

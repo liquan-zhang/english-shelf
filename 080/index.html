@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>The Pre-Read That Wins the Meeting · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "080", "title": "The Pre-Read That Wins the Meeting", "meta": "B2 · 约 260 词 · 场景：会前材料", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Decided Before It Starts", "heading_zh": "1. 开会之前就已定局", "rows": [[{"id": "s0_0_0", "md": "If you walk into a decision meeting with only slides, you are starting from behind.", "text": "If you walk into a decision meeting with only slides, you are starting from behind.", "zh": "如果你只带着 PPT 走进一个决策会，你一开始就落后了。", "sp": null}, {"id": "s0_0_1", "md": "People see your idea for the first time, react to it in real time, and the loudest first reaction often __sets the direction__.", "text": "People see your idea for the first time, react to it in real time, and the loudest first reaction often sets the direction.", "zh": "大家第一次看到你的想法，当场做出反应，而第一个、嗓门最大的反应往往就定了方向。", "sp": null}, {"id": "s0_0_2", "md": "You spend the hour defending basics instead of discussing the real question.", "text": "You spend the hour defending basics instead of discussing the real question.", "zh": "你一个小时都在为基础问题辩护，而不是讨论真正的问题。", "sp": null}], [{"id": "s0_1_0", "md": "A good pre-read changes that.", "text": "A good pre-read changes that.", "zh": "一份好的会前材料能改变这一切。", "sp": null}, {"id": "s0_1_1", "md": "Attendees arrive having already ==digested== your proposal, with considered questions instead of ==improvised== ones.", "text": "Attendees arrive having already digested your proposal, with considered questions instead of improvised ones.", "zh": "参会的人来之前就已经消化了你的方案，带着想清楚的问题来，而不是临场想出来的问题。", "sp": null}, {"id": "s0_1_2", "md": "The meeting becomes a discussion of the hard parts rather than a ==tour== of the basics.", "text": "The meeting becomes a discussion of the hard parts rather than a tour of the basics.", "zh": "会议就变成了讨论难点，而不是把基础信息逛一遍。", "sp": null}], [{"id": "s0_2_0", "md": "**The meeting is where the decision is announced; the pre-read is where it is won.**", "text": "The meeting is where the decision is announced; the pre-read is where it is won.", "zh": "会议是宣布决定的地方；会前材料才是赢下决定的地方。", "sp": null}, {"id": "s0_2_1", "md": "Senior people especially value it, because it respects their time and lets them __weigh in__ ahead of time.", "text": "Senior people especially value it, because it respects their time and lets them weigh in ahead of time.", "zh": "高层尤其看重这一点，因为这尊重他们的时间，也让他们能提前发表意见。", "sp": null}, {"id": "s0_2_2", "md": "It also helps colleagues who work in a second language and prefer to read before they speak.", "text": "It also helps colleagues who work in a second language and prefer to read before they speak.", "zh": "它也照顾到了用第二语言工作、喜欢先读再说的同事。", "sp": null}]]}, {"heading": "2. One Page, Ask at the Top", "heading_zh": "2. 一页纸，诉求放最前", "rows": [[{"id": "s1_0_0", "md": "Put the ask in the first two lines.", "text": "Put the ask in the first two lines.", "zh": "把诉求放在头两行。", "sp": null}, {"id": "s1_0_1", "md": "\"We'd like approval to move the image service to the new storage layer next quarter, at an extra cost of about eight percent.\"", "text": "\"We'd like approval to move the image service to the new storage layer next quarter, at an extra cost of about eight percent.\"", "zh": "「我们希望批准下个季度把图片服务迁到新的存储层，额外成本大约百分之八。」", "sp": null}, {"id": "s1_0_2", "md": "Readers who stop there should still ==grasp== exactly what you want.", "text": "Readers who stop there should still grasp exactly what you want.", "zh": "读到这里就停下的人，也应该能准确明白你要什么。", "sp": null}], [{"id": "s1_1_0", "md": "Then give the context, the ==alternatives== you rejected, and the main risk with its ==safeguard==.", "text": "Then give the context, the alternatives you rejected, and the main risk with its safeguard.", "zh": "然后交代背景、你否掉的备选方案，以及主要风险和对应的保障措施。", "sp": null}, {"id": "s1_1_1", "md": "Keep it to one page, and send it at least a day before.", "text": "Keep it to one page, and send it at least a day before.", "zh": "控制在一页以内，至少提前一天发出去。", "sp": null}, {"id": "s1_1_2", "md": "A pre-read that arrives an hour early is just homework nobody did.", "text": "A pre-read that arrives an hour early is just homework nobody did.", "zh": "提前一小时才到的会前材料，只是一份没人做的作业。", "sp": null}], [{"id": "s1_2_0", "md": "For important decisions, __give key people a heads-up__ before the doc goes out.", "text": "For important decisions, give key people a heads-up before the doc goes out.", "zh": "对于重要的决定，在文档发出之前先跟关键人物打个招呼。", "sp": null}, {"id": "s1_2_1", "md": "Ask them, \"Is there anything here that would stop you from agreeing?\"", "text": "Ask them, \"Is there anything here that would stop you from agreeing?\"", "zh": "问他们：「这里面有没有什么会让你没法同意的？」", "sp": null}, {"id": "s1_2_2", "md": "**Objections you hear in private the day before are easy to fix; objections you hear in the room are not.**", "text": "Objections you hear in private the day before are easy to fix; objections you hear in the room are not.", "zh": "前一天私下听到的反对意见很好解决；在会上才听到的反对意见就不好办了。", "sp": null}]]}], "gist": [{"q": "只带幻灯片进决策会有什么问题？", "a": "大家第一次看到方案、当场反应，最响的第一反应往往定方向，你整场都在解释基础内容。"}, {"q": "一份好的会前材料怎么写？", "a": "开头两行写清诉求；再写背景、否掉的备选方案、主要风险和保障措施；控制在一页，至少提前一天发。"}, {"q": "重要决策还要额外做什么？为什么？", "a": "发文档前先私下给关键人打招呼，问有没有会让他们不同意的点；前一天私下听到的反对好解决，会上听到的就难了。"}], "dictation": [{"id": "s0_2_0", "text": "The meeting is where the decision is announced; the pre-read is where it is won."}, {"id": "s1_0_2", "text": "Readers who stop there should still grasp exactly what you want."}, {"id": "s1_1_2", "text": "A pre-read that arrives an hour early is just homework nobody did."}, {"id": "s1_2_2", "text": "Objections you hear in private the day before are easy to fix; objections you hear in the room are not."}], "shadow": {"text": "A good pre-read changes that. Attendees arrive having already digested your proposal, with considered questions instead of improvised ones. The meeting becomes a discussion of the hard parts rather than a tour of the basics.", "marked": "A <b>good</b> pre-read / <b>changes</b> that. //<br>Attendees arrive / having <b>already</b> digested your proposal, / with <b>considered</b> questions / instead of <b>improvised</b> ones. //<br>The meeting becomes a discussion / of the <b>hard</b> parts / rather than a <b>tour</b> / of the <b>basics</b>. //"}, "prompts": [{"q": "明天要在评审会上申请扩容预算。用 30 秒口头说出你会前材料开头的“诉求两行”和关键内容。", "ref": "The first two lines will say: we're asking for approval to add twenty percent more GPU capacity next quarter, at a cost of about fifteen thousand dollars a month. Below that, I'll explain why: training jobs are waiting an average of six hours. I'll list the two alternatives we rejected, and the main risk, which is low usage over holidays, with our plan to release capacity if that happens.", "ref_zh": "头两行会这么写：我们申请下个季度增加百分之二十的 GPU 算力，成本大约每月一万五千美元。下面我会解释原因：训练任务平均要排队六个小时。我会列出我们否掉的两个备选方案，以及主要风险，也就是节假日期间利用率低，还有万一出现这种情况我们释放算力的方案。", "id": "ref0"}, {"q": "评审会前一天，你想先和最可能反对的财务同事沟通。用 30 秒打这个招呼。", "ref": "Hi Grace, do you have five minutes? Tomorrow I'm presenting the storage migration proposal, and I'm sending the one-page pre-read this afternoon. Since the cost section matters most to you, I wanted to walk you through it first. Is there anything in the numbers that would stop you from supporting it? I'd much rather fix it today than discover it in the room.", "ref_zh": "Grace 你好，有五分钟吗？明天我要讲存储迁移的方案，今天下午会把一页纸的会前材料发出来。成本部分对你最重要，所以我想先带你过一遍。这些数字里有没有什么会让你没法支持的？我宁愿今天就改好，也不想在会上才发现。", "id": "ref1"}], "words": [{"w": "digest (v.)", "ipa": "/daɪˈdʒest/", "zh": "消化、理解吸收", "ex": "Give people a day to digest the proposal before we vote.", "tts_w": "digest", "id": "w0"}, {"w": "improvise", "ipa": "/ˈɪmprəˌvaɪz/", "zh": "即兴发挥、临时应付", "ex": "The demo crashed, so I had to improvise with screenshots.", "id": "w1"}, {"w": "tour", "ipa": "/tʊr/", "zh": "（逐一的）介绍、巡览", "ex": "She gave the new hires a quick tour of the codebase.", "id": "w2"}, {"w": "grasp (v.)", "ipa": "/ɡræsp/", "zh": "理解、领会", "ex": "It took me a while to grasp how the billing system works.", "tts_w": "grasp", "id": "w3"}, {"w": "alternative", "ipa": "/ɔːlˈtɜːrnətɪv/", "zh": "备选方案", "ex": "We looked at two alternatives, but both cost more to run.", "id": "w4"}, {"w": "safeguard", "ipa": "/ˈseɪfˌɡɑːrd/", "zh": "保障措施", "ex": "As a safeguard, the old system will stay online for a month.", "id": "w5"}, {"w": "pre-read", "ipa": "/ˈpriː ˌriːd/", "zh": "会前阅读材料", "ex": "Please review the pre-read before Thursday's architecture review.", "id": "w6"}, {"w": "heads-up", "ipa": "/ˈhedz ˌʌp/", "zh": "提前打招呼、预先提醒", "ex": "Just a heads-up: the release might slip by a day.", "id": "w7"}, {"w": "attendee", "ipa": "/əˌtenˈdiː/", "zh": "与会者", "ex": "All attendees should have edit access to the doc.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Decided Before It Starts", "zh": "1. 开会之前就已定局", "start": 0.0, "end": 2.544, "words": [[0.105, 0.395], [0.724, 1.171], [1.184, 1.474], [1.487, 1.553], [1.566, 2.145]]}, {"kind": "s", "id": "s0_0_0", "md": "If you walk into a decision meeting with only slides, you are starting from behind.", "zh": "如果你只带着 PPT 走进一个决策会，你一开始就落后了。", "sp": null, "gap": false, "start": 2.544, "end": 7.68, "words": [[2.649, 2.768], [2.781, 2.886], [2.899, 3.189], [3.202, 3.426], [3.439, 3.505], [3.518, 4.018], [4.031, 4.36], [4.373, 4.557], [4.676, 4.965], [4.978, 5.636], [5.926, 6.018], [6.031, 6.136], [6.149, 6.557], [6.57, 6.741], [6.755, 7.294]]}, {"kind": "s", "id": "s0_0_1", "md": "People see your idea for the first time, react to it in real time, and the loudest first reaction often __sets the direction__.", "zh": "大家第一次看到你的想法，当场做出反应，而第一个、嗓门最大的反应往往就定了方向。", "sp": null, "gap": false, "start": 7.68, "end": 15.912, "words": [[7.798, 8.075], [8.088, 8.285], [8.298, 8.509], [8.522, 8.93], [8.943, 9.062], [9.075, 9.154], [9.167, 9.522], [9.535, 9.89], [10.298, 10.693], [10.706, 10.864], [10.877, 10.97], [10.983, 11.193], [11.206, 11.483], [11.496, 11.93], [12.338, 12.39], [12.404, 12.522], [12.535, 13.022], [13.035, 13.404], [13.417, 14.022], [14.154, 14.548], [14.562, 14.851], [14.864, 14.956], [14.969, 15.522]]}, {"kind": "s", "id": "s0_0_2", "md": "You spend the hour defending basics instead of discussing the real question.", "zh": "你一个小时都在为基础问题辩护，而不是讨论真正的问题。", "sp": null, "gap": false, "start": 15.912, "end": 20.232, "words": [[16.017, 16.109], [16.123, 16.412], [16.425, 16.504], [16.517, 16.82], [16.833, 17.28], [17.294, 17.846], [17.925, 18.307], [18.32, 18.399], [18.412, 19.004], [19.017, 19.096], [19.109, 19.333], [19.346, 19.846]]}, {"kind": "s", "id": "s0_1_0", "md": "A good pre-read changes that.", "zh": "一份好的会前材料能改变这一切。", "sp": null, "gap": true, "start": 20.232, "end": 22.224, "words": [[20.337, 20.416], [20.429, 20.653], [20.666, 21.1], [21.114, 21.495], [21.508, 21.824]]}, {"kind": "s", "id": "s0_1_1", "md": "Attendees arrive having already ==digested== your proposal, with considered questions instead of ==improvised== ones.", "zh": "参会的人来之前就已经消化了你的方案，带着想清楚的问题来，而不是临场想出来的问题。", "sp": null, "gap": false, "start": 22.224, "end": 29.4, "words": [[22.342, 22.882], [22.895, 23.342], [23.356, 23.777], [23.79, 24.237], [24.25, 24.856], [24.869, 25.0], [25.013, 25.671], [25.987, 26.132], [26.145, 26.645], [26.658, 27.211], [27.224, 27.803], [27.816, 27.908], [27.921, 28.5], [28.513, 29.0]]}, {"kind": "s", "id": "s0_1_2", "md": "The meeting becomes a discussion of the hard parts rather than a ==tour== of the basics.", "zh": "会议就变成了讨论难点，而不是把基础信息逛一遍。", "sp": null, "gap": false, "start": 29.4, "end": 34.008, "words": [[29.518, 29.584], [29.597, 29.874], [29.887, 30.282], [30.295, 30.347], [30.361, 30.966], [30.979, 31.058], [31.071, 31.137], [31.15, 31.492], [31.505, 31.926], [31.939, 32.242], [32.255, 32.387], [32.4, 32.453], [32.466, 32.782], [32.795, 32.874], [32.887, 32.966], [32.979, 33.624]]}, {"kind": "s", "id": "s0_2_0", "md": "**The meeting is where the decision is announced; the pre-read is where it is won.**", "zh": "会议是宣布决定的地方；会前材料才是赢下决定的地方。", "sp": null, "gap": true, "start": 34.008, "end": 38.736, "words": [[34.126, 34.192], [34.205, 34.587], [34.6, 34.732], [34.745, 34.876], [34.89, 34.995], [35.008, 35.6], [35.613, 35.758], [35.771, 36.363], [36.613, 36.732], [36.745, 37.35], [37.482, 37.6], [37.613, 37.811], [37.824, 37.89], [37.903, 38.008], [38.021, 38.35]]}, {"kind": "s", "id": "s0_2_1", "md": "Senior people especially value it, because it respects their time and lets them __weigh in__ ahead of time.", "zh": "高层尤其看重这一点，因为这尊重他们的时间，也让他们能提前发表意见。", "sp": null, "gap": false, "start": 38.736, "end": 44.904, "words": [[38.841, 39.197], [39.21, 39.578], [39.591, 40.223], [40.236, 40.683], [40.697, 40.854], [41.131, 41.394], [41.407, 41.486], [41.499, 41.973], [41.986, 42.144], [42.157, 42.604], [42.854, 42.973], [42.986, 43.183], [43.197, 43.354], [43.368, 43.697], [43.71, 43.802], [43.815, 44.039], [44.052, 44.144], [44.157, 44.525]]}, {"kind": "s", "id": "s0_2_2", "md": "It also helps colleagues who work in a second language and prefer to read before they speak.", "zh": "它也照顾到了用第二语言工作、喜欢先读再说的同事。", "sp": null, "gap": false, "start": 44.904, "end": 50.208, "words": [[45.009, 45.088], [45.101, 45.417], [45.43, 45.72], [45.733, 46.18], [46.193, 46.299], [46.312, 46.588], [46.601, 46.68], [46.693, 46.746], [46.759, 47.193], [47.207, 47.733], [47.904, 47.97], [47.983, 48.417], [48.43, 48.549], [48.562, 48.891], [48.904, 49.233], [49.246, 49.351], [49.365, 49.825]]}, {"kind": "h", "id": "h1", "md": "2. One Page, Ask at the Top", "zh": "2. 一页纸，诉求放最前", "start": 50.208, "end": 53.04, "words": [[50.326, 50.563], [50.892, 51.103], [51.116, 51.616], [51.866, 52.116], [52.129, 52.195], [52.208, 52.274], [52.287, 52.642]]}, {"kind": "s", "id": "s1_0_0", "md": "Put the ask in the first two lines.", "zh": "把诉求放在头两行。", "sp": null, "gap": false, "start": 53.04, "end": 55.464, "words": [[53.158, 53.277], [53.29, 53.395], [53.408, 53.777], [53.79, 53.856], [53.869, 53.961], [53.974, 54.329], [54.343, 54.501], [54.514, 55.066]]}, {"kind": "s", "id": "s1_0_1", "md": "\"We'd like approval to move the image service to the new storage layer next quarter, at an extra cost of about eight percent.\"", "zh": "「我们希望批准下个季度把图片服务迁到新的存储层，额外成本大约百分之八。」", "sp": null, "gap": false, "start": 55.464, "end": 63.072, "words": [[55.648, 55.675], [55.753, 55.938], [55.951, 56.477], [56.49, 56.609], [56.622, 56.938], [56.951, 57.069], [57.135, 57.464], [57.477, 57.964], [57.977, 58.082], [58.096, 58.188], [58.201, 58.49], [58.503, 58.964], [58.977, 59.306], [59.319, 59.622], [59.635, 60.109], [60.517, 60.582], [60.596, 60.701], [60.714, 61.043], [61.056, 61.543], [61.556, 61.622], [61.635, 61.924], [61.938, 62.082], [62.096, 62.648]]}, {"kind": "s", "id": "s1_0_2", "md": "Readers who stop there should still ==grasp== exactly what you want.", "zh": "读到这里就停下的人，也应该能准确明白你要什么。", "sp": null, "gap": false, "start": 63.072, "end": 66.792, "words": [[63.177, 63.493], [63.506, 63.598], [63.611, 64.006], [64.059, 64.19], [64.204, 64.401], [64.414, 64.73], [64.743, 65.177], [65.19, 65.769], [65.783, 65.927], [65.94, 66.033], [66.046, 66.401]]}, {"kind": "s", "id": "s1_1_0", "md": "Then give the context, the ==alternatives== you rejected, and the main risk with its ==safeguard==.", "zh": "然后交代背景、你否掉的备选方案，以及主要风险和对应的保障措施。", "sp": null, "gap": true, "start": 66.792, "end": 72.456, "words": [[66.897, 67.121], [67.134, 67.371], [67.384, 67.476], [67.489, 68.279], [68.489, 68.582], [68.595, 69.252], [69.266, 69.384], [69.397, 69.976], [70.305, 70.371], [70.384, 70.45], [70.463, 70.792], [70.805, 71.147], [71.16, 71.305], [71.318, 71.437], [71.45, 72.055]]}, {"kind": "s", "id": "s1_1_1", "md": "Keep it to one page, and send it at least a day before.", "zh": "控制在一页以内，至少提前一天发出去。", "sp": null, "gap": false, "start": 72.456, "end": 76.104, "words": [[72.561, 72.732], [72.745, 72.838], [72.851, 72.943], [72.956, 73.219], [73.232, 73.759], [74.074, 74.153], [74.167, 74.417], [74.43, 74.509], [74.522, 74.653], [74.667, 74.917], [74.93, 74.969], [74.982, 75.18], [75.193, 75.719]]}, {"kind": "s", "id": "s1_1_2", "md": "A pre-read that arrives an hour early is just homework nobody did.", "zh": "提前一小时才到的会前材料，只是一份没人做的作业。", "sp": null, "gap": false, "start": 76.104, "end": 80.256, "words": [[76.209, 76.275], [76.288, 76.736], [76.749, 76.854], [76.867, 77.288], [77.301, 77.394], [77.407, 77.709], [77.722, 78.143], [78.275, 78.407], [78.42, 78.683], [78.696, 79.183], [79.196, 79.578], [79.591, 79.867]]}, {"kind": "s", "id": "s1_2_0", "md": "For important decisions, __give key people a heads-up__ before the doc goes out.", "zh": "对于重要的决定，在文档发出之前先跟关键人物打个招呼。", "sp": null, "gap": true, "start": 80.256, "end": 84.984, "words": [[80.401, 80.493], [80.506, 80.927], [80.94, 81.624], [81.861, 82.085], [82.098, 82.322], [82.335, 82.69], [82.703, 82.756], [82.769, 83.282], [83.295, 83.651], [83.664, 83.743], [83.756, 84.032], [84.045, 84.295], [84.309, 84.598]]}, {"kind": "s", "id": "s1_2_1", "md": "Ask them, \"Is there anything here that would stop you from agreeing?\"", "zh": "问他们：「这里面有没有什么会让你没法同意的？」", "sp": null, "gap": false, "start": 84.984, "end": 88.872, "words": [[85.076, 85.352], [85.366, 85.563], [86.037, 86.142], [86.155, 86.339], [86.352, 86.76], [86.773, 86.997], [87.01, 87.102], [87.116, 87.234], [87.247, 87.629], [87.642, 87.773], [87.787, 87.958], [87.971, 88.431]]}, {"kind": "s", "id": "s1_2_2", "md": "**Objections you hear in private the day before are easy to fix; objections you hear in the room are not.**", "zh": "前一天私下听到的反对意见很好解决；在会上才听到的反对意见就不好办了。", "sp": null, "gap": false, "start": 88.872, "end": 95.976, "words": [[88.964, 89.583], [89.596, 89.714], [89.727, 90.017], [90.03, 90.135], [90.148, 90.596], [90.609, 90.701], [90.714, 90.912], [90.925, 91.504], [91.622, 91.78], [91.938, 92.227], [92.24, 92.319], [92.333, 92.938], [93.385, 93.951], [93.964, 94.056], [94.069, 94.306], [94.319, 94.385], [94.398, 94.464], [94.477, 94.859], [95.017, 95.109], [95.122, 95.596]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

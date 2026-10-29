@@ -1,0 +1,202 @@
+{
+  "id": "000",
+  "title": "How to Disagree Without Making Enemies",
+  "meta": "B2 · 约 270 词 · 场景：会议发言",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Why Silence Is Expensive",
+      "paragraphs": [
+        [
+          "In many teams, the most dangerous moment in a meeting is not an argument.",
+          "It is the quiet agreement.",
+          "Someone presents a plan, nobody ==objects==, and the decision is made.",
+          "Two weeks later, half the room ==admits== they had doubts from the start."
+        ],
+        [
+          "This happens because disagreeing feels risky.",
+          "We worry about __coming across as__ negative, or about __putting someone on the spot__ in front of their manager.",
+          "So we stay silent, and the team pays later.",
+          "**A concern raised in the meeting costs five minutes; the same concern raised after launch costs five weeks.**"
+        ],
+        [
+          "Good teams treat disagreement as a ==contribution==, not an attack.",
+          "The goal is not to win the argument.",
+          "The goal is to ==surface== risks while they are still cheap to fix."
+        ]
+      ],
+      "heading_zh": "1. 沉默的代价很高",
+      "paragraphs_zh": [
+        [
+          "在很多团队里，会议中最危险的时刻不是争论。",
+          "而是一片安静的同意。",
+          "有人提出一个方案，没人反对，决定就这么定了。",
+          "两周后，半屋子的人承认自己一开始就有疑虑。"
+        ],
+        [
+          "之所以会这样，是因为提反对意见让人觉得有风险。",
+          "我们担心显得太消极，或者担心当着别人经理的面让人下不来台。",
+          "于是我们保持沉默，代价则由团队事后来付。",
+          "一个顾虑在会上提出来只要五分钟；同样的顾虑等上线后再提，要花五周。"
+        ],
+        [
+          "好的团队把不同意见当作贡献，而不是攻击。",
+          "目的不是赢下争论。",
+          "目的是趁风险还容易修的时候，把它摆到桌面上。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Three Moves That Make Disagreement Safe",
+      "paragraphs": [
+        [
+          "**First, agree on the goal before you challenge the method.**",
+          "Saying \"We both want this release to be stable\" __sets the frame__.",
+          "Now your objection sounds like help, not opposition."
+        ],
+        [
+          "Second, ask instead of assert.",
+          "\"What happens if traffic doubles?\" is easier to hear than \"This won't scale.\"",
+          "A question invites the other person to find the gap themselves, which makes them far more likely to ==acknowledge== it."
+        ],
+        [
+          "Third, be specific.",
+          "==Vague== concerns like \"I'm not sure about this\" __leave people guessing__.",
+          "Point to one number, one dependency, or one ==scenario==.",
+          "**Specific doubts get fixed; vague doubts get ignored.**"
+        ],
+        [
+          "Finally, once the team decides, __commit to the decision__, even if it wasn't your choice.",
+          "Disagreeing openly and then supporting the outcome is what builds ==credibility==.",
+          "People will listen to your next objection because they know you are not just being difficult."
+        ]
+      ],
+      "heading_zh": "2. 让反对变得安全的三个动作",
+      "paragraphs_zh": [
+        [
+          "第一，先对齐目标，再质疑方法。",
+          "说一句「我们都希望这次发布是稳定的」，就先把框架定下来了。",
+          "这样你的反对听起来像是在帮忙，而不是在唱反调。"
+        ],
+        [
+          "第二，用提问代替断言。",
+          "「如果流量翻倍会怎样？」比「这扛不住」更容易让人听进去。",
+          "提问会让对方自己去发现漏洞，这样他们承认问题的可能性就大得多。"
+        ],
+        [
+          "第三，说具体。",
+          "「我对这个不太确定」这种模糊的顾虑，只会让人去猜你到底担心什么。",
+          "指出一个数字、一个依赖，或者一个具体场景。",
+          "具体的疑虑会被解决；模糊的疑虑会被忽略。"
+        ],
+        [
+          "最后，团队一旦做了决定，就全力执行，哪怕那不是你选的方案。",
+          "公开提出异议，然后支持最终结果，这才是建立信誉的方式。",
+          "下次你再反对时，大家会听，因为他们知道你不是在故意找茬。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者说会议里最危险的时刻是什么？",
+      "a": "The quiet agreement：没人反对、决定就这么定了，事后一半人承认一开始就有疑虑。"
+    },
+    {
+      "q": "为什么要在会上就提出顾虑？用文中的数字回答。",
+      "a": "会上提只花 5 分钟，上线后再提要花 5 周。"
+    },
+    {
+      "q": "安全地表达反对有哪几步？",
+      "a": "先对齐目标再质疑方法；用提问代替断言；说具体（一个数字/依赖/场景）；团队定了之后全力执行。"
+    }
+  ],
+  "dictation": [
+    "A concern raised in the meeting costs five minutes; the same concern raised after launch costs five weeks.",
+    "First, agree on the goal before you challenge the method.",
+    "A question invites the other person to find the gap themselves, which makes them far more likely to acknowledge it.",
+    "Specific doubts get fixed; vague doubts get ignored."
+  ],
+  "shadow": {
+    "text": "First, agree on the goal before you challenge the method. Saying \"We both want this release to be stable\" sets the frame. Now your objection sounds like help, not opposition.",
+    "marked": "First, <b>agree</b> on the <b>goal</b> / before you <b>challenge</b> the <b>method</b>. //<br>Saying \"We <b>both</b> want this release / to be <b>stable</b>\" / sets the <b>frame</b>. //<br>Now your objection sounds like <b>help</b>, / <b>not</b> opposition. //"
+  },
+  "prompts": [
+    {
+      "q": "PM 想跳过灰度，周五直接全量上线。用 30 秒反对他，先对齐目标，再用一个问题指出风险。",
+      "ref": "I think we all want this launch to go smoothly, without a rollback over the weekend. What happens if the new logic breaks in a region we haven't tested? If we start with a ten percent rollout on Friday and watch the crash rate for a day, we only lose twenty-four hours, and we get a real number to decide on.",
+      "ref_zh": "我想我们都希望这次上线顺顺利利，周末不用回滚。如果新逻辑在我们没测过的地区出问题怎么办？如果周五先放百分之十的量，观察一天崩溃率，我们只损失二十四小时，却能拿到一个真实的数字来做决定。"
+    },
+    {
+      "q": "TL 提议这个季度把服务用新框架重写。你对排期有顾虑，提一个具体的担忧，并给出替代方案。",
+      "ref": "I like the direction, and I agree the current code is hard to maintain. My concern is the timeline. Three other projects depend on this service this quarter, so if the rewrite slips by even two weeks, they slip with it. Could we migrate one endpoint first and see how long it actually takes?",
+      "ref_zh": "我认同这个方向，也同意现在的代码很难维护。我担心的是排期。这个季度有三个项目依赖这个服务，重写哪怕晚两周，它们也会跟着延期。我们能不能先迁移一个接口，看看实际要花多久？"
+    }
+  ],
+  "words": [
+    {
+      "w": "vague",
+      "ipa": "/veɪɡ/",
+      "zh": "模糊的、含糊的",
+      "ex": "\"Faster\" is too vague. Can we say p99 under 200 ms?",
+      "tts": "\"Faster\" is too vague. Can we say P ninety-nine under two hundred milliseconds?"
+    },
+    {
+      "w": "surface (v.)",
+      "ipa": "/ˈsɜːrfɪs/",
+      "zh": "提出、使浮出水面",
+      "ex": "I want to surface a risk before we commit to the timeline.",
+      "tts_w": "surface"
+    },
+    {
+      "w": "acknowledge",
+      "ipa": "/əkˈnɑːlɪdʒ/",
+      "zh": "承认、认可",
+      "ex": "He acknowledged the latency issue and agreed to add a cache."
+    },
+    {
+      "w": "credibility",
+      "ipa": "/ˌkredəˈbɪləti/",
+      "zh": "可信度",
+      "ex": "Hitting the last two deadlines gave us credibility with the PM."
+    },
+    {
+      "w": "scenario",
+      "ipa": "/səˈnæriˌoʊ/",
+      "zh": "情形、场景",
+      "ex": "In the worst-case scenario, we roll back within ten minutes."
+    },
+    {
+      "w": "contribution",
+      "ipa": "/ˌkɑːntrɪˈbjuːʃən/",
+      "zh": "贡献",
+      "ex": "That pushback was a real contribution to the design review."
+    },
+    {
+      "w": "object (v.)",
+      "ipa": "/əbˈdʒekt/",
+      "zh": "反对",
+      "ex": "If no one objects, we'll go with option B.",
+      "tts_w": "object"
+    },
+    {
+      "w": "admit",
+      "ipa": "/ədˈmɪt/",
+      "zh": "承认",
+      "ex": "I'll admit I underestimated the migration cost."
+    },
+    {
+      "w": "assert",
+      "ipa": "/əˈsɜːrt/",
+      "zh": "断言",
+      "ex": "Rather than assert it's broken, let's look at the logs."
+    },
+    {
+      "w": "opposition",
+      "ipa": "/ˌɑːpəˈzɪʃən/",
+      "zh": "反对、对立",
+      "ex": "There was some opposition to moving the launch date."
+    }
+  ]
+}

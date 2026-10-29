@@ -1,0 +1,232 @@
+{
+  "id": "111",
+  "type": "dialogue",
+  "title": "Ordering Drinks at a Bar",
+  "meta": "B2 · 约 270 词 · 场景：酒吧点酒、开账与核对账单",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Bartender",
+      "name_zh": "调酒师",
+      "voice": "en-US-EmmaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Ordering at the Bar",
+      "heading_zh": "1. 在吧台点酒",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Hey, what can I get you?",
+          "zh": "嗨，要喝点什么？"
+        },
+        {
+          "sp": "A",
+          "en": "**Hi. What's on happy hour right now?**",
+          "zh": "你好。现在欢乐时光有什么优惠？"
+        },
+        {
+          "sp": "B",
+          "en": "Until eight, house wines and draft beers are ==one-for-one==, and selected cocktails are twelve dollars.",
+          "zh": "八点之前，自家酒和生啤买一送一，指定鸡尾酒十二块。"
+        },
+        {
+          "sp": "A",
+          "en": "Nice. I'm not much of a beer person, though. What would you recommend __if I like__ something not too sweet?",
+          "zh": "不错。不过我不太喝啤酒。如果我喜欢不太甜的，你推荐什么？"
+        },
+        {
+          "sp": "B",
+          "en": "Try our gin and tonic with ==yuzu==. It's ==crisp== and a little bitter. Most people love it.",
+          "zh": "试试我们的柚子金汤力，清爽、带点苦味。大多数人都很喜欢。"
+        },
+        {
+          "sp": "A",
+          "en": "I'll __go for__ that. And for my friend, anything ==non-alcoholic==? He's driving.",
+          "zh": "那我就要这个。给我朋友有没有不含酒精的？他要开车。"
+        },
+        {
+          "sp": "B",
+          "en": "We do a great ginger and lime ==mocktail==. Very refreshing.",
+          "zh": "我们有一款很棒的姜汁青柠无酒精鸡尾酒，很清爽。"
+        },
+        {
+          "sp": "A",
+          "en": "**Perfect, one of each. Can I start a tab? A few more colleagues are coming.**",
+          "zh": "好，各来一杯。我能开个账先挂着吗？还有几个同事要来。"
+        },
+        {
+          "sp": "B",
+          "en": "Sure. I'll just need to hold a card behind the bar.",
+          "zh": "可以。我需要押一张卡在吧台。"
+        },
+        {
+          "sp": "A",
+          "en": "Here you go. Could you also __bring a jug of water__ to our table? We're the ones by the window.",
+          "zh": "给你。能再送一壶水到我们桌吗？我们坐在窗边。"
+        },
+        {
+          "sp": "B",
+          "en": "You got it. I'll bring the drinks over.",
+          "zh": "没问题。饮料我给你们送过去。"
+        }
+      ]
+    },
+    {
+      "heading": "2. Closing the Tab",
+      "heading_zh": "2. 结账",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "**Hi, we're heading off soon. Could I close out the tab, please?**",
+          "zh": "你好，我们要走了。能帮我结一下账吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Sure. That comes to two hundred and eighteen dollars.",
+          "zh": "好的。一共两百一十八块。"
+        },
+        {
+          "sp": "A",
+          "en": "Hmm, that seems a bit high. Could I __take a look at__ the bill before I pay?",
+          "zh": "嗯，好像有点多。付钱之前能让我看一下账单吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Of course, here you go.",
+          "zh": "当然，给你。"
+        },
+        {
+          "sp": "A",
+          "en": "I think the ==last round== was charged at full price. We ordered it at seven forty-five, still within ==happy hour==.",
+          "zh": "最后一轮好像是按原价收的。我们七点四十五点的，还在欢乐时光内。"
+        },
+        {
+          "sp": "B",
+          "en": "Let me check the system. Oh, you're right. It was ==keyed in== at eight oh five. Sorry, I'll ==adjust== that.",
+          "zh": "我查一下系统。哦，你说得对。是八点零五才录进去的。抱歉，我改一下。"
+        },
+        {
+          "sp": "A",
+          "en": "Thanks. And we didn't order these nachos. I think they're from the next table.",
+          "zh": "谢谢。还有，这份玉米片不是我们点的，应该是隔壁桌的。"
+        },
+        {
+          "sp": "B",
+          "en": "My bad. I'll take those off too. The new total is one hundred and seventy-six.",
+          "zh": "是我搞错了，这个也去掉。新的总数是一百七十六。"
+        },
+        {
+          "sp": "A",
+          "en": "That looks right now. __Thanks for sorting it out__.",
+          "zh": "现在对了。谢谢你处理好。"
+        },
+        {
+          "sp": "B",
+          "en": "No problem. Don't forget your card. Have a good night, guys!",
+          "zh": "不客气。别忘了你的卡。祝你们晚上愉快！"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "欢乐时光有什么优惠？",
+      "a": "八点前自家酒和生啤买一送一，指定鸡尾酒十二块。"
+    },
+    {
+      "q": "「你」给自己和朋友各点了什么？为什么？",
+      "a": "自己要了不太甜的柚子金汤力；朋友要开车，所以点了姜汁青柠无酒精鸡尾酒。"
+    },
+    {
+      "q": "结账时发现了哪两个问题？",
+      "a": "最后一轮是七点四十五点的，却因为八点零五才录入被按原价收；还多算了一份隔壁桌的玉米片。总数从两百一十八改成一百七十六。"
+    }
+  ],
+  "dictation": [
+    "Hi. What's on happy hour right now?",
+    "Perfect, one of each. Can I start a tab? A few more colleagues are coming.",
+    "Hi, we're heading off soon. Could I close out the tab, please?",
+    "I think the last round was charged at full price. We ordered it at seven forty-five, still within happy hour."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "I think the last round was charged at full price. We ordered it at seven forty-five, still within happy hour.",
+    "marked": "I think the <b>last round</b> / was charged at <b>full price</b>. //<br>We ordered it at <b>seven forty-five</b>, / still within <b>happy hour</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你请客户喝酒，但你不确定他喝不喝酒。跟调酒师说你们的需求，问几个不同口味的选择，并说明全部记在你的账上。",
+      "ref": "Hi, I'm hosting a client tonight, and I'm not sure what he likes yet. Could you suggest a couple of options? Maybe one light cocktail, one good whisky, and something non-alcoholic in case he doesn't drink. Whatever we order tonight, please put it all on my tab. Here's my card.",
+      "ref_zh": "你好，我今晚招待一位客户，还不清楚他喜欢喝什么。能推荐几个选择吗？比如一款清淡的鸡尾酒、一款好的威士忌，再来一款无酒精的，以防他不喝酒。今晚点的全都记在我的账上。这是我的卡。"
+    },
+    {
+      "q": "你点了一杯鸡尾酒，喝了一口发现太甜，跟你说的口味完全不一样。礼貌地跟调酒师说明，问能不能调整或换一杯。",
+      "ref": "Sorry, could I ask you something? I had a sip of this, and it's a lot sweeter than I expected. I'm not a fan of sweet drinks. Is there any way to make it a bit drier, maybe with more lime or soda? If not, I'm happy to switch to a gin and tonic instead.",
+      "ref_zh": "不好意思，想问一下。我尝了一口，比我想的甜很多。我不太喜欢甜的。能不能调干一点，比如多加点青柠或者苏打水？不行的话，我换一杯金汤力也可以。"
+    }
+  ],
+  "words": [
+    {
+      "w": "happy hour",
+      "ipa": "/ˈhæpi aʊər/",
+      "zh": "欢乐时光（酒水优惠时段）",
+      "ex": "Happy hour ends at eight."
+    },
+    {
+      "w": "one-for-one",
+      "ipa": "/ˌwʌn fər ˈwʌn/",
+      "zh": "买一送一",
+      "ex": "Bubble tea is one-for-one on Wednesdays."
+    },
+    {
+      "w": "yuzu",
+      "ipa": "/ˈjuːzuː/",
+      "zh": "日本柚子",
+      "ex": "This cake has a light yuzu flavour."
+    },
+    {
+      "w": "crisp",
+      "ipa": "/krɪsp/",
+      "zh": "（口感）清爽的",
+      "ex": "I'd like a crisp white wine with the fish."
+    },
+    {
+      "w": "non-alcoholic",
+      "ipa": "/ˌnɑːn ælkəˈhɔːlɪk/",
+      "zh": "不含酒精的",
+      "ex": "Do you have any non-alcoholic beer?"
+    },
+    {
+      "w": "mocktail",
+      "ipa": "/ˈmɑːkteɪl/",
+      "zh": "无酒精鸡尾酒",
+      "ex": "The kids each had a fruit mocktail."
+    },
+    {
+      "w": "last round",
+      "ipa": "/læst raʊnd/",
+      "zh": "最后一轮（酒）",
+      "ex": "Last round is on me."
+    },
+    {
+      "w": "keyed in",
+      "ipa": "/kiːd ɪn/",
+      "zh": "录入（系统）",
+      "ex": "The order was keyed in under the wrong table."
+    },
+    {
+      "w": "adjust",
+      "ipa": "/əˈdʒʌst/",
+      "zh": "调整",
+      "ex": "Could you adjust the bill? We cancelled one dish."
+    }
+  ]
+}

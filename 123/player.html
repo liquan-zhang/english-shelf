@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Booking and Visiting the Dentist · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "123", "type": "dialogue", "title": "Booking and Visiting the Dentist", "meta": "B2 · 约 300 词 · 场景：预约牙医与结账报销", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Dental Receptionist", "name_zh": "牙科前台", "voice": "en-GB-SoniaNeural"}}, "gist": [{"q": "「你」的牙是什么症状？最后约在什么时候？", "a": "左下牙平时没事，喝冷的就很疼；因为不想请假，约在周四晚上六点半。"}, {"q": "账单为什么比预期贵？保险报了多少？", "a": "包括问诊、两张片子和较贵的白色补牙材料，共三百四十块；保险报两百，自付一百四十。"}, {"q": "「你」结账时提了哪两个请求？", "a": "要一张明细收据找公司报销剩下的钱；洗牙推迟到下个月，约晚上。"}], "dictation": [{"id": "s0_3_0", "text": "It's fine most of the time, but it really hurts when I drink something cold."}, {"id": "s0_5_0", "text": "Do you have anything after six? I'd rather not take time off work."}, {"id": "s1_1_0", "text": "Oh, that's more than I expected. Could you walk me through the charges?"}, {"id": "s1_5_0", "text": "Could I get an itemised receipt? I'd like to claim the rest from my company."}], "shadow": {"speaker": "A", "text": "Could I get an itemised receipt? I'd like to claim the rest from my company.", "marked": "Could I get an <b>itemised</b> receipt? //<br>I'd like to <b>claim</b> the rest / from my <b>company</b>. //"}, "prompts": [{"q": "孩子第一次看牙医，你打电话预约。说明孩子年龄、问有没有儿童牙医、问周末时间和大概费用。", "ref": "Hi, I'd like to book a first dental checkup for my son. He's three and a half, and he's a bit nervous about doctors. Do you have a dentist who's good with young kids? We'd prefer a Saturday morning if possible. And roughly how much does a first visit cost?", "ref_zh": "你好，我想给我儿子约第一次牙科检查。他三岁半，有点怕看医生。你们有擅长看小孩的牙医吗？如果可以的话想约周六上午。第一次大概多少钱？", "id": "ref0"}, {"q": "牙医建议你做一个很贵的治疗。你想先了解有没有别的方案，并且不想今天就决定。", "ref": "Thanks for explaining. Before I decide, could you tell me if there are any other options? Maybe something less expensive, even if it doesn't last as long? I'd also like to check with my insurance first. Could you give me a written quote, and I'll call you back by the end of the week?", "ref_zh": "谢谢你的解释。在我决定之前，能告诉我还有没有其他方案吗？比如便宜一点的，哪怕没那么持久也行。我也想先问问保险公司。能给我一份书面报价吗？我这周末之前给你回电话。", "id": "ref1"}], "words": [{"w": "toothache", "ipa": "/ˈtuːθeɪk/", "zh": "牙疼", "ex": "I had a terrible toothache all weekend.", "id": "w0"}, {"w": "sensitivity", "ipa": "/ˌsensəˈtɪvəti/", "zh": "（牙齿）敏感", "ex": "This toothpaste helps with sensitivity to cold drinks.", "id": "w1"}, {"w": "cavity", "ipa": "/ˈkævəti/", "zh": "蛀牙，龋洞", "ex": "Too many sweets can give kids cavities.", "id": "w2"}, {"w": "emergency", "ipa": "/ɪˈmɜːrdʒənsi/", "zh": "紧急情况，急诊", "ex": "Call this number only in an emergency.", "id": "w3"}, {"w": "filling", "ipa": "/ˈfɪlɪŋ/", "zh": "补牙；补牙材料", "ex": "One of my old fillings fell out last night.", "id": "w4"}, {"w": "balance", "ipa": "/ˈbæləns/", "zh": "余额，差额", "ex": "You can pay the balance when you pick it up.", "id": "w5"}, {"w": "treatment notes", "ipa": "/ˈtriːtmənt noʊts/", "zh": "治疗记录", "ex": "The insurer asked for a copy of the treatment notes.", "id": "w6"}, {"w": "scaling", "ipa": "/ˈskeɪlɪŋ/", "zh": "洗牙（刮牙石）", "ex": "I get a scaling and polish every six months.", "id": "w7"}, {"w": "itemised", "ipa": "/ˈaɪtəmaɪzd/", "zh": "逐项列明的", "ex": "Could you send me an itemised bill?", "id": "w8"}, {"w": "hold off on", "ipa": "/hoʊld ɔːf ɑːn/", "zh": "推迟，先不做", "ex": "Let's hold off on buying a car until next year.", "id": "w9"}], "sections": [{"heading": "1. Booking on the Phone", "heading_zh": "1. 电话预约", "rows": [[{"id": "s0_0_0", "md": "Good morning, Bright Smile Dental. How can I help?", "text": "Good morning, Bright Smile Dental. How can I help?", "zh": "早上好，这里是亮笑牙科。有什么可以帮您？", "sp": "B"}], [{"id": "s0_1_0", "md": "Hi, I'd like to __book an appointment__. I've got a ==toothache== on the lower left side.", "text": "Hi, I'd like to book an appointment. I've got a toothache on the lower left side.", "zh": "你好，我想预约一下。我左下边的牙疼。", "sp": "A"}], [{"id": "s0_2_0", "md": "Sorry to hear that. Is the pain constant, or only when you eat something?", "text": "Sorry to hear that. Is the pain constant, or only when you eat something?", "zh": "真遗憾。是一直疼，还是只在吃东西的时候疼？", "sp": "B"}], [{"id": "s0_3_0", "md": "**It's fine most of the time, but it really hurts when I drink something cold.**", "text": "It's fine most of the time, but it really hurts when I drink something cold.", "zh": "大部分时间没事，但一喝冷的就特别疼。", "sp": "A"}], [{"id": "s0_4_0", "md": "That could be ==sensitivity== or a small ==cavity==. Doctor Tan has a slot tomorrow at eleven fifteen.", "text": "That could be sensitivity or a small cavity. Doctor Tan has a slot tomorrow at eleven fifteen.", "zh": "可能是牙齿敏感，也可能是有个小蛀牙。陈医生明天十一点一刻有空。", "sp": "B"}], [{"id": "s0_5_0", "md": "Do you have anything after six? I'd rather not __take time off__ work.", "text": "Do you have anything after six? I'd rather not take time off work.", "zh": "六点以后有吗？我不太想请假。", "sp": "A"}], [{"id": "s0_6_0", "md": "Our latest slot is six thirty on Thursday. Would that suit you?", "text": "Our latest slot is six thirty on Thursday. Would that suit you?", "zh": "我们最晚的号是周四六点半。您看行吗？", "sp": "B"}], [{"id": "s0_7_0", "md": "Thursday works. Roughly how much is a checkup, and do you take insurance?", "text": "Thursday works. Roughly how much is a checkup, and do you take insurance?", "zh": "周四可以。检查大概多少钱？你们接受保险吗？", "sp": "A"}], [{"id": "s0_8_0", "md": "A consultation and X ray is about one hundred and twenty dollars. We can bill some insurers directly, so please bring your card.", "text": "A consultation and X ray is about one hundred and twenty dollars. We can bill some insurers directly, so please bring your card.", "zh": "问诊加拍片大约一百二十块。部分保险公司我们可以直接结算，所以请带上保险卡。", "sp": "B"}], [{"id": "s0_9_0", "md": "Will do. And what if the pain gets worse before then?", "text": "Will do. And what if the pain gets worse before then?", "zh": "好的。那如果在那之前疼得更厉害了呢？", "sp": "A"}], [{"id": "s0_10_0", "md": "Just call us. We keep a few ==emergency== slots every morning.", "text": "Just call us. We keep a few emergency slots every morning.", "zh": "直接给我们打电话。我们每天早上都留了几个急诊号。", "sp": "B"}]]}, {"heading": "2. Paying After Treatment", "heading_zh": "2. 治疗后结账", "rows": [[{"id": "s1_0_0", "md": "So Doctor Tan did one ==filling== today. The total comes to three hundred and forty dollars.", "text": "So Doctor Tan did one filling today. The total comes to three hundred and forty dollars.", "zh": "陈医生今天给您补了一颗牙。一共三百四十块。", "sp": "B"}], [{"id": "s1_1_0", "md": "Oh, that's more than I expected. Could you __walk me through__ the charges?", "text": "Oh, that's more than I expected. Could you walk me through the charges?", "zh": "哦，比我想的贵。能给我讲讲都收了哪些费用吗？", "sp": "A"}], [{"id": "s1_2_0", "md": "Of course. It's the consultation, two X rays, and a white filling, which costs more than a silver one.", "text": "Of course. It's the consultation, two X rays, and a white filling, which costs more than a silver one.", "zh": "当然。有问诊费、两张片子，还有一个白色补牙材料，比银色的贵一些。", "sp": "B"}], [{"id": "s1_3_0", "md": "I see. Does my insurance cover the filling, or just the checkup?", "text": "I see. Does my insurance cover the filling, or just the checkup?", "zh": "明白了。我的保险报补牙吗，还是只报检查？", "sp": "A"}], [{"id": "s1_4_0", "md": "Your plan covers basic fillings up to two hundred dollars a year. You'd pay the ==balance== of one hundred and forty.", "text": "Your plan covers basic fillings up to two hundred dollars a year. You'd pay the balance of one hundred and forty.", "zh": "您的保险每年最多报两百块的基础补牙。剩下的一百四十块需要您自付。", "sp": "B"}], [{"id": "s1_5_0", "md": "**Could I get an itemised receipt? I'd like to claim the rest from my company.**", "text": "Could I get an itemised receipt? I'd like to claim the rest from my company.", "zh": "能给我开一张明细收据吗？剩下的我想找公司报销。", "sp": "A"}], [{"id": "s1_6_0", "md": "No problem. I'll email it to you along with the ==treatment notes==.", "text": "No problem. I'll email it to you along with the treatment notes.", "zh": "没问题。我连同治疗记录一起发到您邮箱。", "sp": "B"}], [{"id": "s1_7_0", "md": "Thanks. The dentist also mentioned a ==scaling== and polish. Can I __hold off on__ that for a few weeks?", "text": "Thanks. The dentist also mentioned a scaling and polish. Can I hold off on that for a few weeks?", "zh": "谢谢。牙医还提到要洗牙抛光。能过几周再做吗？", "sp": "A"}], [{"id": "s1_8_0", "md": "Sure, it's not urgent. Shall I __put you down for__ next month?", "text": "Sure, it's not urgent. Shall I put you down for next month?", "zh": "可以，不着急。帮您约在下个月？", "sp": "B"}], [{"id": "s1_9_0", "md": "**Let's do that. Something in the evening again, please.**", "text": "Let's do that. Something in the evening again, please.", "zh": "好的。还是麻烦约晚上的时间。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Booking on the Phone", "zh": "1. 电话预约", "start": 0.0, "end": 1.92, "words": [[0.105, 0.368], [0.684, 0.974], [0.987, 1.066], [1.079, 1.158], [1.171, 1.526]]}, {"kind": "s", "id": "s0_0_0", "md": "Good morning, Bright Smile Dental. How can I help?", "zh": "早上好，这里是亮笑牙科。有什么可以帮您？", "sp": "B", "gap": false, "start": 1.92, "end": 6.312, "words": [[2.021, 2.258], [2.271, 2.811], [3.074, 3.363], [3.377, 3.798], [3.811, 4.403], [4.828, 4.999], [5.012, 5.21], [5.223, 5.328], [5.341, 5.92]]}, {"kind": "s", "id": "s0_1_0", "md": "Hi, I'd like to __book an appointment__. I've got a ==toothache== on the lower left side.", "zh": "你好，我想预约一下。我左下边的牙疼。", "sp": "A", "gap": false, "start": 6.312, "end": 11.112, "words": [[6.43, 6.694], [7.088, 7.233], [7.246, 7.404], [7.417, 7.496], [7.509, 7.694], [7.707, 7.773], [7.786, 8.338], [8.773, 8.878], [8.891, 9.023], [9.036, 9.088], [9.101, 9.615], [9.628, 9.707], [9.72, 9.799], [9.812, 10.088], [10.101, 10.338], [10.351, 10.733]]}, {"kind": "s", "id": "s0_2_0", "md": "Sorry to hear that. Is the pain constant, or only when you eat something?", "zh": "真遗憾。是一直疼，还是只在吃东西的时候疼？", "sp": "B", "gap": false, "start": 11.112, "end": 16.632, "words": [[11.241, 11.688], [11.701, 11.846], [11.859, 12.123], [12.136, 12.609], [13.033, 13.165], [13.178, 13.296], [13.309, 13.625], [13.638, 14.349], [14.678, 14.796], [14.809, 15.073], [15.086, 15.27], [15.283, 15.401], [15.415, 15.638], [15.651, 16.244]]}, {"kind": "s", "id": "s0_3_0", "md": "**It's fine most of the time, but it really hurts when I drink something cold.**", "zh": "大部分时间没事，但一喝冷的就特别疼。", "sp": "A", "gap": false, "start": 16.632, "end": 20.928, "words": [[16.737, 16.869], [16.882, 17.145], [17.158, 17.448], [17.461, 17.514], [17.527, 17.593], [17.606, 18.053], [18.356, 18.474], [18.487, 18.632], [18.645, 18.895], [18.908, 19.264], [19.277, 19.395], [19.408, 19.487], [19.5, 19.764], [19.777, 20.119], [20.132, 20.54]]}, {"kind": "s", "id": "s0_4_0", "md": "That could be ==sensitivity== or a small ==cavity==. Doctor Tan has a slot tomorrow at eleven fifteen.", "zh": "可能是牙齿敏感，也可能是有个小蛀牙。陈医生明天十一点一刻有空。", "sp": "B", "gap": false, "start": 20.928, "end": 28.152, "words": [[21.057, 21.307], [21.32, 21.504], [21.517, 21.649], [21.662, 22.623], [22.636, 22.846], [22.86, 22.939], [22.952, 23.307], [23.32, 23.939], [24.336, 24.757], [24.77, 25.178], [25.191, 25.389], [25.402, 25.467], [25.481, 25.875], [25.889, 26.454], [26.467, 26.678], [26.691, 27.073], [27.086, 27.757]]}, {"kind": "s", "id": "s0_5_0", "md": "Do you have anything after six? I'd rather not __take time off__ work.", "zh": "六点以后有吗？我不太想请假。", "sp": "A", "gap": false, "start": 28.152, "end": 32.16, "words": [[28.257, 28.31], [28.323, 28.415], [28.428, 28.626], [28.639, 28.955], [28.968, 29.244], [29.257, 29.731], [30.165, 30.27], [30.284, 30.52], [30.534, 30.731], [30.744, 30.942], [30.955, 31.178], [31.191, 31.389], [31.402, 31.77]]}, {"kind": "s", "id": "s0_6_0", "md": "Our latest slot is six thirty on Thursday. Would that suit you?", "zh": "我们最晚的号是周四六点半。您看行吗？", "sp": "B", "gap": false, "start": 32.16, "end": 37.392, "words": [[32.261, 32.498], [32.511, 32.998], [33.011, 33.406], [33.419, 33.643], [33.656, 33.972], [33.985, 34.406], [34.419, 34.603], [34.617, 35.34], [35.724, 35.974], [35.988, 36.238], [36.251, 36.619], [36.632, 37.001]]}, {"kind": "s", "id": "s0_7_0", "md": "Thursday works. Roughly how much is a checkup, and do you take insurance?", "zh": "周四可以。检查大概多少钱？你们接受保险吗？", "sp": "A", "gap": false, "start": 37.392, "end": 42.024, "words": [[37.51, 37.853], [37.866, 38.379], [38.813, 39.102], [39.116, 39.3], [39.313, 39.524], [39.537, 39.629], [39.642, 39.681], [39.695, 40.181], [40.484, 40.55], [40.563, 40.655], [40.668, 40.76], [40.774, 41.01], [41.024, 41.629]]}, {"kind": "s", "id": "s0_8_0", "md": "A consultation and X ray is about one hundred and twenty dollars. We can bill some insurers directly, so please bring your card.", "zh": "问诊加拍片大约一百二十块。部分保险公司我们可以直接结算，所以请带上保险卡。", "sp": "B", "gap": false, "start": 42.024, "end": 51.144, "words": [[42.14, 42.245], [42.258, 43.245], [43.258, 43.442], [43.456, 43.745], [43.758, 44.1], [44.113, 44.284], [44.298, 44.692], [44.706, 44.916], [44.929, 45.285], [45.298, 45.377], [45.39, 45.771], [45.785, 46.377], [46.8, 46.958], [46.971, 47.169], [47.182, 47.432], [47.445, 47.642], [47.656, 48.287], [48.3, 49.011], [49.313, 49.458], [49.471, 49.814], [49.827, 50.024], [50.037, 50.195], [50.208, 50.761]]}, {"kind": "s", "id": "s0_9_0", "md": "Will do. And what if the pain gets worse before then?", "zh": "好的。那如果在那之前疼得更厉害了呢？", "sp": "A", "gap": false, "start": 51.144, "end": 54.48, "words": [[51.249, 51.328], [51.341, 51.618], [52.052, 52.131], [52.144, 52.262], [52.276, 52.368], [52.381, 52.486], [52.499, 52.947], [52.96, 53.17], [53.183, 53.46], [53.473, 53.828], [53.841, 54.091]]}, {"kind": "s", "id": "s0_10_0", "md": "Just call us. We keep a few ==emergency== slots every morning.", "zh": "直接给我们打电话。我们每天早上都留了几个急诊号。", "sp": "B", "gap": false, "start": 54.48, "end": 59.352, "words": [[54.581, 54.949], [54.962, 55.265], [55.278, 55.699], [56.098, 56.283], [56.296, 56.559], [56.572, 56.664], [56.677, 56.941], [56.954, 57.598], [57.612, 58.125], [58.138, 58.401], [58.414, 58.967]]}, {"kind": "h", "id": "h1", "md": "2. Paying After Treatment", "zh": "2. 治疗后结账", "start": 59.352, "end": 61.656, "words": [[59.47, 59.72], [60.155, 60.549], [60.563, 60.773], [60.786, 61.273]]}, {"kind": "s", "id": "s1_0_0", "md": "So Doctor Tan did one ==filling== today. The total comes to three hundred and forty dollars.", "zh": "陈医生今天给您补了一颗牙。一共三百四十块。", "sp": "B", "gap": false, "start": 61.656, "end": 68.184, "words": [[61.772, 62.035], [62.048, 62.482], [62.495, 62.89], [62.903, 63.101], [63.114, 63.39], [63.403, 63.759], [63.772, 64.311], [64.735, 64.867], [64.88, 65.419], [65.432, 65.801], [65.814, 65.972], [65.985, 66.288], [66.301, 66.656], [66.669, 66.788], [66.801, 67.182], [67.195, 67.801]]}, {"kind": "s", "id": "s1_1_0", "md": "Oh, that's more than I expected. Could you __walk me through__ the charges?", "zh": "哦，比我想的贵。能给我讲讲都收了哪些费用吗？", "sp": "A", "gap": false, "start": 68.184, "end": 72.432, "words": [[68.289, 68.46], [68.855, 69.066], [69.079, 69.263], [69.276, 69.408], [69.421, 69.5], [69.513, 70.105], [70.539, 70.658], [70.671, 70.763], [70.776, 71.052], [71.066, 71.184], [71.197, 71.329], [71.342, 71.421], [71.434, 72.052]]}, {"kind": "s", "id": "s1_2_0", "md": "Of course. It's the consultation, two X rays, and a white filling, which costs more than a silver one.", "zh": "当然。有问诊费、两张片子，还有一个白色补牙材料，比银色的贵一些。", "sp": "B", "gap": false, "start": 72.432, "end": 79.968, "words": [[72.548, 72.745], [72.758, 73.377], [73.8, 73.985], [73.998, 74.103], [74.116, 75.143], [75.393, 75.603], [75.616, 75.866], [75.879, 76.3], [76.498, 76.643], [76.656, 76.695], [76.708, 77.05], [77.064, 77.471], [77.761, 77.958], [77.971, 78.366], [78.379, 78.577], [78.59, 78.748], [78.761, 78.814], [78.827, 79.182], [79.195, 79.577]]}, {"kind": "s", "id": "s1_3_0", "md": "I see. Does my insurance cover the filling, or just the checkup?", "zh": "明白了。我的保险报补牙吗，还是只报检查？", "sp": "A", "gap": false, "start": 79.968, "end": 84.024, "words": [[80.073, 80.152], [80.165, 80.508], [80.942, 81.047], [81.06, 81.205], [81.218, 81.692], [81.705, 81.942], [81.955, 82.034], [82.047, 82.455], [82.784, 82.863], [82.876, 83.06], [83.073, 83.165], [83.179, 83.639]]}, {"kind": "s", "id": "s1_4_0", "md": "Your plan covers basic fillings up to two hundred dollars a year. You'd pay the ==balance== of one hundred and forty.", "zh": "您的保险每年最多报两百块的基础补牙。剩下的一百四十块需要您自付。", "sp": "B", "gap": false, "start": 84.024, "end": 91.632, "words": [[84.166, 84.35], [84.363, 84.824], [84.837, 85.245], [85.258, 85.706], [85.719, 86.271], [86.285, 86.482], [86.495, 86.627], [86.64, 86.903], [86.916, 87.245], [87.258, 87.587], [87.6, 87.653], [87.666, 88.114], [88.537, 88.8], [88.813, 89.05], [89.063, 89.182], [89.195, 89.734], [89.748, 89.906], [89.919, 90.129], [90.142, 90.498], [90.511, 90.629], [90.642, 91.235]]}, {"kind": "s", "id": "s1_5_0", "md": "**Could I get an itemised receipt? I'd like to claim the rest from my company.**", "zh": "能给我开一张明细收据吗？剩下的我想找公司报销。", "sp": "A", "gap": false, "start": 91.632, "end": 95.856, "words": [[91.737, 91.843], [91.856, 91.935], [91.948, 92.079], [92.093, 92.185], [92.198, 92.698], [92.711, 93.198], [93.632, 93.737], [93.75, 93.895], [93.908, 93.987], [94.0, 94.264], [94.277, 94.356], [94.369, 94.698], [94.711, 94.843], [94.856, 94.974], [94.987, 95.474]]}, {"kind": "s", "id": "s1_6_0", "md": "No problem. I'll email it to you along with the ==treatment notes==.", "zh": "没问题。我连同治疗记录一起发到您邮箱。", "sp": "B", "gap": false, "start": 95.856, "end": 100.68, "words": [[95.972, 96.222], [96.235, 96.88], [97.303, 97.54], [97.553, 97.922], [97.935, 98.08], [98.093, 98.211], [98.224, 98.488], [98.501, 98.895], [98.909, 99.053], [99.067, 99.159], [99.172, 99.698], [99.711, 100.29]]}, {"kind": "s", "id": "s1_7_0", "md": "Thanks. The dentist also mentioned a ==scaling== and polish. Can I __hold off on__ that for a few weeks?", "zh": "谢谢。牙医还提到要洗牙抛光。能过几周再做吗？", "sp": "A", "gap": false, "start": 100.68, "end": 106.824, "words": [[100.812, 101.219], [101.667, 101.733], [101.746, 102.154], [102.18, 102.496], [102.509, 102.891], [102.904, 102.943], [102.956, 103.456], [103.469, 103.548], [103.562, 104.167], [104.601, 104.706], [104.719, 104.785], [104.798, 105.035], [105.048, 105.259], [105.272, 105.364], [105.377, 105.548], [105.562, 105.693], [105.706, 105.746], [105.759, 105.943], [105.956, 106.443]]}, {"kind": "s", "id": "s1_8_0", "md": "Sure, it's not urgent. Shall I __put you down for__ next month?", "zh": "可以，不着急。帮您约在下个月？", "sp": "B", "gap": false, "start": 106.824, "end": 111.816, "words": [[106.94, 107.4], [107.663, 107.834], [107.848, 108.111], [108.124, 108.795], [109.192, 109.469], [109.482, 109.561], [109.574, 109.85], [109.863, 109.995], [110.008, 110.39], [110.403, 110.521], [110.535, 110.89], [110.903, 111.429]]}, {"kind": "s", "id": "s1_9_0", "md": "**Let's do that. Something in the evening again, please.**", "zh": "好的。还是麻烦约晚上的时间。", "sp": "A", "gap": false, "start": 111.816, "end": 115.368, "words": [[111.921, 112.066], [112.079, 112.237], [112.25, 112.54], [112.974, 113.29], [113.303, 113.369], [113.382, 113.448], [113.461, 113.829], [113.842, 114.224], [114.408, 114.987]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

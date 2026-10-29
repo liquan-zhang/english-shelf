@@ -1,0 +1,190 @@
+{
+  "id": "021",
+  "title": "What Makes a Good Design Review",
+  "meta": "B2 · 约 280 词 · 场景：设计评审",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Diagram Is Not the Design",
+      "paragraphs": [
+        [
+          "Most design reviews spend forty minutes on __boxes and arrows__.",
+          "Someone asks why the queue is drawn on the left, and someone else suggests a different name for the cache.",
+          "The meeting ends, everyone feels ==productive==, and the hard questions were never asked."
+        ],
+        [
+          "A diagram shows what the system looks like.",
+          "A design is the set of decisions behind it, and the ==assumptions== those decisions rest on.",
+          "**A good review tests the assumptions, because that is where designs usually break.**"
+        ],
+        [
+          "So before the meeting, the author should __spell out__ the three decisions that matter most.",
+          "Why build a new service instead of extending the old one?",
+          "Why accept eventual ==consistency== instead of strong consistency?",
+          "Each decision should come with the option that was rejected and the reason."
+        ]
+      ],
+      "heading_zh": "1. 架构图不等于设计",
+      "paragraphs_zh": [
+        [
+          "大多数设计评审会花四十分钟在框框和箭头上。",
+          "有人问队列为什么画在左边，又有人建议给缓存换个名字。",
+          "会开完了，大家都觉得挺有成效，可真正难的问题一个都没问。"
+        ],
+        [
+          "架构图展示的是系统长什么样。",
+          "设计则是背后的一系列决策，以及这些决策所依赖的假设。",
+          "好的评审要去检验这些假设，因为设计通常就是在这里出问题的。"
+        ],
+        [
+          "所以开会之前，作者应该把最关键的三个决策讲清楚。",
+          "为什么要新建一个服务，而不是在老服务上扩展？",
+          "为什么接受最终一致性，而不是强一致性？",
+          "每个决策都要附上被否掉的方案和否掉的理由。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Three Questions for Reviewers",
+      "paragraphs": [
+        [
+          "As a reviewer, your job is not to redesign the system in the room.",
+          "It is to __poke holes in__ the thinking while changes are still cheap.",
+          "Three questions do most of the work."
+        ],
+        [
+          "First, what happens when this part fails?",
+          "Ask about timeouts, retries, and what the user sees when a ==dependency== is down.",
+          "If the answer is \"it won't fail,\" you have found your first ==gap==."
+        ],
+        [
+          "Second, what does this look like at ten times the traffic?",
+          "You are not asking the author to build for that scale today.",
+          "You are checking whether the design __paints the team into a corner__ later."
+        ],
+        [
+          "Third, how will we know it is working?",
+          "A design without metrics, alerts, and a ==rollback== plan is only half finished.",
+          "**If you leave with a list of decisions and open risks, it was a good review, even if nobody moved a single box.**"
+        ]
+      ],
+      "heading_zh": "2. 评审人该问的三个问题",
+      "paragraphs_zh": [
+        [
+          "作为评审人，你的任务不是在会上把系统重新设计一遍。",
+          "而是趁改动成本还低的时候，去挑思路里的漏洞。",
+          "三个问题就能解决大部分事情。"
+        ],
+        [
+          "第一，这部分挂了会怎样？",
+          "问问超时、重试，以及依赖挂掉时用户会看到什么。",
+          "如果回答是「它不会挂」，那你就找到第一个漏洞了。"
+        ],
+        [
+          "第二，流量涨到十倍会是什么样？",
+          "你不是要作者现在就按那个量级去建。",
+          "你是在确认这个设计以后会不会把团队逼进死胡同。"
+        ],
+        [
+          "第三，我们怎么知道它运行正常？",
+          "一个没有指标、告警和回滚方案的设计，只完成了一半。",
+          "如果散会时你手里有一份决策清单和待解决的风险，那就是一次好的评审，哪怕没人挪动过一个框。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为很多设计评审的问题出在哪里？",
+      "a": "把时间花在框和箭头（图本身）上，真正难的问题没人问；图不等于设计，设计是背后的决策和假设。"
+    },
+    {
+      "q": "评审前作者应该准备什么？",
+      "a": "讲清楚最重要的三个决策，每个决策附上被否掉的方案和理由。"
+    },
+    {
+      "q": "评审者可以问哪三个问题？",
+      "a": "这部分挂了会怎样；流量涨到十倍会怎样；我们怎么知道它运转正常（指标、告警、回滚方案）。"
+    }
+  ],
+  "dictation": [
+    "A good review tests the assumptions, because that is where designs usually break.",
+    "A design is the set of decisions behind it, and the assumptions those decisions rest on.",
+    "Each decision should come with the option that was rejected and the reason.",
+    "If you leave with a list of decisions and open risks, it was a good review, even if nobody moved a single box."
+  ],
+  "shadow": {
+    "text": "A diagram shows what the system looks like. A design is the set of decisions behind it, and the assumptions those decisions rest on. A good review tests the assumptions, because that is where designs usually break.",
+    "marked": "A <b>diagram</b> shows / what the system <b>looks</b> like. //<br>A <b>design</b> is the set of <b>decisions</b> behind it, / and the <b>assumptions</b> / those decisions rest on. //<br>A good review / <b>tests</b> the assumptions, / because that is where designs <b>usually break</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "同事在评审会上讲一个新的缓存方案，图画得很漂亮但没讲失败场景。用 30 秒问两个问题：挂了会怎样、怎么知道它在正常工作。",
+      "ref": "This looks clean, thanks for walking us through it. I have two questions before we go further. First, what happens when the cache cluster is down? Do requests fall through to the database, and can the database handle that load? Second, how will we know it's working after launch? I'd like to see the hit rate on a dashboard and an alert if latency jumps.",
+      "ref_zh": "方案看着挺清晰的，谢谢你带大家过了一遍。往下聊之前我有两个问题。第一，缓存集群挂了会怎样？请求会不会直接打到数据库上，数据库扛得住吗？第二，上线之后我们怎么知道它运行正常？我希望能在大盘上看到命中率，延迟突然飙升的时候要有告警。"
+    },
+    {
+      "q": "你是方案作者，评审会开场。用 30 秒告诉大家这次请重点评审哪两个决策，以及你否掉了什么方案。",
+      "ref": "Before we look at the diagram, I want to point out the two decisions I'd like you to challenge. One, we're building a separate service instead of extending the order service, because the release cycles are very different. Two, we're accepting eventual consistency for the counters. We considered strong consistency, but it doubled the write latency. If either assumption looks wrong to you, that's the most useful feedback today.",
+      "ref_zh": "看图之前，我想先点出两个希望大家来挑战的决策。第一，我们是新建一个独立服务，而不是在订单服务上扩展，因为两边的发布节奏差别很大。第二，计数器这块我们接受最终一致性。我们考虑过强一致性，但写延迟会翻倍。如果你觉得哪个假设不对，那就是今天最有价值的反馈。"
+    }
+  ],
+  "words": [
+    {
+      "w": "productive",
+      "ipa": "/prəˈdʌktɪv/",
+      "zh": "有成效的",
+      "ex": "The sync felt productive, but we left without a single decision."
+    },
+    {
+      "w": "assumption",
+      "ipa": "/əˈsʌmpʃən/",
+      "zh": "假设、前提",
+      "ex": "The whole design rests on the assumption that traffic stays flat."
+    },
+    {
+      "w": "consistency",
+      "ipa": "/kənˈsɪstənsi/",
+      "zh": "一致性",
+      "ex": "We traded strong consistency for lower write latency."
+    },
+    {
+      "w": "eventual",
+      "ipa": "/ɪˈventʃuəl/",
+      "zh": "最终的",
+      "ex": "Eventual consistency is fine for like counts, not for payments."
+    },
+    {
+      "w": "dependency",
+      "ipa": "/dɪˈpendənsi/",
+      "zh": "依赖（项）",
+      "ex": "If the auth dependency times out, we show a cached profile."
+    },
+    {
+      "w": "gap",
+      "ipa": "/ɡæp/",
+      "zh": "漏洞、缺口",
+      "ex": "The review exposed a gap in how we handle retries."
+    },
+    {
+      "w": "rollback",
+      "ipa": "/ˈroʊlbæk/",
+      "zh": "回滚",
+      "ex": "We need a rollback plan before this goes to production."
+    },
+    {
+      "w": "reject (v.)",
+      "ipa": "/rɪˈdʒekt/",
+      "zh": "否决、拒绝",
+      "ex": "We rejected the shared database option because of the coupling.",
+      "tts_w": "reject"
+    },
+    {
+      "w": "metric",
+      "ipa": "/ˈmetrɪk/",
+      "zh": "指标",
+      "ex": "Which metric tells us the new path is healthy?"
+    }
+  ]
+}

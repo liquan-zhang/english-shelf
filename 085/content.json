@@ -1,0 +1,183 @@
+{
+  "id": "085",
+  "title": "Coffee Chats with People Outside Your Team",
+  "meta": "B2 · 约 270 词 · 场景：跨组咖啡聊天",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Why Bother Leaving Your Team",
+      "paragraphs": [
+        [
+          "When you are busy, coffee with someone from another team can feel like a ==luxury==.",
+          "Your own roadmap is full, and their work seems ==unrelated==."
+        ],
+        [
+          "But most problems in a large company sit between teams, not inside them.",
+          "The person who already knows the data lead, the legal reviewer, or the platform owner can solve in one message what takes others a week.",
+          "**Your network is not who you know; it is who will reply when you need help.**"
+        ],
+        [
+          "Those relationships are much easier to build before you need them.",
+          "Asking a stranger for a favor in the middle of an ==outage== feels uncomfortable.",
+          "Asking someone you had coffee with last month feels normal."
+        ]
+      ],
+      "heading_zh": "1. 为什么要走出自己的团队",
+      "paragraphs_zh": [
+        [
+          "忙起来的时候，跟别的团队的人喝杯咖啡，感觉像是一种奢侈。",
+          "自己的 roadmap 排得满满的，他们的工作看着也不相干。"
+        ],
+        [
+          "但在大公司里，大多数问题都卡在团队之间，而不是团队内部。",
+          "一个本来就认识数据负责人、法务审核或者平台 owner 的人，一条消息就能搞定别人要折腾一周的事。",
+          "你的人脉不是你认识谁；而是你需要帮忙的时候，谁会回你消息。"
+        ],
+        [
+          "这种关系，在你用得上之前建立要容易得多。",
+          "线上事故处理到一半去找陌生人帮忙，会很别扭。",
+          "去找上个月一起喝过咖啡的人，就很自然。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Making Thirty Minutes Count",
+      "paragraphs": [
+        [
+          "Go with a light reason, not a hidden ==agenda==.",
+          "\"I saw your team launched the new search feature, and I'd love to hear how you approached it\" is an easy message to __say yes to__."
+        ],
+        [
+          "During the chat, __lean on__ three kinds of questions.",
+          "Ask about their work: \"What's taking up most of your time this quarter?\"",
+          "Ask about their path: \"How did you end up on this team?\"",
+          "Ask about their view: \"What do people outside your team usually get wrong about it?\""
+        ],
+        [
+          "**The best coffee chats are two-way, so come ready to give something back.**",
+          "Share a lesson from your own project, offer an introduction, or __send over__ a useful document afterward.",
+          "That ==reciprocity== is what turns one chat into a lasting ==connection==."
+        ],
+        [
+          "Finally, keep it short and __follow through__.",
+          "A one-line message the next day, like \"Thanks again, that tip about the review process saved me hours,\" makes the next coffee much easier to ==arrange==."
+        ]
+      ],
+      "heading_zh": "2. 让三十分钟物有所值",
+      "paragraphs_zh": [
+        [
+          "带一个轻松的理由去，别藏着别的目的。",
+          "「看到你们团队上线了新的搜索功能，很想听听你们是怎么做的」，这种消息对方很容易答应。"
+        ],
+        [
+          "聊的时候，靠三类问题撑着。",
+          "问他们的工作：「这个季度你主要在忙什么？」",
+          "问他们的经历：「你是怎么来到这个团队的？」",
+          "问他们的看法：「外面的人对你们团队最常见的误解是什么？」"
+        ],
+        [
+          "最好的咖啡聊天是双向的，所以要准备好回馈点什么。",
+          "分享一条自己项目里的经验，主动帮忙引荐，或者事后发一份有用的文档过去。",
+          "正是这种有来有往，让一次聊天变成长久的联系。"
+        ],
+        [
+          "最后，聊得短一点，事后要跟进。",
+          "第二天发一句话，比如「再次感谢，你说的评审流程那个技巧帮我省了好几个小时」，下次再约咖啡就容易多了。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者为什么认为值得和组外的人喝咖啡？",
+      "a": "大公司的问题多出在团队之间；认识对口的人能一条消息解决别人一周的事，而关系要在需要之前建立。"
+    },
+    {
+      "q": "聊天时可以问哪三类问题？",
+      "a": "问对方的工作（这季度最占时间的是什么）、经历（怎么来到这个组）、看法（组外的人常误解什么）。"
+    },
+    {
+      "q": "怎样让一次聊天变成长期关系？",
+      "a": "双向交流，主动回馈（分享经验、引荐、发资料）；第二天发一句具体的感谢，下次更好约。"
+    }
+  ],
+  "dictation": [
+    "Your network is not who you know; it is who will reply when you need help.",
+    "Those relationships are much easier to build before you need them.",
+    "The best coffee chats are two-way, so come ready to give something back.",
+    "That reciprocity is what turns one chat into a lasting connection."
+  ],
+  "shadow": {
+    "text": "The best coffee chats are two-way, so come ready to give something back. Share a lesson from your own project, offer an introduction, or send over a useful document afterward. That reciprocity is what turns one chat into a lasting connection.",
+    "marked": "<b>The best</b> coffee chats are <b>two-way</b>, / so come ready to <b>give</b> something <b>back</b>. //<br>Share a <b>lesson</b> from your own project, / offer an <b>introduction</b>, / or send over a useful <b>document</b> afterward. //<br>That <b>reciprocity</b> / is what turns <b>one</b> chat / into a <b>lasting</b> connection. //"
+  },
+  "prompts": [
+    {
+      "q": "你在电梯里碰到另一个部门做推荐实验的 TL，你们不认识。用一个轻理由在 30 秒内约他喝咖啡。",
+      "ref": "Hi, sorry to jump in, I lead the media processing team on the third floor. I saw your talk on ranking experiments last month and really liked the part about small samples. Would you be up for a quick coffee sometime next week? I'd love to hear how your team decides which experiments to stop early.",
+      "ref_zh": "你好，不好意思冒昧打扰，我是三楼媒体处理团队的负责人。上个月听了你讲排序实验的分享，特别喜欢讲小样本的那部分。下周找个时间一起喝杯咖啡怎么样？很想听听你们团队是怎么决定哪些实验提前停掉的。"
+    },
+    {
+      "q": "咖啡聊天快结束了，对方给了你很多帮助。用 30 秒表示感谢、回馈一点东西，并约下次。",
+      "ref": "This was really helpful, thank you. The point about getting legal involved early is something I'll take straight back to my team. By the way, you mentioned you're struggling with video transcoding costs. One of my engineers did a deep dive on that last quarter. Want me to introduce you? And let's do this again next month.",
+      "ref_zh": "这次真的很有帮助，谢谢。你说的让法务早点介入，我回去马上就跟团队讲。对了，你提到视频转码成本让你们挺头疼。我们组有个工程师上个季度专门深挖过这块。要不要我给你们牵个线？我们下个月再约一次。"
+    }
+  ],
+  "words": [
+    {
+      "w": "luxury",
+      "ipa": "/ˈlʌkʃəri/",
+      "zh": "奢侈、难得的享受",
+      "ex": "Long design reviews are a luxury we can't afford this quarter."
+    },
+    {
+      "w": "unrelated",
+      "ipa": "/ˌʌnrɪˈleɪtɪd/",
+      "zh": "无关的",
+      "ex": "The crash looked unrelated to our change, but we checked anyway."
+    },
+    {
+      "w": "outage",
+      "ipa": "/ˈaʊtɪdʒ/",
+      "zh": "（服务）中断、故障",
+      "ex": "The outage lasted forty minutes and affected two regions."
+    },
+    {
+      "w": "agenda",
+      "ipa": "/əˈdʒendə/",
+      "zh": "议程；（隐藏的）目的",
+      "ex": "I don't have a hidden agenda, I just want to understand your roadmap."
+    },
+    {
+      "w": "reciprocity",
+      "ipa": "/ˌresɪˈprɑːsəti/",
+      "zh": "互惠、礼尚往来",
+      "ex": "Good partnerships between teams run on reciprocity."
+    },
+    {
+      "w": "connection",
+      "ipa": "/kəˈnekʃən/",
+      "zh": "联系、人脉",
+      "ex": "She has a strong connection with the infra team, so ask her first."
+    },
+    {
+      "w": "arrange",
+      "ipa": "/əˈreɪndʒ/",
+      "zh": "安排",
+      "ex": "Could you arrange a call with their tech lead next week?"
+    },
+    {
+      "w": "follow through",
+      "ipa": "/ˈfɑːloʊ θruː/",
+      "zh": "说到做到、跟进到底",
+      "ex": "He always follows through on what he promises in meetings."
+    },
+    {
+      "w": "lean on",
+      "ipa": "/liːn ɑːn/",
+      "zh": "依靠、借助",
+      "ex": "When the topic gets technical, I lean on our staff engineer."
+    }
+  ]
+}

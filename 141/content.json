@@ -1,0 +1,83 @@
+{
+  "id": "141",
+  "type": "dialogue",
+  "title": "Meeting Your New Neighbor",
+  "meta": "B2 · 约 250 词 · 场景：和新邻居打招呼与装修提前沟通",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Neighbor", "name_zh": "邻居", "voice": "en-US-EmmaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. At the Door",
+      "heading_zh": "1. 在门口",
+      "lines": [
+        {"sp": "A", "en": "**Hi, sorry to bother you. I'm Wei. We just moved in next door, and I wanted to come over and say hello.**", "zh": "你好，打扰一下。我叫伟，我们刚搬到隔壁，想过来打个招呼。"},
+        {"sp": "B", "en": "Oh, hi! Welcome! I'm Rachel. I saw the moving truck last weekend.", "zh": "噢，你好！欢迎！我是 Rachel。上周末我看到搬家车了。"},
+        {"sp": "A", "en": "Yes, that was us. It's me, my wife and our son. He's three, so __apologies in advance__ for any noise.", "zh": "对，就是我们。我、我太太和儿子，他三岁，所以先为可能的吵闹道个歉。"},
+        {"sp": "B", "en": "Don't worry about it. We have two kids ourselves, so we're hardly quiet!", "zh": "别担心。我们自己也有两个孩子，可一点都不安静！"},
+        {"sp": "A", "en": "That's a relief. These are just some cookies from a ==bakery== we love.", "zh": "那就放心了。这是我们很喜欢的一家面包店的饼干，一点心意。"},
+        {"sp": "B", "en": "Oh, that's so sweet of you. How long have you been in Singapore?", "zh": "哎呀，你们太贴心了。你们来新加坡多久了？"},
+        {"sp": "A", "en": "About a year. We were ==renting== near the city before, but we wanted more space.", "zh": "一年左右。之前在市区附近租房，但想要更大的空间。"},
+        {"sp": "B", "en": "Well, you picked a good ==block==. The neighbors are friendly, and the park is right downstairs.", "zh": "那你们选对楼了。邻居们都很友好，公园就在楼下。"}
+      ]
+    },
+    {
+      "heading": "2. A Heads-up About Renovation",
+      "heading_zh": "2. 提前打招呼：装修",
+      "lines": [
+        {"sp": "A", "en": "One more thing. We're doing some ==renovation== next week, mainly the kitchen.", "zh": "还有一件事。我们下周要装修，主要是厨房。"},
+        {"sp": "B", "en": "Oh, OK. How long will that take?", "zh": "噢，好的。要多久？"},
+        {"sp": "A", "en": "**About ten days. They'll only work on weekdays, from nine to five, never on weekends.**", "zh": "大概十天。他们只在工作日干活，九点到五点，周末绝对不施工。"},
+        {"sp": "B", "en": "Thanks for the ==heads-up==. My husband works from home, so the noise might be tough for him.", "zh": "谢谢提前告诉我。我先生在家办公，噪音对他来说可能会有点难受。"},
+        {"sp": "A", "en": "I completely understand. The ==drilling== should only take the first three days.", "zh": "完全理解。电钻应该只在头三天。"},
+        {"sp": "B", "en": "That's not too bad. Could they keep the corridor clear, though? Last time someone left boxes everywhere.", "zh": "那还好。不过能让他们保持走廊通畅吗？上次有人把箱子堆得到处都是。"},
+        {"sp": "A", "en": "Of course. I'll __make sure__ they clean up every evening.", "zh": "当然。我会确保他们每天晚上都清理干净。"},
+        {"sp": "A", "en": "**Here's my number. Please text me if anything bothers you.**", "zh": "这是我的电话。有任何打扰到你的地方，请发短信告诉我。"},
+        {"sp": "B", "en": "That's very ==considerate==. And if you need anything, like a good plumber, just ask.", "zh": "你真是考虑周到。你们要是需要什么，比如靠谱的水管工，尽管问我。"},
+        {"sp": "A", "en": "Thanks, I might __take you up on that__. It was lovely to meet you, Rachel.", "zh": "谢谢，说不定真要麻烦你。很高兴认识你，Rachel。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」上门时介绍了自己家的哪些情况？", "a": "刚搬到隔壁，家里有太太和三岁的儿子；来新加坡一年左右，之前在市区附近租房，想要更大空间。"},
+    {"q": "装修安排是怎样的？", "a": "下周装修厨房，大约十天，只在工作日九点到五点施工，周末不施工，电钻只在头三天。"},
+    {"q": "邻居提了什么要求？「你」怎么回应？", "a": "希望保持走廊通畅；「你」保证让工人每天晚上清理，并留下电话，有打扰随时发短信。"}
+  ],
+  "dictation": [
+    "Hi, sorry to bother you. I'm Wei. We just moved in next door, and I wanted to come over and say hello.",
+    "Yes, that was us. It's me, my wife and our son. He's three, so apologies in advance for any noise.",
+    "About ten days. They'll only work on weekdays, from nine to five, never on weekends.",
+    "Here's my number. Please text me if anything bothers you."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "One more thing. We're doing some renovation next week, mainly the kitchen.",
+    "marked": "One more <b>thing</b>. //<br>We're doing some <b>renovation</b> / next <b>week</b>, / mainly the <b>kitchen</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "楼上邻居家的孩子每晚十一点后还在跑跳。你去敲门，友好地提出来。",
+      "ref": "Hi, sorry to bother you. I'm Wei from the unit right below yours. I know it's hard with little kids, and we have one too. It's just that there's often running and jumping after eleven, and our son keeps waking up. Would it be possible to keep it down a bit later at night? We'd really appreciate it.",
+      "ref_zh": "你好，打扰了。我是住你们正下方的伟。我知道带小孩不容易，我们家也有一个。只是晚上十一点以后经常有跑跳的声音，我儿子总被吵醒。晚上晚一点的时候能不能稍微轻一点？我们会非常感激。"
+    },
+    {
+      "q": "你们全家要回国两周，想请邻居帮忙收快递、偶尔看一眼门口。上门拜托对方。",
+      "ref": "Hi Rachel, I have a small favour to ask. We're flying back to China for two weeks from Saturday. A couple of parcels might arrive while we're away. Would you mind taking them in for us? And if you notice anything strange at our door, could you send me a message? Of course, we're happy to do the same for you anytime.",
+      "ref_zh": "Rachel 你好，想请你帮个小忙。我们周六开始回国两周，期间可能会到几个快递。你介意帮我们收一下吗？另外如果看到我们门口有什么异常，能给我发个消息吗？当然，你们需要的时候我们也随时帮忙。"
+    }
+  ],
+  "words": [
+    {"w": "bakery", "ipa": "/ˈbeɪkəri/", "zh": "面包店", "ex": "There's a great bakery at the bottom of our block."},
+    {"w": "rent (v.)", "ipa": "/rent/", "zh": "租（房）", "ex": "We're renting a three-bedroom flat near the school.", "tts_w": "rent"},
+    {"w": "block", "ipa": "/blɑːk/", "zh": "（组屋/公寓）一栋楼", "ex": "The lift in our block is under maintenance today."},
+    {"w": "renovation", "ipa": "/ˌrenəˈveɪʃən/", "zh": "装修", "ex": "The renovation took longer than we expected."},
+    {"w": "heads-up", "ipa": "/ˈhedz ʌp/", "zh": "提前告知", "ex": "Thanks for the heads-up about the water cut tomorrow."},
+    {"w": "drilling", "ipa": "/ˈdrɪlɪŋ/", "zh": "钻孔（电钻声）", "ex": "The drilling next door started at nine sharp."},
+    {"w": "corridor", "ipa": "/ˈkɔːrɪdɔːr/", "zh": "走廊", "ex": "Please don't leave shoes in the corridor."},
+    {"w": "considerate", "ipa": "/kənˈsɪdərət/", "zh": "体贴的；考虑周到的", "ex": "It was considerate of them to warn us about the party."},
+    {"w": "take someone up on", "ipa": "/teɪk ˈsʌmwʌn ʌp ɑːn/", "zh": "接受某人的提议", "ex": "I'll take you up on that offer of a lift."}
+  ]
+}

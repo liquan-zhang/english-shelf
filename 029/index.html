@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Turning Lessons Learned into Real Changes · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "029", "title": "Turning Lessons Learned into Real Changes", "meta": "B2 · 约 270 词 · 场景：复盘行动项跟进", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Graveyard of Action Items", "heading_zh": "1. 待办事项的坟场", "rows": [[{"id": "s0_0_0", "md": "Open any team's postmortem folder and count the action items that were never done.", "text": "Open any team's postmortem folder and count the action items that were never done.", "zh": "随便打开哪个团队的复盘文件夹，数数有多少待办事项从来没做完。", "sp": null}, {"id": "s0_0_1", "md": "Most teams find a ==graveyard==.", "text": "Most teams find a graveyard.", "zh": "大多数团队会发现那是一片坟场。", "sp": null}, {"id": "s0_0_2", "md": "The same lessons appear again and again: \"improve monitoring,\" \"communicate better,\" \"be more careful.\"", "text": "The same lessons appear again and again: \"improve monitoring,\" \"communicate better,\" \"be more careful.\"", "zh": "同样的教训一遍又一遍地出现：「完善监控」「加强沟通」「更加小心」。", "sp": null}], [{"id": "s0_1_0", "md": "These items fail because they describe a wish, not a change.", "text": "These items fail because they describe a wish, not a change.", "zh": "这些事项之所以落空，是因为它们描述的是一个愿望，而不是一个改动。", "sp": null}, {"id": "s0_1_1", "md": "Nobody can tell when \"be more careful\" is finished, so it never is.", "text": "Nobody can tell when \"be more careful\" is finished, so it never is.", "zh": "没人说得清「更加小心」什么时候算完成，所以它永远完成不了。", "sp": null}, {"id": "s0_1_2", "md": "Three months later, a new incident __brings the same lesson back__, and everyone nods again.", "text": "Three months later, a new incident brings the same lesson back, and everyone nods again.", "zh": "三个月后，一个新事故又把同样的教训翻出来，大家又一起点头。", "sp": null}, {"id": "s0_1_3", "md": "**Good intentions do not survive a busy quarter; mechanisms do.**", "text": "Good intentions do not survive a busy quarter; mechanisms do.", "zh": "良好的意愿熬不过一个忙碌的季度；机制才能。", "sp": null}], [{"id": "s0_2_0", "md": "A ==mechanism== is something that works even when people are tired, busy, or new.", "text": "A mechanism is something that works even when people are tired, busy, or new.", "zh": "机制就是那种在人累了、忙了或者刚来的时候，依然能起作用的东西。", "sp": null}, {"id": "s0_2_1", "md": "It might be an alert, a safer default setting, or a check in the deploy ==pipeline==.", "text": "It might be an alert, a safer default setting, or a check in the deploy pipeline.", "zh": "它可以是一条告警、一个更安全的默认配置，或者发布流水线里的一道检查。", "sp": null}, {"id": "s0_2_2", "md": "It does not depend on anyone remembering the incident.", "text": "It does not depend on anyone remembering the incident.", "zh": "它不依赖任何人还记得那次事故。", "sp": null}]]}, {"heading": "2. Owner, Date, Proof", "heading_zh": "2. 负责人、截止日期、验证", "rows": [[{"id": "s1_0_0", "md": "Take each lesson and ask, \"What would have stopped this automatically?\"", "text": "Take each lesson and ask, \"What would have stopped this automatically?\"", "zh": "拿着每一条教训问自己：「什么东西能自动拦住这件事？」", "sp": null}, {"id": "s1_0_1", "md": "\"Be careful with ==migrations==\" becomes \"the pipeline blocks any migration that has not passed a ==dry run==.\"", "text": "\"Be careful with migrations\" becomes \"the pipeline blocks any migration that has not passed a dry run.\"", "zh": "「做迁移要小心」就变成了「流水线会拦下任何没跑过 dry run 的迁移」。", "sp": null}, {"id": "s1_0_2", "md": "Now the lesson lives in the system, not in someone's memory.", "text": "Now the lesson lives in the system, not in someone's memory.", "zh": "这样，教训就沉淀进了系统里，而不是靠某个人的记忆。", "sp": null}, {"id": "s1_0_3", "md": "It keeps working even after the people who wrote the postmortem have moved to other teams.", "text": "It keeps working even after the people who wrote the postmortem have moved to other teams.", "zh": "哪怕写复盘的那批人都转去了别的团队，它也照样起作用。", "sp": null}], [{"id": "s1_1_0", "md": "Every item needs one owner and a realistic date.", "text": "Every item needs one owner and a realistic date.", "zh": "每一项都需要一个负责人和一个靠谱的截止日期。", "sp": null}, {"id": "s1_1_1", "md": "Name one person, not a team, because shared ownership usually means no ownership.", "text": "Name one person, not a team, because shared ownership usually means no ownership.", "zh": "要点名到一个人，而不是一个团队，因为大家一起负责，通常就等于没人负责。", "sp": null}, {"id": "s1_1_2", "md": "Then __cut the list down__ to the two or three changes that matter most.", "text": "Then cut the list down to the two or three changes that matter most.", "zh": "然后把清单砍到最重要的两三项改动。", "sp": null}, {"id": "s1_1_3", "md": "**Three finished fixes beat ten open tickets.**", "text": "Three finished fixes beat ten open tickets.", "zh": "做完三个修复，胜过挂着十个没关的工单。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, decide how you will ==verify== that the change works.", "text": "Finally, decide how you will verify that the change works.", "zh": "最后，想清楚你要怎么验证这个改动真的有效。", "sp": null}, {"id": "s1_2_1", "md": "Run a ==drill== in staging, break the thing on purpose, and confirm the new check catches it.", "text": "Run a drill in staging, break the thing on purpose, and confirm the new check catches it.", "zh": "在测试环境搞一次演练，故意把东西弄坏，确认新加的检查能拦住它。", "sp": null}, {"id": "s1_2_2", "md": "A fix that has never been tested is only a hope.", "text": "A fix that has never been tested is only a hope.", "zh": "一个从来没测过的修复，只是一个愿望。", "sp": null}, {"id": "s1_2_3", "md": "Then __close the loop__ in the next team meeting, so people see that postmortems actually lead somewhere.", "text": "Then close the loop in the next team meeting, so people see that postmortems actually lead somewhere.", "zh": "然后在下一次团队会议上把这件事闭环，让大家看到复盘是真的能带来结果的。", "sp": null}]]}], "gist": [{"q": "为什么很多复盘行动项从来没被完成？", "a": "它们描述的是愿望而不是改变，比如「更小心」，没人能判断什么时候算完成。"}, {"q": "作者说什么能扛过忙碌的季度？举例说明。", "a": "机制：告警、更安全的默认配置、发布流水线里的检查，不依赖任何人记得这次事故。"}, {"q": "把教训变成改进需要哪几步？", "a": "问「什么能自动拦住它」；每项一个负责人和现实的日期，精简到两三项；在预发环境演练验证，并在团队会上闭环。"}], "dictation": [{"id": "s0_1_3", "text": "Good intentions do not survive a busy quarter; mechanisms do."}, {"id": "s1_1_3", "text": "Three finished fixes beat ten open tickets."}, {"id": "s1_0_2", "text": "Now the lesson lives in the system, not in someone's memory."}, {"id": "s1_1_1", "text": "Name one person, not a team, because shared ownership usually means no ownership."}], "shadow": {"text": "These items fail because they describe a wish, not a change. Nobody can tell when \"be more careful\" is finished, so it never is.", "marked": "These items <b>fail</b> / because they describe a <b>wish</b>, / <b>not</b> a change. //<br><b>Nobody</b> can tell / when \"be more <b>careful</b>\" is <b>finished</b>, / so it <b>never</b> is. //"}, "prompts": [{"q": "复盘会上有人写下行动项「以后上线前要更仔细检查配置」。用 30 秒把它改写成一个可以落地的机制，并指定负责人和日期。", "ref": "I agree with the spirit, but checking more carefully is hard to measure. What would have caught this automatically? A config diff check in the pipeline would have flagged the wrong region name before deploy. Could we make that the action item instead? Priya, would you be able to own it, with a target of the end of next sprint? Then we'll test it in staging with a broken config.", "ref_zh": "出发点我同意，但「检查得更仔细」很难衡量。什么东西能自动发现这个问题？流水线里加一个配置 diff 检查，就能在发布前把错误的地区名标出来。我们能不能把这个作为待办？Priya，你能负责吗？目标是下个 sprint 结束前。然后我们在测试环境用一份错误的配置来验证它。", "id": "ref0"}, {"q": "上次复盘列了十几个行动项，大部分没做。用 30 秒向团队提议精简清单并约定怎么验证。", "ref": "Looking back at our last postmortem, we wrote fourteen action items and finished three. I don't think the problem is effort; the list was just too long. This time, let's pick the two changes that would have prevented the outage, give each one a single owner, and agree how we'll prove they work. I'll add a check-in to our team meeting in two weeks.", "ref_zh": "回头看上次复盘，我们写了十四个待办，只完成了三个。我觉得问题不在不够努力，而是清单太长了。这次我们就挑两个能避免这次故障的改动，每个只定一个负责人，再约定好怎么证明它们有效。我会在两周后的团队会议上加一个进度检查。", "id": "ref1"}], "words": [{"w": "graveyard", "ipa": "/ˈɡreɪvjɑːrd/", "zh": "墓地（喻：被遗忘的地方）", "ex": "Our backlog has become a graveyard of old tickets.", "id": "w0"}, {"w": "intention", "ipa": "/ɪnˈtenʃən/", "zh": "意图、打算", "ex": "Good intentions won't stop the next outage; an alert will.", "id": "w1"}, {"w": "mechanism", "ipa": "/ˈmekənɪzəm/", "zh": "机制", "ex": "We need a mechanism, not a reminder in the wiki.", "id": "w2"}, {"w": "pipeline", "ipa": "/ˈpaɪplaɪn/", "zh": "（构建发布）流水线", "ex": "The pipeline now fails if test coverage drops.", "id": "w3"}, {"w": "migration", "ipa": "/maɪˈɡreɪʃən/", "zh": "（数据库）迁移", "ex": "The schema migration locked the table for ten minutes.", "id": "w4"}, {"w": "dry run", "ipa": "/ˈdraɪ rʌn/", "zh": "演练、试运行", "ex": "Do a dry run first so we can see which rows would change.", "id": "w5"}, {"w": "verify", "ipa": "/ˈverɪfaɪ/", "zh": "核实、验证", "ex": "Please verify the fix in staging before closing the ticket.", "id": "w6"}, {"w": "drill", "ipa": "/drɪl/", "zh": "演练", "ex": "We run a failover drill every quarter.", "id": "w7"}, {"w": "ownership", "ipa": "/ˈoʊnərʃɪp/", "zh": "归属、负责", "ex": "Ownership of the alert rules is unclear after the reorg.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Graveyard of Action Items", "zh": "1. 待办事项的坟场", "start": 0.0, "end": 2.76, "words": [[0.105, 0.408], [0.724, 0.829], [0.842, 1.382], [1.395, 1.474], [1.487, 1.868], [1.882, 2.368]]}, {"kind": "s", "id": "s0_0_0", "md": "Open any team's postmortem folder and count the action items that were never done.", "zh": "随便打开哪个团队的复盘文件夹，数数有多少待办事项从来没做完。", "sp": null, "gap": false, "start": 2.76, "end": 7.824, "words": [[2.865, 3.168], [3.313, 3.523], [3.536, 3.944], [3.957, 4.602], [4.615, 5.155], [5.273, 5.365], [5.378, 5.681], [5.694, 5.786], [5.852, 6.273], [6.286, 6.602], [6.615, 6.747], [6.76, 6.865], [6.878, 7.115], [7.128, 7.444]]}, {"kind": "s", "id": "s0_0_1", "md": "Most teams find a ==graveyard==.", "zh": "大多数团队会发现那是一片坟场。", "sp": null, "gap": false, "start": 7.824, "end": 9.912, "words": [[7.929, 8.206], [8.219, 8.587], [8.6, 8.837], [8.85, 8.877], [8.89, 9.535]]}, {"kind": "s", "id": "s0_0_2", "md": "The same lessons appear again and again: \"improve monitoring,\" \"communicate better,\" \"be more careful.\"", "zh": "同样的教训一遍又一遍地出现：「完善监控」「加强沟通」「更加小心」。", "sp": null, "gap": false, "start": 9.912, "end": 17.304, "words": [[10.03, 10.096], [10.109, 10.478], [10.491, 10.912], [10.925, 11.333], [11.346, 11.807], [11.925, 12.044], [12.057, 12.517], [12.978, 13.491], [13.504, 14.136], [14.478, 15.136], [15.149, 15.53], [15.899, 16.044], [16.057, 16.333], [16.346, 16.912]]}, {"kind": "s", "id": "s0_1_0", "md": "These items fail because they describe a wish, not a change.", "zh": "这些事项之所以落空，是因为它们描述的是一个愿望，而不是一个改动。", "sp": null, "gap": true, "start": 17.304, "end": 21.384, "words": [[17.409, 17.672], [17.686, 18.067], [18.08, 18.475], [18.488, 18.778], [18.791, 18.896], [18.909, 19.37], [19.383, 19.475], [19.488, 20.001], [20.225, 20.383], [20.396, 20.422], [20.436, 21.001]]}, {"kind": "s", "id": "s0_1_1", "md": "Nobody can tell when \"be more careful\" is finished, so it never is.", "zh": "没人说得清「更加小心」什么时候算完成，所以它永远完成不了。", "sp": null, "gap": false, "start": 21.384, "end": 26.184, "words": [[21.489, 21.858], [21.871, 22.029], [22.042, 22.423], [22.437, 22.621], [22.647, 22.766], [22.779, 23.016], [23.029, 23.634], [23.805, 23.937], [23.95, 24.516], [24.818, 25.016], [25.029, 25.121], [25.134, 25.463], [25.476, 25.792]]}, {"kind": "s", "id": "s0_1_2", "md": "Three months later, a new incident __brings the same lesson back__, and everyone nods again.", "zh": "三个月后，一个新事故又把同样的教训翻出来，大家又一起点头。", "sp": null, "gap": false, "start": 26.184, "end": 31.992, "words": [[26.355, 26.526], [26.539, 26.816], [26.829, 27.184], [27.579, 27.592], [27.605, 27.855], [27.868, 28.355], [28.368, 28.645], [28.658, 28.763], [28.776, 29.171], [29.184, 29.513], [29.526, 29.934], [30.223, 30.368], [30.447, 30.895], [30.908, 31.223], [31.237, 31.592]]}, {"kind": "s", "id": "s0_1_3", "md": "**Good intentions do not survive a busy quarter; mechanisms do.**", "zh": "良好的意愿熬不过一个忙碌的季度；机制才能。", "sp": null, "gap": false, "start": 31.992, "end": 36.552, "words": [[32.097, 32.229], [32.242, 32.874], [32.887, 33.058], [33.071, 33.4], [33.413, 33.874], [33.887, 33.979], [33.992, 34.36], [34.374, 34.795], [35.242, 35.834], [35.847, 36.163]]}, {"kind": "s", "id": "s0_2_0", "md": "A ==mechanism== is something that works even when people are tired, busy, or new.", "zh": "机制就是那种在人累了、忙了或者刚来的时候，依然能起作用的东西。", "sp": null, "gap": true, "start": 36.552, "end": 41.64, "words": [[36.657, 36.697], [36.71, 37.289], [37.302, 37.407], [37.42, 37.776], [37.789, 37.934], [37.947, 38.249], [38.381, 38.644], [38.657, 38.802], [38.815, 39.17], [39.184, 39.276], [39.289, 39.855], [40.17, 40.605], [40.815, 40.934], [40.947, 41.249]]}, {"kind": "s", "id": "s0_2_1", "md": "It might be an alert, a safer default setting, or a check in the deploy ==pipeline==.", "zh": "它可以是一条告警、一个更安全的默认配置，或者发布流水线里的一道检查。", "sp": null, "gap": false, "start": 41.64, "end": 46.752, "words": [[41.745, 41.824], [41.837, 42.061], [42.074, 42.232], [42.245, 42.311], [42.324, 42.758], [43.008, 43.048], [43.061, 43.482], [43.495, 43.877], [43.89, 44.311], [44.64, 44.758], [44.772, 44.811], [44.824, 45.179], [45.193, 45.258], [45.272, 45.364], [45.377, 45.745], [45.758, 46.351]]}, {"kind": "s", "id": "s0_2_2", "md": "It does not depend on anyone remembering the incident.", "zh": "它不依赖任何人还记得那次事故。", "sp": null, "gap": false, "start": 46.752, "end": 49.968, "words": [[46.857, 46.923], [46.936, 47.055], [47.068, 47.252], [47.265, 47.607], [47.62, 47.805], [47.949, 48.344], [48.357, 48.897], [48.91, 48.989], [49.002, 49.581]]}, {"kind": "h", "id": "h1", "md": "2. Owner, Date, Proof", "zh": "2. 负责人、截止日期、验证", "start": 49.968, "end": 52.896, "words": [[50.086, 50.336], [50.771, 51.1], [51.402, 51.771], [51.994, 52.494]]}, {"kind": "s", "id": "s1_0_0", "md": "Take each lesson and ask, \"What would have stopped this automatically?\"", "zh": "拿着每一条教训问自己：「什么东西能自动拦住这件事？」", "sp": null, "gap": false, "start": 52.896, "end": 57.0, "words": [[53.001, 53.238], [53.251, 53.449], [53.462, 53.83], [53.843, 53.975], [53.988, 54.462], [54.725, 54.843], [54.857, 54.962], [54.975, 55.08], [55.093, 55.554], [55.567, 55.751], [55.764, 56.58]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Be careful with ==migrations==\" becomes \"the pipeline blocks any migration that has not passed a ==dry run==.\"", "zh": "「做迁移要小心」就变成了「流水线会拦下任何没跑过 dry run 的迁移」。", "sp": null, "gap": false, "start": 57.0, "end": 64.08, "words": [[57.197, 57.237], [57.316, 57.724], [57.737, 57.882], [57.895, 58.763], [58.895, 59.513], [59.618, 59.737], [59.75, 60.303], [60.316, 60.776], [60.921, 61.092], [61.105, 61.816], [61.895, 62.0], [62.013, 62.158], [62.171, 62.487], [62.5, 62.882], [62.895, 62.934], [62.947, 63.29], [63.303, 63.671]]}, {"kind": "s", "id": "s1_0_2", "md": "Now the lesson lives in the system, not in someone's memory.", "zh": "这样，教训就沉淀进了系统里，而不是靠某个人的记忆。", "sp": null, "gap": false, "start": 64.08, "end": 67.968, "words": [[64.185, 64.343], [64.356, 64.475], [64.488, 64.909], [64.922, 65.317], [65.33, 65.409], [65.422, 65.514], [65.527, 66.001], [66.396, 66.58], [66.593, 66.685], [66.698, 67.08], [67.093, 67.58]]}, {"kind": "s", "id": "s1_0_3", "md": "It keeps working even after the people who wrote the postmortem have moved to other teams.", "zh": "哪怕写复盘的那批人都转去了别的团队，它也照样起作用。", "sp": null, "gap": false, "start": 67.968, "end": 73.368, "words": [[68.073, 68.192], [68.205, 68.507], [68.521, 68.955], [69.021, 69.31], [69.323, 69.613], [69.626, 69.705], [69.718, 70.073], [70.086, 70.244], [70.257, 70.507], [70.521, 70.613], [70.626, 71.35], [71.56, 71.705], [71.718, 72.1], [72.113, 72.192], [72.205, 72.428], [72.442, 72.981]]}, {"kind": "s", "id": "s1_1_0", "md": "Every item needs one owner and a realistic date.", "zh": "每一项都需要一个负责人和一个靠谱的截止日期。", "sp": null, "gap": true, "start": 73.368, "end": 76.92, "words": [[73.473, 73.763], [73.776, 74.144], [74.315, 74.579], [74.592, 74.815], [74.829, 75.21], [75.407, 75.473], [75.486, 75.552], [75.565, 76.197], [76.21, 76.539]]}, {"kind": "s", "id": "s1_1_1", "md": "Name one person, not a team, because shared ownership usually means no ownership.", "zh": "要点名到一个人，而不是一个团队，因为大家一起负责，通常就等于没人负责。", "sp": null, "gap": false, "start": 76.92, "end": 82.776, "words": [[77.025, 77.328], [77.341, 77.578], [77.591, 78.065], [78.459, 78.604], [78.617, 78.67], [78.683, 79.117], [79.433, 79.749], [79.762, 80.078], [80.144, 80.604], [80.617, 81.131], [81.209, 81.473], [81.486, 81.736], [81.749, 82.394]]}, {"kind": "s", "id": "s1_1_2", "md": "Then __cut the list down__ to the two or three changes that matter most.", "zh": "然后把清单砍到最重要的两三项改动。", "sp": null, "gap": false, "start": 82.776, "end": 87.096, "words": [[82.894, 83.052], [83.065, 83.263], [83.276, 83.368], [83.381, 83.658], [83.671, 83.947], [83.96, 84.052], [84.065, 84.171], [84.184, 84.605], [84.737, 84.868], [84.881, 85.197], [85.21, 85.737], [85.75, 85.908], [85.921, 86.197], [86.21, 86.697]]}, {"kind": "s", "id": "s1_1_3", "md": "**Three finished fixes beat ten open tickets.**", "zh": "做完三个修复，胜过挂着十个没关的工单。", "sp": null, "gap": false, "start": 87.096, "end": 90.216, "words": [[87.254, 87.438], [87.451, 87.78], [87.793, 88.28], [88.293, 88.662], [88.728, 88.964], [88.978, 89.228], [89.241, 89.82]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, decide how you will ==verify== that the change works.", "zh": "最后，想清楚你要怎么验证这个改动真的有效。", "sp": null, "gap": true, "start": 90.216, "end": 93.984, "words": [[90.387, 90.795], [91.163, 91.532], [91.545, 91.69], [91.703, 91.808], [91.821, 91.94], [91.953, 92.479], [92.492, 92.624], [92.637, 92.716], [92.729, 93.045], [93.058, 93.584]]}, {"kind": "s", "id": "s1_2_1", "md": "Run a ==drill== in staging, break the thing on purpose, and confirm the new check catches it.", "zh": "在测试环境搞一次演练，故意把东西弄坏，确认新加的检查能拦住它。", "sp": null, "gap": false, "start": 93.984, "end": 99.792, "words": [[94.089, 94.273], [94.287, 94.339], [94.352, 94.721], [94.734, 94.852], [94.866, 95.405], [95.787, 96.037], [96.05, 96.142], [96.155, 96.379], [96.392, 96.55], [96.563, 97.142], [97.392, 97.497], [97.51, 97.997], [98.01, 98.102], [98.116, 98.392], [98.405, 98.694], [98.708, 99.181], [99.195, 99.392]]}, {"kind": "s", "id": "s1_2_2", "md": "A fix that has never been tested is only a hope.", "zh": "一个从来没测过的修复，只是一个愿望。", "sp": null, "gap": false, "start": 99.792, "end": 103.248, "words": [[99.897, 99.963], [99.976, 100.292], [100.305, 100.437], [100.45, 100.595], [100.608, 100.95], [100.963, 101.121], [101.134, 101.608], [101.884, 102.082], [102.095, 102.371], [102.384, 102.437], [102.45, 102.858]]}, {"kind": "s", "id": "s1_2_3", "md": "Then __close the loop__ in the next team meeting, so people see that postmortems actually lead somewhere.", "zh": "然后在下一次团队会议上把这件事闭环，让大家看到复盘是真的能带来结果的。", "sp": null, "gap": false, "start": 103.248, "end": 109.416, "words": [[103.353, 103.972], null, [103.985, 104.103], [104.116, 104.419], [104.432, 104.498], [104.511, 104.59], [104.603, 104.906], [104.919, 105.169], [105.182, 105.524], [105.853, 105.985], [105.998, 106.353], [106.366, 106.616], [106.63, 106.827], [106.84, 107.801], [107.866, 108.209], [108.222, 108.485], [108.498, 109.037]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

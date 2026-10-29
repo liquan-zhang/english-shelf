@@ -1,0 +1,187 @@
+{
+  "id": "090",
+  "title": "Being Funny Without Trying Too Hard",
+  "meta": "B2 · 约 270 词 · 场景：工作场合的幽默",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Forget About Telling Jokes",
+      "paragraphs": [
+        [
+          "Many people think being funny at work means telling jokes.",
+          "In a second language, that is a hard game to win, because jokes depend on timing, wordplay and shared culture.",
+          "**The funniest people at work are rarely joke tellers; they are good observers.**"
+        ],
+        [
+          "Most workplace humor comes from noticing something everyone already feels.",
+          "Think of the meeting that could have been an email, or the build that only fails during demos.",
+          "When you name that shared feeling lightly, people laugh because they ==recognize== it."
+        ],
+        [
+          "This kind of humor is also much safer across cultures.",
+          "It does not rely on ==sarcasm==, which often gets lost or ==misread== between offices.",
+          "It also __takes the pressure off__, because you are describing the room, not performing for it."
+        ]
+      ],
+      "heading_zh": "1. 别想着讲笑话",
+      "paragraphs_zh": [
+        [
+          "很多人以为在职场上有趣，就是会讲笑话。",
+          "用第二语言的话，这局很难赢，因为笑话靠的是节奏、文字游戏和共同的文化背景。",
+          "职场上最有意思的人，很少是会讲笑话的人；他们是会观察的人。"
+        ],
+        [
+          "职场上的幽默，大多来自点破一件大家都有同感的事。",
+          "比如那个本来发封邮件就能解决的会，或者那个一到演示就挂的构建。",
+          "你轻描淡写地把这种共同感受说出来，大家就会笑，因为都有共鸣。"
+        ],
+        [
+          "这种幽默在跨文化场合也安全得多。",
+          "它不靠讽刺，而讽刺在不同办公室之间经常会丢失或者被误读。",
+          "它也让你没那么大压力，因为你是在描述现场，而不是给大家表演。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Three Low-Effort Habits",
+      "paragraphs": [
+        [
+          "First, use ==self-deprecating== humor, gently.",
+          "\"My English gets worse after four o'clock, so let's decide this now\" makes people relax, and it shows you are __comfortable in your own skin__.",
+          "It works because you name your weakness before anyone else can."
+        ],
+        [
+          "Second, ==exaggerate== a small truth.",
+          "\"This spreadsheet has more tabs than my browser, and that's saying something.\"",
+          "Small, harmless exaggeration is easy to deliver and hard to get wrong."
+        ],
+        [
+          "Third, be a good audience.",
+          "When someone else makes a joke, laugh, or __play along__ with one more line.",
+          "**You do not need to be the funniest person in the room; you just need to make humor feel welcome.**"
+        ],
+        [
+          "Finally, avoid jokes about someone's accent, appearance or country, and never get a laugh at a junior person's ==expense==.",
+          "If you are not sure a joke will __go down well__, leave it out."
+        ]
+      ],
+      "heading_zh": "2. 三个不费劲的习惯",
+      "paragraphs_zh": [
+        [
+          "第一，适度地自嘲。",
+          "「我的英语过了四点就会变差，所以咱们现在就定了吧」，能让大家放松下来，也显得你对自己挺自在的。",
+          "之所以管用，是因为你抢在别人之前，自己先把短处说出来了。"
+        ],
+        [
+          "第二，把一个小事实稍微夸张一下。",
+          "「这个表格的 tab 比我浏览器开的还多，这可不是一般的多。」",
+          "小而无害的夸张，好说出口，也很难翻车。"
+        ],
+        [
+          "第三，做个好观众。",
+          "别人开玩笑的时候，笑一笑，或者顺着再接一句。",
+          "你不需要当全场最有趣的人；只要让大家觉得在这儿开玩笑是受欢迎的。"
+        ],
+        [
+          "最后，别拿别人的口音、长相或者国家开玩笑，也永远别拿资历浅的人逗乐。",
+          "如果拿不准一个笑话会不会冷场或冒犯人，那就别讲。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者为什么不建议用第二语言讲笑话？",
+      "a": "笑话依赖时机、文字游戏和共同文化，用第二语言很难赢；职场上最有趣的人通常是善于观察的人。"
+    },
+    {
+      "q": "为什么观察式幽默跨文化更安全？",
+      "a": "它说出大家共有的感受，不依赖讽刺，而讽刺在不同办公室之间容易丢失或被误解。"
+    },
+    {
+      "q": "文中的三个低成本习惯和禁区是什么？",
+      "a": "温和地自嘲；夸大一个小事实；做好听众、接梗。禁区：拿口音、外貌、国家开玩笑，或拿下属开涮；没把握就别说。"
+    }
+  ],
+  "dictation": [
+    "The funniest people at work are rarely joke tellers; they are good observers.",
+    "Most workplace humor comes from noticing something everyone already feels.",
+    "Small, harmless exaggeration is easy to deliver and hard to get wrong.",
+    "You do not need to be the funniest person in the room; you just need to make humor feel welcome."
+  ],
+  "shadow": {
+    "text": "Most workplace humor comes from noticing something everyone already feels. Think of the meeting that could have been an email, or the build that only fails during demos. When you name that shared feeling lightly, people laugh because they recognize it.",
+    "marked": "Most workplace <b>humor</b> / comes from <b>noticing</b> something / everyone <b>already</b> feels. //<br>Think of the meeting / that could have been an <b>email</b>, / or the build that only fails during <b>demos</b>. //<br>When you <b>name</b> that shared feeling <b>lightly</b>, / people laugh / because they <b>recognize</b> it. //"
+  },
+  "prompts": [
+    {
+      "q": "季度复盘会开场，大家都很紧张，因为数据不好。用一句自嘲或观察式幽默缓和气氛，再进入正题。",
+      "ref": "Before we start, I should say I've looked at these numbers so many times this week that I now see them in my dreams. So nothing on these slides will surprise me. Okay, the short version is we missed our target, and I want to spend most of today on why, and on what we change next quarter.",
+      "ref_zh": "开始之前先说一句，这周这些数字我看了太多遍，现在做梦都能梦到。所以这几页 PPT 上的东西都吓不到我了。好，简单说就是我们没达成目标，今天我想把大部分时间花在原因上，以及下个季度要改什么。"
+    },
+    {
+      "q": "会上同事抱怨 Our build server needs a holiday more than we do. 你接一句梗，再顺势把话题拉回工作。",
+      "ref": "Honestly, I think it's already on holiday. It just forgot to set an out-of-office message. Maybe that's why it only replies every forty minutes. But seriously, Sam, if you have time this week, could we look at caching together? I'd love to get our build time down before the release.",
+      "ref_zh": "说实话，我觉得它已经在休假了。只是忘了设自动回复。可能这就是为什么它每四十分钟才回一次。不过说正经的，Sam，你这周要是有空，我们一起看看缓存？我想在发布前把构建时间降下来。"
+    }
+  ],
+  "words": [
+    {
+      "w": "recognize",
+      "ipa": "/ˈrekəɡˌnaɪz/",
+      "zh": "认出、意识到",
+      "ex": "Everyone recognized the problem the moment she showed the graph."
+    },
+    {
+      "w": "sarcasm",
+      "ipa": "/ˈsɑːrˌkæzəm/",
+      "zh": "讽刺、挖苦",
+      "ex": "Sarcasm in chat is easy to misread, so add context."
+    },
+    {
+      "w": "misread",
+      "ipa": "/ˌmɪsˈriːd/",
+      "zh": "误读、误解",
+      "ex": "I misread his short reply as angry, but he was just busy."
+    },
+    {
+      "w": "self-deprecating",
+      "ipa": "/ˌself ˈdeprəˌkeɪtɪŋ/",
+      "zh": "自嘲的、自谦的",
+      "ex": "Her self-deprecating opening made the tense review feel lighter."
+    },
+    {
+      "w": "exaggerate",
+      "ipa": "/ɪɡˈzædʒəˌreɪt/",
+      "zh": "夸大、夸张",
+      "ex": "I'm not exaggerating, the page took ten seconds to load.",
+      "tts": "I'm not exaggerating, the page took ten seconds to load."
+    },
+    {
+      "w": "expense",
+      "ipa": "/ɪkˈspens/",
+      "zh": "代价；at someone's expense 拿某人开涮",
+      "ex": "Never make a joke at a new teammate's expense."
+    },
+    {
+      "w": "deliver (v.)",
+      "ipa": "/dɪˈlɪvər/",
+      "zh": "（讲笑话、发言）表达、说出",
+      "ex": "He delivered the bad news calmly and with a clear plan.",
+      "tts_w": "deliver"
+    },
+    {
+      "w": "play along",
+      "ipa": "/pleɪ əˈlɔːŋ/",
+      "zh": "配合、接梗",
+      "ex": "When the PM joked about the deadline, I played along for a second."
+    },
+    {
+      "w": "go down well",
+      "ipa": "/ɡoʊ daʊn wel/",
+      "zh": "受欢迎、反响好",
+      "ex": "The new on-call rotation went down well with the team."
+    }
+  ]
+}

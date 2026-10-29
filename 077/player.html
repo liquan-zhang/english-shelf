@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Planning Meetings That Produce Plans · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "077", "title": "Planning Meetings That Produce Plans", "meta": "B2 · 约 270 词 · 场景：规划会议", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Why Planning Meetings Drift", "heading_zh": "1. 规划会为什么会跑偏", "rows": [[{"id": "s0_0_0", "md": "Many planning meetings end with a ==lengthy== discussion and a promise to __follow up offline__.", "text": "Many planning meetings end with a lengthy discussion and a promise to follow up offline.", "zh": "很多规划会最后都是一通冗长的讨论，再加一句「会后线下再跟进」。", "sp": null}, {"id": "s0_0_1", "md": "Two hours of senior time later, the plan looks exactly the same as before.", "text": "Two hours of senior time later, the plan looks exactly the same as before.", "zh": "花了两个小时高级别的时间，计划跟之前一模一样。", "sp": null}, {"id": "s0_0_2", "md": "Everyone leaves tired, and nobody is quite sure what was decided.", "text": "Everyone leaves tired, and nobody is quite sure what was decided.", "zh": "大家都累了，走的时候谁也说不准到底定了什么。", "sp": null}], [{"id": "s0_1_0", "md": "The usual cause is that the meeting is doing two jobs at once.", "text": "The usual cause is that the meeting is doing two jobs at once.", "zh": "常见的原因是，这个会在同时干两件事。", "sp": null}, {"id": "s0_1_1", "md": "People are hearing information for the first time while also being asked to decide.", "text": "People are hearing information for the first time while also being asked to decide.", "zh": "大家第一次听到信息，同时又被要求做决定。", "sp": null}, {"id": "s0_1_2", "md": "So the conversation ==drifts== into questions that should have been answered by email a week earlier.", "text": "So the conversation drifts into questions that should have been answered by email a week earlier.", "zh": "于是讨论就跑偏到一些本该一周前用邮件就答完的问题上。", "sp": null}], [{"id": "s0_2_0", "md": "**A planning meeting should be where decisions get made, not where facts get collected.**", "text": "A planning meeting should be where decisions get made, not where facts get collected.", "zh": "规划会应该是做决定的地方，而不是收集信息的地方。", "sp": null}, {"id": "s0_2_1", "md": "Collect estimates, dependencies, and open questions in the days before.", "text": "Collect estimates, dependencies, and open questions in the days before.", "zh": "估时、依赖和待定问题，在会前几天就收集好。", "sp": null}, {"id": "s0_2_2", "md": "By the time everyone sits down, the ==groundwork== should already be done.", "text": "By the time everyone sits down, the groundwork should already be done.", "zh": "等大家坐下来的时候，铺垫工作应该已经做完了。", "sp": null}, {"id": "s0_2_3", "md": "The meeting is for the questions that only the people in the room can answer.", "text": "The meeting is for the questions that only the people in the room can answer.", "zh": "会议是留给那些只有在场的人才能回答的问题的。", "sp": null}]]}, {"heading": "2. Bring a Draft, Leave with Owners", "heading_zh": "2. 带着草案进来，带着负责人离开", "rows": [[{"id": "s1_0_0", "md": "Walk in with a draft plan, even a rough one.", "text": "Walk in with a draft plan, even a rough one.", "zh": "带着一份计划草案进会，哪怕很粗糙。", "sp": null}, {"id": "s1_0_1", "md": "A ==straw man== gives people something concrete to react to.", "text": "A straw man gives people something concrete to react to.", "zh": "一个靶子能给大家一个具体的东西去回应。", "sp": null}, {"id": "s1_0_2", "md": "**It is much easier to improve a bad plan than to write a good one from a blank page.**", "text": "It is much easier to improve a bad plan than to write a good one from a blank page.", "zh": "改进一份糟糕的计划，比从一张白纸开始写一份好计划容易得多。", "sp": null}], [{"id": "s1_1_0", "md": "Spend the meeting on the parts people actually disagree about.", "text": "Spend the meeting on the parts people actually disagree about.", "zh": "把会议时间花在大家真正有分歧的部分上。", "sp": null}, {"id": "s1_1_1", "md": "If everyone accepts the staffing for the first two projects, don't reopen it; spend the time on the ==contested== third one.", "text": "If everyone accepts the staffing for the first two projects, don't reopen it; spend the time on the contested third one.", "zh": "如果大家都接受前两个项目的人力安排，就别再翻出来讨论；把时间花在有争议的第三个上。", "sp": null}, {"id": "s1_1_2", "md": "A good facilitator will often say, \"It sounds like we agree on this, so let's __move on__.\"", "text": "A good facilitator will often say, \"It sounds like we agree on this, so let's move on.\"", "zh": "一个好的主持人经常会说：「听起来这点我们达成一致了，那就往下走。」", "sp": null}], [{"id": "s1_2_0", "md": "Before anyone leaves, go through every item and confirm an owner and a date.", "text": "Before anyone leaves, go through every item and confirm an owner and a date.", "zh": "在任何人离开之前，逐项过一遍，确认每项的负责人和日期。", "sp": null}, {"id": "s1_2_1", "md": "Read them back out loud, so ==misunderstandings== come up while everyone is still in the room.", "text": "Read them back out loud, so misunderstandings come up while everyone is still in the room.", "zh": "把它们大声念一遍，这样误解能在大家都还在场的时候暴露出来。", "sp": null}, {"id": "s1_2_2", "md": "Then send the summary within an hour, while the discussion is still fresh.", "text": "Then send the summary within an hour, while the discussion is still fresh.", "zh": "然后在一小时内发出会议纪要，趁讨论还新鲜。", "sp": null}, {"id": "s1_2_3", "md": "A plan without named owners is just a ==wish list==.", "text": "A plan without named owners is just a wish list.", "zh": "没有具体负责人的计划，只是一张愿望清单。", "sp": null}]]}], "gist": [{"q": "规划会为什么常常开完了计划没变？", "a": "会议同时在做两件事：大家第一次听到信息，又被要求当场决定，讨论就跑偏到本该会前邮件解决的问题上。"}, {"q": "会前应该做什么？带什么进会？", "a": "提前收集估时、依赖和未决问题；带一份草案（稻草人方案）进会，让大家有具体东西可以改。"}, {"q": "会议结束前要做哪一步？", "a": "逐项确认负责人和日期并大声复述，暴露误解；一小时内发出总结。没有负责人的计划只是愿望清单。"}], "dictation": [{"id": "s0_2_0", "text": "A planning meeting should be where decisions get made, not where facts get collected."}, {"id": "s1_0_2", "text": "It is much easier to improve a bad plan than to write a good one from a blank page."}, {"id": "s1_2_0", "text": "Before anyone leaves, go through every item and confirm an owner and a date."}, {"id": "s1_2_3", "text": "A plan without named owners is just a wish list."}], "shadow": {"text": "Before anyone leaves, go through every item and confirm an owner and a date. Read them back out loud, so misunderstandings come up while everyone is still in the room.", "marked": "Before anyone <b>leaves</b>, / go through <b>every</b> item / and confirm an <b>owner</b> / and a <b>date</b>. //<br>Read them back <b>out loud</b>, / so <b>misunderstandings</b> come up / while everyone is <b>still</b> in the room. //"}, "prompts": [{"q": "下周你要主持季度规划会。用 30 秒在群里说明会前准备的要求和会议怎么开。", "ref": "Hi all, quick note before next Tuesday's planning session. By Friday, please add your estimates, dependencies, and open questions to the shared doc. I'll turn that into a draft plan over the weekend. In the meeting itself, we won't walk through every item; we'll focus on the parts where we disagree. And we'll finish with an owner and a date for each project, so please come ready to commit.", "ref_zh": "大家好，下周二规划会之前提醒一下。请在周五之前把你们的估时、依赖和待定问题填到共享文档里。我周末会整理成一份计划草案。会上我们不会逐项过；我们只聚焦有分歧的部分。最后每个项目都会定下负责人和日期，所以请大家带着承诺来。", "id": "ref0"}, {"q": "规划会已经开了一个半小时，还在讨论第一个项目的细节。用 30 秒把会议拉回来，确认负责人和日期。", "ref": "Sorry to cut in, but we're at ninety minutes and still on the first project. It sounds like we agree on the approach, and the remaining questions are details that Wei and Sam can sort out offline. Can we confirm Wei as owner, with a first milestone at the end of the month? Then let's move to the search project, which is where we actually disagree.", "ref_zh": "抱歉打断一下，我们已经开了九十分钟，还在第一个项目上。听起来大家对方案是一致的，剩下的问题都是细节，Wei 和 Sam 可以线下解决。我们能不能确认 Wei 做负责人，第一个里程碑定在月底？然后我们进到搜索项目，那才是我们真正有分歧的地方。", "id": "ref1"}], "words": [{"w": "lengthy", "ipa": "/ˈleŋθi/", "zh": "冗长的", "ex": "After a lengthy debate, we agreed to keep the old API for now.", "id": "w0"}, {"w": "drift (v.)", "ipa": "/drɪft/", "zh": "偏离、跑题", "ex": "The meeting drifted into a debate about naming conventions.", "tts_w": "drift", "id": "w1"}, {"w": "groundwork", "ipa": "/ˈɡraʊndˌwɜːrk/", "zh": "前期准备、基础工作", "ex": "She did the groundwork with each team before the review.", "id": "w2"}, {"w": "straw man", "ipa": "/ˌstrɔː ˈmæn/", "zh": "供讨论的初稿方案（稻草人）", "ex": "Here's a straw man for the Q3 roadmap; please tear it apart.", "tts": "Here's a straw man for the third quarter roadmap; please tear it apart.", "id": "w3"}, {"w": "contested", "ipa": "/kənˈtestɪd/", "zh": "有争议的", "ex": "The headcount split is the most contested part of the plan.", "id": "w4"}, {"w": "misunderstanding", "ipa": "/ˌmɪsʌndərˈstændɪŋ/", "zh": "误解", "ex": "To avoid any misunderstanding, the deadline is Friday Singapore time.", "id": "w5"}, {"w": "wish list", "ipa": "/ˈwɪʃ lɪst/", "zh": "愿望清单", "ex": "Without headcount, this roadmap is just a wish list.", "id": "w6"}, {"w": "facilitator", "ipa": "/fəˈsɪlɪˌteɪtər/", "zh": "会议主持人、引导者", "ex": "Can you be the facilitator for the retro this week?", "id": "w7"}, {"w": "offline", "ipa": "/ˌɔːfˈlaɪn/", "zh": "会后私下（讨论）", "ex": "Let's take the database question offline after the meeting.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Why Planning Meetings Drift", "zh": "1. 规划会为什么会跑偏", "start": 0.0, "end": 2.52, "words": [[0.105, 0.382], [0.684, 0.855], [0.868, 1.263], [1.276, 1.618], [1.632, 2.118]]}, {"kind": "s", "id": "s0_0_0", "md": "Many planning meetings end with a ==lengthy== discussion and a promise to __follow up offline__.", "zh": "很多规划会最后都是一通冗长的讨论，再加一句「会后线下再跟进」。", "sp": null, "gap": false, "start": 2.52, "end": 7.92, "words": [[2.625, 2.836], [2.849, 3.244], [3.257, 3.836], [3.849, 3.967], [3.981, 4.112], [4.125, 4.178], [4.191, 4.638], [4.652, 5.336], [5.454, 5.546], [5.559, 5.612], [5.625, 6.178], [6.191, 6.296], [6.309, 6.744], [6.757, 6.928], [6.941, 7.52]]}, {"kind": "s", "id": "s0_0_1", "md": "Two hours of senior time later, the plan looks exactly the same as before.", "zh": "花了两个小时高级别的时间，计划跟之前一模一样。", "sp": null, "gap": false, "start": 7.92, "end": 12.912, "words": [[8.038, 8.262], [8.275, 8.644], [8.657, 8.749], [8.762, 9.144], [9.157, 9.433], [9.446, 9.762], [10.052, 10.144], [10.157, 10.486], [10.499, 10.696], [10.709, 11.354], [11.367, 11.46], [11.473, 11.854], [11.867, 11.973], [11.986, 12.525]]}, {"kind": "s", "id": "s0_0_2", "md": "Everyone leaves tired, and nobody is quite sure what was decided.", "zh": "大家都累了，走的时候谁也说不准到底定了什么。", "sp": null, "gap": false, "start": 12.912, "end": 17.64, "words": [[13.017, 13.491], [13.504, 13.794], [13.807, 14.32], [14.715, 14.873], [14.886, 15.412], [15.491, 15.583], [15.596, 15.938], [15.951, 16.386], [16.399, 16.517], [16.53, 16.649], [16.662, 17.241]]}, {"kind": "s", "id": "s0_1_0", "md": "The usual cause is that the meeting is doing two jobs at once.", "zh": "常见的原因是，这个会在同时干两件事。", "sp": null, "gap": true, "start": 17.64, "end": 21.744, "words": [[17.745, 17.798], [17.811, 18.219], [18.232, 18.693], [18.706, 18.811], [18.824, 18.969], [18.982, 19.048], [19.061, 19.495], [19.561, 19.679], [19.693, 20.008], [20.022, 20.311], [20.324, 20.745], [20.758, 20.851], [20.864, 21.364]]}, {"kind": "s", "id": "s0_1_1", "md": "People are hearing information for the first time while also being asked to decide.", "zh": "大家第一次听到信息，同时又被要求做决定。", "sp": null, "gap": false, "start": 21.744, "end": 26.664, "words": [[21.862, 22.112], [22.126, 22.244], [22.257, 22.639], [22.652, 23.231], [23.244, 23.362], [23.376, 23.455], [23.468, 23.889], [23.902, 24.244], [24.455, 24.612], [24.626, 24.981], [24.994, 25.283], [25.31, 25.626], [25.639, 25.731], [25.744, 26.283]]}, {"kind": "s", "id": "s0_1_2", "md": "So the conversation ==drifts== into questions that should have been answered by email a week earlier.", "zh": "于是讨论就跑偏到一些本该一周前用邮件就答完的问题上。", "sp": null, "gap": false, "start": 26.664, "end": 32.064, "words": [[26.769, 26.875], [26.888, 26.98], [26.993, 27.73], [27.743, 28.111], [28.125, 28.282], [28.296, 28.848], [28.861, 28.993], [29.006, 29.19], [29.203, 29.296], [29.309, 29.48], [29.493, 29.914], [29.927, 30.085], [30.164, 30.625], [30.743, 30.796], [30.809, 31.085], [31.151, 31.664]]}, {"kind": "s", "id": "s0_2_0", "md": "**A planning meeting should be where decisions get made, not where facts get collected.**", "zh": "规划会应该是做决定的地方，而不是收集信息的地方。", "sp": null, "gap": true, "start": 32.064, "end": 37.104, "words": [[32.169, 32.235], [32.248, 32.63], [32.643, 32.985], [33.09, 33.301], [33.314, 33.459], [33.472, 33.617], [33.63, 34.248], [34.261, 34.432], [34.446, 34.827], [35.222, 35.406], [35.419, 35.551], [35.564, 35.998], [36.011, 36.156], [36.169, 36.709]]}, {"kind": "s", "id": "s0_2_1", "md": "Collect estimates, dependencies, and open questions in the days before.", "zh": "估时、依赖和待定问题，在会前几天就收集好。", "sp": null, "gap": false, "start": 37.104, "end": 41.88, "words": [[37.209, 37.551], [37.617, 38.288], [38.472, 39.301], [39.486, 39.67], [39.683, 39.972], [39.986, 40.512], [40.525, 40.591], [40.604, 40.683], [40.696, 40.959], [40.972, 41.486]]}, {"kind": "s", "id": "s0_2_2", "md": "By the time everyone sits down, the ==groundwork== should already be done.", "zh": "等大家坐下来的时候，铺垫工作应该已经做完了。", "sp": null, "gap": false, "start": 41.88, "end": 46.32, "words": [[41.998, 42.077], [42.091, 42.196], [42.209, 42.551], [42.709, 43.091], [43.104, 43.393], [43.406, 43.814], [44.13, 44.222], [44.235, 44.827], [44.893, 45.091], [45.104, 45.459], [45.472, 45.577], [45.591, 45.933]]}, {"kind": "s", "id": "s0_2_3", "md": "The meeting is for the questions that only the people in the room can answer.", "zh": "会议是留给那些只有在场的人才能回答的问题的。", "sp": null, "gap": false, "start": 46.32, "end": 50.448, "words": [[46.438, 46.491], [46.504, 46.899], [46.912, 47.031], [47.044, 47.162], [47.175, 47.267], [47.281, 47.873], [47.886, 48.044], [48.109, 48.438], [48.452, 48.557], [48.57, 48.965], [48.978, 49.057], [49.07, 49.149], [49.162, 49.412], [49.425, 49.57], [49.583, 50.057]]}, {"kind": "h", "id": "h1", "md": "2. Bring a Draft, Leave with Owners", "zh": "2. 带着草案进来，带着负责人离开", "start": 50.448, "end": 53.496, "words": [[50.566, 50.83], [51.172, 51.369], [51.382, 51.435], [51.448, 51.961], [52.251, 52.435], [52.448, 52.58], [52.593, 53.106]]}, {"kind": "s", "id": "s1_0_0", "md": "Walk in with a draft plan, even a rough one.", "zh": "带着一份计划草案进会，哪怕很粗糙。", "sp": null, "gap": false, "start": 53.496, "end": 56.616, "words": [[53.601, 53.851], [53.864, 53.943], [53.957, 54.088], [54.101, 54.141], [54.154, 54.562], [54.575, 54.983], [55.378, 55.535], [55.549, 55.601], [55.614, 55.904], [55.917, 56.233]]}, {"kind": "s", "id": "s1_0_1", "md": "A ==straw man== gives people something concrete to react to.", "zh": "一个靶子能给大家一个具体的东西去回应。", "sp": null, "gap": false, "start": 56.616, "end": 60.336, "words": [[56.721, 56.774], [56.787, 57.076], [57.09, 57.524], [57.629, 57.866], [57.879, 58.195], [58.208, 58.563], [58.577, 59.142], [59.155, 59.274], [59.287, 59.695], [59.708, 59.958]]}, {"kind": "s", "id": "s1_0_2", "md": "**It is much easier to improve a bad plan than to write a good one from a blank page.**", "zh": "改进一份糟糕的计划，比从一张白纸开始写一份好计划容易得多。", "sp": null, "gap": false, "start": 60.336, "end": 65.784, "words": [[60.441, 60.52], [60.533, 60.652], [60.665, 60.941], [61.06, 61.454], [61.468, 61.599], [61.612, 62.099], [62.112, 62.218], [62.231, 62.56], [62.573, 63.02], [63.152, 63.257], [63.27, 63.389], [63.402, 63.599], [63.612, 63.665], [63.678, 63.902], [63.915, 64.257], [64.27, 64.441], [64.454, 64.52], [64.533, 64.849], [64.862, 65.402]]}, {"kind": "s", "id": "s1_1_0", "md": "Spend the meeting on the parts people actually disagree about.", "zh": "把会议时间花在大家真正有分歧的部分上。", "sp": null, "gap": true, "start": 65.784, "end": 69.408, "words": [[65.889, 66.179], [66.192, 66.258], [66.271, 66.626], [66.639, 66.731], [66.745, 66.823], [66.837, 67.179], [67.192, 67.639], [67.652, 68.06], [68.073, 68.6], [68.613, 69.008]]}, {"kind": "s", "id": "s1_1_1", "md": "If everyone accepts the staffing for the first two projects, don't reopen it; spend the time on the ==contested== third one.", "zh": "如果大家都接受前两个项目的人力安排，就别再翻出来讨论；把时间花在有争议的第三个上。", "sp": null, "gap": false, "start": 69.408, "end": 76.848, "words": [[69.513, 69.658], [69.79, 70.171], [70.184, 70.684], [70.697, 70.79], [70.803, 71.303], [71.316, 71.421], [71.434, 71.513], [71.526, 71.855], [71.869, 72.0], [72.013, 72.75], [73.0, 73.25], [73.263, 73.711], [73.724, 73.855], [74.25, 74.5], [74.513, 74.579], [74.592, 74.987], [75.066, 75.145], [75.158, 75.237], [75.25, 75.855], [75.869, 76.171], [76.184, 76.461]]}, {"kind": "s", "id": "s1_1_2", "md": "A good facilitator will often say, \"It sounds like we agree on this, so let's __move on__.\"", "zh": "一个好的主持人经常会说：「听起来这点我们达成一致了，那就往下走。」", "sp": null, "gap": false, "start": 76.848, "end": 82.512, "words": [[76.953, 77.032], [77.045, 77.269], [77.282, 78.019], [78.032, 78.203], [78.216, 78.585], [78.598, 78.98], [79.453, 79.545], [79.559, 79.848], [79.861, 79.993], [80.006, 80.124], [80.137, 80.493], [80.506, 80.651], [80.664, 80.98], [81.216, 81.361], [81.374, 81.585], [81.598, 81.795], [81.809, 82.111]]}, {"kind": "s", "id": "s1_2_0", "md": "Before anyone leaves, go through every item and confirm an owner and a date.", "zh": "在任何人离开之前，逐项过一遍，确认每项的负责人和日期。", "sp": null, "gap": true, "start": 82.512, "end": 87.696, "words": [[82.63, 82.946], [82.959, 83.328], [83.341, 83.815], [84.078, 84.262], [84.275, 84.525], [84.538, 84.894], [84.907, 85.236], [85.433, 85.512], [85.525, 86.038], [86.051, 86.17], [86.183, 86.565], [86.749, 86.828], [86.841, 86.907], [86.92, 87.301]]}, {"kind": "s", "id": "s1_2_1", "md": "Read them back out loud, so ==misunderstandings== come up while everyone is still in the room.", "zh": "把它们大声念一遍，这样误解能在大家都还在场的时候暴露出来。", "sp": null, "gap": false, "start": 87.696, "end": 93.288, "words": [[87.788, 87.986], [87.999, 88.13], [88.143, 88.472], [88.485, 88.683], [88.696, 89.078], [89.485, 89.656], [89.67, 90.617], [90.63, 90.828], [90.841, 91.051], [91.17, 91.367], [91.512, 91.972], [91.985, 92.078], [92.091, 92.393], [92.407, 92.472], [92.485, 92.551], [92.564, 92.893]]}, {"kind": "s", "id": "s1_2_2", "md": "Then send the summary within an hour, while the discussion is still fresh.", "zh": "然后在一小时内发出会议纪要，趁讨论还新鲜。", "sp": null, "gap": false, "start": 93.288, "end": 97.872, "words": [[93.406, 93.564], [93.577, 93.827], [93.841, 93.92], [93.933, 94.38], [94.393, 94.722], [94.735, 94.828], [94.841, 95.196], [95.525, 95.617], [95.63, 95.722], [95.735, 96.354], [96.446, 96.551], [96.564, 96.854], [96.867, 97.472]]}, {"kind": "s", "id": "s1_2_3", "md": "A plan without named owners is just a ==wish list==.", "zh": "没有具体负责人的计划，只是一张愿望清单。", "sp": null, "gap": false, "start": 97.872, "end": 101.16, "words": [[97.977, 98.043], [98.056, 98.385], [98.398, 98.767], [98.78, 99.056], [99.069, 99.477], [99.596, 99.74], [99.754, 99.99], [100.004, 100.043], [100.056, 100.319], [100.333, 100.767]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

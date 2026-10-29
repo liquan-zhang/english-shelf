@@ -1,0 +1,90 @@
+{
+  "id": "129",
+  "type": "dialogue",
+  "title": "Booking Movers",
+  "meta": "B2 · 约 320 词 · 场景：搬家询价与砍价",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Moving Coordinator", "name_zh": "搬家公司客服", "voice": "en-IN-NeerjaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Getting a Quote",
+      "heading_zh": "1. 询价",
+      "lines": [
+        {"sp": "B", "en": "Hello, Swift Movers, Neha speaking. How can I help you?", "zh": "您好，迅捷搬家，我是妮哈。有什么可以帮您？"},
+        {"sp": "A", "en": "Hi, we're moving from a three bedroom condo to another one in Bukit Timah, and I'd like to get a ==quote==.", "zh": "你好，我们要从一个三房公寓搬到武吉知马的另一个公寓，想问个报价。"},
+        {"sp": "B", "en": "Sure. When are you planning to move, and do you need help with packing?", "zh": "好的。打算什么时候搬？需要帮忙打包吗？"},
+        {"sp": "A", "en": "**Ideally on the fifteenth of next month. And yes, we'd like you to pack everything for us.**", "zh": "最好是下个月十五号。是的，我们希望你们全部帮我们打包。"},
+        {"sp": "B", "en": "No problem. Do you have any large or ==fragile== items, like a piano, artwork, or a big TV?", "zh": "没问题。有大件或易碎品吗？比如钢琴、画、或者大电视？"},
+        {"sp": "A", "en": "A sixty-five inch TV, a glass dining table, and quite a lot of kitchenware.", "zh": "一台六十五寸电视、一张玻璃餐桌，还有挺多厨房用品。"},
+        {"sp": "B", "en": "We'll wrap those separately and use a special crate for the TV.", "zh": "这些我们会单独包装，电视用专门的木箱装。"},
+        {"sp": "A", "en": "What happens if something gets broken? Are you ==insured==?", "zh": "要是有东西摔坏了怎么办？你们有保险吗？"},
+        {"sp": "B", "en": "Our basic ==coverage== pays up to two hundred dollars per item. For more, you can buy extra insurance.", "zh": "我们的基础保障每件最高赔两百块。想要更高的，可以加买保险。"},
+        {"sp": "A", "en": "I'd rather __be on the safe side__. Could you include that in the quote?", "zh": "我还是想稳妥一点。能把保险也算进报价里吗？"},
+        {"sp": "B", "en": "Sure. Could we do a video ==survey== this week, so I can give you an accurate price?", "zh": "可以。这周能做个视频看房吗？这样我能给您准确的价格。"},
+        {"sp": "A", "en": "Thursday evening works for us.", "zh": "周四晚上我们可以。"}
+      ]
+    },
+    {
+      "heading": "2. Questioning the Quote",
+      "heading_zh": "2. 对报价有疑问",
+      "lines": [
+        {"sp": "B", "en": "Hi, I've just emailed you the quote. It comes to two thousand three hundred dollars, including insurance.", "zh": "您好，报价刚发到您邮箱了。含保险一共两千三百块。"},
+        {"sp": "A", "en": "Thanks for sending it. It's quite a bit higher than I expected.", "zh": "谢谢。比我预想的高不少。"},
+        {"sp": "A", "en": "**Could you break down the cost for me?**", "zh": "能给我拆分一下费用吗？"},
+        {"sp": "B", "en": "Of course. The move itself is fourteen hundred, packing is six hundred, and insurance is three hundred.", "zh": "当然。搬运本身一千四，打包六百，保险三百。"},
+        {"sp": "A", "en": "I see. Is there a ==surcharge== for weekends? Would a weekday be cheaper?", "zh": "明白了。周末有附加费吗？换工作日会便宜点吗？"},
+        {"sp": "B", "en": "Yes, a Tuesday or Wednesday would save you about two hundred.", "zh": "有的，改周二或周三能省两百左右。"},
+        {"sp": "A", "en": "A Wednesday is fine. And what if we pack the books and clothes ourselves?", "zh": "周三可以。那如果书和衣服我们自己打包呢？"},
+        {"sp": "B", "en": "Then we could __take off__ another two hundred. We'd only pack the fragile items and furniture.", "zh": "那还能再减两百。我们只负责打包易碎品和家具。"},
+        {"sp": "A", "en": "**So that brings it down to about nineteen hundred, right?**", "zh": "那就降到一千九左右了，对吧？"},
+        {"sp": "B", "en": "Exactly. And we'll ==dismantle== and ==reassemble== the beds for free.", "zh": "没错。床的拆装我们免费做。"},
+        {"sp": "A", "en": "Great. Do you need a ==deposit== to __hold the date__?", "zh": "太好了。要付定金才能把日期定下来吗？"},
+        {"sp": "B", "en": "Twenty percent, by bank transfer. I'll send you the revised quote today.", "zh": "百分之二十，银行转账。我今天把修改后的报价发给您。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」家有哪些需要特别处理的物品？搬家公司怎么处理？", "a": "六十五寸电视、玻璃餐桌和很多厨房用品；单独包装，电视用专门木箱。"},
+    {"q": "最初报价多少？由哪几部分组成？", "a": "两千三百块：搬运一千四、打包六百、保险三百。"},
+    {"q": "「你」用了哪两个办法把价格降下来？最后多少？", "a": "改到工作日（周三）省两百，书和衣服自己打包再省两百，降到一千九左右，还免费拆装床。"}
+  ],
+  "dictation": [
+    "Ideally on the fifteenth of next month. And yes, we'd like you to pack everything for us.",
+    "I'd rather be on the safe side. Could you include that in the quote?",
+    "I see. Is there a surcharge for weekends? Would a weekday be cheaper?",
+    "A Wednesday is fine. And what if we pack the books and clothes ourselves?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Thanks for sending it. It's quite a bit higher than I expected. Could you break down the cost for me?",
+    "marked": "Thanks for <b>sending</b> it. //<br>It's <b>quite a bit higher</b> / than I <b>expected</b>. //<br>Could you <b>break down</b> the cost / for me? //"
+  },
+  "prompts": [
+    {
+      "q": "搬家当天，你发现一个箱子被压坏，里面的花瓶碎了。跟搬家队长说明情况，要求记录并问怎么理赔。",
+      "ref": "Excuse me, could you come and look at this box? It was crushed at the bottom, and the vase inside is broken. It was marked fragile on the top. Could you note it down on the delivery form before you leave? And what do I need to do to make an insurance claim? Should I send you photos?",
+      "ref_zh": "不好意思，能过来看一下这个箱子吗？底部被压坏了，里面的花瓶碎了。箱子顶上标了易碎。你们走之前能在交接单上记一下吗？我要理赔需要做什么？要发照片给你们吗？"
+    },
+    {
+      "q": "你收到两家搬家公司的报价，想让第一家再便宜一点。礼貌地拿另一家报价去谈。",
+      "ref": "Hi Neha, thanks for the quote. To be honest, I really liked your service on the phone, but another company has quoted us about three hundred less for the same job. Is there any flexibility on your price? If you could get a bit closer to theirs, I'd be happy to confirm with you today.",
+      "ref_zh": "妮哈你好，谢谢你的报价。说实话，我很喜欢你们电话里的服务，但另一家公司同样的活报价便宜了三百左右。你们价格上还有商量余地吗？如果能接近一点，我今天就可以跟你们确认。"
+    }
+  ],
+  "words": [
+    {"w": "quote", "ipa": "/kwoʊt/", "zh": "报价", "ex": "Get at least three quotes before you choose a company."},
+    {"w": "fragile", "ipa": "/ˈfrædʒəl/", "zh": "易碎的", "ex": "Please mark this box as fragile."},
+    {"w": "insured", "ipa": "/ɪnˈʃʊrd/", "zh": "有保险的，已投保的", "ex": "Is the car insured for other drivers?"},
+    {"w": "coverage", "ipa": "/ˈkʌvərɪdʒ/", "zh": "保险范围，保障额度", "ex": "Check how much coverage you have before you travel."},
+    {"w": "survey", "ipa": "/ˈsɜːrveɪ/", "zh": "（上门或视频）查看评估", "ex": "The movers did a quick survey of our flat."},
+    {"w": "surcharge", "ipa": "/ˈsɜːrtʃɑːrdʒ/", "zh": "附加费", "ex": "There's a surcharge for taxis after midnight."},
+    {"w": "dismantle", "ipa": "/dɪsˈmæntəl/", "zh": "拆卸", "ex": "We had to dismantle the wardrobe to get it out."},
+    {"w": "reassemble", "ipa": "/ˌriːəˈsembəl/", "zh": "重新组装", "ex": "Can you reassemble the cot in the new flat?"},
+    {"w": "deposit", "ipa": "/dɪˈpɑːzɪt/", "zh": "定金，押金", "ex": "We paid a small deposit to book the venue."},
+    {"w": "break down", "ipa": "/breɪk daʊn/", "zh": "（把费用）拆分列明", "ex": "Could you break down the bill by person?"}
+  ]
+}

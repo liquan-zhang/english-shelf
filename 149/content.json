@@ -1,0 +1,245 @@
+{
+  "id": "149",
+  "type": "dialogue",
+  "title": "Booking a Repair Technician",
+  "meta": "B2 · 约 310 词 · 场景：预约空调维修与报价",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Service Coordinator",
+      "name_zh": "维修客服",
+      "voice": "en-IN-NeerjaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Booking the Visit",
+      "heading_zh": "1. 预约上门",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Good morning, CoolAir Services. How can I help you?",
+          "zh": "早上好，CoolAir 空调服务。请问有什么可以帮您？"
+        },
+        {
+          "sp": "A",
+          "en": "**Hi. The aircon in our bedroom is leaking water, and it's not cooling properly.**",
+          "zh": "你好。我们卧室的空调在漏水，制冷也不太好。"
+        },
+        {
+          "sp": "B",
+          "en": "I'm sorry to hear that. How long has it been like this?",
+          "zh": "很抱歉。这种情况多久了？"
+        },
+        {
+          "sp": "A",
+          "en": "About a week. Water keeps dripping onto the floor, especially at night.",
+          "zh": "大概一个星期了。水一直往地板上滴，晚上尤其严重。"
+        },
+        {
+          "sp": "B",
+          "en": "It sounds like a ==blocked== drain pipe, or it may need a ==chemical== wash. When would you like the technician to come?",
+          "zh": "听起来像是排水管堵了，也可能需要做化学清洗。您希望技术员什么时候上门？"
+        },
+        {
+          "sp": "A",
+          "en": "__As soon as possible__, really. Do you have anything this Saturday?",
+          "zh": "越快越好。这周六有空档吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Saturday we have a slot between two and four in the afternoon.",
+          "zh": "周六下午两点到四点有一个时段。"
+        },
+        {
+          "sp": "A",
+          "en": "That works. How much is the ==call-out== fee?",
+          "zh": "可以。上门费是多少？"
+        },
+        {
+          "sp": "B",
+          "en": "It's forty dollars for the ==inspection==, but it's waived if you go ahead with the repair.",
+          "zh": "检查费四十块，如果您决定维修就免掉。"
+        },
+        {
+          "sp": "A",
+          "en": "**Could the technician give me a quote before starting any work?**",
+          "zh": "技术员能在动工前先给我报个价吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Yes, of course. Nothing will be done without your approval.",
+          "zh": "当然可以。没有您的同意，什么都不会动。"
+        }
+      ]
+    },
+    {
+      "heading": "2. The Quote Seems High",
+      "heading_zh": "2. 报价有点高",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "Hi, I'm calling about the quote your technician gave me this afternoon. It's three hundred and eighty dollars.",
+          "zh": "你好，我打电话是想问一下你们技术员今天下午给的报价，三百八十块。"
+        },
+        {
+          "sp": "B",
+          "en": "Let me pull it up. It includes a chemical wash, a gas ==top-up==, and a new drain pipe.",
+          "zh": "我调出来看看。里面包括化学清洗、补充冷媒，还有换一根新的排水管。"
+        },
+        {
+          "sp": "A",
+          "en": "That's a lot more than I expected. __Could you break it down__ for me?",
+          "zh": "这比我预想的高不少。能帮我拆开讲讲各项费用吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Sure. The chemical wash is one hundred and fifty, the gas is one hundred and twenty, and the pipe is one hundred and ten.",
+          "zh": "好的。化学清洗一百五，冷媒一百二，排水管一百一。"
+        },
+        {
+          "sp": "A",
+          "en": "**The unit's only three years old. Is the gas top-up really necessary right now?**",
+          "zh": "这台空调才用了三年。补冷媒现在真的有必要吗？"
+        },
+        {
+          "sp": "B",
+          "en": "The technician noted the ==pressure== was a bit low, but it's not urgent. You could leave it for now.",
+          "zh": "技术员记录说压力有点低，但不着急，可以先不做。"
+        },
+        {
+          "sp": "A",
+          "en": "Then let's skip the gas for now. And if I sign up for your yearly ==servicing== package, __is there a discount__?",
+          "zh": "那冷媒就先不做了。如果我办你们的年度保养套餐，有折扣吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Yes. With an annual ==contract==, today's chemical wash is twenty percent off.",
+          "zh": "有的。签年度合约的话，今天的化学清洗打八折。"
+        },
+        {
+          "sp": "A",
+          "en": "That sounds reasonable. Does the repair come with a ==warranty==?",
+          "zh": "听起来挺合理的。维修有保修吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Yes, ninety days on parts and labour.",
+          "zh": "有，零件和人工都保九十天。"
+        },
+        {
+          "sp": "A",
+          "en": "Great. __Let's go ahead__ with the pipe and the chemical wash, then.",
+          "zh": "好的。那就做排水管和化学清洗吧。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "空调出了什么问题？客服初步判断是什么原因？",
+      "a": "卧室空调漏水、制冷不好，持续一周了；可能是排水管堵了，或者需要化学清洗。"
+    },
+    {
+      "q": "上门费怎么收？「你」提了什么要求？",
+      "a": "检查费四十块，决定维修就免；「你」要求动工前先报价，没同意不能开工。"
+    },
+    {
+      "q": "对三百八十块的报价，「你」最后怎么砍的？",
+      "a": "请对方拆开费用，问清补冷媒不着急就先不做；签年度保养合约让化学清洗打八折，最后只做排水管和化学清洗，享受九十天保修。"
+    }
+  ],
+  "dictation": [
+    "Hi. The aircon in our bedroom is leaking water, and it's not cooling properly.",
+    "Could the technician give me a quote before starting any work?",
+    "That's a lot more than I expected. Could you break it down for me?",
+    "The unit's only three years old. Is the gas top-up really necessary right now?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "The unit's only three years old. Is the gas top-up really necessary right now?",
+    "marked": "The unit's only <b>three</b> years old. //<br>Is the <b>gas top-up</b> / <b>really</b> necessary / right <b>now</b>? //"
+  },
+  "prompts": [
+    {
+      "q": "家里的洗衣机坏了，打电话约维修。用 30 秒说清：什么问题、希望的时间、问上门费和是否先报价。",
+      "ref": "Hi, our washing machine stopped working this morning. It fills with water, but the drum won't spin, and it's showing an error code. Could someone come and take a look this week, ideally on a weekday evening or Saturday morning? How much is the call-out fee? And could the technician give me a quote before doing any repairs?",
+      "ref_zh": "你好，我家洗衣机今天早上坏了。能进水，但滚筒不转，还显示一个错误代码。这周能派人来看看吗？最好是工作日晚上或者周六上午。上门费多少？技术员修之前能先给我报价吗？"
+    },
+    {
+      "q": "维修师傅说热水器要整个换掉，报价很高。你想先拿第二个意见，礼貌地暂缓。",
+      "ref": "Thanks for checking it so carefully. That's a bigger job than I expected, so I'd like to think it over before I decide. Could you write down the quote and what exactly needs replacing? I'll talk to my landlord first, since it might be covered. I'm happy to pay today's inspection fee, of course.",
+      "ref_zh": "谢谢你检查得这么仔细。这比我预想的工程大，我想先考虑一下再决定。能把报价和具体要换什么写下来给我吗？我先跟房东商量一下，可能由他承担。今天的检查费我当然照付。"
+    }
+  ],
+  "words": [
+    {
+      "w": "blocked",
+      "ipa": "/blɑːkt/",
+      "zh": "堵塞的",
+      "ex": "The kitchen sink is blocked again."
+    },
+    {
+      "w": "chemical wash",
+      "ipa": "/ˈkemɪkəl wɑːʃ/",
+      "zh": "（空调）化学清洗",
+      "ex": "Our aircon needs a chemical wash once a year."
+    },
+    {
+      "w": "call-out fee",
+      "ipa": "/ˈkɔːl aʊt fiː/",
+      "zh": "上门费",
+      "ex": "The plumber charges a call-out fee even if he can't fix it."
+    },
+    {
+      "w": "inspection",
+      "ipa": "/ɪnˈspekʃən/",
+      "zh": "检查",
+      "ex": "The landlord wants to do an inspection before we move out."
+    },
+    {
+      "w": "top-up",
+      "ipa": "/ˈtɑːp ʌp/",
+      "zh": "补充；充值",
+      "ex": "I need to top up my EZ-Link card."
+    },
+    {
+      "w": "pressure",
+      "ipa": "/ˈpreʃər/",
+      "zh": "压力，气压",
+      "ex": "The water pressure in the shower is really weak."
+    },
+    {
+      "w": "servicing",
+      "ipa": "/ˈsɜːrvɪsɪŋ/",
+      "zh": "定期保养",
+      "ex": "The car is due for servicing next month."
+    },
+    {
+      "w": "contract",
+      "ipa": "/ˈkɑːntrækt/",
+      "zh": "合约",
+      "ex": "We signed a one-year cleaning contract.",
+      "tts": "We signed a one-year cleaning contract."
+    },
+    {
+      "w": "warranty",
+      "ipa": "/ˈwɔːrənti/",
+      "zh": "保修",
+      "ex": "Is the fridge still under warranty?"
+    },
+    {
+      "w": "quote (n.)",
+      "ipa": "/kwoʊt/",
+      "zh": "报价",
+      "ex": "We got three quotes before choosing a mover.",
+      "tts_w": "quote"
+    }
+  ]
+}

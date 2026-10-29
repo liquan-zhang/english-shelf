@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Chatting with Other Parents at the Playground · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "138", "type": "dialogue", "title": "Chatting with Other Parents at the Playground", "meta": "B2 · 约 240 词 · 场景：游乐场搭话与约玩", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Other Parent", "name_zh": "另一位家长", "voice": "en-GB-RyanNeural"}}, "gist": [{"q": "两位家长互相介绍了哪些信息？", "a": "Mia 三岁半，住对面公寓，两个月前从上海搬来；Oliver 刚满四岁，在社区中心旁的幼儿园上学。"}, {"q": "两个孩子发生了什么？大人怎么处理的？", "a": "两人抢同一辆滑板车；「你」让 Mia 好好问、轮流玩，对方让 Oliver 先给她玩几分钟。"}, {"q": "最后约了什么？", "a": "周日上午十点来「你」家玩，天气好可以去公寓泳池；两人交换了电话，「你」用 WhatsApp 发地址。"}], "dictation": [{"id": "s0_1_0", "text": "Yes, that's Mia. She's three and a half. Which one is yours?"}, {"id": "s0_7_0", "text": "Not yet. Is that one any good? I've heard mixed reviews."}, {"id": "s1_3_0", "text": "Sorry about that. She's still learning to share."}, {"id": "s1_5_0", "text": "They seem to get along, though. Would you be up for a playdate sometime? Maybe at our place on the weekend?"}], "shadow": {"speaker": "A", "text": "From Shanghai. We're still settling in. Does Oliver go to school nearby?", "marked": "From <b>Shanghai</b>. //<br>We're still <b>settling in</b>. //<br>Does <b>Oliver</b> / go to school <b>nearby</b>? //"}, "prompts": [{"q": "在电梯里遇到一位常见面的家长，孩子年龄相仿。主动搭话，并问问附近有什么适合孩子的地方。", "ref": "Hi, I think I see you at the playground most evenings. Your daughter must be about the same age as my son, around three? We're fairly new here, so I'm still looking for things to do with him on weekends. Are there any good indoor playgrounds or kids' classes nearby that you'd recommend?", "ref_zh": "你好，我好像傍晚经常在游乐场看到你。你女儿应该跟我儿子差不多大，三岁左右吧？我们刚搬来不久，还在找周末能带他去玩的地方。附近有没有什么好的室内游乐场或者儿童课程可以推荐？", "id": "ref0"}, {"q": "约好的周日玩耍，孩子早上发烧了。给对方家长发语音，取消并改约。", "ref": "Hi, it's Mia's dad. I'm really sorry, but Mia woke up with a fever this morning, so we'll have to cancel today. I don't want Oliver to catch anything. She was really looking forward to it, though. Could we do next Sunday instead, same time? Let me know what works for you. Sorry again.", "ref_zh": "你好，我是 Mia 的爸爸。真不好意思，Mia 今早起来发烧了，今天只能取消了，不想让 Oliver 被传染。不过她本来特别期待。下周日同一时间可以吗？看你们什么时候方便。再次抱歉。", "id": "ref1"}], "words": [{"w": "condo", "ipa": "/ˈkɑːndoʊ/", "zh": "（私人）公寓", "ex": "Our condo has a pool and a small gym.", "id": "w0"}, {"w": "neighbourhood", "ipa": "/ˈneɪbərhʊd/", "zh": "街区；附近一带", "ex": "It's a quiet neighbourhood with lots of families.", "id": "w1"}, {"w": "settle in", "ipa": "/ˈsetəl ɪn/", "zh": "安顿下来；适应", "ex": "It took us a few months to settle in after the move.", "id": "w2"}, {"w": "review", "ipa": "/rɪˈvjuː/", "zh": "评价", "ex": "The restaurant has great reviews on Google.", "id": "w3"}, {"w": "waiting list", "ipa": "/ˈweɪtɪŋ lɪst/", "zh": "候补名单", "ex": "Can you put my name on the waiting list?", "id": "w4"}, {"w": "take turns", "ipa": "/teɪk tɜːrnz/", "zh": "轮流", "ex": "You two need to take turns on the swing.", "id": "w5"}, {"w": "share", "ipa": "/ʃer/", "zh": "分享", "ex": "Can you share your crayons with your brother?", "id": "w6"}, {"w": "squabble", "ipa": "/ˈskwɑːbəl/", "zh": "（小事）争吵", "ex": "The kids had a squabble over the last cookie.", "id": "w7"}, {"w": "swap", "ipa": "/swɑːp/", "zh": "交换", "ex": "Let's swap seats so you can see the screen.", "id": "w8"}, {"w": "playdate", "ipa": "/ˈpleɪdeɪt/", "zh": "（家长约的）孩子一起玩", "ex": "We arranged a playdate at the park on Saturday.", "id": "w9"}], "sections": [{"heading": "1. Breaking the Ice", "heading_zh": "1. 打开话题", "rows": [[{"id": "s0_0_0", "md": "Is that your little one on the slide? She's fearless!", "text": "Is that your little one on the slide? She's fearless!", "zh": "滑梯上那个是你家的吗？她胆子真大！", "sp": "B"}], [{"id": "s0_1_0", "md": "**Yes, that's Mia. She's three and a half. Which one is yours?**", "text": "Yes, that's Mia. She's three and a half. Which one is yours?", "zh": "是的，那是 Mia，三岁半。哪个是你家的？", "sp": "A"}], [{"id": "s0_2_0", "md": "The boy in the blue hat, Oliver. He just turned four. Do you live around here?", "text": "The boy in the blue hat, Oliver. He just turned four. Do you live around here?", "zh": "戴蓝帽子那个男孩，叫 Oliver，刚满四岁。你住这附近吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "Yes, in the ==condo== just across the road. We moved in two months ago.", "text": "Yes, in the condo just across the road. We moved in two months ago.", "zh": "对，就住马路对面那个公寓，两个月前搬进来的。", "sp": "A"}], [{"id": "s0_4_0", "md": "Oh nice, welcome to the ==neighbourhood==. Where did you move from?", "text": "Oh nice, welcome to the neighbourhood. Where did you move from?", "zh": "不错啊，欢迎来到这一片。你们从哪儿搬来的？", "sp": "B"}], [{"id": "s0_5_0", "md": "From Shanghai. We're still __settling in__. Does Oliver go to school nearby?", "text": "From Shanghai. We're still settling in. Does Oliver go to school nearby?", "zh": "从上海。我们还在适应中。Oliver 在附近上学吗？", "sp": "A"}], [{"id": "s0_6_0", "md": "Yes, he's at the preschool next to the community centre. Have you found one yet?", "text": "Yes, he's at the preschool next to the community centre. Have you found one yet?", "zh": "对，在社区中心旁边那家幼儿园。你们找到幼儿园了吗？", "sp": "B"}], [{"id": "s0_7_0", "md": "Not yet. Is that one any good? I've heard mixed ==reviews==.", "text": "Not yet. Is that one any good? I've heard mixed reviews.", "zh": "还没有。那家好吗？我听到的评价有好有坏。", "sp": "A"}], [{"id": "s0_8_0", "md": "We've been happy with it. The teachers are lovely, though the ==waiting list== is long.", "text": "We've been happy with it. The teachers are lovely, though the waiting list is long.", "zh": "我们挺满意的。老师都很好，不过候补名单很长。", "sp": "B"}]]}, {"heading": "2. A Squabble and a Playdate", "heading_zh": "2. 小争执和约玩", "rows": [[{"id": "s1_0_0", "md": "Uh oh. Looks like they both want the same scooter.", "text": "Uh oh. Looks like they both want the same scooter.", "zh": "哎呀，看来他俩都想要同一辆滑板车。", "sp": "B"}], [{"id": "s1_1_0", "md": "Mia, sweetheart, that's Oliver's scooter. Can you ask nicely and __take turns__?", "text": "Mia, sweetheart, that's Oliver's scooter. Can you ask nicely and take turns?", "zh": "Mia，宝贝，那是 Oliver 的滑板车。你好好问一下，轮流玩好不好？", "sp": "A"}], [{"id": "s1_2_0", "md": "Oliver, let her __have a go__ for a few minutes, then it's your turn again.", "text": "Oliver, let her have a go for a few minutes, then it's your turn again.", "zh": "Oliver，让她玩几分钟，然后再轮到你。", "sp": "B"}], [{"id": "s1_3_0", "md": "Sorry about that. She's still learning to ==share==.", "text": "Sorry about that. She's still learning to share.", "zh": "不好意思。她还在学怎么分享。", "sp": "A"}], [{"id": "s1_4_0", "md": "No worries, Oliver's exactly the same. Little ==squabbles== like this happen every day.", "text": "No worries, Oliver's exactly the same. Little squabbles like this happen every day.", "zh": "没事，Oliver 也一样。这种小争执每天都有。", "sp": "B"}], [{"id": "s1_5_0", "md": "**They seem to get along, though. Would you be up for a playdate sometime? Maybe at our place on the weekend?**", "text": "They seem to get along, though. Would you be up for a playdate sometime? Maybe at our place on the weekend?", "zh": "不过他俩好像挺合得来。哪天约着一起玩怎么样？周末来我们家？", "sp": "A"}], [{"id": "s1_6_0", "md": "That would be great. Saturdays are busy with swimming, but Sunday morning could work.", "text": "That would be great. Saturdays are busy with swimming, but Sunday morning could work.", "zh": "那太好了。周六要上游泳课，但周日上午可以。", "sp": "B"}], [{"id": "s1_7_0", "md": "How about Sunday at ten? There's a pool in our condo, __if the weather holds__.", "text": "How about Sunday at ten? There's a pool in our condo, if the weather holds.", "zh": "周日十点怎么样？我们公寓有泳池，天气好的话可以去玩。", "sp": "A"}], [{"id": "s1_8_0", "md": "Sunday at ten sounds perfect. Shall we ==swap== numbers?", "text": "Sunday at ten sounds perfect. Shall we swap numbers?", "zh": "周日十点很好。我们交换一下电话吧？", "sp": "B"}], [{"id": "s1_9_0", "md": "**Sure. I'll WhatsApp you our address. It was really nice meeting you.**", "text": "Sure. I'll WhatsApp you our address. It was really nice meeting you.", "zh": "好的，我用 WhatsApp 把地址发给你。很高兴认识你。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Breaking the Ice", "zh": "1. 打开话题", "start": 0.0, "end": 1.872, "words": [[0.105, 0.329], [0.355, 0.737], [0.75, 0.868], [0.882, 1.408]]}, {"kind": "s", "id": "s0_0_0", "md": "Is that your little one on the slide? She's fearless!", "zh": "滑梯上那个是你家的吗？她胆子真大！", "sp": "B", "gap": false, "start": 1.872, "end": 6.768, "words": [[1.972, 2.143], [2.156, 2.34], [2.354, 2.433], [2.446, 2.775], [2.788, 2.972], [2.985, 3.077], [3.09, 3.156], [3.169, 3.827], [4.738, 5.08], [5.093, 5.856]]}, {"kind": "s", "id": "s0_1_0", "md": "**Yes, that's Mia. She's three and a half. Which one is yours?**", "zh": "是的，那是 Mia，三岁半。哪个是你家的？", "sp": "A", "gap": false, "start": 6.768, "end": 11.4, "words": [[6.873, 7.228], [7.321, 7.544], [7.557, 7.86], [8.307, 8.557], [8.571, 8.952], [9.044, 9.123], [9.136, 9.176], [9.189, 9.636], [10.084, 10.202], [10.215, 10.386], [10.4, 10.518], [10.531, 11.018]]}, {"kind": "s", "id": "s0_2_0", "md": "The boy in the blue hat, Oliver. He just turned four. Do you live around here?", "zh": "戴蓝帽子那个男孩，叫 Oliver，刚满四岁。你住这附近吗？", "sp": "B", "gap": false, "start": 11.4, "end": 18.768, "words": [[11.5, 11.684], [11.697, 11.974], [11.987, 12.105], [12.118, 12.211], [12.224, 12.513], [12.526, 12.921], [13.118, 13.566], [14.476, 14.7], [14.713, 14.95], [14.963, 15.253], [15.266, 15.687], [16.595, 16.739], [16.753, 16.871], [16.884, 17.029], [17.042, 17.411], [17.424, 17.845]]}, {"kind": "s", "id": "s0_3_0", "md": "Yes, in the ==condo== just across the road. We moved in two months ago.", "zh": "对，就住马路对面那个公寓，两个月前搬进来的。", "sp": "A", "gap": false, "start": 18.768, "end": 23.52, "words": [[18.873, 19.321], [19.571, 19.663], [19.676, 19.755], [19.768, 20.242], [20.255, 20.518], [20.531, 20.926], [20.939, 21.018], [21.031, 21.373], [21.807, 21.9], [21.913, 22.215], [22.229, 22.334], [22.347, 22.544], [22.557, 22.821], [22.834, 23.136]]}, {"kind": "s", "id": "s0_4_0", "md": "Oh nice, welcome to the ==neighbourhood==. Where did you move from?", "zh": "不错啊，欢迎来到这一片。你们从哪儿搬来的？", "sp": "B", "gap": false, "start": 23.52, "end": 28.68, "words": [[23.62, 23.831], [23.844, 24.33], [24.475, 24.831], [24.844, 24.936], [24.949, 25.028], [25.041, 25.712], [26.623, 26.846], [26.859, 26.991], [27.004, 27.109], [27.123, 27.373], [27.386, 27.754]]}, {"kind": "s", "id": "s0_5_0", "md": "From Shanghai. We're still __settling in__. Does Oliver go to school nearby?", "zh": "从上海。我们还在适应中。Oliver 在附近上学吗？", "sp": "A", "gap": false, "start": 28.68, "end": 33.432, "words": [[28.798, 28.904], [28.917, 29.469], [29.904, 29.996], [30.009, 30.272], [30.285, 30.746], [30.759, 31.009], [31.456, 31.641], [31.654, 31.996], [32.009, 32.141], [32.154, 32.233], [32.246, 32.535], [32.548, 33.035]]}, {"kind": "s", "id": "s0_6_0", "md": "Yes, he's at the preschool next to the community centre. Have you found one yet?", "zh": "对，在社区中心旁边那家幼儿园。你们找到幼儿园了吗？", "sp": "B", "gap": false, "start": 33.432, "end": 39.864, "words": [[33.532, 33.993], [34.243, 34.414], [34.427, 34.493], [34.506, 34.598], [34.611, 35.137], [35.15, 35.453], [35.466, 35.532], [35.545, 35.624], [35.637, 36.177], [36.19, 36.69], [37.6, 37.798], [37.811, 37.89], [37.903, 38.219], [38.232, 38.443], [38.456, 38.942]]}, {"kind": "s", "id": "s0_7_0", "md": "Not yet. Is that one any good? I've heard mixed ==reviews==.", "zh": "还没有。那家好吗？我听到的评价有好有坏。", "sp": "A", "gap": false, "start": 39.864, "end": 43.776, "words": [[39.969, 40.14], [40.153, 40.456], [40.89, 40.982], [40.996, 41.14], [41.153, 41.285], [41.298, 41.443], [41.456, 41.732], [42.167, 42.311], [42.325, 42.548], [42.561, 42.798], [42.811, 43.377]]}, {"kind": "s", "id": "s0_8_0", "md": "We've been happy with it. The teachers are lovely, though the ==waiting list== is long.", "zh": "我们挺满意的。老师都很好，不过候补名单很长。", "sp": "B", "gap": false, "start": 43.776, "end": 49.848, "words": [[43.876, 44.087], [44.1, 44.231], [44.244, 44.56], [44.573, 44.744], [44.758, 45.008], [45.918, 46.089], [46.102, 46.51], [46.523, 46.602], [46.615, 47.155], [47.352, 47.458], [47.471, 47.563], [47.576, 47.984], [47.997, 48.273], [48.287, 48.431], [48.444, 48.931]]}, {"kind": "h", "id": "h1", "md": "2. A Squabble and a Playdate", "zh": "2. 小争执和约玩", "start": 49.848, "end": 52.224, "words": [[49.966, 50.23], [50.532, 50.585], [50.598, 51.137], [51.151, 51.23], [51.243, 51.282], [51.295, 51.835]]}, {"kind": "s", "id": "s1_0_0", "md": "Uh oh. Looks like they both want the same scooter.", "zh": "哎呀，看来他俩都想要同一辆滑板车。", "sp": "B", "gap": false, "start": 52.224, "end": 56.856, "words": [[52.324, 52.495], [52.508, 52.863], [53.774, 54.103], [54.116, 54.3], [54.313, 54.406], [54.419, 54.735], [54.748, 54.971], [54.985, 55.063], [55.077, 55.353], [55.366, 55.945]]}, {"kind": "s", "id": "s1_1_0", "md": "Mia, sweetheart, that's Oliver's scooter. Can you ask nicely and __take turns__?", "zh": "Mia，宝贝，那是 Oliver 的滑板车。你好好问一下，轮流玩好不好？", "sp": "A", "gap": false, "start": 56.856, "end": 62.28, "words": [[56.961, 57.29], [57.593, 58.185], [58.474, 58.685], [58.698, 59.119], [59.132, 59.593], [60.027, 60.132], [60.145, 60.251], [60.264, 60.553], [60.567, 61.014], [61.093, 61.172], [61.185, 61.422], [61.435, 61.895]]}, {"kind": "s", "id": "s1_2_0", "md": "Oliver, let her __have a go__ for a few minutes, then it's your turn again.", "zh": "Oliver，让她玩几分钟，然后再轮到你。", "sp": "B", "gap": false, "start": 62.28, "end": 67.08, "words": [[62.38, 62.841], [63.091, 63.209], [63.222, 63.327], [63.341, 63.512], [63.525, 63.577], [63.591, 63.814], [63.827, 63.985], [63.998, 64.064], [64.077, 64.327], [64.341, 64.762], [64.972, 65.104], [65.117, 65.235], [65.248, 65.393], [65.406, 65.722], [65.735, 66.169]]}, {"kind": "s", "id": "s1_3_0", "md": "Sorry about that. She's still learning to ==share==.", "zh": "不好意思。她还在学怎么分享。", "sp": "A", "gap": false, "start": 67.08, "end": 70.128, "words": [[67.185, 67.435], [67.448, 67.698], [67.712, 68.001], [68.448, 68.646], [68.659, 68.909], [68.922, 69.198], [69.212, 69.277], [69.291, 69.725]]}, {"kind": "s", "id": "s1_4_0", "md": "No worries, Oliver's exactly the same. Little ==squabbles== like this happen every day.", "zh": "没事，Oliver 也一样。这种小争执每天都有。", "sp": "B", "gap": false, "start": 70.128, "end": 76.896, "words": [[70.228, 70.504], [70.517, 71.083], [71.267, 71.61], [71.623, 72.123], [72.136, 72.228], [72.241, 72.715], [73.625, 74.007], [74.02, 74.52], [74.533, 74.731], [74.744, 74.928], [74.941, 75.283], [75.296, 75.546], [75.56, 75.967]]}, {"kind": "s", "id": "s1_5_0", "md": "**They seem to get along, though. Would you be up for a playdate sometime? Maybe at our place on the weekend?**", "zh": "不过他俩好像挺合得来。哪天约着一起玩怎么样？周末来我们家？", "sp": "A", "gap": false, "start": 76.896, "end": 82.32, "words": [[77.014, 77.08], [77.093, 77.291], [77.304, 77.37], [77.383, 77.514], [77.528, 77.883], [77.909, 78.146], [78.58, 78.699], [78.712, 78.791], [78.804, 78.962], [78.975, 79.08], [79.093, 79.225], [79.238, 79.278], [79.291, 79.633], [79.646, 80.12], [80.554, 80.817], [80.83, 80.909], [80.922, 81.014], [81.028, 81.33], [81.343, 81.422], [81.435, 81.514], [81.528, 81.935]]}, {"kind": "s", "id": "s1_6_0", "md": "That would be great. Saturdays are busy with swimming, but Sunday morning could work.", "zh": "那太好了。周六要上游泳课，但周日上午可以。", "sp": "B", "gap": false, "start": 82.32, "end": 88.968, "words": [[82.42, 82.67], [82.683, 82.788], [82.802, 82.907], [82.92, 83.459], [84.37, 85.054], [85.067, 85.186], [85.199, 85.554], [85.567, 85.725], [85.738, 86.173], [86.383, 86.528], [86.541, 86.949], [86.962, 87.37], [87.383, 87.581], [87.594, 88.054]]}, {"kind": "s", "id": "s1_7_0", "md": "How about Sunday at ten? There's a pool in our condo, __if the weather holds__.", "zh": "周日十点怎么样？我们公寓有泳池，天气好的话可以去玩。", "sp": "A", "gap": false, "start": 88.968, "end": 93.624, "words": [[89.086, 89.179], [89.192, 89.402], [89.415, 89.771], [89.784, 89.889], [89.902, 90.244], [90.692, 90.836], [90.85, 90.915], [90.929, 91.244], [91.257, 91.336], [91.35, 91.481], [91.494, 92.007], [92.244, 92.336], [92.35, 92.429], [92.442, 92.705], [92.718, 93.244]]}, {"kind": "s", "id": "s1_8_0", "md": "Sunday at ten sounds perfect. Shall we ==swap== numbers?", "zh": "周日十点很好。我们交换一下电话吧？", "sp": "B", "gap": false, "start": 93.624, "end": 99.024, "words": [[93.724, 94.29], [94.303, 94.5], [94.513, 94.79], [94.803, 95.211], [95.224, 95.869], [96.779, 97.082], [97.095, 97.2], [97.213, 97.503], [97.516, 98.095]]}, {"kind": "s", "id": "s1_9_0", "md": "**Sure. I'll WhatsApp you our address. It was really nice meeting you.**", "zh": "好的，我用 WhatsApp 把地址发给你。很高兴认识你。", "sp": "A", "gap": false, "start": 99.024, "end": 103.248, "words": [[99.129, 99.498], [99.932, 100.037], [100.05, 100.419], [100.432, 100.563], [100.577, 100.682], [100.695, 101.234], [101.669, 101.721], [101.735, 101.866], [101.879, 102.09], [102.103, 102.366], [102.379, 102.669], [102.682, 102.866]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

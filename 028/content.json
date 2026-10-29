@@ -1,0 +1,188 @@
+{
+  "id": "028",
+  "title": "Reviewing a Proposal You Disagree With",
+  "meta": "B2 · 约 280 词 · 场景：方案评审",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Make Their Case First",
+      "paragraphs": [
+        [
+          "You open the proposal, read the first page, and already know you don't like it.",
+          "That reaction might be real ==insight==, or it might just be ==bias== toward your own approach.",
+          "Before you write a single comment, try to __argue for__ the proposal."
+        ],
+        [
+          "**If you cannot explain why a smart person would choose this, you are not ready to reject it.**",
+          "Write a short summary of the author's goal and their strongest argument.",
+          "Then share it: \"Here is my understanding; did I get it right?\""
+        ],
+        [
+          "This step does two things.",
+          "It catches ==misunderstandings== early, because many disagreements are really about different readings of the same page.",
+          "It also shows the author you __took their work seriously__, which makes them more ==receptive== to what comes next."
+        ]
+      ],
+      "heading_zh": "1. 先替对方把道理讲出来",
+      "paragraphs_zh": [
+        [
+          "你打开这份提案，读完第一页，就已经知道自己不喜欢它了。",
+          "这种反应可能是真知灼见，也可能只是你偏爱自己那套做法。",
+          "在写下任何一条评论之前，先试着替这份提案说话。"
+        ],
+        [
+          "如果你讲不出一个聪明人为什么会这么选，你就还没资格否掉它。",
+          "简短写下作者的目标，以及他们最有力的论据。",
+          "然后发出去：「这是我的理解，我理解得对吗？」"
+        ],
+        [
+          "这一步有两个作用。",
+          "它能尽早发现误解，因为很多分歧其实只是对同一页内容的理解不同。",
+          "它也让作者看到你认真对待了他们的工作，这样他们对你后面的意见会更听得进去。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Different Is Not Wrong",
+      "paragraphs": [
+        [
+          "Next, sort your concerns into two groups.",
+          "Some are ==preferences==: you would have picked another framework or named things differently.",
+          "Others are risks: the plan will miss the deadline, or it will lose data under load."
+        ],
+        [
+          "Only the second group should block the proposal.",
+          "Label the first group clearly, with something like \"personal preference, feel free to ignore.\"",
+          "**Reviewers who block on taste soon find that nobody asks them to review anything.**"
+        ],
+        [
+          "For real risks, be concrete and ==proportionate==.",
+          "Explain the ==impact==, how likely it is, and what would reduce it.",
+          "A rare edge case does not deserve the same energy as a likely outage.",
+          "If the author ==addresses== the risk in a way you would not have chosen, __let it go__."
+        ],
+        [
+          "Your job is to make the proposal safe, not to turn it into yours.",
+          "Authors remember the reviewers who __made their ideas stronger__, and they come back to them."
+        ]
+      ],
+      "heading_zh": "2. 不一样不等于错",
+      "paragraphs_zh": [
+        [
+          "接下来，把你的顾虑分成两类。",
+          "一类是个人偏好：你可能会选另一个框架，或者换种命名方式。",
+          "另一类是风险：这个方案会赶不上 deadline，或者高负载下会丢数据。"
+        ],
+        [
+          "只有第二类才应该卡住这份提案。",
+          "第一类要明确标出来，比如写一句「个人偏好，可以忽略」。",
+          "因为个人口味就卡别人的评审人，很快会发现没人再找他们 review 了。"
+        ],
+        [
+          "对真正的风险，要说得具体，也要把握分寸。",
+          "讲清楚影响有多大、发生的可能性有多高，以及怎么能降低它。",
+          "一个很少触发的边界情况，不值得花跟一个大概率故障同样的力气。",
+          "如果作者用一种你不会选的方式解决了这个风险，那就随它去吧。"
+        ],
+        [
+          "你的任务是让提案变得安全，不是把它改成你的方案。",
+          "作者会记住那些让他们的想法变得更强的评审人，下次还会去找他们。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "评审一个你不认同的方案，第一步应该做什么？",
+      "a": "先替方案说话：写下作者的目标和最有力的论点，并问作者「我理解得对吗」。"
+    },
+    {
+      "q": "这一步有什么好处？",
+      "a": "及早发现误解（很多分歧其实是对同一页的不同理解）；让作者感到被认真对待，更愿意听后面的意见。"
+    },
+    {
+      "q": "作者建议把顾虑分成哪两类？分别怎么处理？",
+      "a": "个人偏好（标注清楚、可忽略，不阻塞）和真实风险（具体、成比例地说明影响、可能性和缓解办法，才可以阻塞）。"
+    }
+  ],
+  "dictation": [
+    "If you cannot explain why a smart person would choose this, you are not ready to reject it.",
+    "Reviewers who block on taste soon find that nobody asks them to review anything.",
+    "Only the second group should block the proposal.",
+    "Your job is to make the proposal safe, not to turn it into yours."
+  ],
+  "shadow": {
+    "text": "Next, sort your concerns into two groups. Some are preferences: you would have picked another framework or named things differently. Others are risks: the plan will miss the deadline, or it will lose data under load.",
+    "marked": "Next, / sort your concerns / into <b>two</b> groups. //<br>Some are <b>preferences</b>: / you would have picked <b>another</b> framework / or named things <b>differently</b>. //<br>Others are <b>risks</b>: / the plan will <b>miss</b> the deadline, / or it will <b>lose data</b> under load. //"
+  },
+  "prompts": [
+    {
+      "q": "另一个团队提议把服务从 Go 迁到 Java，你不认同。评审会上先用 30 秒复述对方方案的目标和最强论点，再确认理解是否正确。",
+      "ref": "Before I share my concerns, let me check that I understand the proposal. The main goal is to put all backend services on one language, so engineers can move between teams and share libraries. The strongest argument, I think, is the hiring data: most of our new hires already know Java. Did I get that right? If so, my questions are really about the migration cost, not the direction.",
+      "ref_zh": "在说我的顾虑之前，我先确认一下我对提案的理解。主要目标是把所有后端服务统一成一种语言，这样工程师可以在团队之间流动，也能共享库。我觉得最有力的论据是招聘数据：我们大部分新人本来就会 Java。我理解得对吗？如果对的话，我的问题其实是关于迁移成本的，而不是方向。"
+    },
+    {
+      "q": "你对一个方案有三条意见，其中两条只是个人偏好，一条是真实风险。用 30 秒把它们区分清楚地讲出来。",
+      "ref": "I have three comments, but only one of them is blocking. The first two are just preferences: I'd name the topics differently, and I'd use a different retry library. Feel free to ignore both. The real concern is data loss. If the consumer crashes after reading a message but before writing to the database, that message is gone. I'd like to see that case handled before we approve.",
+      "ref_zh": "我有三条评论，但只有一条是 blocking。前两条只是个人偏好：topic 我会换个命名，重试库我会用另一个。这两条都可以忽略。真正的顾虑是丢数据。如果 consumer 读到消息后、写数据库之前挂了，这条消息就没了。我希望在批准之前，把这种情况处理掉。"
+    }
+  ],
+  "words": [
+    {
+      "w": "insight",
+      "ipa": "/ˈɪnsaɪt/",
+      "zh": "洞察、深刻见解",
+      "ex": "Her insight about cold starts changed the whole design."
+    },
+    {
+      "w": "bias",
+      "ipa": "/ˈbaɪəs/",
+      "zh": "偏见、偏向",
+      "ex": "I have a bias toward tools I've used before, so push back if needed."
+    },
+    {
+      "w": "misunderstanding",
+      "ipa": "/ˌmɪsʌndərˈstændɪŋ/",
+      "zh": "误解",
+      "ex": "Half the debate was a misunderstanding about what \"real time\" meant."
+    },
+    {
+      "w": "receptive",
+      "ipa": "/rɪˈseptɪv/",
+      "zh": "乐于接受的",
+      "ex": "The team was more receptive once we showed the cost numbers."
+    },
+    {
+      "w": "preference",
+      "ipa": "/ˈprefərəns/",
+      "zh": "偏好",
+      "ex": "Tabs versus spaces is a preference, not a blocker."
+    },
+    {
+      "w": "proportionate",
+      "ipa": "/prəˈpɔːrʃənət/",
+      "zh": "相称的、成比例的",
+      "ex": "Keep the fix proportionate to the risk; this is an internal tool."
+    },
+    {
+      "w": "impact",
+      "ipa": "/ˈɪmpækt/",
+      "zh": "影响",
+      "ex": "What's the user impact if this job runs an hour late?"
+    },
+    {
+      "w": "address (v.)",
+      "ipa": "/əˈdres/",
+      "zh": "处理、应对",
+      "ex": "The new version addresses the timeout issue I raised.",
+      "tts_w": "address"
+    },
+    {
+      "w": "concrete",
+      "ipa": "/ˈkɑːŋkriːt/",
+      "zh": "具体的",
+      "ex": "Can you give a concrete example of where this would fail?"
+    }
+  ]
+}

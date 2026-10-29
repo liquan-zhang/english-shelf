@@ -1,0 +1,190 @@
+{
+  "id": "004",
+  "title": "Summarizing a Meeting in Thirty Seconds",
+  "meta": "B2 · 约 280 词 · 场景：会议收尾",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Same Meeting, Different Memories",
+      "paragraphs": [
+        [
+          "Ask three people what was decided in a meeting, and you will often get three different answers.",
+          "The engineer remembers that the launch was delayed.",
+          "The PM remembers that it was \"delayed only if the tests fail.\"",
+          "The designer thinks the date never came up at all."
+        ],
+        [
+          "Nobody is lying.",
+          "Each person heard the parts that ==mattered== to them, and the meeting ended before anyone __checked the picture__.",
+          "That gap usually shows up a week later, in a tense message thread."
+        ],
+        [
+          "**The last thirty seconds of a meeting are worth more than any ten minutes in the middle.**",
+          "A short spoken summary turns a ==fuzzy== feeling of progress into something ==concrete== that people can agree with or correct.",
+          "It also makes you the person who __keeps things moving__, which people notice."
+        ]
+      ],
+      "heading_zh": "1. 同一个会，不同的记忆",
+      "paragraphs_zh": [
+        [
+          "问三个人会上定了什么，你经常会得到三个不同的答案。",
+          "工程师记得的是上线推迟了。",
+          "PM 记得的是「只有测试没过才推迟」。",
+          "设计师则觉得会上压根没提日期。"
+        ],
+        [
+          "没有人在撒谎。",
+          "每个人听到的都是对自己重要的那部分，而会议结束前没人去核对一下大家的理解。",
+          "这个偏差通常一周后才冒出来，变成一串火药味很浓的消息。"
+        ],
+        [
+          "会议最后三十秒，比中间任何十分钟都值钱。",
+          "一个简短的口头总结，能把模糊的「好像有进展」变成具体的东西，让大家可以认同或者纠正。",
+          "这也会让你成为推动事情往前走的那个人，大家是看在眼里的。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Decisions, Owners, Open Questions",
+      "paragraphs": [
+        [
+          "Keep the summary to three short parts, and say them in the same order every time.",
+          "When the format is ==predictable==, people know exactly what to listen for."
+        ],
+        [
+          "First, the decisions.",
+          "\"We agreed to ship on the twelfth, with the payment feature behind a flag.\"",
+          "Use the word \"agreed\" on purpose, because it invites anyone who did not agree to __speak up now__."
+        ],
+        [
+          "Second, the owners and dates.",
+          "\"Lena will update the rollout plan by Thursday, and I'll talk to the support team.\"",
+          "**A task without a name attached to it is just a wish.**"
+        ],
+        [
+          "Third, what is still open.",
+          "\"We haven't decided how to handle refunds, so let's ==revisit== that next week.\"",
+          "Naming open questions ==honestly== prevents people from __filling the gaps__ with their own guesses.",
+          "Then post the same three lines in the chat, so the people who missed the call get the same version of the truth."
+        ]
+      ],
+      "heading_zh": "2. 决定、负责人、待定问题",
+      "paragraphs_zh": [
+        [
+          "总结控制在三个简短的部分，每次都按同样的顺序说。",
+          "格式固定了，大家就知道该听什么。"
+        ],
+        [
+          "第一，决定。",
+          "「我们说好了十二号上线，支付功能先用开关控制。」",
+          "特意用「说好了」这个词，是为了让不同意的人现在就站出来说。"
+        ],
+        [
+          "第二，负责人和时间。",
+          "「Lena 周四前更新上线方案，我去跟客服团队沟通。」",
+          "一件事如果没落到具体的人头上，那就只是个愿望。"
+        ],
+        [
+          "第三，还没定的事。",
+          "「退款怎么处理还没定，我们下周再议。」",
+          "坦白地把待定问题点出来，可以避免大家用自己的猜测去填空。",
+          "然后把这三句话原样发到群里，让没参会的人也拿到同一个版本的事实。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "开头三个人对同一场会议的记忆为什么不同？",
+      "a": "每个人只听到了对自己重要的部分，会议结束前没人核对共同理解。"
+    },
+    {
+      "q": "三十秒总结分哪三部分？",
+      "a": "已做的决定；负责人和截止时间；仍未决定的问题。"
+    },
+    {
+      "q": "为什么总结里要刻意用“agreed”这个词？",
+      "a": "它会促使不同意的人当场说出来，而不是事后再争。"
+    }
+  ],
+  "dictation": [
+    "The last thirty seconds of a meeting are worth more than any ten minutes in the middle.",
+    "A task without a name attached to it is just a wish.",
+    "When the format is predictable, people know exactly what to listen for.",
+    "Naming open questions honestly prevents people from filling the gaps with their own guesses."
+  ],
+  "shadow": {
+    "text": "Second, the owners and dates. \"Lena will update the rollout plan by Thursday, and I'll talk to the support team.\" A task without a name attached to it is just a wish.",
+    "marked": "<b>Second</b>, / the <b>owners</b> and <b>dates</b>. //<br>\"<b>Lena</b> will update the rollout plan / by <b>Thursday</b>, / and <b>I'll</b> talk to the <b>support</b> team.\" //<br>A task / <b>without</b> a name attached to it / is just a <b>wish</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "需求评审会快结束了。用 30 秒按“决定、负责人和时间、未决问题”三段做总结：搜索改版下个月上线，设计稿周三前给，埋点方案还没定。",
+      "ref": "Let me quickly sum up before we drop. We agreed the new search page goes live next month, starting with a small slice of users. Mia will send the final designs by Wednesday, and I'll set up the release checklist. What's still open is the tracking plan, so let's revisit that on Monday. I'll post these three points in the chat right after the call.",
+      "ref_zh": "散会前我快速总结一下。我们说好了新的搜索页下个月上线，先放一小部分用户。Mia 周三前出终稿设计，我来准备发布 checklist。还没定的是埋点方案，我们周一再议。会后我马上把这三点发到群里。"
+    },
+    {
+      "q": "一个讨论很发散的故障复盘会结束时，没人做总结。你主动接过来，用 30 秒说清楚已定和未定的事项。",
+      "ref": "Before everyone leaves, can I try a quick summary so we don't lose anything? We agreed the root cause was the expired certificate, and we'll add an alert thirty days before expiry. Omar owns the alert and will have it in place by Friday. We still haven't agreed who owns certificate renewal long term, so that's open. Did I miss anything?",
+      "ref_zh": "大家走之前，我能不能快速总结一下，免得漏掉什么？我们一致认为根因是证书过期，接下来会加一个到期前三十天的告警。告警由 Omar 负责，周五前上线。长期由谁负责证书续期还没定，这个先挂着。我有漏掉什么吗？"
+    }
+  ],
+  "words": [
+    {
+      "w": "matter (v.)",
+      "ipa": "/ˈmætər/",
+      "zh": "要紧、有关系",
+      "ex": "Latency matters more than throughput for this API.",
+      "tts_w": "matter"
+    },
+    {
+      "w": "fuzzy",
+      "ipa": "/ˈfʌzi/",
+      "zh": "模糊的、不清晰的",
+      "ex": "The scope is still fuzzy, so let's not commit to a date yet."
+    },
+    {
+      "w": "concrete",
+      "ipa": "/kɑːnˈkriːt/",
+      "zh": "具体的、明确的",
+      "ex": "Can you give me a concrete example of where the old flow breaks?"
+    },
+    {
+      "w": "predictable",
+      "ipa": "/prɪˈdɪktəbəl/",
+      "zh": "可预测的、有规律的",
+      "ex": "A predictable release train makes planning easier for everyone."
+    },
+    {
+      "w": "revisit",
+      "ipa": "/riːˈvɪzɪt/",
+      "zh": "重新讨论、回头再看",
+      "ex": "Let's revisit the quota limits after the holiday traffic."
+    },
+    {
+      "w": "honestly",
+      "ipa": "/ˈɑːnɪstli/",
+      "zh": "坦诚地",
+      "ex": "We need to report the delay honestly, not hide it in the footnotes."
+    },
+    {
+      "w": "attach",
+      "ipa": "/əˈtætʃ/",
+      "zh": "附上、绑定",
+      "ex": "Every action item should have an owner attached to it."
+    },
+    {
+      "w": "tense",
+      "ipa": "/tens/",
+      "zh": "紧张的",
+      "ex": "The thread got a bit tense after the second rollback."
+    },
+    {
+      "w": "sum up",
+      "ipa": "/sʌm ʌp/",
+      "zh": "总结",
+      "ex": "To sum up, we ship Tuesday unless the load test fails."
+    }
+  ]
+}

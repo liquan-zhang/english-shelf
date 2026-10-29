@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Estimating When You Really Don't Know · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "073", "title": "Estimating When You Really Don't Know", "meta": "B2 · 约 270 词 · 场景：排期估时", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Why Single Numbers Mislead", "heading_zh": "1. 单个数字为什么会误导", "rows": [[{"id": "s0_0_0", "md": "Your PM asks how long the new search integration will take.", "text": "Your PM asks how long the new search integration will take.", "zh": "PM 问你新的搜索集成要多久。", "sp": null}, {"id": "s0_0_1", "md": "You have never used this vendor's API, and the data format is still undecided.", "text": "You have never used this vendor's API, and the data format is still undecided.", "zh": "你从来没用过这家供应商的 API，数据格式也还没定。", "sp": null}, {"id": "s0_0_2", "md": "Any single number you give right now is a guess dressed up as a plan.", "text": "Any single number you give right now is a guess dressed up as a plan.", "zh": "现在你给出的任何一个数字，都只是一个打扮成计划的猜测。", "sp": null}], [{"id": "s0_1_0", "md": "The usual mistake is to say \"about three weeks\" to sound ==decisive==.", "text": "The usual mistake is to say \"about three weeks\" to sound decisive.", "zh": "常见的错误是为了显得果断，张口就说「大概三周」。", "sp": null}, {"id": "s0_1_1", "md": "The PM writes it on the roadmap, and from that moment the guess __becomes a commitment__.", "text": "The PM writes it on the roadmap, and from that moment the guess becomes a commitment.", "zh": "PM 把它写进 roadmap，从那一刻起，这个猜测就变成了承诺。", "sp": null}, {"id": "s0_1_2", "md": "When it slips, the team looks ==unreliable==, even though the original number was never real.", "text": "When it slips, the team looks unreliable, even though the original number was never real.", "zh": "等延期了，团队就显得不靠谱，尽管最初那个数字本来就不是真的。", "sp": null}], [{"id": "s0_2_0", "md": "**An estimate without a range is a promise you didn't mean to make.**", "text": "An estimate without a range is a promise you didn't mean to make.", "zh": "不带区间的估时，是一个你本没打算做出的承诺。", "sp": null}, {"id": "s0_2_1", "md": "Ranges can sound ==noncommittal==, but they carry real information: how much you still don't know.", "text": "Ranges can sound noncommittal, but they carry real information: how much you still don't know.", "zh": "区间听起来可能像不愿表态，但它承载着真实的信息：你还有多少不知道。", "sp": null}, {"id": "s0_2_2", "md": "A wide range is not a weakness; it is an honest description of the problem.", "text": "A wide range is not a weakness; it is an honest description of the problem.", "zh": "区间宽不是弱点；它是对问题的诚实描述。", "sp": null}]]}, {"heading": "2. A Range, a Reason, a Checkpoint", "heading_zh": "2. 一个区间、一个理由、一个检查点", "rows": [[{"id": "s1_0_0", "md": "Give a range, and say what drives the width.", "text": "Give a range, and say what drives the width.", "zh": "给一个区间，并说明是什么让它这么宽。", "sp": null}, {"id": "s1_0_1", "md": "\"Two to six weeks; the big unknown is whether their API supports bulk updates.\"", "text": "\"Two to six weeks; the big unknown is whether their API supports bulk updates.\"", "zh": "「两到六周；最大的未知是他们的 API 支不支持批量更新。」", "sp": null}, {"id": "s1_0_2", "md": "Now the PM knows which question matters most, and might even help answer it.", "text": "Now the PM knows which question matters most, and might even help answer it.", "zh": "这样 PM 就知道哪个问题最关键，说不定还能帮着去搞清楚。", "sp": null}], [{"id": "s1_1_0", "md": "Then offer to __narrow it down__.", "text": "Then offer to narrow it down.", "zh": "然后主动提出把区间缩小。", "sp": null}, {"id": "s1_1_1", "md": "Spend two or three days on a quick ==prototype== against the real API.", "text": "Spend two or three days on a quick prototype against the real API.", "zh": "花两三天对着真实的 API 快速做一个原型。", "sp": null}, {"id": "s1_1_2", "md": "After that, you can give a much tighter estimate, and the PM can decide whether the project is still worth it.", "text": "After that, you can give a much tighter estimate, and the PM can decide whether the project is still worth it.", "zh": "之后你就能给出一个准得多的估时，PM 也能判断这个项目还值不值得做。", "sp": null}], [{"id": "s1_2_0", "md": "Agree on a ==checkpoint== where you will update the number, and put it in the calendar.", "text": "Agree on a checkpoint where you will update the number, and put it in the calendar.", "zh": "约好一个更新数字的检查点，并且放进日历。", "sp": null}, {"id": "s1_2_1", "md": "**The goal is not a perfect estimate; it is an estimate that gets better on schedule.**", "text": "The goal is not a perfect estimate; it is an estimate that gets better on schedule.", "zh": "目标不是一次完美的估时；而是一个能按时变得越来越准的估时。", "sp": null}, {"id": "s1_2_2", "md": "When the update arrives on the day you promised, a changed number looks like ==diligence==, not failure.", "text": "When the update arrives on the day you promised, a changed number looks like diligence, not failure.", "zh": "当更新在你承诺的那天准时到来，数字变了看起来是认真负责，而不是失败。", "sp": null}, {"id": "s1_2_3", "md": "Over a few projects, that habit __earns you__ more trust than any confident guess ever could.", "text": "Over a few projects, that habit earns you more trust than any confident guess ever could.", "zh": "做过几个项目之后，这个习惯为你赢得的信任，比任何自信满满的猜测都多。", "sp": null}]]}], "gist": [{"q": "面对未知时给出单一数字有什么问题？", "a": "猜测会被写进路线图变成承诺，延期时团队显得不可靠，尽管原始数字本来就不真实。"}, {"q": "作者建议怎么给估时？", "a": "给一个区间，并说明是什么因素决定了区间宽度（最大的未知是什么）。"}, {"q": "如何让估时逐步变准并赢得信任？", "a": "花两三天做原型缩小不确定性；约定检查点按时更新数字，这样数字变化看起来是尽责而非失败。"}], "dictation": [{"id": "s0_0_2", "text": "Any single number you give right now is a guess dressed up as a plan."}, {"id": "s0_2_0", "text": "An estimate without a range is a promise you didn't mean to make."}, {"id": "s0_2_2", "text": "A wide range is not a weakness; it is an honest description of the problem."}, {"id": "s1_2_1", "text": "The goal is not a perfect estimate; it is an estimate that gets better on schedule."}], "shadow": {"text": "Give a range, and say what drives the width. \"Two to six weeks; the big unknown is whether their API supports bulk updates.\" Now the PM knows which question matters most, and might even help answer it.", "marked": "Give a <b>range</b>, / and say what <b>drives</b> the width. //<br>\"<b>Two</b> to <b>six</b> weeks; / the big <b>unknown</b> / is whether their API supports <b>bulk</b> updates.\" //<br>Now the PM knows / which question matters <b>most</b>, / and might even <b>help</b> answer it. //"}, "prompts": [{"q": "PM 在会上追问“接入新支付渠道要多久？给个数”。你们从没接过这家。用 30 秒给出区间、主要未知和检查点。", "ref": "Honestly, a single number right now would be a guess. My range is three to eight weeks. The biggest unknown is their refund API; if it works like their docs say, we're near the low end. Here's what I suggest: give us three days to build a small prototype against their sandbox. On Thursday I'll come back with a much tighter estimate, and you can decide if it's still worth it.", "ref_zh": "说实话，现在给一个数字只能是猜。我的区间是三到八周。最大的未知是他们的退款 API；如果它跟文档说的一样，我们就接近下限。我的建议是：给我们三天，对着他们的沙箱环境做个小原型。周四我给你一个准得多的估时，到时候你再判断还值不值得做。", "id": "ref0"}, {"q": "上次估三周、实际做了六周，老板有些不满。用 30 秒说明你以后会怎么给估时。", "ref": "You're right that the last estimate was off, and I take responsibility for that. The problem was that I gave one number when we still didn't understand the data migration. From now on, I'll give a range and name the biggest unknown behind it. I'll also set a checkpoint after the first week to update the estimate, so you hear about any change early rather than at the deadline.", "ref_zh": "你说得对，上次的估时偏了，这个责任在我。问题在于，我们还没搞懂数据迁移的时候，我就给了一个数字。以后我会给区间，并说明背后最大的未知是什么。我还会在第一周之后设一个检查点来更新估时，这样有任何变化你都能早点知道，而不是到 deadline 才知道。", "id": "ref1"}], "words": [{"w": "decisive", "ipa": "/dɪˈsaɪsɪv/", "zh": "果断的", "ex": "We need someone decisive to own the launch call.", "id": "w0"}, {"w": "unreliable", "ipa": "/ˌʌnrɪˈlaɪəbəl/", "zh": "不可靠的", "ex": "The staging data is unreliable, so test against a production copy.", "id": "w1"}, {"w": "noncommittal", "ipa": "/ˌnɑːnkəˈmɪtəl/", "zh": "不表态的、含糊的", "ex": "The vendor was noncommittal about when the fix would be ready.", "id": "w2"}, {"w": "prototype", "ipa": "/ˈproʊtəˌtaɪp/", "zh": "原型", "ex": "Let's build a quick prototype before we commit to this design.", "id": "w3"}, {"w": "checkpoint", "ipa": "/ˈtʃekˌpɔɪnt/", "zh": "检查点、节点", "ex": "We'll have a checkpoint at the end of week two to review progress.", "id": "w4"}, {"w": "diligence", "ipa": "/ˈdɪlɪdʒəns/", "zh": "勤勉、尽责", "ex": "Her diligence in testing caught the bug before launch.", "id": "w5"}, {"w": "commitment", "ipa": "/kəˈmɪtmənt/", "zh": "承诺", "ex": "Is this date a commitment or just a target?", "id": "w6"}, {"w": "narrow down", "ipa": "/ˈnæroʊ daʊn/", "zh": "缩小（范围）", "ex": "We narrowed down the cause to one bad query.", "id": "w7"}, {"w": "tight", "ipa": "/taɪt/", "zh": "（估计）精确的；（时间）紧的", "ex": "The schedule is tight, so let's not add new scope.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Why Single Numbers Mislead", "zh": "1. 单个数字为什么会误导", "start": 0.0, "end": 2.52, "words": [[0.105, 0.395], [0.75, 0.934], [0.947, 1.276], [1.289, 1.605], [1.618, 2.132]]}, {"kind": "s", "id": "s0_0_0", "md": "Your PM asks how long the new search integration will take.", "zh": "PM 问你新的搜索集成要多久。", "sp": null, "gap": false, "start": 2.52, "end": 6.24, "words": [[2.625, 2.744], [2.757, 3.112], [3.125, 3.52], [3.533, 3.691], [3.704, 4.007], [4.02, 4.112], [4.125, 4.415], [4.428, 4.796], [4.809, 5.336], [5.349, 5.467], [5.481, 5.836]]}, {"kind": "s", "id": "s0_0_1", "md": "You have never used this vendor's API, and the data format is still undecided.", "zh": "你从来没用过这家供应商的 API，数据格式也还没定。", "sp": null, "gap": false, "start": 6.24, "end": 11.424, "words": [[6.345, 6.464], [6.477, 6.608], [6.622, 6.977], [6.99, 7.279], [7.293, 7.464], [7.477, 7.872], [7.885, 8.49], [8.819, 8.924], [8.937, 9.03], [9.043, 9.293], [9.306, 9.819], [9.911, 9.99], [10.003, 10.385], [10.398, 11.043]]}, {"kind": "s", "id": "s0_0_2", "md": "Any single number you give right now is a guess dressed up as a plan.", "zh": "现在你给出的任何一个数字，都只是一个打扮成计划的猜测。", "sp": null, "gap": false, "start": 11.424, "end": 15.576, "words": [[11.529, 11.713], [11.727, 12.042], [12.056, 12.306], [12.319, 12.437], [12.45, 12.661], [12.674, 12.885], [12.898, 13.292], [13.306, 13.424], [13.437, 13.529], [13.542, 13.937], [13.95, 14.319], [14.332, 14.477], [14.569, 14.674], [14.687, 14.74], [14.753, 15.187]]}, {"kind": "s", "id": "s0_1_0", "md": "The usual mistake is to say \"about three weeks\" to sound ==decisive==.", "zh": "常见的错误是为了显得果断，张口就说「大概三周」。", "sp": null, "gap": true, "start": 15.576, "end": 20.184, "words": [[15.694, 15.747], [15.76, 16.168], [16.181, 16.655], [16.668, 16.773], [16.787, 16.879], [16.892, 17.234], [17.26, 17.563], [17.576, 17.944], [17.958, 18.55], [18.734, 18.839], [18.852, 19.168], [19.181, 19.8]]}, {"kind": "s", "id": "s0_1_1", "md": "The PM writes it on the roadmap, and from that moment the guess __becomes a commitment__.", "zh": "PM 把它写进 roadmap，从那一刻起，这个猜测就变成了承诺。", "sp": null, "gap": false, "start": 20.184, "end": 25.104, "words": [[20.302, 20.368], [20.381, 20.789], [20.802, 21.079], [21.092, 21.197], [21.21, 21.316], [21.329, 21.408], [21.421, 22.013], [22.329, 22.381], [22.395, 22.592], [22.605, 22.789], [22.802, 23.184], [23.197, 23.276], [23.289, 23.71], [23.723, 24.105], [24.118, 24.171], [24.184, 24.723]]}, {"kind": "s", "id": "s0_1_2", "md": "When it slips, the team looks ==unreliable==, even though the original number was never real.", "zh": "等延期了，团队就显得不靠谱，尽管最初那个数字本来就不是真的。", "sp": null, "gap": false, "start": 25.104, "end": 31.128, "words": [[25.222, 25.315], [25.328, 25.407], [25.42, 26.025], [26.249, 26.367], [26.38, 26.762], [26.775, 27.117], [27.249, 28.038], [28.472, 28.67], [28.683, 28.815], [28.828, 28.946], [28.959, 29.512], [29.525, 29.841], [29.854, 30.012], [30.025, 30.354], [30.367, 30.736]]}, {"kind": "s", "id": "s0_2_0", "md": "**An estimate without a range is a promise you didn't mean to make.**", "zh": "不带区间的估时，是一个你本没打算做出的承诺。", "sp": null, "gap": true, "start": 31.128, "end": 35.088, "words": [[31.233, 31.365], [31.378, 31.891], [31.904, 32.273], [32.286, 32.312], [32.325, 32.746], [32.76, 32.878], [32.891, 32.957], [32.97, 33.536], [33.549, 33.641], [33.654, 33.931], [33.944, 34.167], [34.181, 34.273], [34.286, 34.707]]}, {"kind": "s", "id": "s0_2_1", "md": "Ranges can sound ==noncommittal==, but they carry real information: how much you still don't know.", "zh": "区间听起来可能像不愿表态，但它承载着真实的信息：你还有多少不知道。", "sp": null, "gap": false, "start": 35.088, "end": 41.016, "words": [[35.193, 35.535], [35.549, 35.693], [35.706, 36.088], [36.101, 36.785], [37.154, 37.285], [37.299, 37.43], [37.443, 37.851], [37.864, 38.141], [38.154, 38.812], [39.259, 39.377], [39.391, 39.627], [39.641, 39.746], [39.759, 40.088], [40.101, 40.338], [40.351, 40.627]]}, {"kind": "s", "id": "s0_2_2", "md": "A wide range is not a weakness; it is an honest description of the problem.", "zh": "区间宽不是弱点；它是对问题的诚实描述。", "sp": null, "gap": false, "start": 41.016, "end": 46.032, "words": [[41.121, 41.187], [41.2, 41.529], [41.542, 42.029], [42.161, 42.266], [42.279, 42.608], [42.621, 42.674], [42.687, 43.345], [43.661, 43.713], [43.727, 43.832], [43.845, 43.977], [44.095, 44.437], [44.45, 45.003], [45.016, 45.082], [45.095, 45.161], [45.174, 45.634]]}, {"kind": "h", "id": "h1", "md": "2. A Range, a Reason, a Checkpoint", "zh": "2. 一个区间、一个理由、一个检查点", "start": 46.032, "end": 49.368, "words": [[46.137, 46.453], [46.874, 46.953], [46.966, 47.571], [47.756, 47.795], [47.808, 48.243], [48.308, 48.348], [48.361, 48.979]]}, {"kind": "s", "id": "s1_0_0", "md": "Give a range, and say what drives the width.", "zh": "给一个区间，并说明是什么让它这么宽。", "sp": null, "gap": false, "start": 49.368, "end": 52.176, "words": [[49.473, 49.579], [49.592, 49.631], [49.644, 50.197], [50.434, 50.513], [50.526, 50.763], [50.776, 50.934], [50.947, 51.263], [51.276, 51.355], [51.368, 51.776]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Two to six weeks; the big unknown is whether their API supports bulk updates.\"", "zh": "「两到六周；最大的未知是他们的 API 支不支持批量更新。」", "sp": null, "gap": false, "start": 52.176, "end": 58.008, "words": [[52.36, 52.426], [52.505, 52.61], [52.623, 52.952], [52.965, 53.439], [53.715, 53.847], [53.86, 54.097], [54.11, 54.65], [54.715, 54.834], [54.847, 55.123], [55.137, 55.347], [55.465, 55.979], [55.992, 56.518], [56.531, 56.847], [56.86, 57.505]]}, {"kind": "s", "id": "s1_0_2", "md": "Now the PM knows which question matters most, and might even help answer it.", "zh": "这样 PM 就知道哪个问题最关键，说不定还能帮着去搞清楚。", "sp": null, "gap": false, "start": 58.008, "end": 62.712, "words": [[58.113, 58.258], [58.271, 58.363], [58.376, 58.824], [58.837, 59.153], [59.166, 59.363], [59.376, 59.824], [59.837, 60.205], [60.219, 60.719], [61.034, 61.126], [61.14, 61.337], [61.35, 61.561], [61.574, 61.784], [61.797, 62.14], [62.153, 62.324]]}, {"kind": "s", "id": "s1_1_0", "md": "Then offer to __narrow it down__.", "zh": "然后主动提出把区间缩小。", "sp": null, "gap": true, "start": 62.712, "end": 64.632, "words": [[62.83, 62.962], [62.975, 63.265], [63.278, 63.357], [63.37, 63.778], [63.791, 63.883], [63.896, 64.251]]}, {"kind": "s", "id": "s1_1_1", "md": "Spend two or three days on a quick ==prototype== against the real API.", "zh": "花两三天对着真实的 API 快速做一个原型。", "sp": null, "gap": false, "start": 64.632, "end": 69.312, "words": [[64.737, 65.079], [65.093, 65.461], [65.474, 65.619], [65.632, 65.895], [65.908, 66.211], [66.224, 66.329], [66.343, 66.408], [66.421, 66.724], [66.737, 67.369], [67.448, 67.777], [67.79, 67.882], [67.895, 68.25], [68.343, 68.921]]}, {"kind": "s", "id": "s1_1_2", "md": "After that, you can give a much tighter estimate, and the PM can decide whether the project is still worth it.", "zh": "之后你就能给出一个准得多的估时，PM 也能判断这个项目还值不值得做。", "sp": null, "gap": false, "start": 69.312, "end": 75.744, "words": [[69.417, 69.733], [69.746, 70.049], [70.338, 70.417], [70.43, 70.562], [70.575, 70.707], [70.72, 70.786], [70.799, 71.101], [71.115, 71.496], [71.509, 72.009], [72.325, 72.391], [72.404, 72.483], [72.496, 72.93], [72.944, 73.101], [73.115, 73.628], [73.641, 73.851], [73.865, 73.944], [73.957, 74.496], [74.509, 74.602], [74.615, 74.891], [74.904, 75.167], [75.18, 75.351]]}, {"kind": "s", "id": "s1_2_0", "md": "Agree on a ==checkpoint== where you will update the number, and put it in the calendar.", "zh": "约好一个更新数字的检查点，并且放进日历。", "sp": null, "gap": true, "start": 75.744, "end": 80.328, "words": [[75.849, 76.191], [76.205, 76.31], [76.323, 76.376], [76.389, 76.994], [77.007, 77.152], [77.165, 77.257], [77.27, 77.468], [77.533, 77.928], [77.941, 78.02], [78.033, 78.494], [78.797, 78.862], [78.876, 79.06], [79.073, 79.152], [79.165, 79.244], [79.257, 79.336], [79.349, 79.941]]}, {"kind": "s", "id": "s1_2_1", "md": "**The goal is not a perfect estimate; it is an estimate that gets better on schedule.**", "zh": "目标不是一次完美的估时；而是一个能按时变得越来越准的估时。", "sp": null, "gap": false, "start": 80.328, "end": 85.536, "words": [[80.446, 80.512], [80.525, 80.881], [80.96, 81.065], [81.078, 81.328], [81.341, 81.394], [81.407, 81.973], [81.986, 82.433], [82.867, 82.933], [82.946, 83.052], [83.065, 83.196], [83.21, 83.723], [83.789, 83.92], [83.933, 84.144], [84.157, 84.46], [84.473, 84.578], [84.591, 85.144]]}, {"kind": "s", "id": "s1_2_2", "md": "When the update arrives on the day you promised, a changed number looks like ==diligence==, not failure.", "zh": "当更新在你承诺的那天准时到来，数字变了看起来是认真负责，而不是失败。", "sp": null, "gap": false, "start": 85.536, "end": 91.32, "words": [[85.641, 85.72], [85.733, 85.852], [85.865, 86.233], [86.247, 86.72], [86.733, 86.826], [86.839, 86.918], [86.931, 87.102], [87.115, 87.207], [87.22, 87.786], [88.036, 88.062], [88.075, 88.51], [88.523, 88.786], [88.799, 89.036], [89.049, 89.286], [89.299, 89.904], [90.181, 90.391], [90.404, 90.931]]}, {"kind": "s", "id": "s1_2_3", "md": "Over a few projects, that habit __earns you__ more trust than any confident guess ever could.", "zh": "做过几个项目之后，这个习惯为你赢得的信任，比任何自信满满的猜测都多。", "sp": null, "gap": false, "start": 91.32, "end": 97.32, "words": [[91.425, 91.649], [91.662, 91.702], [91.715, 91.952], [91.965, 92.702], [92.938, 93.083], [93.096, 93.465], [93.57, 93.833], [93.846, 93.952], [93.965, 94.228], [94.241, 94.754], [94.767, 94.965], [95.083, 95.307], [95.32, 95.925], [95.938, 96.241], [96.386, 96.557], [96.57, 96.938]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

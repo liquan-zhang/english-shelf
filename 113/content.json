@@ -1,0 +1,84 @@
+{
+  "id": "113",
+  "type": "dialogue",
+  "title": "Talking to a Stranger at the Bar",
+  "meta": "B2 · 约 250 词 · 场景：酒吧和陌生人搭话与告别",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Stranger", "name_zh": "陌生人", "voice": "en-GB-SoniaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Breaking the Ice",
+      "heading_zh": "1. 打开话题",
+      "lines": [
+        {"sp": "A", "en": "**Sorry, is anyone sitting here?**", "zh": "不好意思，这儿有人坐吗？"},
+        {"sp": "B", "en": "No, it's free. __Help yourself__.", "zh": "没有，空着呢。请坐。"},
+        {"sp": "A", "en": "Thanks. That looks good. What are you drinking, if you don't mind me asking?", "zh": "谢谢。你那杯看着不错。冒昧问一下，你喝的是什么？"},
+        {"sp": "B", "en": "It's a local ==craft== beer, a bit fruity. The bartender __talked me into__ it, and I'm glad he did.", "zh": "本地的一款精酿啤酒，有点果香。是酒保推荐的，还好我听了他的。"},
+        {"sp": "A", "en": "Maybe I'll try one too. Do you come here often? It's my first time.", "zh": "那我也来一杯吧。你常来这儿吗？我是第一次来。"},
+        {"sp": "B", "en": "Most Fridays, actually. It's close to my office. You don't sound like you're from around here.", "zh": "其实差不多每个周五都来，离我公司近。听口音你不是本地人吧？"},
+        {"sp": "A", "en": "No, I'm originally from China. I moved here with my family about two years ago. What about you?", "zh": "不是，我是中国人。大概两年前带着家人搬过来的。你呢？"},
+        {"sp": "B", "en": "I'm from Manchester. I came out on a two-year ==posting== and somehow never left.", "zh": "我是曼彻斯特人。本来是公司外派两年，结果不知怎么就留下来了。"},
+        {"sp": "A", "en": "That __happens a lot__ here, doesn't it? The weather ==grows on you==.", "zh": "这种事在这儿挺常见的，对吧？天气慢慢就让人习惯了。"}
+      ]
+    },
+    {
+      "heading": "2. Keeping It Going, Then Wrapping Up",
+      "heading_zh": "2. 接着聊，再自然收尾",
+      "lines": [
+        {"sp": "B", "en": "So what do you do? Let me guess, something in tech?", "zh": "那你是做什么的？我猜猜，搞技术的？"},
+        {"sp": "A", "en": "Good guess. I manage a team at a tech company. And you?", "zh": "猜对了。我在一家科技公司带团队。你呢？"},
+        {"sp": "B", "en": "I'm in ==logistics==, which is rather less glamorous. Mostly ==chasing== ships around the region.", "zh": "我做物流，没那么光鲜。基本上就是在区域里到处追船期。"},
+        {"sp": "A", "en": "**Sorry, I didn't quite catch that. Did you say chasing ships?**", "zh": "不好意思，我没太听清。你是说追船吗？"},
+        {"sp": "B", "en": "Ha, yes. Tracking shipments that are late, basically. It's less exciting than it sounds.", "zh": "哈，对。说白了就是盯那些延误的货。没听起来那么刺激。"},
+        {"sp": "A", "en": "Still sounds more exciting than my meetings. Any good places around here you'd ==recommend==?", "zh": "那也比我开会有意思。这附近有什么好地方推荐吗？"},
+        {"sp": "B", "en": "There's a little jazz bar two streets down. Quiet, decent wine, no one shouting.", "zh": "往前两条街有个小爵士酒吧。安静，红酒不错，没人大吵大闹。"},
+        {"sp": "A", "en": "I'll __check it out__. Well, I should __head off__. My son gets up at six, so no late nights for me.", "zh": "我去看看。好了，我得走了。我儿子六点就起，我可熬不了夜。"},
+        {"sp": "A", "en": "**It was really nice chatting with you. I'm Lee, by the way.**", "zh": "跟你聊天很开心。对了，我叫 Lee。"},
+        {"sp": "B", "en": "Sophie. Nice to meet you, Lee. Maybe see you here next Friday.", "zh": "我叫 Sophie。很高兴认识你，Lee。说不定下周五这儿见。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」是怎么开启对话的？", "a": "先问旁边的座位有没有人，再问对方喝的是什么酒。"},
+    {"q": "对方是哪里人、做什么工作？", "a": "来自曼彻斯特，原本外派两年后留在了这里，做物流，主要追踪延误的货运。"},
+    {"q": "「你」用什么理由结束了聊天？", "a": "说儿子六点就起床，不能太晚，然后自我介绍并道别。"}
+  ],
+  "dictation": [
+    "Thanks. That looks good. What are you drinking, if you don't mind me asking?",
+    "No, I'm originally from China. I moved here with my family about two years ago. What about you?",
+    "Sorry, I didn't quite catch that. Did you say chasing ships?",
+    "It was really nice chatting with you. I'm Lee, by the way."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "I'll check it out. Well, I should head off. My son gets up at six, so no late nights for me.",
+    "marked": "I'll <b>check</b> it out. //<br><b>Well</b>, / I should <b>head off</b>. //<br>My <b>son</b> gets up at <b>six</b>, / so no <b>late</b> nights for me. //"
+  },
+  "prompts": [
+    {
+      "q": "在朋友的生日聚会上，你旁边站着一个谁都不认识的人。主动搭话：介绍自己、说明你和寿星的关系，再问对方一个问题。",
+      "ref": "Hi, I don't think we've met. I'm Lee. I know Daniel from work, we sit on the same floor. How do you know him? I have to say, this is a great place for a party. Have you been here before? I'm always looking for somewhere new to take my family on weekends.",
+      "ref_zh": "你好，我们好像还没见过。我叫 Lee，跟 Daniel 是同事，在同一层办公。你是怎么认识他的？说真的，这地方办聚会真不错。你以前来过吗？我周末总在找新地方带家人去。"
+    },
+    {
+      "q": "在酒吧有人一直拉着你聊，你想礼貌地结束对话回到朋友那边。说一段既得体又明确的话。",
+      "ref": "Sorry, I'm going to have to steal myself away. My friends are waiting for me over there, and I promised I'd only be a minute. It was really good talking to you, though. Good luck with the new job, and enjoy the rest of your night.",
+      "ref_zh": "不好意思，我得先走开一下了。我朋友在那边等我，我说好只离开一会儿的。不过跟你聊得很开心。新工作顺利，今晚玩得开心。"
+    }
+  ],
+  "words": [
+    {"w": "craft beer", "ipa": "/kræft bɪr/", "zh": "精酿啤酒", "ex": "This bar has over twenty craft beers on tap."},
+    {"w": "posting", "ipa": "/ˈpoʊstɪŋ/", "zh": "外派任职", "ex": "She's here on a three-year posting from London.", "tts": "She's here on a three-year posting from London."},
+    {"w": "grow on (someone)", "ipa": "/ɡroʊ ɑːn/", "zh": "越来越让人喜欢", "ex": "Durian is strange at first, but it grows on you.", "tts_w": "grow on"},
+    {"w": "logistics", "ipa": "/ləˈdʒɪstɪks/", "zh": "物流", "ex": "My neighbour works in logistics at the port."},
+    {"w": "chase", "ipa": "/tʃeɪs/", "zh": "追；催办", "ex": "I had to chase the agent three times for the contract."},
+    {"w": "recommend", "ipa": "/ˌrekəˈmend/", "zh": "推荐", "ex": "Can you recommend a good dim sum place nearby?"},
+    {"w": "help yourself", "ipa": "/help jərˈself/", "zh": "请随意，自便", "ex": "There's coffee in the kitchen, help yourself."},
+    {"w": "head off", "ipa": "/hed ɔːf/", "zh": "离开，动身", "ex": "I'd better head off before the rain starts."},
+    {"w": "talk (someone) into", "ipa": "/tɔːk ˈɪntuː/", "zh": "说服某人做某事", "ex": "My wife talked me into joining the gym.", "tts_w": "talk into"}
+  ]
+}

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>The One-Slide Summary · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "016", "title": "The One-Slide Summary", "meta": "B2 · 约 270 词 · 场景：项目汇报", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Only Slide That Gets Read", "heading_zh": "1. 唯一会被读的那页", "rows": [[{"id": "s0_0_0", "md": "A director once told me how she reads a twenty-page project deck.", "text": "A director once told me how she reads a twenty-page project deck.", "zh": "有位总监跟我讲过她是怎么看一份二十页的项目汇报的。", "sp": null}, {"id": "s0_0_1", "md": "She looks at the first slide, then skips to the last one, and only opens the middle if something ==bothers== her.", "text": "She looks at the first slide, then skips to the last one, and only opens the middle if something bothers her.", "zh": "她先看第一页，然后直接跳到最后一页，只有哪里让她不放心，才会翻开中间。", "sp": null}, {"id": "s0_0_2", "md": "She is not lazy; she has thirty projects to ==juggle==.", "text": "She is not lazy; she has thirty projects to juggle.", "zh": "她不是懒，她手上有三十个项目要兼顾。", "sp": null}], [{"id": "s0_1_0", "md": "Most senior people work this way.", "text": "Most senior people work this way.", "zh": "大多数高层都是这么工作的。", "sp": null}, {"id": "s0_1_1", "md": "That means your first slide is not an introduction.", "text": "That means your first slide is not an introduction.", "zh": "这意味着你的第一页不是开场白。", "sp": null}, {"id": "s0_1_2", "md": "**It is the whole presentation, and everything after it is evidence.**", "text": "It is the whole presentation, and everything after it is evidence.", "zh": "它就是整场汇报，后面的一切都只是证据。", "sp": null}], [{"id": "s0_2_0", "md": "Writing that slide is harder than it sounds, and that is exactly why it is useful.", "text": "Writing that slide is harder than it sounds, and that is exactly why it is useful.", "zh": "写好这一页比听起来难，而这正是它有用的原因。", "sp": null}, {"id": "s0_2_1", "md": "If you cannot fit the project on one page, you probably have not decided what really matters yet.", "text": "If you cannot fit the project on one page, you probably have not decided what really matters yet.", "zh": "如果你没法把项目塞进一页纸，那多半是你还没想清楚什么才真正重要。", "sp": null}, {"id": "s0_2_2", "md": "The slide __forces the thinking__ that a long deck lets you ==postpone==.", "text": "The slide forces the thinking that a long deck lets you postpone.", "zh": "长篇大论的汇报让你可以把思考往后拖，而这一页逼着你现在就想清楚。", "sp": null}]]}, {"heading": "2. Four Boxes and a Title", "heading_zh": "2. 四个框加一个标题", "rows": [[{"id": "s1_0_0", "md": "Start with the title, and make it a full sentence with your conclusion in it.", "text": "Start with the title, and make it a full sentence with your conclusion in it.", "zh": "先写标题，而且要写成一个完整的句子，把结论放进去。", "sp": null}, {"id": "s1_0_1", "md": "Not \"Search Latency Project,\" but \"Search is now forty percent faster; we need two more weeks for mobile.\"", "text": "Not \"Search Latency Project,\" but \"Search is now forty percent faster; we need two more weeks for mobile.\"", "zh": "不要写「搜索延迟项目」，而要写「搜索已提速百分之四十；移动端还需要两周」。", "sp": null}, {"id": "s1_0_2", "md": "Someone who reads only the title should still __walk away with__ the main point.", "text": "Someone who reads only the title should still walk away with the main point.", "zh": "只看标题的人，也应该能带走核心信息。", "sp": null}], [{"id": "s1_1_0", "md": "Under the title, use four short boxes.", "text": "Under the title, use four short boxes.", "zh": "标题下面，放四个简短的框。", "sp": null}, {"id": "s1_1_1", "md": "Why we did this, what we did, what changed, and what we need next.", "text": "Why we did this, what we did, what changed, and what we need next.", "zh": "为什么做、做了什么、带来了什么变化、接下来需要什么。", "sp": null}, {"id": "s1_1_2", "md": "Keep each box to two or three lines, and cut every word that does not __earn its place__.", "text": "Keep each box to two or three lines, and cut every word that does not earn its place.", "zh": "每个框控制在两三行，凡是没有存在价值的词都删掉。", "sp": null}], [{"id": "s1_2_0", "md": "The last box is the one people ==skip== most often, and it matters most.", "text": "The last box is the one people skip most often, and it matters most.", "zh": "最后一个框最常被人跳过，却最重要。", "sp": null}, {"id": "s1_2_1", "md": "**A summary without an ask is just a status report.**", "text": "A summary without an ask is just a status report.", "zh": "一份没有诉求的总结，只是一份进度汇报。", "sp": null}, {"id": "s1_2_2", "md": "Whether you need a decision, a person, or simply ==awareness== of a risk, say it ==explicitly==.", "text": "Whether you need a decision, a person, or simply awareness of a risk, say it explicitly.", "zh": "不管你需要的是一个决定、一个人手，还是只想让大家知道某个风险，都要明确说出来。", "sp": null}], [{"id": "s1_3_0", "md": "Then test the slide on someone outside the project.", "text": "Then test the slide on someone outside the project.", "zh": "然后找个项目外的人测试一下这页。", "sp": null}, {"id": "s1_3_1", "md": "Give them thirty seconds, take the slide away, and ask what they remember.", "text": "Give them thirty seconds, take the slide away, and ask what they remember.", "zh": "给他三十秒，然后把幻灯片拿走，问他记住了什么。", "sp": null}, {"id": "s1_3_2", "md": "If their answer matches your title, you are ready.", "text": "If their answer matches your title, you are ready.", "zh": "如果他的回答和你的标题对得上，你就准备好了。", "sp": null}]]}], "gist": [{"q": "作者说的那位总监是怎么看项目材料的？这说明了什么？", "a": "只看第一页和最后一页，有疑问才看中间；说明第一页就是整个汇报，后面都只是证据。"}, {"q": "一页纸总结的结构是什么？", "a": "一个包含结论的完整句子做标题，下面四个框：为什么做、做了什么、改变了什么、下一步需要什么。"}, {"q": "为什么最后一个“需要什么”的框最重要？", "a": "没有明确诉求的总结只是状态汇报；需要决定、人手还是风险知情，都要明说。"}], "dictation": [{"id": "s0_1_2", "text": "It is the whole presentation, and everything after it is evidence."}, {"id": "s1_2_1", "text": "A summary without an ask is just a status report."}, {"id": "s0_2_1", "text": "If you cannot fit the project on one page, you probably have not decided what really matters yet."}, {"id": "s1_3_2", "text": "If their answer matches your title, you are ready."}], "shadow": {"text": "The last box is the one people skip most often, and it matters most. A summary without an ask is just a status report.", "marked": "The <b>last</b> box / is the one people <b>skip</b> most often, / and it matters <b>most</b>. //<br>A summary / <b>without</b> an ask / is just a <b>status</b> report. //"}, "prompts": [{"q": "电梯里碰到总监，他问你项目怎么样了。用 30 秒按“一页纸”结构口头汇报：结论先行，最后提出一个明确诉求。", "ref": "Short version, the new checkout is live in two markets and conversion is up about six percent. We built it because the old flow was losing a lot of users at the payment step. The main open issue is the mobile wallet integration, which needs another two weeks. What I need from you is help getting time from the payments team next sprint. Could you raise it with their director?", "ref_zh": "简单说，新的结算流程已经在两个市场上线，转化率提升了大约百分之六。我们做这个，是因为老流程在支付这一步流失了大量用户。目前主要的遗留问题是移动钱包的接入，还需要两周。我需要你帮忙的是，下个迭代从支付团队那边争取一些排期。你能跟他们的总监提一下吗？", "id": "ref0"}, {"q": "同事给你看他的项目首页，标题是“推荐系统优化项目”。用 30 秒给他反馈，教他把标题改成结论句并补上诉求。", "ref": "The content is solid, but I'd change the title. Right now it just names the project, so a busy reader learns nothing from it. Try putting your conclusion in the title, something like, click-through is up twelve percent, and we need one more engineer to finish the rollout. Also, your last box only shows status. Add a clear ask, otherwise leadership won't know what you want from them.", "ref_zh": "内容很扎实，但我会改一下标题。现在它只写了项目名，忙碌的读者从中什么也得不到。试着把结论放进标题里，比如：点击率提升了百分之十二，还需要再加一个工程师才能完成全量。另外，你最后一个框只写了进度。加一个明确的诉求，不然领导不知道你需要他们做什么。", "id": "ref1"}], "words": [{"w": "bother", "ipa": "/ˈbɑːðər/", "zh": "使困扰、让人在意", "ex": "What bothers me is that the error only shows up on weekends.", "id": "w0"}, {"w": "postpone", "ipa": "/poʊstˈpoʊn/", "zh": "推迟", "ex": "We postponed the launch until the security review is done.", "id": "w1"}, {"w": "skip", "ipa": "/skɪp/", "zh": "跳过", "ex": "Let's skip the intro slides and go straight to the results.", "id": "w2"}, {"w": "awareness", "ipa": "/əˈwernəs/", "zh": "知晓、意识", "ex": "This is just for awareness; no action needed yet.", "id": "w3"}, {"w": "explicitly", "ipa": "/ɪkˈsplɪsɪtli/", "zh": "明确地", "ex": "The doc should explicitly say who approves the release.", "id": "w4"}, {"w": "deck", "ipa": "/dek/", "zh": "（一套）幻灯片", "ex": "Can you send me the deck before the review?", "id": "w5"}, {"w": "ask (n.)", "ipa": "/æsk/", "zh": "诉求、请求", "ex": "My ask is two extra days for load testing.", "tts_w": "ask", "id": "w6"}, {"w": "earn its place", "ipa": "/ɜːrn ɪts pleɪs/", "zh": "值得保留、有存在价值", "ex": "Every chart in the deck has to earn its place.", "id": "w7"}, {"w": "walk away with", "ipa": "/wɔːk əˈweɪ wɪð/", "zh": "带走（收获、印象）", "ex": "I want people to walk away with one clear message.", "id": "w8"}, {"w": "juggle", "ipa": "/ˈdʒʌɡəl/", "zh": "同时应付（多件事）", "ex": "I'm juggling three launches and an on-call week right now.", "id": "w9"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Only Slide That Gets Read", "zh": "1. 唯一会被读的那页", "start": 0.0, "end": 2.664, "words": [[0.118, 0.382], [0.737, 0.855], [0.868, 1.132], [1.145, 1.54], [1.553, 1.671], [1.684, 1.895], [1.908, 2.276]]}, {"kind": "s", "id": "s0_0_0", "md": "A director once told me how she reads a twenty-page project deck.", "zh": "有位总监跟我讲过她是怎么看一份二十页的项目汇报的。", "sp": null, "gap": false, "start": 2.664, "end": 6.768, "words": [[2.769, 2.822], [2.835, 3.269], [3.282, 3.506], [3.519, 3.769], [3.782, 3.914], [3.927, 4.072], [4.085, 4.296], [4.309, 4.598], [4.611, 4.664], [4.677, 5.414], [5.427, 5.967], [5.98, 6.375]]}, {"kind": "s", "id": "s0_0_1", "md": "She looks at the first slide, then skips to the last one, and only opens the middle if something ==bothers== her.", "zh": "她先看第一页，然后直接跳到最后一页，只有哪里让她不放心，才会翻开中间。", "sp": null, "gap": false, "start": 6.768, "end": 13.32, "words": [[6.886, 7.044], [7.057, 7.281], [7.294, 7.373], [7.386, 7.465], [7.479, 7.834], [7.847, 8.294], [8.61, 8.768], [8.781, 9.15], [9.163, 9.255], [9.268, 9.373], [9.386, 9.755], [9.768, 10.005], [10.4, 10.544], [10.557, 10.9], [10.913, 11.294], [11.307, 11.386], [11.4, 11.781], [11.794, 11.873], [11.886, 12.215], [12.229, 12.663], [12.676, 12.926]]}, {"kind": "s", "id": "s0_0_2", "md": "She is not lazy; she has thirty projects to ==juggle==.", "zh": "她不是懒，她手上有三十个项目要兼顾。", "sp": null, "gap": false, "start": 13.32, "end": 17.064, "words": [[13.438, 13.662], [13.675, 13.794], [13.807, 14.083], [14.096, 14.517], [14.925, 15.044], [15.057, 15.228], [15.241, 15.596], [15.609, 16.109], [16.123, 16.215], [16.228, 16.675]]}, {"kind": "s", "id": "s0_1_0", "md": "Most senior people work this way.", "zh": "大多数高层都是这么工作的。", "sp": null, "gap": true, "start": 17.064, "end": 19.104, "words": [[17.169, 17.38], [17.393, 17.696], [17.709, 18.025], [18.038, 18.248], [18.261, 18.446], [18.459, 18.722]]}, {"kind": "s", "id": "s0_1_1", "md": "That means your first slide is not an introduction.", "zh": "这意味着你的第一页不是开场白。", "sp": null, "gap": false, "start": 19.104, "end": 22.44, "words": [[19.222, 19.328], [19.341, 19.591], [19.604, 19.749], [19.762, 20.17], [20.183, 20.643], [20.854, 20.959], [20.972, 21.315], [21.328, 21.407], [21.42, 22.038]]}, {"kind": "s", "id": "s0_1_2", "md": "**It is the whole presentation, and everything after it is evidence.**", "zh": "它就是整场汇报，后面的一切都只是证据。", "sp": null, "gap": false, "start": 22.44, "end": 26.424, "words": [[22.545, 22.624], [22.637, 22.743], [22.756, 22.848], [22.861, 23.164], [23.177, 23.979], [24.203, 24.322], [24.414, 24.861], [24.874, 25.243], [25.256, 25.322], [25.335, 25.466], [25.479, 26.032]]}, {"kind": "s", "id": "s0_2_0", "md": "Writing that slide is harder than it sounds, and that is exactly why it is useful.", "zh": "写好这一页比听起来难，而这正是它有用的原因。", "sp": null, "gap": true, "start": 26.424, "end": 31.464, "words": [[26.529, 26.819], [26.832, 26.977], [26.99, 27.385], [27.398, 27.49], [27.503, 27.885], [27.898, 28.029], [28.042, 28.121], [28.135, 28.753], [29.082, 29.187], [29.2, 29.358], [29.371, 29.463], [29.477, 30.056], [30.069, 30.358], [30.371, 30.45], [30.463, 30.569], [30.582, 31.082]]}, {"kind": "s", "id": "s0_2_1", "md": "If you cannot fit the project on one page, you probably have not decided what really matters yet.", "zh": "如果你没法把项目塞进一页纸，那多半是你还没想清楚什么才真正重要。", "sp": null, "gap": false, "start": 31.464, "end": 37.296, "words": [[31.569, 31.674], [31.688, 31.78], [31.793, 32.135], [32.148, 32.385], [32.398, 32.477], [32.49, 32.99], [33.003, 33.148], [33.161, 33.372], [33.385, 33.911], [34.188, 34.253], [34.267, 34.688], [34.701, 34.806], [34.819, 35.069], [35.082, 35.622], [35.635, 35.872], [35.885, 36.135], [36.148, 36.569], [36.582, 36.898]]}, {"kind": "s", "id": "s0_2_2", "md": "The slide __forces the thinking__ that a long deck lets you ==postpone==.", "zh": "长篇大论的汇报让你可以把思考往后拖，而这一页逼着你现在就想清楚。", "sp": null, "gap": false, "start": 37.296, "end": 41.352, "words": [[37.414, 37.467], [37.48, 37.875], [37.888, 38.375], [38.388, 38.493], [38.507, 38.875], [38.888, 39.007], [39.02, 39.059], [39.072, 39.441], [39.454, 39.862], [40.033, 40.204], [40.217, 40.309], [40.322, 40.954]]}, {"kind": "h", "id": "h1", "md": "2. Four Boxes and a Title", "zh": "2. 四个框加一个标题", "start": 41.352, "end": 43.896, "words": [[41.457, 41.72], [41.984, 42.22], [42.234, 42.813], [42.826, 42.984], [42.997, 43.049], [43.063, 43.51]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with the title, and make it a full sentence with your conclusion in it.", "zh": "先写标题，而且要写成一个完整的句子，把结论放进去。", "sp": null, "gap": false, "start": 43.896, "end": 48.288, "words": [[44.014, 44.343], [44.357, 44.475], [44.488, 44.567], [44.58, 44.975], [45.383, 45.449], [45.462, 45.659], [45.672, 45.751], [45.764, 45.817], [45.83, 46.185], [46.199, 46.685], [46.699, 46.857], [46.87, 46.988], [47.001, 47.58], [47.593, 47.699], [47.712, 47.896]]}, {"kind": "s", "id": "s1_0_1", "md": "Not \"Search Latency Project,\" but \"Search is now forty percent faster; we need two more weeks for mobile.\"", "zh": "不要写「搜索延迟项目」，而要写「搜索已提速百分之四十；移动端还需要两周」。", "sp": null, "gap": false, "start": 48.288, "end": 55.704, "words": [[48.393, 48.735], [48.92, 49.249], [49.262, 49.67], [49.683, 50.288], [50.538, 50.762], [50.972, 51.314], [51.327, 51.446], [51.459, 51.722], [51.735, 52.13], [52.143, 52.564], [52.577, 53.117], [53.433, 53.564], [53.577, 53.814], [53.827, 54.051], [54.064, 54.341], [54.354, 54.67], [54.683, 54.841], [54.854, 55.301]]}, {"kind": "s", "id": "s1_0_2", "md": "Someone who reads only the title should still __walk away with__ the main point.", "zh": "只看标题的人，也应该能带走核心信息。", "sp": null, "gap": false, "start": 55.704, "end": 60.12, "words": [[55.809, 56.125], [56.138, 56.296], [56.309, 56.757], [56.77, 57.033], [57.046, 57.138], [57.151, 57.599], [57.691, 57.888], [57.901, 58.204], [58.217, 58.467], [58.48, 58.809], [58.822, 58.954], [58.967, 59.046], [59.059, 59.296], [59.309, 59.717]]}, {"kind": "s", "id": "s1_1_0", "md": "Under the title, use four short boxes.", "zh": "标题下面，放四个简短的框。", "sp": null, "gap": true, "start": 60.12, "end": 63.048, "words": [[60.225, 60.409], [60.423, 60.515], [60.528, 60.949], [61.278, 61.488], [61.502, 61.738], [61.752, 62.028], [62.041, 62.646]]}, {"kind": "s", "id": "s1_1_1", "md": "Why we did this, what we did, what changed, and what we need next.", "zh": "为什么做、做了什么、带来了什么变化、接下来需要什么。", "sp": null, "gap": false, "start": 63.048, "end": 67.8, "words": [[63.166, 63.324], [63.337, 63.443], [63.456, 63.666], [63.68, 64.074], [64.272, 64.403], [64.416, 64.522], [64.535, 64.903], [65.311, 65.482], [65.495, 66.061], [66.298, 66.39], [66.403, 66.535], [66.548, 66.64], [66.653, 66.877], [66.89, 67.416]]}, {"kind": "s", "id": "s1_1_2", "md": "Keep each box to two or three lines, and cut every word that does not __earn its place__.", "zh": "每个框控制在两三行，凡是没有存在价值的词都删掉。", "sp": null, "gap": false, "start": 67.8, "end": 73.992, "words": [[67.918, 68.155], [68.247, 68.458], [68.471, 68.918], [68.932, 69.024], [69.037, 69.458], [69.576, 69.721], [69.734, 70.037], [70.05, 70.642], [71.011, 71.129], [71.142, 71.392], [71.524, 71.76], [71.774, 72.129], [72.142, 72.274], [72.287, 72.418], [72.432, 72.721], [72.734, 72.879], [72.892, 73.024], [73.037, 73.603]]}, {"kind": "s", "id": "s1_2_0", "md": "The last box is the one people ==skip== most often, and it matters most.", "zh": "最后一个框最常被人跳过，却最重要。", "sp": null, "gap": true, "start": 73.992, "end": 78.504, "words": [[74.11, 74.176], [74.189, 74.532], [74.545, 74.874], [74.887, 74.992], [75.005, 75.097], [75.11, 75.347], [75.36, 75.676], [75.689, 76.032], [76.045, 76.36], [76.374, 76.795], [77.097, 77.15], [77.163, 77.242], [77.255, 77.61], [77.624, 78.11]]}, {"kind": "s", "id": "s1_2_1", "md": "**A summary without an ask is just a status report.**", "zh": "一份没有诉求的总结，只是一份进度汇报。", "sp": null, "gap": false, "start": 78.504, "end": 81.84, "words": [[78.609, 78.662], [78.675, 79.109], [79.122, 79.53], [79.543, 79.636], [79.649, 80.044], [80.136, 80.28], [80.293, 80.543], [80.557, 80.596], [80.609, 81.004], [81.017, 81.451]]}, {"kind": "s", "id": "s1_2_2", "md": "Whether you need a decision, a person, or simply ==awareness== of a risk, say it ==explicitly==.", "zh": "不管你需要的是一个决定、一个人手，还是只想让大家知道某个风险，都要明确说出来。", "sp": null, "gap": false, "start": 81.84, "end": 87.864, "words": [[81.958, 82.182], [82.195, 82.327], [82.34, 82.524], [82.537, 82.59], [82.603, 83.169], [83.458, 83.498], [83.511, 84.05], [84.472, 84.564], [84.577, 84.985], [84.998, 85.511], [85.524, 85.603], [85.616, 85.669], [85.682, 86.116], [86.393, 86.643], [86.656, 86.722], [86.735, 87.458]]}, {"kind": "s", "id": "s1_3_0", "md": "Then test the slide on someone outside the project.", "zh": "然后找个项目外的人测试一下这页。", "sp": null, "gap": true, "start": 87.864, "end": 90.96, "words": [[87.969, 88.127], [88.14, 88.43], [88.443, 88.535], [88.548, 88.943], [88.956, 89.088], [89.101, 89.443], [89.456, 89.89], [89.903, 89.969], [89.982, 90.575]]}, {"kind": "s", "id": "s1_3_1", "md": "Give them thirty seconds, take the slide away, and ask what they remember.", "zh": "给他三十秒，然后把幻灯片拿走，问他记住了什么。", "sp": null, "gap": false, "start": 90.96, "end": 95.712, "words": [[91.065, 91.223], [91.236, 91.394], [91.407, 91.776], [91.789, 92.434], [92.671, 92.894], [92.907, 92.999], [93.013, 93.355], [93.368, 93.776], [94.078, 94.236], [94.249, 94.552], [94.565, 94.684], [94.697, 94.802], [94.815, 95.328]]}, {"kind": "s", "id": "s1_3_2", "md": "If their answer matches your title, you are ready.", "zh": "如果他的回答和你的标题对得上，你就准备好了。", "sp": null, "gap": false, "start": 95.712, "end": 98.592, "words": [[95.817, 95.936], [95.949, 96.107], [96.12, 96.409], [96.423, 96.804], [96.817, 96.922], [96.936, 97.33], [97.646, 97.751], [97.765, 97.909], [97.923, 98.212]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

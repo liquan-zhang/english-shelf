@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Making a Call with Incomplete Data · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "064", "title": "Making a Call with Incomplete Data", "meta": "B2 · 约 280 词 · 场景：决策会议", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Waiting Is Also a Choice", "heading_zh": "1. 等待也是一种选择", "rows": [[{"id": "s0_0_0", "md": "In almost every planning meeting, someone eventually says, \"Let's wait for more data.\"", "text": "In almost every planning meeting, someone eventually says, \"Let's wait for more data.\"", "zh": "几乎每次规划会上，最后总有人会说：「要不再等等更多数据吧。」", "sp": null}, {"id": "s0_0_1", "md": "Sometimes that is wise.", "text": "Sometimes that is wise.", "zh": "有时候这确实明智。", "sp": null}, {"id": "s0_0_2", "md": "Often it is a polite way to avoid __owning a decision__.", "text": "Often it is a polite way to avoid owning a decision.", "zh": "但很多时候，这只是一种体面地回避为决定负责的说法。", "sp": null}], [{"id": "s0_1_0", "md": "The problem is that waiting is not ==neutral==.", "text": "The problem is that waiting is not neutral.", "zh": "问题在于，等待并不是中性的。", "sp": null}, {"id": "s0_1_1", "md": "While the team waits two more weeks for experiment results, engineers sit idle, competitors ship, and the ==window== slowly closes.", "text": "While the team waits two more weeks for experiment results, engineers sit idle, competitors ship, and the window slowly closes.", "zh": "团队再等两周实验结果的时候，工程师闲着，竞品在上线，窗口期一点点关上。", "sp": null}, {"id": "s0_1_2", "md": "**Not deciding is also a decision, and it usually has a cost nobody wrote down.**", "text": "Not deciding is also a decision, and it usually has a cost nobody wrote down.", "zh": "不做决定本身也是一种决定，而且它通常有一笔没人记下来的成本。", "sp": null}], [{"id": "s0_2_0", "md": "Data is rarely complete in real work.", "text": "Data is rarely complete in real work.", "zh": "实际工作中，数据很少是完整的。", "sp": null}, {"id": "s0_2_1", "md": "Logs have gaps, dashboards ==contradict== each other, and the user research covers twelve people.", "text": "Logs have gaps, dashboards contradict each other, and the user research covers twelve people.", "zh": "日志有缺口，几个看板互相打架，用户调研只覆盖了十二个人。", "sp": null}, {"id": "s0_2_2", "md": "The skill is not finding certainty; it is acting __in proportion to__ the evidence you have.", "text": "The skill is not finding certainty; it is acting in proportion to the evidence you have.", "zh": "真正的本事不是找到确定性；而是根据手上证据的分量去行动。", "sp": null}], [{"id": "s0_3_0", "md": "Before asking for more data, ask what result would actually change the decision.", "text": "Before asking for more data, ask what result would actually change the decision.", "zh": "在要更多数据之前，先问一句：什么样的结果会真正改变这个决定？", "sp": null}, {"id": "s0_3_1", "md": "If no realistic number from the experiment would make you choose differently, the extra two weeks buy you nothing.", "text": "If no realistic number from the experiment would make you choose differently, the extra two weeks buy you nothing.", "zh": "如果实验跑出任何现实的数字都不会让你改选，那多等两周什么都买不到。", "sp": null}, {"id": "s0_3_2", "md": "If one result really would flip the choice, then wait, but agree on the date you will decide.", "text": "If one result really would flip the choice, then wait, but agree on the date you will decide.", "zh": "如果某个结果真的会让你改选，那就等，但要先约好哪天拍板。", "sp": null}]]}, {"heading": "2. Name What Would Change Your Mind", "heading_zh": "2. 说清什么会让你改主意", "rows": [[{"id": "s1_0_0", "md": "When you make a call with partial data, say three things out loud.", "text": "When you make a call with partial data, say three things out loud.", "zh": "当你在数据不全的情况下拍板时，要把三件事说出来。", "sp": null}, {"id": "s1_0_1", "md": "First, what you are deciding and why the current evidence ==leans== that way.", "text": "First, what you are deciding and why the current evidence leans that way.", "zh": "第一，你决定的是什么，以及为什么现有证据倾向于这个方向。", "sp": null}, {"id": "s1_0_2", "md": "Second, what you are still ==uncertain== about, so nobody thinks you are hiding the gaps.", "text": "Second, what you are still uncertain about, so nobody thinks you are hiding the gaps.", "zh": "第二，你还有哪些不确定的地方，免得大家觉得你在藏着缺口。", "sp": null}], [{"id": "s1_1_0", "md": "Third, and most important, name the signal that would make you ==reverse== it.", "text": "Third, and most important, name the signal that would make you reverse it.", "zh": "第三，也是最重要的，说出什么信号会让你推翻这个决定。", "sp": null}, {"id": "s1_1_1", "md": "\"We'll go with the new ranking, and if retention drops in the first week, we'll switch back.\"", "text": "\"We'll go with the new ranking, and if retention drops in the first week, we'll switch back.\"", "zh": "「我们先上新的排序，如果第一周留存掉了，就切回去。」", "sp": null}, {"id": "s1_1_2", "md": "**Naming your exit condition turns a gamble into an experiment.**", "text": "Naming your exit condition turns a gamble into an experiment.", "zh": "把退出条件说出来，赌博就变成了一次实验。", "sp": null}], [{"id": "s1_2_0", "md": "This works because it gives the doubters something concrete to watch instead of something to argue about.", "text": "This works because it gives the doubters something concrete to watch instead of something to argue about.", "zh": "这招管用，是因为它给了持怀疑态度的人一个具体的东西去盯，而不是一个去争论的东西。", "sp": null}, {"id": "s1_2_1", "md": "It also __protects your credibility__.", "text": "It also protects your credibility.", "zh": "它也能保住你的信誉。", "sp": null}, {"id": "s1_2_2", "md": "If the data turns against you, you are following your own plan, not __backing down__ under pressure.", "text": "If the data turns against you, you are following your own plan, not backing down under pressure.", "zh": "如果数据最后对你不利，你是在执行自己的方案，而不是顶不住压力退让。", "sp": null}]]}], "gist": [{"q": "作者为什么说“等等更多数据”并不是中立的？", "a": "等待本身也是决定，有成本：工程师闲置、对手上线、时间窗口关闭，只是没人把这笔账写下来。"}, {"q": "数据不全时做决定，要说出哪三件事？", "a": "决定是什么以及证据为何倾向它；还有哪些不确定；什么信号会让你推翻这个决定。"}, {"q": "说出“退出条件”有什么好处？", "a": "把赌博变成实验，给质疑者一个具体可观察的指标；数据不利时你是在执行原计划，而不是被迫让步，保护了信誉。"}], "dictation": [{"id": "s0_1_2", "text": "Not deciding is also a decision, and it usually has a cost nobody wrote down."}, {"id": "s0_2_2", "text": "The skill is not finding certainty; it is acting in proportion to the evidence you have."}, {"id": "s1_1_2", "text": "Naming your exit condition turns a gamble into an experiment."}, {"id": "s1_2_0", "text": "This works because it gives the doubters something concrete to watch instead of something to argue about."}], "shadow": {"text": "Third, and most important, name the signal that would make you reverse it. \"We'll go with the new ranking, and if retention drops in the first week, we'll switch back.\" Naming your exit condition turns a gamble into an experiment.", "marked": "<b>Third</b>, / and most <b>important</b>, / name the <b>signal</b> / that would make you <b>reverse</b> it. //<br>\"We'll go with the <b>new</b> ranking, / and if <b>retention</b> drops in the first week, / we'll switch <b>back</b>.\" //<br>Naming your <b>exit</b> condition / turns a <b>gamble</b> / into an <b>experiment</b>. //"}, "prompts": [{"q": "A/B 实验还要两周才出完整结果，但下个版本马上要定。用 30 秒做出决定：说明倾向、不确定点和反悔条件。", "ref": "Here's my call: we ship the new onboarding flow in the next release. The early numbers lean that way, completion is up in the first four days, though the sample is still small. What I'm unsure about is whether it hurts long-term retention. So if week-two retention drops more than two points, we switch back to the old flow. That way we're not waiting, and we're not guessing blindly.", "ref_zh": "我的决定是：新的新手引导流程下个版本上线。早期数据倾向于这样做，前四天完成率涨了，不过样本还小。我不确定的是它会不会伤害长期留存。所以如果第二周留存掉超过两个点，我们就切回老流程。这样我们既不干等，也不是瞎猜。", "id": "ref0"}, {"q": "会上有人第三次提议“再等等数据”。用 30 秒指出等待的成本，并推动大家定下来。", "ref": "I get why more data feels safer. But waiting isn't free. Two engineers are blocked until we choose, and the holiday window closes in three weeks. We'll never have complete data here. Can we decide today based on what we have, and agree on one metric that would make us change course? Then the extra data becomes a check, not a reason to wait.", "ref_zh": "我理解多要点数据感觉更稳妥。但等待不是免费的。我们不定下来，两个工程师就一直卡着，节日窗口期三周后就关了。这件事我们永远不会有完整的数据。能不能今天就根据现有的信息拍板，同时约定一个会让我们改方向的指标？这样后面的数据是用来校验的，而不是拿来当等待的理由。", "id": "ref1"}], "words": [{"w": "neutral", "ipa": "/ˈnuːtrəl/", "zh": "中立的、无影响的", "ex": "Delaying the launch isn't a neutral choice; it costs us the campaign.", "id": "w0"}, {"w": "window", "ipa": "/ˈwɪndoʊ/", "zh": "时间窗口、机会期", "ex": "We have a two-week window before the code freeze.", "id": "w1"}, {"w": "contradict", "ipa": "/ˌkɑːntrəˈdɪkt/", "zh": "相互矛盾、反驳", "ex": "The dashboard numbers contradict what the client is reporting.", "id": "w2"}, {"w": "lean (v.)", "ipa": "/liːn/", "zh": "倾向于", "ex": "I'm leaning toward option A, but I'd like to hear from QA.", "tts_w": "lean", "id": "w3"}, {"w": "uncertain", "ipa": "/ʌnˈsɜːrtən/", "zh": "不确定的", "ex": "We're still uncertain whether the vendor can handle our peak load.", "id": "w4"}, {"w": "reverse (v.)", "ipa": "/rɪˈvɜːrs/", "zh": "推翻、撤销", "ex": "If the metrics drop, we'll reverse the change on Monday.", "tts_w": "reverse", "id": "w5"}, {"w": "proportion", "ipa": "/prəˈpɔːrʃən/", "zh": "比例；相称", "ex": "Our testing effort should be in proportion to the risk of the change.", "id": "w6"}, {"w": "gamble", "ipa": "/ˈɡæmbəl/", "zh": "赌博、冒险", "ex": "Rewriting the service right before launch is a big gamble.", "id": "w7"}, {"w": "idle", "ipa": "/ˈaɪdəl/", "zh": "闲置的", "ex": "Half the GPUs were idle overnight while the job waited for data.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Waiting Is Also a Choice", "zh": "1. 等待也是一种选择", "start": 0.0, "end": 2.592, "words": [[0.105, 0.342], [0.816, 1.092], [1.105, 1.224], [1.237, 1.566], [1.579, 1.618], [1.632, 2.197]]}, {"kind": "s", "id": "s0_0_0", "md": "In almost every planning meeting, someone eventually says, \"Let's wait for more data.\"", "zh": "几乎每次规划会上，最后总有人会说：「要不再等等更多数据吧。」", "sp": null, "gap": false, "start": 2.592, "end": 8.256, "words": [[2.697, 2.842], [2.855, 3.276], [3.421, 3.697], [3.71, 4.118], [4.131, 4.513], [4.776, 5.105], [5.118, 5.645], [5.658, 6.158], [6.579, 6.75], [6.763, 7.013], [7.026, 7.171], [7.184, 7.408], [7.421, 7.816]]}, {"kind": "s", "id": "s0_0_1", "md": "Sometimes that is wise.", "zh": "有时候这确实明智。", "sp": null, "gap": false, "start": 8.256, "end": 9.936, "words": [[8.361, 8.769], [8.782, 8.927], [8.94, 9.032], [9.045, 9.545]]}, {"kind": "s", "id": "s0_0_2", "md": "Often it is a polite way to avoid __owning a decision__.", "zh": "但很多时候，这只是一种体面地回避为决定负责的说法。", "sp": null, "gap": false, "start": 9.936, "end": 13.344, "words": [[10.041, 10.383], [10.397, 10.489], [10.502, 10.607], [10.62, 10.686], [10.699, 11.147], [11.16, 11.37], [11.383, 11.554], [11.568, 12.015], [12.107, 12.37], [12.383, 12.423], [12.436, 12.949]]}, {"kind": "s", "id": "s0_1_0", "md": "The problem is that waiting is not ==neutral==.", "zh": "问题在于，等待并不是中性的。", "sp": null, "gap": true, "start": 13.344, "end": 16.032, "words": [[13.462, 13.528], [13.541, 13.962], [13.976, 14.068], [14.081, 14.304], [14.318, 14.712], [14.805, 14.897], [14.91, 15.147], [15.16, 15.633]]}, {"kind": "s", "id": "s0_1_1", "md": "While the team waits two more weeks for experiment results, engineers sit idle, competitors ship, and the ==window== slowly closes.", "zh": "团队再等两周实验结果的时候，工程师闲着，竞品在上线，窗口期一点点关上。", "sp": null, "gap": false, "start": 16.032, "end": 24.432, "words": [[16.15, 16.282], [16.295, 16.387], [16.4, 16.69], [16.703, 17.006], [17.019, 17.256], [17.269, 17.532], [17.545, 17.835], [17.848, 17.979], [17.993, 18.545], [18.558, 19.15], [19.44, 20.032], [20.045, 20.308], [20.321, 20.703], [20.953, 21.558], [21.571, 21.966], [22.295, 22.348], [22.361, 22.453], [22.466, 22.9], [22.914, 23.348], [23.361, 24.045]]}, {"kind": "s", "id": "s0_1_2", "md": "**Not deciding is also a decision, and it usually has a cost nobody wrote down.**", "zh": "不做决定本身也是一种决定，而且它通常有一笔没人记下来的成本。", "sp": null, "gap": false, "start": 24.432, "end": 29.808, "words": [[24.537, 24.721], [24.735, 25.327], [25.445, 25.577], [25.59, 25.958], [25.971, 26.024], [26.037, 26.59], [27.024, 27.077], [27.09, 27.221], [27.235, 27.656], [27.669, 27.827], [27.84, 27.906], [27.919, 28.327], [28.34, 28.761], [28.774, 29.024], [29.037, 29.419]]}, {"kind": "s", "id": "s0_2_0", "md": "Data is rarely complete in real work.", "zh": "实际工作中，数据很少是完整的。", "sp": null, "gap": true, "start": 29.808, "end": 32.76, "words": [[29.926, 30.321], [30.334, 30.505], [30.519, 30.926], [30.94, 31.44], [31.584, 31.729], [31.742, 31.979], [31.992, 32.374]]}, {"kind": "s", "id": "s0_2_1", "md": "Logs have gaps, dashboards ==contradict== each other, and the user research covers twelve people.", "zh": "日志有缺口，几个看板互相打架，用户调研只覆盖了十二个人。", "sp": null, "gap": false, "start": 32.76, "end": 38.904, "words": [[32.865, 33.168], [33.181, 33.352], [33.365, 33.971], [34.221, 34.852], [34.865, 35.471], [35.484, 35.655], [35.668, 35.957], [36.273, 36.326], [36.339, 36.392], [36.405, 36.839], [36.852, 37.352], [37.365, 37.76], [37.773, 38.115], [38.128, 38.523]]}, {"kind": "s", "id": "s0_2_2", "md": "The skill is not finding certainty; it is acting __in proportion to__ the evidence you have.", "zh": "真正的本事不是找到确定性；而是根据手上证据的分量去行动。", "sp": null, "gap": false, "start": 38.904, "end": 44.52, "words": [[39.022, 39.075], [39.088, 39.496], [39.667, 39.799], [39.812, 40.128], [40.141, 40.562], [40.575, 41.167], [41.496, 41.562], [41.575, 41.707], [41.72, 42.101], [42.115, 42.207], [42.22, 42.851], [42.865, 42.983], [42.996, 43.141], [43.207, 43.615], [43.628, 43.72], [43.733, 44.128]]}, {"kind": "s", "id": "s0_3_0", "md": "Before asking for more data, ask what result would actually change the decision.", "zh": "在要更多数据之前，先问一句：什么样的结果会真正改变这个决定？", "sp": null, "gap": true, "start": 44.52, "end": 49.272, "words": [[44.638, 44.941], [44.954, 45.296], [45.309, 45.441], [45.454, 45.638], [45.652, 46.033], [46.481, 46.744], [46.757, 46.915], [46.928, 47.296], [47.309, 47.441], [47.454, 47.888], [47.902, 48.27], [48.283, 48.362], [48.375, 48.875]]}, {"kind": "s", "id": "s0_3_1", "md": "If no realistic number from the experiment would make you choose differently, the extra two weeks buy you nothing.", "zh": "如果实验跑出任何现实的数字都不会让你改选，那多等两周什么都买不到。", "sp": null, "gap": false, "start": 49.272, "end": 55.608, "words": [[49.39, 49.535], [49.548, 49.772], [49.785, 50.377], [50.39, 50.719], [50.733, 50.89], [50.904, 50.956], [50.969, 51.68], [51.693, 51.864], [51.877, 52.075], [52.088, 52.193], [52.206, 52.535], [52.548, 53.075], [53.404, 53.496], [53.509, 53.877], [53.89, 54.167], [54.18, 54.548], [54.561, 54.68], [54.693, 54.811], [54.825, 55.219]]}, {"kind": "s", "id": "s0_3_2", "md": "If one result really would flip the choice, then wait, but agree on the date you will decide.", "zh": "如果某个结果真的会让你改选，那就等，但要先约好哪天拍板。", "sp": null, "gap": false, "start": 55.608, "end": 61.32, "words": [[55.713, 55.858], [55.871, 56.082], [56.095, 56.529], [56.542, 56.805], [56.819, 57.003], [57.016, 57.305], [57.319, 57.411], [57.424, 58.016], [58.253, 58.424], [58.437, 58.805], [59.134, 59.266], [59.279, 59.674], [59.687, 59.779], [59.792, 59.897], [59.911, 60.161], [60.174, 60.266], [60.279, 60.384], [60.397, 60.937]]}, {"kind": "h", "id": "h1", "md": "2. Name What Would Change Your Mind", "zh": "2. 说清什么会让你改主意", "start": 61.32, "end": 63.792, "words": [[61.438, 61.688], [62.123, 62.281], [62.294, 62.399], [62.412, 62.544], [62.557, 62.886], [62.899, 62.991], [63.004, 63.412]]}, {"kind": "s", "id": "s1_0_0", "md": "When you make a call with partial data, say three things out loud.", "zh": "当你在数据不全的情况下拍板时，要把三件事说出来。", "sp": null, "gap": false, "start": 63.792, "end": 67.704, "words": [[63.897, 63.989], [64.003, 64.068], [64.081, 64.266], [64.279, 64.331], [64.345, 64.621], [64.634, 64.766], [64.779, 65.16], [65.174, 65.463], [65.845, 66.108], [66.121, 66.463], [66.476, 66.779], [66.792, 66.963], [66.976, 67.318]]}, {"kind": "s", "id": "s1_0_1", "md": "First, what you are deciding and why the current evidence ==leans== that way.", "zh": "第一，你决定的是什么，以及为什么现有证据倾向于这个方向。", "sp": null, "gap": false, "start": 67.704, "end": 72.048, "words": [[67.875, 68.283], [68.533, 68.665], [68.678, 68.757], [68.77, 68.849], [68.862, 69.467], [69.599, 69.717], [69.73, 69.954], [69.967, 70.072], [70.086, 70.415], [70.493, 70.901], [70.915, 71.191], [71.204, 71.388], [71.401, 71.665]]}, {"kind": "s", "id": "s1_0_2", "md": "Second, what you are still ==uncertain== about, so nobody thinks you are hiding the gaps.", "zh": "第二，你还有哪些不确定的地方，免得大家觉得你在藏着缺口。", "sp": null, "gap": false, "start": 72.048, "end": 77.256, "words": [[72.166, 72.561], [72.956, 73.074], [73.087, 73.193], [73.206, 73.298], [73.311, 73.587], [73.601, 74.101], [74.114, 74.469], [74.772, 74.903], [74.916, 75.311], [75.324, 75.653], [75.666, 75.745], [75.759, 75.851], [75.864, 76.206], [76.219, 76.285], [76.298, 76.864]]}, {"kind": "s", "id": "s1_1_0", "md": "Third, and most important, name the signal that would make you ==reverse== it.", "zh": "第三，也是最重要的，说出什么信号会让你推翻这个决定。", "sp": null, "gap": true, "start": 77.256, "end": 81.912, "words": [[77.414, 77.861], [78.177, 78.269], [78.282, 78.545], [78.559, 79.072], [79.467, 79.677], [79.69, 79.795], [79.809, 80.282], [80.295, 80.414], [80.427, 80.559], [80.572, 80.769], [80.782, 80.888], [80.901, 81.296], [81.309, 81.519]]}, {"kind": "s", "id": "s1_1_1", "md": "\"We'll go with the new ranking, and if retention drops in the first week, we'll switch back.\"", "zh": "「我们先上新的排序，如果第一周留存掉了，就切回去。」", "sp": null, "gap": false, "start": 81.912, "end": 87.504, "words": [[82.096, 82.109], [82.188, 82.346], [82.359, 82.491], [82.504, 82.583], [82.596, 82.833], [82.846, 83.346], [83.649, 83.741], [83.754, 83.873], [83.886, 84.412], [84.425, 84.82], [84.833, 84.899], [84.912, 84.978], [84.991, 85.399], [85.412, 85.754], [86.044, 86.162], [86.175, 86.491], [86.504, 86.991]]}, {"kind": "s", "id": "s1_1_2", "md": "**Naming your exit condition turns a gamble into an experiment.**", "zh": "把退出条件说出来，赌博就变成了一次实验。", "sp": null, "gap": false, "start": 87.504, "end": 91.752, "words": [[87.609, 87.925], [87.938, 88.162], [88.175, 88.478], [88.491, 89.03], [89.109, 89.451], [89.465, 89.543], [89.557, 90.122], [90.241, 90.517], [90.53, 90.609], [90.622, 91.359]]}, {"kind": "s", "id": "s1_2_0", "md": "This works because it gives the doubters something concrete to watch instead of something to argue about.", "zh": "这招管用，是因为它给了持怀疑态度的人一个具体的东西去盯，而不是一个去争论的东西。", "sp": null, "gap": true, "start": 91.752, "end": 97.56, "words": [[91.87, 92.041], [92.055, 92.397], [92.41, 92.712], [92.726, 92.844], [92.857, 93.134], [93.147, 93.278], [93.291, 93.739], [93.752, 94.094], [94.107, 94.673], [94.686, 94.791], [94.805, 95.291], [95.384, 95.765], [95.778, 95.857], [95.87, 96.226], [96.239, 96.344], [96.357, 96.739], [96.752, 97.173]]}, {"kind": "s", "id": "s1_2_1", "md": "It also __protects your credibility__.", "zh": "它也能保住你的信誉。", "sp": null, "gap": false, "start": 97.56, "end": 99.768, "words": [[97.665, 97.744], [97.757, 98.021], [98.034, 98.547], [98.56, 98.665], [98.678, 99.376]]}, {"kind": "s", "id": "s1_2_2", "md": "If the data turns against you, you are following your own plan, not __backing down__ under pressure.", "zh": "如果数据最后对你不利，你是在执行自己的方案，而不是顶不住压力退让。", "sp": null, "gap": false, "start": 99.768, "end": 105.768, "words": [[99.873, 99.992], [100.005, 100.097], [100.11, 100.479], [100.492, 100.821], [100.834, 101.229], [101.242, 101.413], [101.913, 101.979], [101.992, 102.084], [102.097, 102.584], [102.597, 102.768], [102.781, 102.952], [102.965, 103.426], [103.847, 104.044], [104.057, 104.426], [104.439, 104.715], [104.729, 104.886], [104.9, 105.386]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

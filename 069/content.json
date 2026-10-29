@@ -1,0 +1,186 @@
+{
+  "id": "069",
+  "title": "Telling Customers What Went Wrong",
+  "meta": "B2 · 约 270 词 · 场景：对外故障说明",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. What Customers Actually Want",
+      "paragraphs": [
+        [
+          "After a serious outage, the hardest message to write is the one that goes to customers.",
+          "The ==temptation== is to say as little as possible.",
+          "Phrases like \"some users may have experienced issues\" feel safe to legal teams and frustrating to everyone else."
+        ],
+        [
+          "Customers rarely expect a system that never fails.",
+          "What they expect is honesty about what happened and confidence that it won't happen the same way again.",
+          "**People forgive an outage much faster than they forgive feeling misled.**"
+        ],
+        [
+          "==Evasive== language also creates more work, not less.",
+          "Support teams get flooded with tickets asking the exact questions your message ==dodged==.",
+          "Every vague sentence you save in the statement comes back as fifty angry emails."
+        ]
+      ],
+      "heading_zh": "1. 客户真正想要什么",
+      "paragraphs_zh": [
+        [
+          "一次严重故障之后，最难写的就是发给客户的那封信。",
+          "最大的诱惑是能少说就少说。",
+          "像「部分用户可能遇到了问题」这种说法，法务觉得稳妥，其他人看了只会窝火。"
+        ],
+        [
+          "客户很少指望系统永远不出问题。",
+          "他们期待的是你坦诚说明发生了什么，并且相信同样的事不会再以同样的方式发生。",
+          "人们原谅一次故障，比原谅被糊弄的感觉要快得多。"
+        ],
+        [
+          "闪烁其词的措辞也只会带来更多工作，而不是更少。",
+          "客服会被工单淹没，问的恰恰是你那封信回避掉的问题。",
+          "声明里你每省掉一句含糊话，最后都会变成五十封愤怒的邮件找回来。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Own It, Explain It, Fix It",
+      "paragraphs": [
+        [
+          "Start by __taking ownership__ in the first sentence.",
+          "\"Yesterday, between two and four in the afternoon, many of you could not log in, and that was our fault.\"",
+          "Active voice and a clear time window show that you are not hiding."
+        ],
+        [
+          "Then explain the cause in plain language, without internal jargon.",
+          "\"A configuration change sent all login traffic to a single server, which became ==overloaded==.\"",
+          "Customers do not need the full technical story, but they need enough to believe you understand it."
+        ],
+        [
+          "Finally, list what you have already changed, not just what you will ==investigate==.",
+          "Concrete steps, like extra checks before every configuration change, are far more ==reassuring== than promises to __do better__.",
+          "**An apology without a specific change is just a nicer way of saying nothing.**"
+        ],
+        [
+          "Send the message within a day, while customers are still paying attention.",
+          "A perfect explanation two weeks later reads like an afterthought, even if every detail in it is right."
+        ]
+      ],
+      "heading_zh": "2. 认下来、讲清楚、改到位",
+      "paragraphs_zh": [
+        [
+          "第一句话就把责任认下来。",
+          "「昨天下午两点到四点，很多用户无法登录，这是我们的责任。」",
+          "用主动语态，加上清晰的时间窗口，表明你没有在藏着掖着。"
+        ],
+        [
+          "然后用大白话解释原因，不要用内部黑话。",
+          "「一次配置变更把所有登录流量都打到了一台服务器上，导致它过载。」",
+          "客户不需要完整的技术细节，但需要足够的信息来相信你搞明白了。"
+        ],
+        [
+          "最后，列出你已经改了什么，而不只是你打算调查什么。",
+          "具体的措施，比如每次配置变更前增加检查，比承诺「我们会做得更好」让人安心得多。",
+          "没有具体改动的道歉，只是一种更好听的什么都没说。"
+        ],
+        [
+          "一天之内把信发出去，趁客户还在关注。",
+          "两周后才发一份完美的解释，读起来就像事后补的，哪怕里面每个细节都是对的。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "写给客户的故障说明，常见的诱惑是什么？为什么不好？",
+      "a": "尽量少说、用含糊措辞；客户会觉得被误导，客服还会被追问同样问题的工单淹没。"
+    },
+    {
+      "q": "客户真正想从故障说明里得到什么？",
+      "a": "诚实说明发生了什么，并相信同样的问题不会以同样方式再发生。"
+    },
+    {
+      "q": "一份好的说明包含哪三步？",
+      "a": "第一句就承担责任（主动语态+明确时间段）；用大白话解释原因；列出已经做出的具体改变，而不只是承诺调查。"
+    }
+  ],
+  "dictation": [
+    "People forgive an outage much faster than they forgive feeling misled.",
+    "Active voice and a clear time window show that you are not hiding.",
+    "Customers do not need the full technical story, but they need enough to believe you understand it.",
+    "An apology without a specific change is just a nicer way of saying nothing."
+  ],
+  "shadow": {
+    "text": "Customers rarely expect a system that never fails. What they expect is honesty about what happened and confidence that it won't happen the same way again. People forgive an outage much faster than they forgive feeling misled.",
+    "marked": "Customers <b>rarely</b> expect a system / that <b>never</b> fails. //<br>What they <b>expect</b> / is <b>honesty</b> about what happened / and <b>confidence</b> / that it won't happen the <b>same</b> way again. //<br>People <b>forgive</b> an outage / much <b>faster</b> / than they forgive feeling <b>misled</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "昨天的同步故障影响了一个大客户。你和对方负责人开电话会，用 30 秒说明发生了什么、原因和已做的改变。",
+      "ref": "Thanks for making time. I want to be direct: yesterday, from nine to eleven in the morning, your team's files didn't sync, and that was our fault. A database upgrade on our side slowed every write request until they timed out. We've already rolled it back, and we've added a load test that every upgrade must pass first. I'm sorry for the disruption to your team.",
+      "ref_zh": "谢谢您抽时间。我直说吧：昨天上午九点到十一点，贵团队的文件没有同步，这是我们的责任。我们这边的一次数据库升级拖慢了所有写请求，直到超时。我们已经回滚了，并且加了一项压测，以后每次升级都必须先通过。给您团队带来的影响，我很抱歉。"
+    },
+    {
+      "q": "法务给的对外声明草稿写着“部分用户可能遇到了问题”。用 30 秒说服他们改得更直接。",
+      "ref": "I understand why the draft is careful, and I don't want us to admit anything we can't support. But 'some users may have experienced issues' will make customers angrier, because they know exactly what happened to them. If we state the time window and say clearly that it was our configuration error, support gets fewer tickets, and we look honest. Can we review a more direct version together?",
+      "ref_zh": "我理解这份草稿为什么写得这么谨慎，我也不希望我们承认任何站不住的东西。但「部分用户可能遇到了问题」只会让客户更生气，因为他们很清楚自己遇到了什么。如果我们写明时间窗口，并清楚说明是我们的配置错误，客服工单会更少，我们也显得坦诚。我们能一起过一下一个更直接的版本吗？"
+    }
+  ],
+  "words": [
+    {
+      "w": "temptation",
+      "ipa": "/tempˈteɪʃən/",
+      "zh": "诱惑、冲动",
+      "ex": "There's a temptation to blame the cloud provider, but the bug was ours."
+    },
+    {
+      "w": "evasive",
+      "ipa": "/ɪˈveɪsɪv/",
+      "zh": "含糊其辞的、回避的",
+      "ex": "The vendor gave an evasive answer about their uptime last quarter."
+    },
+    {
+      "w": "dodge (v.)",
+      "ipa": "/dɑːdʒ/",
+      "zh": "回避、躲开（问题）",
+      "ex": "He dodged the question about the delay and talked about new features.",
+      "tts_w": "dodge"
+    },
+    {
+      "w": "overloaded",
+      "ipa": "/ˌoʊvərˈloʊdɪd/",
+      "zh": "过载的",
+      "ex": "The search cluster got overloaded when the campaign went live."
+    },
+    {
+      "w": "investigate",
+      "ipa": "/ɪnˈvestɪˌɡeɪt/",
+      "zh": "调查、排查",
+      "ex": "We're still investigating why only Android users were affected."
+    },
+    {
+      "w": "reassuring",
+      "ipa": "/ˌriːəˈʃʊrɪŋ/",
+      "zh": "令人安心的",
+      "ex": "It was reassuring to see the error rate drop right after the fix."
+    },
+    {
+      "w": "jargon",
+      "ipa": "/ˈdʒɑːrɡən/",
+      "zh": "行话、术语",
+      "ex": "Please cut the jargon before this goes to the customer."
+    },
+    {
+      "w": "ownership",
+      "ipa": "/ˈoʊnərˌʃɪp/",
+      "zh": "担当、主人翁意识",
+      "ex": "I like how she took ownership of the incident review."
+    },
+    {
+      "w": "mislead",
+      "ipa": "/mɪsˈliːd/",
+      "zh": "误导",
+      "ex": "That chart could mislead people because the axis doesn't start at zero."
+    }
+  ]
+}

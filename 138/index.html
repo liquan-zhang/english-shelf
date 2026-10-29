@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Chatting with Other Parents at the Playground · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "138", "type": "dialogue", "title": "Chatting with Other Parents at the Playground", "meta": "B2 · 约 240 词 · 场景：游乐场搭话与约玩", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Other Parent", "name_zh": "另一位家长", "voice": "en-GB-RyanNeural"}}, "gist": [{"q": "两位家长互相介绍了哪些信息？", "a": "Mia 三岁半，住对面公寓，两个月前从上海搬来；Oliver 刚满四岁，在社区中心旁的幼儿园上学。"}, {"q": "两个孩子发生了什么？大人怎么处理的？", "a": "两人抢同一辆滑板车；「你」让 Mia 好好问、轮流玩，对方让 Oliver 先给她玩几分钟。"}, {"q": "最后约了什么？", "a": "周日上午十点来「你」家玩，天气好可以去公寓泳池；两人交换了电话，「你」用 WhatsApp 发地址。"}], "dictation": [{"id": "s0_1_0", "text": "Yes, that's Mia. She's three and a half. Which one is yours?"}, {"id": "s0_7_0", "text": "Not yet. Is that one any good? I've heard mixed reviews."}, {"id": "s1_3_0", "text": "Sorry about that. She's still learning to share."}, {"id": "s1_5_0", "text": "They seem to get along, though. Would you be up for a playdate sometime? Maybe at our place on the weekend?"}], "shadow": {"speaker": "A", "text": "From Shanghai. We're still settling in. Does Oliver go to school nearby?", "marked": "From <b>Shanghai</b>. //<br>We're still <b>settling in</b>. //<br>Does <b>Oliver</b> / go to school <b>nearby</b>? //"}, "prompts": [{"q": "在电梯里遇到一位常见面的家长，孩子年龄相仿。主动搭话，并问问附近有什么适合孩子的地方。", "ref": "Hi, I think I see you at the playground most evenings. Your daughter must be about the same age as my son, around three? We're fairly new here, so I'm still looking for things to do with him on weekends. Are there any good indoor playgrounds or kids' classes nearby that you'd recommend?", "ref_zh": "你好，我好像傍晚经常在游乐场看到你。你女儿应该跟我儿子差不多大，三岁左右吧？我们刚搬来不久，还在找周末能带他去玩的地方。附近有没有什么好的室内游乐场或者儿童课程可以推荐？", "id": "ref0"}, {"q": "约好的周日玩耍，孩子早上发烧了。给对方家长发语音，取消并改约。", "ref": "Hi, it's Mia's dad. I'm really sorry, but Mia woke up with a fever this morning, so we'll have to cancel today. I don't want Oliver to catch anything. She was really looking forward to it, though. Could we do next Sunday instead, same time? Let me know what works for you. Sorry again.", "ref_zh": "你好，我是 Mia 的爸爸。真不好意思，Mia 今早起来发烧了，今天只能取消了，不想让 Oliver 被传染。不过她本来特别期待。下周日同一时间可以吗？看你们什么时候方便。再次抱歉。", "id": "ref1"}], "words": [{"w": "condo", "ipa": "/ˈkɑːndoʊ/", "zh": "（私人）公寓", "ex": "Our condo has a pool and a small gym.", "id": "w0"}, {"w": "neighbourhood", "ipa": "/ˈneɪbərhʊd/", "zh": "街区；附近一带", "ex": "It's a quiet neighbourhood with lots of families.", "id": "w1"}, {"w": "settle in", "ipa": "/ˈsetəl ɪn/", "zh": "安顿下来；适应", "ex": "It took us a few months to settle in after the move.", "id": "w2"}, {"w": "review", "ipa": "/rɪˈvjuː/", "zh": "评价", "ex": "The restaurant has great reviews on Google.", "id": "w3"}, {"w": "waiting list", "ipa": "/ˈweɪtɪŋ lɪst/", "zh": "候补名单", "ex": "Can you put my name on the waiting list?", "id": "w4"}, {"w": "take turns", "ipa": "/teɪk tɜːrnz/", "zh": "轮流", "ex": "You two need to take turns on the swing.", "id": "w5"}, {"w": "share", "ipa": "/ʃer/", "zh": "分享", "ex": "Can you share your crayons with your brother?", "id": "w6"}, {"w": "squabble", "ipa": "/ˈskwɑːbəl/", "zh": "（小事）争吵", "ex": "The kids had a squabble over the last cookie.", "id": "w7"}, {"w": "swap", "ipa": "/swɑːp/", "zh": "交换", "ex": "Let's swap seats so you can see the screen.", "id": "w8"}, {"w": "playdate", "ipa": "/ˈpleɪdeɪt/", "zh": "（家长约的）孩子一起玩", "ex": "We arranged a playdate at the park on Saturday.", "id": "w9"}], "sections": [{"heading": "1. Breaking the Ice", "heading_zh": "1. 打开话题", "rows": [[{"id": "s0_0_0", "md": "Is that your little one on the slide? She's fearless!", "text": "Is that your little one on the slide? She's fearless!", "zh": "滑梯上那个是你家的吗？她胆子真大！", "sp": "B"}], [{"id": "s0_1_0", "md": "**Yes, that's Mia. She's three and a half. Which one is yours?**", "text": "Yes, that's Mia. She's three and a half. Which one is yours?", "zh": "是的，那是 Mia，三岁半。哪个是你家的？", "sp": "A"}], [{"id": "s0_2_0", "md": "The boy in the blue hat, Oliver. He just turned four. Do you live around here?", "text": "The boy in the blue hat, Oliver. He just turned four. Do you live around here?", "zh": "戴蓝帽子那个男孩，叫 Oliver，刚满四岁。你住这附近吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "Yes, in the ==condo== just across the road. We moved in two months ago.", "text": "Yes, in the condo just across the road. We moved in two months ago.", "zh": "对，就住马路对面那个公寓，两个月前搬进来的。", "sp": "A"}], [{"id": "s0_4_0", "md": "Oh nice, welcome to the ==neighbourhood==. Where did you move from?", "text": "Oh nice, welcome to the neighbourhood. Where did you move from?", "zh": "不错啊，欢迎来到这一片。你们从哪儿搬来的？", "sp": "B"}], [{"id": "s0_5_0", "md": "From Shanghai. We're still __settling in__. Does Oliver go to school nearby?", "text": "From Shanghai. We're still settling in. Does Oliver go to school nearby?", "zh": "从上海。我们还在适应中。Oliver 在附近上学吗？", "sp": "A"}], [{"id": "s0_6_0", "md": "Yes, he's at the preschool next to the community centre. Have you found one yet?", "text": "Yes, he's at the preschool next to the community centre. Have you found one yet?", "zh": "对，在社区中心旁边那家幼儿园。你们找到幼儿园了吗？", "sp": "B"}], [{"id": "s0_7_0", "md": "Not yet. Is that one any good? I've heard mixed ==reviews==.", "text": "Not yet. Is that one any good? I've heard mixed reviews.", "zh": "还没有。那家好吗？我听到的评价有好有坏。", "sp": "A"}], [{"id": "s0_8_0", "md": "We've been happy with it. The teachers are lovely, though the ==waiting list== is long.", "text": "We've been happy with it. The teachers are lovely, though the waiting list is long.", "zh": "我们挺满意的。老师都很好，不过候补名单很长。", "sp": "B"}]]}, {"heading": "2. A Squabble and a Playdate", "heading_zh": "2. 小争执和约玩", "rows": [[{"id": "s1_0_0", "md": "Uh oh. Looks like they both want the same scooter.", "text": "Uh oh. Looks like they both want the same scooter.", "zh": "哎呀，看来他俩都想要同一辆滑板车。", "sp": "B"}], [{"id": "s1_1_0", "md": "Mia, sweetheart, that's Oliver's scooter. Can you ask nicely and __take turns__?", "text": "Mia, sweetheart, that's Oliver's scooter. Can you ask nicely and take turns?", "zh": "Mia，宝贝，那是 Oliver 的滑板车。你好好问一下，轮流玩好不好？", "sp": "A"}], [{"id": "s1_2_0", "md": "Oliver, let her __have a go__ for a few minutes, then it's your turn again.", "text": "Oliver, let her have a go for a few minutes, then it's your turn again.", "zh": "Oliver，让她玩几分钟，然后再轮到你。", "sp": "B"}], [{"id": "s1_3_0", "md": "Sorry about that. She's still learning to ==share==.", "text": "Sorry about that. She's still learning to share.", "zh": "不好意思。她还在学怎么分享。", "sp": "A"}], [{"id": "s1_4_0", "md": "No worries, Oliver's exactly the same. Little ==squabbles== like this happen every day.", "text": "No worries, Oliver's exactly the same. Little squabbles like this happen every day.", "zh": "没事，Oliver 也一样。这种小争执每天都有。", "sp": "B"}], [{"id": "s1_5_0", "md": "**They seem to get along, though. Would you be up for a playdate sometime? Maybe at our place on the weekend?**", "text": "They seem to get along, though. Would you be up for a playdate sometime? Maybe at our place on the weekend?", "zh": "不过他俩好像挺合得来。哪天约着一起玩怎么样？周末来我们家？", "sp": "A"}], [{"id": "s1_6_0", "md": "That would be great. Saturdays are busy with swimming, but Sunday morning could work.", "text": "That would be great. Saturdays are busy with swimming, but Sunday morning could work.", "zh": "那太好了。周六要上游泳课，但周日上午可以。", "sp": "B"}], [{"id": "s1_7_0", "md": "How about Sunday at ten? There's a pool in our condo, __if the weather holds__.", "text": "How about Sunday at ten? There's a pool in our condo, if the weather holds.", "zh": "周日十点怎么样？我们公寓有泳池，天气好的话可以去玩。", "sp": "A"}], [{"id": "s1_8_0", "md": "Sunday at ten sounds perfect. Shall we ==swap== numbers?", "text": "Sunday at ten sounds perfect. Shall we swap numbers?", "zh": "周日十点很好。我们交换一下电话吧？", "sp": "B"}], [{"id": "s1_9_0", "md": "**Sure. I'll WhatsApp you our address. It was really nice meeting you.**", "text": "Sure. I'll WhatsApp you our address. It was really nice meeting you.", "zh": "好的，我用 WhatsApp 把地址发给你。很高兴认识你。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Breaking the Ice", "zh": "1. 打开话题", "start": 0.0, "end": 1.872, "words": [[0.105, 0.329], [0.355, 0.737], [0.75, 0.868], [0.882, 1.408]]}, {"kind": "s", "id": "s0_0_0", "md": "Is that your little one on the slide? She's fearless!", "zh": "滑梯上那个是你家的吗？她胆子真大！", "sp": "B", "gap": false, "start": 1.872, "end": 6.768, "words": [[1.972, 2.143], [2.156, 2.34], [2.354, 2.433], [2.446, 2.775], [2.788, 2.972], [2.985, 3.077], [3.09, 3.156], [3.169, 3.827], [4.738, 5.08], [5.093, 5.856]]}, {"kind": "s", "id": "s0_1_0", "md": "**Yes, that's Mia. She's three and a half. Which one is yours?**", "zh": "是的，那是 Mia，三岁半。哪个是你家的？", "sp": "A", "gap": false, "start": 6.768, "end": 11.4, "words": [[6.873, 7.228], [7.321, 7.544], [7.557, 7.86], [8.307, 8.557], [8.571, 8.952], [9.044, 9.123], [9.136, 9.176], [9.189, 9.636], [10.084, 10.202], [10.215, 10.386], [10.4, 10.518], [10.531, 11.018]]}, {"kind": "s", "id": "s0_2_0", "md": "The boy in the blue hat, Oliver. He just turned four. Do you live around here?", "zh": "戴蓝帽子那个男孩，叫 Oliver，刚满四岁。你住这附近吗？", "sp": "B", "gap": false, "start": 11.4, "end": 18.768, "words": [[11.5, 11.684], [11.697, 11.974], [11.987, 12.105], [12.118, 12.211], [12.224, 12.513], [12.526, 12.921], [13.118, 13.566], [14.476, 14.7], [14.713, 14.95], [14.963, 15.253], [15.266, 15.687], [16.595, 16.739], [16.753, 16.871], [16.884, 17.029], [17.042, 17.411], [17.424, 17.845]]}, {"kind": "s", "id": "s0_3_0", "md": "Yes, in the ==condo== just across the road. We moved in two months ago.", "zh": "对，就住马路对面那个公寓，两个月前搬进来的。", "sp": "A", "gap": false, "start": 18.768, "end": 23.52, "words": [[18.873, 19.321], [19.571, 19.663], [19.676, 19.755], [19.768, 20.242], [20.255, 20.518], [20.531, 20.926], [20.939, 21.018], [21.031, 21.373], [21.807, 21.9], [21.913, 22.215], [22.229, 22.334], [22.347, 22.544], [22.557, 22.821], [22.834, 23.136]]}, {"kind": "s", "id": "s0_4_0", "md": "Oh nice, welcome to the ==neighbourhood==. Where did you move from?", "zh": "不错啊，欢迎来到这一片。你们从哪儿搬来的？", "sp": "B", "gap": false, "start": 23.52, "end": 28.68, "words": [[23.62, 23.831], [23.844, 24.33], [24.475, 24.831], [24.844, 24.936], [24.949, 25.028], [25.041, 25.712], [26.623, 26.846], [26.859, 26.991], [27.004, 27.109], [27.123, 27.373], [27.386, 27.754]]}, {"kind": "s", "id": "s0_5_0", "md": "From Shanghai. We're still __settling in__. Does Oliver go to school nearby?", "zh": "从上海。我们还在适应中。Oliver 在附近上学吗？", "sp": "A", "gap": false, "start": 28.68, "end": 33.432, "words": [[28.798, 28.904], [28.917, 29.469], [29.904, 29.996], [30.009, 30.272], [30.285, 30.746], [30.759, 31.009], [31.456, 31.641], [31.654, 31.996], [32.009, 32.141], [32.154, 32.233], [32.246, 32.535], [32.548, 33.035]]}, {"kind": "s", "id": "s0_6_0", "md": "Yes, he's at the preschool next to the community centre. Have you found one yet?", "zh": "对，在社区中心旁边那家幼儿园。你们找到幼儿园了吗？", "sp": "B", "gap": false, "start": 33.432, "end": 39.864, "words": [[33.532, 33.993], [34.243, 34.414], [34.427, 34.493], [34.506, 34.598], [34.611, 35.137], [35.15, 35.453], [35.466, 35.532], [35.545, 35.624], [35.637, 36.177], [36.19, 36.69], [37.6, 37.798], [37.811, 37.89], [37.903, 38.219], [38.232, 38.443], [38.456, 38.942]]}, {"kind": "s", "id": "s0_7_0", "md": "Not yet. Is that one any good? I've heard mixed ==reviews==.", "zh": "还没有。那家好吗？我听到的评价有好有坏。", "sp": "A", "gap": false, "start": 39.864, "end": 43.776, "words": [[39.969, 40.14], [40.153, 40.456], [40.89, 40.982], [40.996, 41.14], [41.153, 41.285], [41.298, 41.443], [41.456, 41.732], [42.167, 42.311], [42.325, 42.548], [42.561, 42.798], [42.811, 43.377]]}, {"kind": "s", "id": "s0_8_0", "md": "We've been happy with it. The teachers are lovely, though the ==waiting list== is long.", "zh": "我们挺满意的。老师都很好，不过候补名单很长。", "sp": "B", "gap": false, "start": 43.776, "end": 49.848, "words": [[43.876, 44.087], [44.1, 44.231], [44.244, 44.56], [44.573, 44.744], [44.758, 45.008], [45.918, 46.089], [46.102, 46.51], [46.523, 46.602], [46.615, 47.155], [47.352, 47.458], [47.471, 47.563], [47.576, 47.984], [47.997, 48.273], [48.287, 48.431], [48.444, 48.931]]}, {"kind": "h", "id": "h1", "md": "2. A Squabble and a Playdate", "zh": "2. 小争执和约玩", "start": 49.848, "end": 52.224, "words": [[49.966, 50.23], [50.532, 50.585], [50.598, 51.137], [51.151, 51.23], [51.243, 51.282], [51.295, 51.835]]}, {"kind": "s", "id": "s1_0_0", "md": "Uh oh. Looks like they both want the same scooter.", "zh": "哎呀，看来他俩都想要同一辆滑板车。", "sp": "B", "gap": false, "start": 52.224, "end": 56.856, "words": [[52.324, 52.495], [52.508, 52.863], [53.774, 54.103], [54.116, 54.3], [54.313, 54.406], [54.419, 54.735], [54.748, 54.971], [54.985, 55.063], [55.077, 55.353], [55.366, 55.945]]}, {"kind": "s", "id": "s1_1_0", "md": "Mia, sweetheart, that's Oliver's scooter. Can you ask nicely and __take turns__?", "zh": "Mia，宝贝，那是 Oliver 的滑板车。你好好问一下，轮流玩好不好？", "sp": "A", "gap": false, "start": 56.856, "end": 62.28, "words": [[56.961, 57.29], [57.593, 58.185], [58.474, 58.685], [58.698, 59.119], [59.132, 59.593], [60.027, 60.132], [60.145, 60.251], [60.264, 60.553], [60.567, 61.014], [61.093, 61.172], [61.185, 61.422], [61.435, 61.895]]}, {"kind": "s", "id": "s1_2_0", "md": "Oliver, let her __have a go__ for a few minutes, then it's your turn again.", "zh": "Oliver，让她玩几分钟，然后再轮到你。", "sp": "B", "gap": false, "start": 62.28, "end": 67.08, "words": [[62.38, 62.841], [63.091, 63.209], [63.222, 63.327], [63.341, 63.512], [63.525, 63.577], [63.591, 63.814], [63.827, 63.985], [63.998, 64.064], [64.077, 64.327], [64.341, 64.762], [64.972, 65.104], [65.117, 65.235], [65.248, 65.393], [65.406, 65.722], [65.735, 66.169]]}, {"kind": "s", "id": "s1_3_0", "md": "Sorry about that. She's still learning to ==share==.", "zh": "不好意思。她还在学怎么分享。", "sp": "A", "gap": false, "start": 67.08, "end": 70.128, "words": [[67.185, 67.435], [67.448, 67.698], [67.712, 68.001], [68.448, 68.646], [68.659, 68.909], [68.922, 69.198], [69.212, 69.277], [69.291, 69.725]]}, {"kind": "s", "id": "s1_4_0", "md": "No worries, Oliver's exactly the same. Little ==squabbles== like this happen every day.", "zh": "没事，Oliver 也一样。这种小争执每天都有。", "sp": "B", "gap": false, "start": 70.128, "end": 76.896, "words": [[70.228, 70.504], [70.517, 71.083], [71.267, 71.61], [71.623, 72.123], [72.136, 72.228], [72.241, 72.715], [73.625, 74.007], [74.02, 74.52], [74.533, 74.731], [74.744, 74.928], [74.941, 75.283], [75.296, 75.546], [75.56, 75.967]]}, {"kind": "s", "id": "s1_5_0", "md": "**They seem to get along, though. Would you be up for a playdate sometime? Maybe at our place on the weekend?**", "zh": "不过他俩好像挺合得来。哪天约着一起玩怎么样？周末来我们家？", "sp": "A", "gap": false, "start": 76.896, "end": 82.32, "words": [[77.014, 77.08], [77.093, 77.291], [77.304, 77.37], [77.383, 77.514], [77.528, 77.883], [77.909, 78.146], [78.58, 78.699], [78.712, 78.791], [78.804, 78.962], [78.975, 79.08], [79.093, 79.225], [79.238, 79.278], [79.291, 79.633], [79.646, 80.12], [80.554, 80.817], [80.83, 80.909], [80.922, 81.014], [81.028, 81.33], [81.343, 81.422], [81.435, 81.514], [81.528, 81.935]]}, {"kind": "s", "id": "s1_6_0", "md": "That would be great. Saturdays are busy with swimming, but Sunday morning could work.", "zh": "那太好了。周六要上游泳课，但周日上午可以。", "sp": "B", "gap": false, "start": 82.32, "end": 88.968, "words": [[82.42, 82.67], [82.683, 82.788], [82.802, 82.907], [82.92, 83.459], [84.37, 85.054], [85.067, 85.186], [85.199, 85.554], [85.567, 85.725], [85.738, 86.173], [86.383, 86.528], [86.541, 86.949], [86.962, 87.37], [87.383, 87.581], [87.594, 88.054]]}, {"kind": "s", "id": "s1_7_0", "md": "How about Sunday at ten? There's a pool in our condo, __if the weather holds__.", "zh": "周日十点怎么样？我们公寓有泳池，天气好的话可以去玩。", "sp": "A", "gap": false, "start": 88.968, "end": 93.624, "words": [[89.086, 89.179], [89.192, 89.402], [89.415, 89.771], [89.784, 89.889], [89.902, 90.244], [90.692, 90.836], [90.85, 90.915], [90.929, 91.244], [91.257, 91.336], [91.35, 91.481], [91.494, 92.007], [92.244, 92.336], [92.35, 92.429], [92.442, 92.705], [92.718, 93.244]]}, {"kind": "s", "id": "s1_8_0", "md": "Sunday at ten sounds perfect. Shall we ==swap== numbers?", "zh": "周日十点很好。我们交换一下电话吧？", "sp": "B", "gap": false, "start": 93.624, "end": 99.024, "words": [[93.724, 94.29], [94.303, 94.5], [94.513, 94.79], [94.803, 95.211], [95.224, 95.869], [96.779, 97.082], [97.095, 97.2], [97.213, 97.503], [97.516, 98.095]]}, {"kind": "s", "id": "s1_9_0", "md": "**Sure. I'll WhatsApp you our address. It was really nice meeting you.**", "zh": "好的，我用 WhatsApp 把地址发给你。很高兴认识你。", "sp": "A", "gap": false, "start": 99.024, "end": 103.248, "words": [[99.129, 99.498], [99.932, 100.037], [100.05, 100.419], [100.432, 100.563], [100.577, 100.682], [100.695, 101.234], [101.669, 101.721], [101.735, 101.866], [101.879, 102.09], [102.103, 102.366], [102.379, 102.669], [102.682, 102.866]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

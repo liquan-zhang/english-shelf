@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Reversible and Irreversible Decisions · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "066", "title": "Reversible and Irreversible Decisions", "meta": "B2 · 约 260 词 · 场景：技术决策", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Ask What It Costs to Undo", "heading_zh": "1. 先问撤回的代价", "rows": [[{"id": "s0_0_0", "md": "Many teams spend the same amount of debate on every decision.", "text": "Many teams spend the same amount of debate on every decision.", "zh": "很多团队对每个决定都花同样多的时间争论。", "sp": null}, {"id": "s0_0_1", "md": "A button color gets three meetings, and so does a database migration.", "text": "A button color gets three meetings, and so does a database migration.", "zh": "一个按钮颜色开三次会，一次数据库迁移也开三次会。", "sp": null}, {"id": "s0_0_2", "md": "That is a ==mismatch==, and it slows everything down.", "text": "That is a mismatch, and it slows everything down.", "zh": "这就是错配，它会拖慢所有事情。", "sp": null}], [{"id": "s0_1_0", "md": "A better first question is simple: if we get this wrong, what does it cost to undo?", "text": "A better first question is simple: if we get this wrong, what does it cost to undo?", "zh": "更好的第一个问题很简单：如果我们做错了，撤回要付出什么代价？", "sp": null}, {"id": "s0_1_1", "md": "Changing a feature flag costs minutes.", "text": "Changing a feature flag costs minutes.", "zh": "改一个 feature flag 只要几分钟。", "sp": null}, {"id": "s0_1_2", "md": "Changing a public API that partners have built on can cost a year.", "text": "Changing a public API that partners have built on can cost a year.", "zh": "改一个合作方已经接入的公开 API，可能要花一年。", "sp": null}, {"id": "s0_1_3", "md": "**The cost of undoing a decision, not its size, should decide how long you debate it.**", "text": "The cost of undoing a decision, not its size, should decide how long you debate it.", "zh": "决定该讨论多久，取决于撤回它的代价，而不是它看起来有多大。", "sp": null}], [{"id": "s0_2_0", "md": "Most daily choices are ==reversible==.", "text": "Most daily choices are reversible.", "zh": "日常大多数选择都是可逆的。", "sp": null}, {"id": "s0_2_1", "md": "Which library to try, how to name a config, which test to write first.", "text": "Which library to try, how to name a config, which test to write first.", "zh": "试哪个库、配置怎么命名、先写哪个测试。", "sp": null}, {"id": "s0_2_2", "md": "For these, a quick decision by one ==accountable== person beats a perfect decision by committee.", "text": "For these, a quick decision by one accountable person beats a perfect decision by committee.", "zh": "对这类事，由一个负责人快速拍板，胜过一个委员会做出完美决定。", "sp": null}, {"id": "s0_2_3", "md": "If it turns out wrong, you __change course__ next week and lose very little.", "text": "If it turns out wrong, you change course next week and lose very little.", "zh": "就算错了，下周换个方向就行，损失很小。", "sp": null}]]}, {"heading": "2. Where to Slow Down", "heading_zh": "2. 哪里该慢下来", "rows": [[{"id": "s1_0_0", "md": "A few decisions really are hard to take back.", "text": "A few decisions really are hard to take back.", "zh": "有少数决定确实很难收回。", "sp": null}, {"id": "s1_0_1", "md": "Data schemas, public contracts, deleting user data, and anything that ==alters== what users have been promised.", "text": "Data schemas, public contracts, deleting user data, and anything that alters what users have been promised.", "zh": "数据 schema、对外的接口约定、删除用户数据，以及任何会改变对用户承诺的事。", "sp": null}, {"id": "s1_0_2", "md": "These __deserve the extra meeting__, a written proposal, and a second reviewer.", "text": "These deserve the extra meeting, a written proposal, and a second reviewer.", "zh": "这些值得多开一次会、写一份书面方案，再加一个 reviewer。", "sp": null}], [{"id": "s1_1_0", "md": "The trick is to say out loud which kind of decision you are in.", "text": "The trick is to say out loud which kind of decision you are in.", "zh": "诀窍是把你面对的是哪一类决定说出来。", "sp": null}, {"id": "s1_1_1", "md": "\"This is easy to undo, so let's pick one today and look at it again next sprint.\"", "text": "\"This is easy to undo, so let's pick one today and look at it again next sprint.\"", "zh": "「这个很容易撤回，我们今天就选一个，下个迭代再回头看。」", "sp": null}, {"id": "s1_1_2", "md": "Or: \"This one is ==permanent== once partners integrate, so I want a design review first.\"", "text": "Or: \"This one is permanent once partners integrate, so I want a design review first.\"", "zh": "或者：「这个一旦合作方接入就改不了了，所以我想先过一次设计评审。」", "sp": null}], [{"id": "s1_2_0", "md": "**Labeling the decision out loud ends a lot of pointless debate.**", "text": "Labeling the decision out loud ends a lot of pointless debate.", "zh": "把决定的类型说出来，能省掉大量无谓的争论。", "sp": null}, {"id": "s1_2_1", "md": "People relax when they know a choice can be ==revisited==.", "text": "People relax when they know a choice can be revisited.", "zh": "大家知道一个选择以后还能再改，就会放松下来。", "sp": null}, {"id": "s1_2_2", "md": "And they __take it seriously__ when you tell them it cannot.", "text": "And they take it seriously when you tell them it cannot.", "zh": "你告诉他们改不了的时候，他们也会认真对待。", "sp": null}, {"id": "s1_2_3", "md": "Over time, the team learns to move fast on most things and carefully on the few that matter.", "text": "Over time, the team learns to move fast on most things and carefully on the few that matter.", "zh": "时间长了，团队就学会了大多数事情快速推进，少数关键的事谨慎处理。", "sp": null}]]}], "gist": [{"q": "作者说团队在决策上常犯什么错？", "a": "对所有决定花同样多的讨论时间，按钮颜色和数据库迁移都开三次会，节奏错配。"}, {"q": "判断该讨论多久，应该看什么？", "a": "看决定撤销的成本，而不是决定看起来多大；可逆的由一个负责人快速拍板。"}, {"q": "哪些决定值得放慢？作者建议在会上怎么做？", "a": "数据结构、对外接口、删除数据、改变对用户承诺的事；在会上明确说出这是可逆还是不可逆的决定。"}], "dictation": [{"id": "s0_1_3", "text": "The cost of undoing a decision, not its size, should decide how long you debate it."}, {"id": "s0_2_2", "text": "For these, a quick decision by one accountable person beats a perfect decision by committee."}, {"id": "s1_2_0", "text": "Labeling the decision out loud ends a lot of pointless debate."}, {"id": "s1_2_3", "text": "Over time, the team learns to move fast on most things and carefully on the few that matter."}], "shadow": {"text": "A better first question is simple: if we get this wrong, what does it cost to undo? Changing a feature flag costs minutes. Changing a public API that partners have built on can cost a year.", "marked": "A better <b>first</b> question is simple: / if we get this <b>wrong</b>, / what does it <b>cost</b> to undo? //<br>Changing a feature <b>flag</b> / costs <b>minutes</b>. //<br>Changing a <b>public</b> API / that partners have built on / can cost a <b>year</b>. //"}, "prompts": [{"q": "团队为日志库选型已经争了两周。用 30 秒指出这是可逆决定，并推动今天拍板。", "ref": "Can I step back for a second? We've spent two weeks on this, but switching logging libraries later is maybe two days of work. That makes it a reversible decision. I'd suggest Priya picks one today, since she owns the service, and we check how it's going after one sprint. If it's painful, we switch. Let's save our debate time for the schema changes coming next month.", "ref_zh": "我能先跳出来说一句吗？这件事我们已经讨论了两周，但以后要换日志库，大概也就两天的工作量。这说明它是一个可逆的决定。我建议 Priya 今天选一个，毕竟服务是她负责的，一个迭代之后我们看看效果。要是用着难受，我们再换。把争论的时间留给下个月的 schema 变更吧。", "id": "ref0"}, {"q": "PM 想下周就把新接口开放给外部合作方。用 30 秒说明这是不可逆决定，需要先做设计评审。", "ref": "I'm excited about this too, but I want to flag the type of decision we're making. Once partners build on this API, we basically can't change the response format without breaking them. That makes it close to permanent. So I'd like a short design review and one more reviewer before we open it up. It might cost us a week now, but it could save us a year of support later.", "ref_zh": "我也很期待这个，但我想提醒一下我们在做的是哪一类决定。合作方一旦基于这个 API 开发，我们基本就没法改返回格式了，否则会把他们搞挂。所以这几乎是永久性的。我希望在开放之前先过一次简短的设计评审，再多加一个 reviewer。现在可能会多花一周，但以后可能省下一年的支持成本。", "id": "ref1"}], "words": [{"w": "mismatch", "ipa": "/ˈmɪsˌmætʃ/", "zh": "不匹配、错配", "ex": "There's a mismatch between the roadmap and our actual headcount.", "id": "w0"}, {"w": "reversible", "ipa": "/rɪˈvɜːrsəbəl/", "zh": "可逆的、可撤回的", "ex": "This config change is fully reversible, so let's just try it.", "id": "w1"}, {"w": "accountable", "ipa": "/əˈkaʊntəbəl/", "zh": "负责的、须担责的", "ex": "Who is accountable for the final launch decision?", "id": "w2"}, {"w": "alter", "ipa": "/ˈɔːltər/", "zh": "改变、更改", "ex": "This migration will alter how we store user preferences.", "id": "w3"}, {"w": "permanent", "ipa": "/ˈpɜːrmənənt/", "zh": "永久的", "ex": "Deleting the backups is permanent, so get a second approval.", "id": "w4"}, {"w": "revisit", "ipa": "/riːˈvɪzɪt/", "zh": "重新审视、再讨论", "ex": "Let's revisit the pricing model after we see the first month of data.", "id": "w5"}, {"w": "committee", "ipa": "/kəˈmɪti/", "zh": "委员会（此处指多人共同决策）", "ex": "Design by committee is why this screen has six buttons.", "id": "w6"}, {"w": "integrate", "ipa": "/ˈɪntɪˌɡreɪt/", "zh": "集成、接入", "ex": "Three partners have already integrated with the old endpoint.", "id": "w7"}, {"w": "pointless", "ipa": "/ˈpɔɪntləs/", "zh": "无意义的", "ex": "It's pointless to optimize this query before we know it's slow.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Ask What It Costs to Undo", "zh": "1. 先问撤回的代价", "start": 0.0, "end": 2.688, "words": [[0.105, 0.395], [0.882, 1.132], [1.145, 1.237], [1.25, 1.329], [1.342, 1.724], [1.737, 1.842], [1.855, 2.289]]}, {"kind": "s", "id": "s0_0_0", "md": "Many teams spend the same amount of debate on every decision.", "zh": "很多团队对每个决定都花同样多的时间争论。", "sp": null, "gap": false, "start": 2.688, "end": 6.696, "words": [[2.793, 3.03], [3.043, 3.412], [3.425, 3.714], [3.727, 3.806], [3.82, 4.162], [4.175, 4.464], [4.477, 4.57], [4.583, 5.056], [5.201, 5.385], [5.543, 5.754], [5.767, 6.306]]}, {"kind": "s", "id": "s0_0_1", "md": "A button color gets three meetings, and so does a database migration.", "zh": "一个按钮颜色开三次会，一次数据库迁移也开三次会。", "sp": null, "gap": false, "start": 6.696, "end": 11.064, "words": [[6.801, 6.88], [6.893, 7.196], [7.209, 7.512], [7.525, 7.775], [7.788, 8.078], [8.091, 8.696], [8.985, 9.078], [9.091, 9.262], [9.275, 9.433], [9.446, 9.525], [9.538, 10.051], [10.064, 10.67]]}, {"kind": "s", "id": "s0_0_2", "md": "That is a ==mismatch==, and it slows everything down.", "zh": "这就是错配，它会拖慢所有事情。", "sp": null, "gap": false, "start": 11.064, "end": 14.304, "words": [[11.182, 11.314], [11.327, 11.419], [11.432, 11.472], [11.485, 12.301], [12.538, 12.603], [12.617, 12.696], [12.709, 13.13], [13.143, 13.538], [13.551, 13.919]]}, {"kind": "s", "id": "s0_1_0", "md": "A better first question is simple: if we get this wrong, what does it cost to undo?", "zh": "更好的第一个问题很简单：如果我们做错了，撤回要付出什么代价？", "sp": null, "gap": true, "start": 14.304, "end": 19.392, "words": [[14.409, 14.475], [14.488, 14.751], [14.765, 15.08], [15.093, 15.528], [15.541, 15.646], [15.659, 16.054], [16.515, 16.593], [16.607, 16.712], [16.725, 16.909], [16.922, 17.08], [17.093, 17.488], [17.817, 17.896], [17.909, 18.028], [18.041, 18.133], [18.146, 18.475], [18.488, 18.58], [18.593, 19.014]]}, {"kind": "s", "id": "s0_1_1", "md": "Changing a feature flag costs minutes.", "zh": "改一个 feature flag 只要几分钟。", "sp": null, "gap": false, "start": 19.392, "end": 22.104, "words": [[19.497, 19.866], [19.879, 19.931], [19.945, 20.352], [20.366, 20.76], [20.774, 21.195], [21.208, 21.721]]}, {"kind": "s", "id": "s0_1_2", "md": "Changing a public API that partners have built on can cost a year.", "zh": "改一个合作方已经接入的公开 API，可能要花一年。", "sp": null, "gap": false, "start": 22.104, "end": 26.448, "words": [[22.209, 22.551], [22.565, 22.617], [22.63, 23.065], [23.183, 23.736], [23.749, 23.92], [23.933, 24.433], [24.446, 24.617], [24.63, 24.907], [24.92, 25.104], [25.117, 25.249], [25.262, 25.63], [25.643, 25.657], [25.67, 26.051]]}, {"kind": "s", "id": "s0_1_3", "md": "**The cost of undoing a decision, not its size, should decide how long you debate it.**", "zh": "决定该讨论多久，取决于撤回它的代价，而不是它看起来有多大。", "sp": null, "gap": false, "start": 26.448, "end": 32.304, "words": [[26.566, 26.632], [26.645, 27.04], [27.053, 27.172], [27.185, 27.751], [27.764, 27.816], [27.83, 28.369], [28.777, 28.935], [28.948, 29.066], [29.08, 29.619], [30.001, 30.211], [30.224, 30.672], [30.685, 30.882], [30.895, 31.238], [31.251, 31.356], [31.369, 31.737], [31.751, 31.922]]}, {"kind": "s", "id": "s0_2_0", "md": "Most daily choices are ==reversible==.", "zh": "日常大多数选择都是可逆的。", "sp": null, "gap": true, "start": 32.304, "end": 34.824, "words": [[32.409, 32.659], [32.672, 32.962], [32.975, 33.488], [33.501, 33.725], [33.738, 34.422]]}, {"kind": "s", "id": "s0_2_1", "md": "Which library to try, how to name a config, which test to write first.", "zh": "试哪个库、配置怎么命名、先写哪个测试。", "sp": null, "gap": false, "start": 34.824, "end": 39.672, "words": [[34.942, 35.087], [35.1, 35.548], [35.561, 35.627], [35.64, 36.061], [36.456, 36.521], [36.535, 36.627], [36.64, 36.837], [36.85, 36.903], [36.916, 37.561], [37.89, 38.1], [38.113, 38.403], [38.416, 38.482], [38.495, 38.692], [38.706, 39.271]]}, {"kind": "s", "id": "s0_2_2", "md": "For these, a quick decision by one ==accountable== person beats a perfect decision by committee.", "zh": "对这类事，由一个负责人快速拍板，胜过一个委员会做出完美决定。", "sp": null, "gap": false, "start": 39.672, "end": 45.36, "words": [[39.817, 39.883], [39.896, 40.33], [40.514, 40.567], [40.58, 40.843], [40.856, 41.343], [41.356, 41.527], [41.54, 41.79], [41.804, 42.304], [42.317, 42.764], [42.777, 43.146], [43.225, 43.277], [43.29, 43.804], [43.817, 44.343], [44.356, 44.527], [44.54, 44.961]]}, {"kind": "s", "id": "s0_2_3", "md": "If it turns out wrong, you __change course__ next week and lose very little.", "zh": "就算错了，下周换个方向就行，损失很小。", "sp": null, "gap": false, "start": 45.36, "end": 49.656, "words": [[45.465, 45.557], [45.571, 45.649], [45.663, 45.913], [45.926, 46.11], [46.123, 46.452], [46.768, 46.834], [46.847, 47.176], [47.189, 47.452], [47.465, 47.755], [47.768, 48.044], [48.215, 48.347], [48.36, 48.663], [48.676, 48.913], [48.926, 49.268]]}, {"kind": "h", "id": "h1", "md": "2. Where to Slow Down", "zh": "2. 哪里该慢下来", "start": 49.656, "end": 51.6, "words": [[49.774, 49.998], [50.367, 50.485], [50.498, 50.564], [50.577, 50.853], [50.867, 51.222]]}, {"kind": "s", "id": "s1_0_0", "md": "A few decisions really are hard to take back.", "zh": "有少数决定确实很难收回。", "sp": null, "gap": false, "start": 51.6, "end": 54.504, "words": [[51.705, 51.758], [51.771, 51.968], [51.982, 52.534], [52.547, 52.916], [52.929, 53.021], [53.034, 53.324], [53.337, 53.389], [53.403, 53.666], [53.679, 54.126]]}, {"kind": "s", "id": "s1_0_1", "md": "Data schemas, public contracts, deleting user data, and anything that ==alters== what users have been promised.", "zh": "数据 schema、对外的接口约定、删除用户数据，以及任何会改变对用户承诺的事。", "sp": null, "gap": false, "start": 54.504, "end": 61.752, "words": [[54.622, 54.859], [54.872, 55.57], [55.78, 56.096], [56.109, 56.938], [57.162, 57.57], [57.583, 57.846], [57.859, 58.254], [58.57, 58.701], [58.715, 59.149], [59.162, 59.32], [59.386, 59.833], [59.846, 60.017], [60.03, 60.451], [60.465, 60.583], [60.596, 60.728], [60.741, 61.359]]}, {"kind": "s", "id": "s1_0_2", "md": "These __deserve the extra meeting__, a written proposal, and a second reviewer.", "zh": "这些值得多开一次会、写一份书面方案，再加一个 reviewer。", "sp": null, "gap": false, "start": 61.752, "end": 66.672, "words": [[61.857, 62.081], [62.094, 62.541], [62.555, 62.66], [62.739, 63.094], [63.107, 63.528], [63.831, 63.87], [63.884, 64.16], [64.173, 64.778], [65.239, 65.305], [65.318, 65.357], [65.37, 65.752], [65.765, 66.291]]}, {"kind": "s", "id": "s1_1_0", "md": "The trick is to say out loud which kind of decision you are in.", "zh": "诀窍是把你面对的是哪一类决定说出来。", "sp": null, "gap": true, "start": 66.672, "end": 70.152, "words": [[66.79, 66.83], [66.843, 67.146], [67.159, 67.264], [67.277, 67.369], [67.383, 67.685], [67.698, 67.896], [67.909, 68.225], [68.238, 68.409], [68.422, 68.672], [68.685, 68.751], [68.764, 69.225], [69.238, 69.356], [69.369, 69.527], [69.54, 69.751]]}, {"kind": "s", "id": "s1_1_1", "md": "\"This is easy to undo, so let's pick one today and look at it again next sprint.\"", "zh": "「这个很容易撤回，我们今天就选一个，下个迭代再回头看。」", "sp": null, "gap": false, "start": 70.152, "end": 75.792, "words": [[70.336, 70.441], [70.52, 70.705], [70.849, 71.139], [71.152, 71.297], [71.31, 71.77], [72.165, 72.284], [72.297, 72.507], [72.52, 72.744], [72.757, 72.968], [72.981, 73.441], [73.599, 73.77], [73.784, 73.981], [73.994, 74.099], [74.113, 74.165], [74.178, 74.56], [74.573, 74.836], [74.849, 75.284]]}, {"kind": "s", "id": "s1_1_2", "md": "Or: \"This one is ==permanent== once partners integrate, so I want a design review first.\"", "zh": "或者：「这个一旦合作方接入就改不了了，所以我想先过一次设计评审。」", "sp": null, "gap": false, "start": 75.792, "end": 81.936, "words": [[75.897, 76.134], [76.621, 76.805], [76.818, 77.029], [77.042, 77.16], [77.174, 77.766], [77.779, 78.042], [78.055, 78.516], [78.529, 79.029], [79.437, 79.687], [79.7, 79.752], [79.766, 79.989], [80.003, 80.042], [80.055, 80.476], [80.489, 80.845], [80.858, 81.437]]}, {"kind": "s", "id": "s1_2_0", "md": "**Labeling the decision out loud ends a lot of pointless debate.**", "zh": "把决定的类型说出来，能省掉大量无谓的争论。", "sp": null, "gap": true, "start": 81.936, "end": 86.136, "words": [[82.041, 82.436], [82.449, 82.541], [82.554, 83.041], [83.054, 83.252], [83.265, 83.673], [83.87, 84.015], [84.028, 84.081], [84.094, 84.581], [84.594, 84.699], [84.712, 85.252], [85.265, 85.752]]}, {"kind": "s", "id": "s1_2_1", "md": "People relax when they know a choice can be ==revisited==.", "zh": "大家知道一个选择以后还能再改，就会放松下来。", "sp": null, "gap": false, "start": 86.136, "end": 89.52, "words": [[86.254, 86.531], [86.544, 87.083], [87.097, 87.215], [87.228, 87.32], [87.333, 87.583], [87.597, 87.649], [87.662, 88.162], [88.175, 88.307], [88.32, 88.465], [88.478, 89.123]]}, {"kind": "s", "id": "s1_2_2", "md": "And they __take it seriously__ when you tell them it cannot.", "zh": "你告诉他们改不了的时候，他们也会认真对待。", "sp": null, "gap": false, "start": 89.52, "end": 92.472, "words": [[89.625, 89.691], [89.704, 89.796], [89.809, 90.046], [90.059, 90.138], [90.152, 90.809], [90.836, 90.967], [90.981, 91.073], [91.086, 91.296], [91.309, 91.428], [91.441, 91.533], [91.546, 92.073]]}, {"kind": "s", "id": "s1_2_3", "md": "Over time, the team learns to move fast on most things and carefully on the few that matter.", "zh": "时间长了，团队就学会了大多数事情快速推进，少数关键的事谨慎处理。", "sp": null, "gap": false, "start": 92.472, "end": 98.208, "words": [[92.577, 92.775], [92.788, 93.222], [93.538, 93.617], [93.63, 93.932], [93.946, 94.222], [94.235, 94.327], [94.34, 94.577], [94.59, 95.011], [95.025, 95.143], [95.156, 95.485], [95.498, 95.906], [95.985, 96.169], [96.183, 96.735], [96.748, 96.854], [96.867, 96.933], [96.946, 97.222], [97.235, 97.419], [97.433, 97.827]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

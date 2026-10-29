@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Praising Specific Work, Not People · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "053", "title": "Praising Specific Work, Not People", "meta": "B2 · 约 260 词 · 场景：表扬与认可", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Trouble with \"Great Job\"", "heading_zh": "1. 「干得好」的问题", "rows": [[{"id": "s0_0_0", "md": "After a smooth launch, you post in the team channel: \"Great job, everyone! You're amazing!\"", "text": "After a smooth launch, you post in the team channel: \"Great job, everyone! You're amazing!\"", "zh": "上线很顺利，你在团队群里发：「大家干得好！你们太棒了！」", "sp": null}, {"id": "s0_0_1", "md": "People add a few emojis, and the moment is gone by lunch.", "text": "People add a few emojis, and the moment is gone by lunch.", "zh": "大家回几个表情，到午饭时这事就过去了。", "sp": null}, {"id": "s0_0_2", "md": "Nobody learned anything, and the engineer who quietly saved the launch feels ==invisible==.", "text": "Nobody learned anything, and the engineer who quietly saved the launch feels invisible.", "zh": "没有人学到任何东西，而那个默默救了这次上线的工程师觉得自己被无视了。", "sp": null}], [{"id": "s0_1_0", "md": "General praise sounds kind, but it carries almost no information.", "text": "General praise sounds kind, but it carries almost no information.", "zh": "笼统的表扬听起来很友善，但几乎不带任何信息。", "sp": null}, {"id": "s0_1_1", "md": "Praise about the person, like \"you're so smart,\" is even ==riskier==.", "text": "Praise about the person, like \"you're so smart,\" is even riskier.", "zh": "夸人本身的，比如「你真聪明」，风险更大。", "sp": null}, {"id": "s0_1_2", "md": "It __teaches people to protect__ their image, so they avoid hard problems where they might look less smart.", "text": "It teaches people to protect their image, so they avoid hard problems where they might look less smart.", "zh": "这会让人学会维护自己的形象，于是他们会避开那些可能显得自己不够聪明的难题。", "sp": null}], [{"id": "s0_2_0", "md": "**Praise is a tool for telling people what to repeat.**", "text": "Praise is a tool for telling people what to repeat.", "zh": "表扬是一种工具，用来告诉大家什么值得重复。", "sp": null}, {"id": "s0_2_1", "md": "Used well, it is one of the cheapest ways to ==steer== how your team works.", "text": "Used well, it is one of the cheapest ways to steer how your team works.", "zh": "用得好，它是引导团队工作方式最便宜的手段之一。", "sp": null}, {"id": "s0_2_2", "md": "Used vaguely, it is just noise.", "text": "Used vaguely, it is just noise.", "zh": "用得模糊，它就只是噪音。", "sp": null}]]}, {"heading": "2. Point at the Work", "heading_zh": "2. 夸具体的工作", "rows": [[{"id": "s1_0_0", "md": "Good praise names a specific action and its effect.", "text": "Good praise names a specific action and its effect.", "zh": "好的表扬会点出一个具体的动作和它的效果。", "sp": null}, {"id": "s1_0_1", "md": "\"Splitting the migration into five small releases meant we could roll back each step in minutes. That's why we had zero downtime.\"", "text": "\"Splitting the migration into five small releases meant we could roll back each step in minutes. That's why we had zero downtime.\"", "zh": "「把迁移拆成五个小版本发布，意味着每一步都能在几分钟内回滚。所以我们才做到了零停机。」", "sp": null}, {"id": "s1_0_2", "md": "The engineer now knows exactly which ==decision== mattered.", "text": "The engineer now knows exactly which decision mattered.", "zh": "这下工程师就确切知道是哪个决定起了作用。", "sp": null}], [{"id": "s1_1_0", "md": "Notice the less visible work, too.", "text": "Notice the less visible work, too.", "zh": "也要注意那些不那么显眼的工作。", "sp": null}, {"id": "s1_1_1", "md": "Anyone can praise a big feature, but cleaning up flaky tests, writing a clear runbook, or ==mentoring== a new hire often __goes unnoticed__.", "text": "Anyone can praise a big feature, but cleaning up flaky tests, writing a clear runbook, or mentoring a new hire often goes unnoticed.", "zh": "谁都会夸一个大功能，但清理不稳定的测试、写一份清晰的 runbook、带新人，这些往往没人注意到。", "sp": null}, {"id": "s1_1_2", "md": "When you praise those things, you tell the whole team that they count.", "text": "When you praise those things, you tell the whole team that they count.", "zh": "当你表扬这些事情时，你是在告诉整个团队：这些也算数。", "sp": null}], [{"id": "s1_2_0", "md": "Choose the right audience.", "text": "Choose the right audience.", "zh": "选对场合。", "sp": null}, {"id": "s1_2_1", "md": "Some people love public ==recognition==; others find it embarrassing and prefer a private message.", "text": "Some people love public recognition; others find it embarrassing and prefer a private message.", "zh": "有些人很喜欢公开表扬；另一些人会觉得尴尬，更喜欢私信。", "sp": null}, {"id": "s1_2_2", "md": "If you are not sure, ask, or __do both__: a short public note and a longer private one.", "text": "If you are not sure, ask, or do both: a short public note and a longer private one.", "zh": "如果拿不准，就问一下，或者两样都做：公开说一句简短的，私下再发一段长的。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, praise the process, not only the result.", "text": "Finally, praise the process, not only the result.", "zh": "最后，表扬过程，而不只是结果。", "sp": null}, {"id": "s1_3_1", "md": "A careful experiment that failed can deserve more credit than a lucky success.", "text": "A careful experiment that failed can deserve more credit than a lucky success.", "zh": "一个严谨但失败了的实验，可能比一次侥幸的成功更值得肯定。", "sp": null}, {"id": "s1_3_2", "md": "**When you reward good thinking instead of good luck, people take smarter risks.**", "text": "When you reward good thinking instead of good luck, people take smarter risks.", "zh": "当你奖励的是好的思考而不是好运气时，大家才会冒更聪明的风险。", "sp": null}]]}], "gist": [{"q": "作者认为 \"Great job, you're amazing\" 这类表扬有什么问题？", "a": "几乎没有信息量，没人学到什么，真正默默救场的人感觉被忽视。"}, {"q": "为什么夸人「聪明」更有风险？", "a": "它让人学会维护形象，回避可能显得不够聪明的难题。"}, {"q": "好的表扬应该怎么做？", "a": "点出具体行动和它的效果；关注不显眼的工作（修不稳定测试、写 runbook、带新人）；选对公开或私下的场合；表扬过程和思考，而不只是结果。"}], "dictation": [{"id": "s0_2_0", "text": "Praise is a tool for telling people what to repeat."}, {"id": "s1_0_0", "text": "Good praise names a specific action and its effect."}, {"id": "s1_3_1", "text": "A careful experiment that failed can deserve more credit than a lucky success."}, {"id": "s1_3_2", "text": "When you reward good thinking instead of good luck, people take smarter risks."}], "shadow": {"text": "Notice the less visible work, too. Anyone can praise a big feature, but cleaning up flaky tests, writing a clear runbook, or mentoring a new hire often goes unnoticed. When you praise those things, you tell the whole team that they count.", "marked": "Notice the <b>less visible</b> work, / too. //<br>Anyone can praise a <b>big</b> feature, / but cleaning up <b>flaky</b> tests, / writing a clear <b>runbook</b>, / or <b>mentoring</b> a new hire / often goes <b>unnoticed</b>. //<br>When you praise <b>those</b> things, / you tell the <b>whole</b> team / that they <b>count</b>. //"}, "prompts": [{"q": "一位工程师花了一周把一批不稳定的测试修好了，CI 变得可靠。用 30 秒在周会上具体地表扬他做的事和带来的效果。", "ref": "I want to call out something that's easy to miss. Over the last week, Arjun fixed almost all of the flaky tests in the checkout pipeline. Before that, we were rerunning builds three or four times a day and losing trust in red results. This week, a red build actually means something is broken. That's saved every one of us time, so thank you, Arjun.", "ref_zh": "我想特别提一件很容易被忽略的事。过去一周，Arjun 把结账流水线里几乎所有不稳定的测试都修好了。在那之前，我们每天要把构建重跑三四次，对红色结果已经不信任了。这周，构建一红就真的说明有东西坏了。这给我们每个人都省了时间，所以谢谢你，Arjun。", "id": "ref0"}, {"q": "下属做了一个实验，结果没有达到预期，但实验设计得很严谨。用 30 秒私下表扬他的过程而不是结果。", "ref": "I know the experiment didn't give us the lift we hoped for, but I want you to know I thought it was really well done. You defined the success metric before you started, you ran it long enough, and you stopped as soon as the guardrail moved. Because of that, we can trust the result and move on quickly. That's exactly the kind of thinking I want more of.", "ref_zh": "我知道这个实验没带来我们期望的提升，但我想让你知道，我觉得它做得非常好。你在开始前就定义了成功指标，跑的时间足够长，护栏指标一动就马上停了。正因为这样，我们可以信任这个结果，并且很快往下走。这正是我希望多一些的思考方式。", "id": "ref1"}], "words": [{"w": "invisible", "ipa": "/ɪnˈvɪzəbl/", "zh": "看不见的、被忽视的", "ex": "A lot of platform work is invisible until something breaks.", "id": "w0"}, {"w": "risky", "ipa": "/ˈrɪski/", "zh": "有风险的", "ex": "Deploying on Friday afternoon is riskier than it looks.", "id": "w1"}, {"w": "steer", "ipa": "/stɪr/", "zh": "引导、掌舵", "ex": "Can you steer the discussion back to the rollout plan?", "id": "w2"}, {"w": "decision", "ipa": "/dɪˈsɪʒən/", "zh": "决定", "ex": "Using a feature flag was the decision that saved the launch.", "id": "w3"}, {"w": "mentor (v.)", "ipa": "/ˈmentɔːr/", "zh": "指导、带（新人）", "ex": "She's been mentoring two new hires on the search team.", "tts_w": "mentor", "id": "w4"}, {"w": "recognition", "ipa": "/ˌrekəɡˈnɪʃən/", "zh": "认可、表彰", "ex": "The on-call team deserves some recognition for last weekend.", "id": "w5"}, {"w": "flaky", "ipa": "/ˈfleɪki/", "zh": "（测试）时好时坏的", "ex": "This test is flaky; it fails about once in ten runs.", "id": "w6"}, {"w": "runbook", "ipa": "/ˈrʌnbʊk/", "zh": "运维手册", "ex": "Add the restart steps to the runbook so on-call can follow them.", "id": "w7"}, {"w": "embarrassing", "ipa": "/ɪmˈbærəsɪŋ/", "zh": "令人尴尬的", "ex": "Some people find being praised in a big meeting embarrassing.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Trouble with \"Great Job\"", "zh": "1. 「干得好」的问题", "start": 0.0, "end": 2.52, "words": [[0.105, 0.395], [0.737, 0.829], [0.842, 1.197], [1.211, 1.382], [1.408, 1.724], [1.737, 2.132]]}, {"kind": "s", "id": "s0_0_0", "md": "After a smooth launch, you post in the team channel: \"Great job, everyone! You're amazing!\"", "zh": "上线很顺利，你在团队群里发：「大家干得好！你们太棒了！」", "sp": null, "gap": false, "start": 2.52, "end": 8.88, "words": [[2.625, 2.954], [2.967, 3.02], [3.033, 3.388], [3.402, 3.928], [4.178, 4.283], [4.296, 4.691], [4.704, 4.757], [4.77, 4.862], [4.875, 5.138], [5.152, 5.533], [5.941, 6.204], [6.217, 6.586], [6.849, 7.336], [7.77, 7.928], [7.941, 8.48]]}, {"kind": "s", "id": "s0_0_1", "md": "People add a few emojis, and the moment is gone by lunch.", "zh": "大家回几个表情，到午饭时这事就过去了。", "sp": null, "gap": false, "start": 8.88, "end": 12.696, "words": [[8.998, 9.314], [9.327, 9.446], [9.459, 9.498], [9.512, 9.762], [9.775, 10.433], [10.656, 10.762], [10.775, 10.841], [10.854, 11.248], [11.262, 11.367], [11.38, 11.604], [11.617, 11.762], [11.775, 12.314]]}, {"kind": "s", "id": "s0_0_2", "md": "Nobody learned anything, and the engineer who quietly saved the launch feels ==invisible==.", "zh": "没有人学到任何东西，而那个默默救了这次上线的工程师觉得自己被无视了。", "sp": null, "gap": false, "start": 12.696, "end": 18.792, "words": [[12.801, 13.222], [13.235, 13.578], [13.749, 14.301], [14.735, 14.788], [14.801, 14.88], [14.893, 15.525], [15.538, 15.683], [15.696, 16.354], [16.367, 16.762], [16.775, 16.867], [16.88, 17.354], [17.367, 17.749], [17.762, 18.393]]}, {"kind": "s", "id": "s0_1_0", "md": "General praise sounds kind, but it carries almost no information.", "zh": "笼统的表扬听起来很友善，但几乎不带任何信息。", "sp": null, "gap": true, "start": 18.792, "end": 23.424, "words": [[18.897, 19.292], [19.305, 19.726], [19.739, 20.082], [20.095, 20.555], [20.924, 21.042], [21.055, 21.147], [21.16, 21.647], [21.66, 22.081], [22.095, 22.358], [22.371, 23.029]]}, {"kind": "s", "id": "s0_1_1", "md": "Praise about the person, like \"you're so smart,\" is even ==riskier==.", "zh": "夸人本身的，比如「你真聪明」，风险更大。", "sp": null, "gap": false, "start": 23.424, "end": 28.224, "words": [[23.542, 23.806], [23.819, 24.042], [24.056, 24.135], [24.148, 24.608], [24.885, 25.187], [25.411, 25.556], [25.569, 25.911], [25.924, 26.411], [26.885, 26.99], [27.003, 27.279], [27.292, 27.845]]}, {"kind": "s", "id": "s0_1_2", "md": "It __teaches people to protect__ their image, so they avoid hard problems where they might look less smart.", "zh": "这会让人学会维护自己的形象，于是他们会避开那些可能显得自己不够聪明的难题。", "sp": null, "gap": false, "start": 28.224, "end": 33.984, "words": [[28.329, 28.461], [28.474, 28.882], [28.895, 29.224], [29.237, 29.316], [29.329, 29.75], [29.763, 29.934], [29.948, 30.382], [30.658, 30.777], [30.79, 30.935], [30.948, 31.303], [31.316, 31.619], [31.632, 32.119], [32.132, 32.25], [32.263, 32.369], [32.382, 32.671], [32.685, 32.882], [32.895, 33.132], [33.145, 33.606]]}, {"kind": "s", "id": "s0_2_0", "md": "**Praise is a tool for telling people what to repeat.**", "zh": "表扬是一种工具，用来告诉大家什么值得重复。", "sp": null, "gap": true, "start": 33.984, "end": 37.008, "words": [[34.102, 34.405], [34.418, 34.523], [34.537, 34.602], [34.616, 34.931], [34.945, 35.076], [35.089, 35.418], [35.431, 35.787], [35.8, 35.971], [35.984, 36.089], [36.102, 36.616]]}, {"kind": "s", "id": "s0_2_1", "md": "Used well, it is one of the cheapest ways to ==steer== how your team works.", "zh": "用得好，它是引导团队工作方式最便宜的手段之一。", "sp": null, "gap": false, "start": 37.008, "end": 41.424, "words": [[37.113, 37.363], [37.376, 37.666], [38.061, 38.113], [38.126, 38.219], [38.232, 38.35], [38.363, 38.403], [38.416, 38.495], [38.508, 39.021], [39.034, 39.35], [39.363, 39.455], [39.469, 39.916], [39.929, 40.047], [40.061, 40.205], [40.219, 40.521], [40.534, 41.034]]}, {"kind": "s", "id": "s0_2_2", "md": "Used vaguely, it is just noise.", "zh": "用得模糊，它就只是噪音。", "sp": null, "gap": false, "start": 41.424, "end": 44.016, "words": [[41.529, 41.806], [41.819, 42.306], [42.516, 42.608], [42.621, 42.74], [42.753, 43.029], [43.042, 43.635]]}, {"kind": "h", "id": "h1", "md": "2. Point at the Work", "zh": "2. 夸具体的工作", "start": 44.016, "end": 46.056, "words": [[44.134, 44.332], [44.858, 45.108], [45.121, 45.2], [45.213, 45.292], [45.305, 45.661]]}, {"kind": "s", "id": "s1_0_0", "md": "Good praise names a specific action and its effect.", "zh": "好的表扬会点出一个具体的动作和它的效果。", "sp": null, "gap": false, "start": 46.056, "end": 49.632, "words": [[46.161, 46.411], [46.424, 46.806], [46.819, 47.095], [47.109, 47.161], [47.174, 47.78], [47.859, 48.319], [48.503, 48.609], [48.622, 48.74], [48.753, 49.253]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Splitting the migration into five small releases meant we could roll back each step in minutes. That's why we had zero downtime.\"", "zh": "「把迁移拆成五个小版本发布，意味着每一步都能在几分钟内回滚。所以我们才做到了零停机。」", "sp": null, "gap": false, "start": 49.632, "end": 57.912, "words": [[49.816, 50.04], [50.119, 50.185], [50.198, 50.882], [50.895, 51.106], [51.119, 51.474], [51.487, 51.803], [51.816, 52.435], [52.632, 52.895], [52.908, 53.027], [53.04, 53.264], [53.277, 53.553], [53.566, 53.987], [54.106, 54.277], [54.29, 54.671], [54.685, 54.777], [54.79, 55.316], [55.764, 55.921], [55.935, 56.079], [56.093, 56.211], [56.224, 56.448], [56.461, 56.803], [56.816, 57.514]]}, {"kind": "s", "id": "s1_0_2", "md": "The engineer now knows exactly which ==decision== mattered.", "zh": "这下工程师就确切知道是哪个决定起了作用。", "sp": null, "gap": false, "start": 57.912, "end": 61.368, "words": [[58.017, 58.07], [58.083, 58.609], [58.623, 58.846], [58.859, 59.175], [59.188, 59.846], [59.859, 60.07], [60.083, 60.583], [60.596, 60.991]]}, {"kind": "s", "id": "s1_1_0", "md": "Notice the less visible work, too.", "zh": "也要注意那些不那么显眼的工作。", "sp": null, "gap": true, "start": 61.368, "end": 63.936, "words": [[61.473, 61.75], [61.763, 61.881], [61.894, 62.171], [62.184, 62.644], [62.657, 63.026], [63.236, 63.539]]}, {"kind": "s", "id": "s1_1_1", "md": "Anyone can praise a big feature, but cleaning up flaky tests, writing a clear runbook, or ==mentoring== a new hire often __goes unnoticed__.", "zh": "谁都会夸一个大功能，但清理不稳定的测试、写一份清晰的 runbook、带新人，这些往往没人注意到。", "sp": null, "gap": false, "start": 63.936, "end": 72.96, "words": [[64.041, 64.449], [64.462, 64.647], [64.66, 64.975], [64.989, 65.068], [65.081, 65.331], [65.344, 65.831], [66.12, 66.252], [66.265, 66.712], [66.725, 66.844], [66.857, 67.278], [67.291, 67.844], [68.107, 68.396], [68.41, 68.475], [68.489, 68.844], [68.857, 69.331], [69.633, 69.699], [69.712, 70.239], [70.252, 70.291], [70.304, 70.594], [70.607, 71.133], [71.252, 71.568], [71.581, 71.844], [71.857, 72.581]]}, {"kind": "s", "id": "s1_1_2", "md": "When you praise those things, you tell the whole team that they count.", "zh": "当你表扬这些事情时，你是在告诉整个团队：这些也算数。", "sp": null, "gap": false, "start": 72.96, "end": 76.608, "words": [[73.065, 73.157], [73.171, 73.263], [73.276, 73.605], [73.618, 73.855], [73.868, 74.315], [74.526, 74.605], [74.618, 74.815], [74.828, 74.907], [74.921, 75.157], [75.171, 75.486], [75.499, 75.631], [75.644, 75.776], [75.789, 76.223]]}, {"kind": "s", "id": "s1_2_0", "md": "Choose the right audience.", "zh": "选对场合。", "sp": null, "gap": true, "start": 76.608, "end": 78.48, "words": [[76.713, 76.95], [76.963, 77.055], [77.069, 77.266], [77.279, 77.871]]}, {"kind": "s", "id": "s1_2_1", "md": "Some people love public ==recognition==; others find it embarrassing and prefer a private message.", "zh": "有些人很喜欢公开表扬；另一些人会觉得尴尬，更喜欢私信。", "sp": null, "gap": false, "start": 78.48, "end": 84.312, "words": [[78.598, 78.796], [78.809, 79.191], [79.204, 79.454], [79.467, 79.809], [79.822, 80.441], [80.835, 81.098], [81.112, 81.375], [81.388, 81.467], [81.48, 82.23], [82.388, 82.454], [82.467, 82.875], [82.888, 82.941], [82.954, 83.388], [83.401, 83.927]]}, {"kind": "s", "id": "s1_2_2", "md": "If you are not sure, ask, or __do both__: a short public note and a longer private one.", "zh": "如果拿不准，就问一下，或者两样都做：公开说一句简短的，私下再发一段长的。", "sp": null, "gap": false, "start": 84.312, "end": 90.456, "words": [[84.417, 84.536], [84.549, 84.615], [84.628, 84.694], [84.707, 84.917], [84.93, 85.312], [85.746, 86.154], [86.338, 86.43], [86.444, 86.68], [86.694, 87.141], [87.549, 87.575], [87.588, 87.917], [87.93, 88.259], [88.273, 88.601], [88.878, 88.957], [88.97, 89.009], [89.023, 89.404], [89.417, 89.799], [89.812, 90.062]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, praise the process, not only the result.", "zh": "最后，表扬过程，而不只是结果。", "sp": null, "gap": true, "start": 90.456, "end": 94.104, "words": [[90.64, 91.074], [91.364, 91.627], [91.64, 91.732], [91.745, 92.39], [92.627, 92.824], [92.838, 93.088], [93.101, 93.193], [93.206, 93.706]]}, {"kind": "s", "id": "s1_3_1", "md": "A careful experiment that failed can deserve more credit than a lucky success.", "zh": "一个严谨但失败了的实验，可能比一次侥幸的成功更值得肯定。", "sp": null, "gap": false, "start": 94.104, "end": 99.288, "words": [[94.209, 94.275], [94.288, 94.696], [94.709, 95.341], [95.446, 95.604], [95.617, 96.078], [96.091, 96.236], [96.249, 96.736], [96.749, 97.012], [97.025, 97.486], [97.565, 97.696], [97.709, 97.762], [97.775, 98.117], [98.13, 98.893]]}, {"kind": "s", "id": "s1_3_2", "md": "**When you reward good thinking instead of good luck, people take smarter risks.**", "zh": "当你奖励的是好的思考而不是好运气时，大家才会冒更聪明的风险。", "sp": null, "gap": false, "start": 99.288, "end": 104.112, "words": [[99.393, 99.525], [99.538, 99.683], [99.696, 100.209], [100.222, 100.459], [100.472, 100.92], [100.933, 101.275], [101.288, 101.38], [101.393, 101.564], [101.577, 101.933], [102.222, 102.538], [102.551, 102.775], [102.788, 103.13], [103.143, 103.722]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

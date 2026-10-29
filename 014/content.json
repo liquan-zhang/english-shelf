@@ -1,0 +1,195 @@
+{
+  "id": "014",
+  "title": "Presenting Numbers That People Remember",
+  "meta": "B2 · 约 280 词 · 场景：数据汇报",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. A Number Alone Means Nothing",
+      "paragraphs": [
+        [
+          "Here is a sentence from a real quarterly review.",
+          "\"We reduced P ninety-nine latency from eight hundred and forty milliseconds to six hundred and ten.\"",
+          "It is accurate, it is impressive, and almost nobody in the room will remember it by lunch."
+        ],
+        [
+          "The problem is not the audience's attention span.",
+          "A number by itself has no ==meaning== until people can compare it to something.",
+          "Is six hundred and ten good?",
+          "Is the drop big or small?",
+          "Most listeners have no ==reference point==, so the number simply __slides past__ them."
+        ],
+        [
+          "**Your job is not to report numbers; it is to make them feel like something.**",
+          "That takes three small habits, and none of them require ==fancy== charts."
+        ]
+      ],
+      "heading_zh": "1. 光有数字毫无意义",
+      "paragraphs_zh": [
+        [
+          "这是一次真实的季度复盘里的一句话。",
+          "「我们把 P99 延迟从八百四十毫秒降到了六百一十毫秒。」",
+          "数据准确，成绩亮眼，但到午饭时间，屋里几乎没人还记得。"
+        ],
+        [
+          "问题不在于听众注意力不集中。",
+          "一个数字本身没有意义，除非大家能拿它跟什么东西比一比。",
+          "六百一十算好吗？",
+          "这个降幅算大还是算小？",
+          "大多数听众没有参照物，所以这个数字就这么从他们耳边滑过去了。"
+        ],
+        [
+          "你的工作不是汇报数字，而是让数字有感觉。",
+          "这需要三个小习惯，而且都用不着花哨的图表。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Round It, Compare It, Translate It",
+      "paragraphs": [
+        [
+          "First, round ==aggressively==.",
+          "\"About a third faster\" is easier to hold in your head than the exact figure.",
+          "Put the precise number on the slide for those who want it, and say the simple one out loud."
+        ],
+        [
+          "Second, always give a comparison.",
+          "A comparison gives listeners a ruler to measure your number against.",
+          "Compare it to last quarter, to a ==competitor==, or to a goal everyone remembers.",
+          "\"We're now faster than our target for next year\" __tells a story__ in one line."
+        ],
+        [
+          "Third, translate the number into human units.",
+          "Instead of \"saved twelve thousand compute hours,\" try \"saved the cost of two full-time engineers.\"",
+          "Instead of \"point three percent error rate,\" try \"one failed payment for every three hundred customers.\"",
+          "**People forget percentages, but they remember people, money, and time.**"
+        ],
+        [
+          "Finally, choose one ==headline== number per slide, and __let the rest go__.",
+          "If everything is highlighted, nothing is.",
+          "A clear number respects how people actually listen, which is once, quickly, and while thinking about something else."
+        ]
+      ],
+      "heading_zh": "2. 取整、对比、换算",
+      "paragraphs_zh": [
+        [
+          "第一，大胆取整。",
+          "「快了大概三分之一」比精确数字好记得多。",
+          "精确数字放在幻灯片上给想看的人看，嘴上说简单的那个。"
+        ],
+        [
+          "第二，永远给一个对比。",
+          "对比给了听众一把尺子，用来衡量你的数字。",
+          "跟上季度比，跟竞争对手比，或者跟一个大家都记得的目标比。",
+          "「我们现在已经比明年的目标还快了」，一句话就讲了个故事。"
+        ],
+        [
+          "第三，把数字换算成人能感知的单位。",
+          "别说「省了一万两千个计算小时」，试试说「省下了两个全职工程师的成本」。",
+          "别说「错误率百分之零点三」，试试说「每三百个客户里有一笔支付失败」。",
+          "百分比人们会忘，但人、钱和时间他们记得住。"
+        ],
+        [
+          "最后，每页幻灯片只选一个核心数字，其余的都舍掉。",
+          "如果什么都高亮，就等于什么都没高亮。",
+          "一个清晰的数字，尊重的是人们真实的听法：只听一遍，听得很快，而且脑子里还想着别的事。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么作者说单独一个数字没有意义？",
+      "a": "听众没有参照点，不知道这个数字是好是坏、变化是大是小，所以记不住。"
+    },
+    {
+      "q": "让数字被记住的三个习惯是什么？",
+      "a": "大胆取整；一定给出对比（上季度、竞品、目标）；换算成人、钱、时间等直观单位。"
+    },
+    {
+      "q": "每页幻灯片的数字应该怎么安排？",
+      "a": "只选一个主打数字，其余放下；全都强调等于什么都没强调。"
+    }
+  ],
+  "dictation": [
+    "Your job is not to report numbers; it is to make them feel like something.",
+    "People forget percentages, but they remember people, money, and time.",
+    "A number by itself has no meaning until people can compare it to something.",
+    "If everything is highlighted, nothing is."
+  ],
+  "shadow": {
+    "text": "Third, translate the number into human units. Instead of \"saved twelve thousand compute hours,\" try \"saved the cost of two full-time engineers.\"",
+    "marked": "<b>Third</b>, / translate the number / into <b>human</b> units. //<br>Instead of \"saved twelve thousand <b>compute</b> hours,\" / try \"saved the <b>cost</b> / of <b>two</b> full-time <b>engineers</b>.\" //"
+  },
+  "prompts": [
+    {
+      "q": "季度汇报中，你要讲“崩溃率从百分之零点八降到百分之零点二”。用 30 秒把这个数字讲得让人记住：取整、对比、换算成人话。",
+      "ref": "The headline for this quarter is stability. Our crash rate is now about a quarter of what it was in the spring. To put that in human terms, before, roughly one in every hundred and twenty sessions ended in a crash. Now it's one in five hundred. For a typical user who opens the app twice a day, that's going from a crash every two months to about one a year.",
+      "ref_zh": "这个季度的关键词是稳定性。我们的崩溃率现在大约只有春天时的四分之一。换成人能感知的说法，以前大概每一百二十次会话就有一次崩溃。现在是五百次一次。对一个每天打开两次 app 的普通用户来说，就是从大概两个月崩一次，变成了一年崩一次左右。"
+    },
+    {
+      "q": "你要向管理层争取资源优化存储，说明“每月存储费用十五万美元，其中三成是无用日志”。用 30 秒把钱换算成大家有感觉的单位。",
+      "ref": "Here's the number I want you to remember. About a third of our storage bill is old logs that nobody ever reads. That's roughly fifty thousand dollars a month, or the cost of a small team, spent on data we delete without looking. With about three weeks of cleanup work, we can get most of that back, every single month, from now on.",
+      "ref_zh": "这是我希望大家记住的数字。我们存储账单里大约三分之一，是从来没人看的旧日志。这差不多是每个月五万美元，相当于一个小团队的成本，花在了我们看都不看就删掉的数据上。只要花大概三周做清理，从今往后每个月都能把其中大部分省回来。"
+    }
+  ],
+  "words": [
+    {
+      "w": "meaning",
+      "ipa": "/ˈmiːnɪŋ/",
+      "zh": "意义",
+      "ex": "This metric has no meaning unless we compare it week over week."
+    },
+    {
+      "w": "reference point",
+      "ipa": "/ˈrefərəns pɔɪnt/",
+      "zh": "参照点",
+      "ex": "Last year's peak gives us a useful reference point for capacity."
+    },
+    {
+      "w": "fancy",
+      "ipa": "/ˈfænsi/",
+      "zh": "花哨的、复杂的",
+      "ex": "We don't need a fancy dashboard; a simple table is enough."
+    },
+    {
+      "w": "aggressively",
+      "ipa": "/əˈɡresɪvli/",
+      "zh": "大胆地、激进地",
+      "ex": "We're cutting scope aggressively to hit the date."
+    },
+    {
+      "w": "competitor",
+      "ipa": "/kəmˈpetɪtər/",
+      "zh": "竞争对手",
+      "ex": "Our sign-up flow is two steps shorter than any competitor's."
+    },
+    {
+      "w": "headline (adj.)",
+      "ipa": "/ˈhedlaɪn/",
+      "zh": "最主要的、标题性的",
+      "ex": "The headline number is a forty percent drop in tickets.",
+      "tts_w": "headline"
+    },
+    {
+      "w": "attention span",
+      "ipa": "/əˈtenʃən spæn/",
+      "zh": "注意力持续时间",
+      "ex": "Keep demos short; everyone's attention span drops after lunch."
+    },
+    {
+      "w": "round (v.)",
+      "ipa": "/raʊnd/",
+      "zh": "取整、四舍五入",
+      "ex": "Let's round it to two seconds on the slide.",
+      "tts_w": "round"
+    },
+    {
+      "w": "impressive",
+      "ipa": "/ɪmˈpresɪv/",
+      "zh": "令人印象深刻的",
+      "ex": "The cost savings from the migration were impressive."
+    }
+  ]
+}

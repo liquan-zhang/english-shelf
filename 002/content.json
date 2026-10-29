@@ -1,0 +1,197 @@
+{
+  "id": "002",
+  "title": "Turning a Messy Discussion into a Decision",
+  "meta": "B2 · 约 270 词 · 场景：会议收敛",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Forty Minutes and No Answer",
+      "paragraphs": [
+        [
+          "You have probably sat through this meeting.",
+          "Six smart people discuss a caching problem for forty minutes.",
+          "Every comment is reasonable, but the conversation __goes in circles__, and the hour ends with \"Let's take this offline.\""
+        ],
+        [
+          "The problem is rarely a lack of ideas.",
+          "It is that nobody has said out loud what the options are and how the group will choose between them.",
+          "Without that, each person is arguing for a ==slightly== different question.",
+          "Some people are ==optimizing== for speed, others for cost, and nobody notices the gap."
+        ],
+        [
+          "**A discussion only becomes a decision when someone gives it edges.**",
+          "That person does not need to be the most senior one in the room.",
+          "It just needs to be someone willing to __step back__ and ==summarize== where things stand."
+        ]
+      ],
+      "heading_zh": "1. 四十分钟，没有结论",
+      "paragraphs_zh": [
+        [
+          "这种会你大概率开过。",
+          "六个聪明人围着一个缓存问题讨论了四十分钟。",
+          "每个人说的都有道理，但讨论一直在原地打转，最后一句「我们会后再聊」就散了。"
+        ],
+        [
+          "问题很少是缺点子。",
+          "而是没有人把选项有哪些、大家要怎么选，明明白白地说出来。",
+          "没有这一步，每个人争的其实都是一个略有不同的问题。",
+          "有人在优化速度，有人在优化成本，却没人注意到这个错位。"
+        ],
+        [
+          "只有有人给讨论划出边界，它才能变成决定。",
+          "这个人不一定得是屋里级别最高的。",
+          "只要有人愿意退一步，总结一下现在讨论到哪儿了就行。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Three Questions That Pull a Room Together",
+      "paragraphs": [
+        [
+          "Start by naming the options.",
+          "\"I'm hearing two ==camps==, either we add a cache now, or we fix the slow query first.\"",
+          "Even if your summary is a bit off, people will correct it, and the ==fog== starts to clear."
+        ],
+        [
+          "Next, ask what really matters.",
+          "\"Is the main concern speed of delivery, or long-term cost?\"",
+          "Once the group agrees on one ==criterion==, many arguments simply disappear, because they were __measuring different things__."
+        ],
+        [
+          "Finally, ask how expensive it is to be wrong.",
+          "If the choice is easy to ==reverse==, there is no reason to keep debating.",
+          "**Pick one, set a date to review it, and move on.**"
+        ],
+        [
+          "Then close the loop out loud.",
+          "\"So we're going with the query fix, and we'll check latency again next Friday.\"",
+          "Saying it clearly gives people a chance to object now, instead of __in the hallway__ later."
+        ]
+      ],
+      "heading_zh": "2. 把讨论收拢的三个问题",
+      "paragraphs_zh": [
+        [
+          "先把选项点出来。",
+          "「我听下来大家分成两派：要么现在就加缓存，要么先把慢查询修了。」",
+          "就算你总结得有点偏，大家也会纠正你，迷雾就开始散了。"
+        ],
+        [
+          "接着问，什么才是真正重要的。",
+          "「我们最关心的是交付速度，还是长期成本？」",
+          "大家一旦对一个标准达成一致，很多争论自然就消失了，因为之前大家衡量的根本不是一回事。"
+        ],
+        [
+          "最后，问一下做错的代价有多大。",
+          "如果这个选择很容易回退，那就没必要再争下去了。",
+          "选一个，定个时间复盘，然后往前走。"
+        ],
+        [
+          "然后当众把这件事闭环。",
+          "「那我们就先修查询，下周五再看一次延迟。」",
+          "把话说清楚，大家就有机会现在提出异议，而不是事后在走廊里嘀咕。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为讨论迟迟定不下来，根本原因是什么？",
+      "a": "不是缺点子，而是没人明确说出有哪些选项、用什么标准来选，每个人其实在争论略有不同的问题。"
+    },
+    {
+      "q": "把讨论收敛成决定要问哪三个问题？",
+      "a": "有哪几个选项；最看重的标准是什么；选错的代价有多大。"
+    },
+    {
+      "q": "如果一个决定很容易回退，作者建议怎么做？",
+      "a": "不要继续争论，选一个，定个复盘日期，然后往前走；最后把结论大声说出来。"
+    }
+  ],
+  "dictation": [
+    "A discussion only becomes a decision when someone gives it edges.",
+    "Pick one, set a date to review it, and move on.",
+    "Without that, each person is arguing for a slightly different question.",
+    "If the choice is easy to reverse, there is no reason to keep debating."
+  ],
+  "shadow": {
+    "text": "Finally, ask how expensive it is to be wrong. If the choice is easy to reverse, there is no reason to keep debating. Pick one, set a date to review it, and move on.",
+    "marked": "<b>Finally</b>, / ask how <b>expensive</b> it is / to be <b>wrong</b>. //<br>If the choice is <b>easy</b> to <b>reverse</b>, / there is <b>no</b> reason / to keep <b>debating</b>. //<br><b>Pick</b> one, / set a <b>date</b> to review it, / and <b>move on</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "大家为“先做 A/B 实验还是直接上线新推荐策略”讨论了半小时没有结论。用 30 秒把选项和判断标准说清楚，推动大家做决定。",
+      "ref": "Can I try to pull this together? I'm hearing two options. We either run an A/B test for two weeks, or we ship the new ranking to everyone now. It seems like the real question is how much risk we can accept on engagement. Since we can roll back with one config change, I'd suggest we ship now and review the numbers next Wednesday. Does anyone strongly object?",
+      "ref_zh": "我来试着收一下？我听下来有两个选项。要么做两周 A/B 实验，要么现在就把新的排序全量推给所有人。看起来真正的问题是，我们在互动指标上能承受多大的风险。既然改一个配置就能回滚，我建议现在就上，下周三再复盘数据。有人强烈反对吗？"
+    },
+    {
+      "q": "会议快结束，决定是“先修慢查询，暂不加缓存”。用 30 秒大声收口，说清决定、负责人和复查时间。",
+      "ref": "Okay, let me close the loop so we're all on the same page. We're going with the query fix first, and we're parking the cache for now. Wei will own the fix, and we'll check P ninety-nine latency again next Friday. If the numbers are still bad by then, we'll come back to the cache option. If anyone disagrees, now is the time to say it.",
+      "ref_zh": "好，我来闭个环，确保大家理解一致。我们先修查询，缓存的事暂时搁置。Wei 负责修复，下周五再看一次 P99 延迟。如果到时候数据还是不行，我们再回头考虑缓存方案。有不同意见的话，现在就说。"
+    }
+  ],
+  "words": [
+    {
+      "w": "slightly",
+      "ipa": "/ˈslaɪtli/",
+      "zh": "稍微、略微",
+      "ex": "The new build is slightly faster, but not enough to notice."
+    },
+    {
+      "w": "summarize",
+      "ipa": "/ˈsʌməˌraɪz/",
+      "zh": "总结、概括",
+      "ex": "Could you summarize the incident in two sentences for the leads?"
+    },
+    {
+      "w": "camp",
+      "ipa": "/kæmp/",
+      "zh": "阵营、派别",
+      "ex": "The team split into two camps over the rewrite."
+    },
+    {
+      "w": "fog",
+      "ipa": "/fɑːɡ/",
+      "zh": "迷雾、混乱不清",
+      "ex": "The dashboard cleared up a lot of the fog around the drop in sign-ups."
+    },
+    {
+      "w": "criterion",
+      "ipa": "/kraɪˈtɪriən/",
+      "zh": "（评判）标准",
+      "ex": "Our main criterion for the vendor is support quality, not price."
+    },
+    {
+      "w": "reverse (v.)",
+      "ipa": "/rɪˈvɜːrs/",
+      "zh": "撤销、回退",
+      "ex": "The flag lets us reverse the change in seconds.",
+      "tts_w": "reverse"
+    },
+    {
+      "w": "close the loop",
+      "ipa": "/kloʊz ðə luːp/",
+      "zh": "收尾、给出闭环",
+      "ex": "Let me close the loop with the PM after the meeting."
+    },
+    {
+      "w": "go in circles",
+      "ipa": "/ɡoʊ ɪn ˈsɜːrkəlz/",
+      "zh": "兜圈子",
+      "ex": "We keep going in circles on the API design."
+    },
+    {
+      "w": "edge",
+      "ipa": "/edʒ/",
+      "zh": "边界、轮廓",
+      "ex": "Let's give this project clear edges before we staff it."
+    },
+    {
+      "w": "optimize (for)",
+      "ipa": "/ˈɑːptɪˌmaɪz/",
+      "zh": "以……为优化目标",
+      "ex": "Right now we're optimizing for launch speed, not perfect code.",
+      "tts_w": "optimize"
+    }
+  ]
+}

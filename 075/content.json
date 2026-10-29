@@ -1,0 +1,177 @@
+{
+  "id": "075",
+  "title": "Prioritizing When Everything Is Urgent",
+  "meta": "B2 · 约 270 词 · 场景：需求排序",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Urgent Is a Label, Not a Fact",
+      "paragraphs": [
+        [
+          "On some Mondays, five people message you before ten o'clock, and every message says urgent.",
+          "Sales needs a fix for a big client, the PM wants a demo by Wednesday, and security has found an old library with a known problem.",
+          "If everything is urgent, the word has stopped meaning anything."
+        ],
+        [
+          "People label requests urgent because that is how they get attention.",
+          "It is not ==dishonest==; it is a ==rational== response to a busy team.",
+          "**Your job is not to judge who shouts loudest but to find out what each delay really costs.**"
+        ],
+        [
+          "Without that, priority goes to whoever is most ==persistent==, and the team spends its whole week reacting.",
+          "Engineers switch tasks five times a day and finish almost nothing.",
+          "By Friday, the most important request is often the one nobody got around to."
+        ]
+      ],
+      "heading_zh": "1. 紧急是标签，不是事实",
+      "paragraphs_zh": [
+        [
+          "有些周一，十点前就有五个人来找你，每条消息都写着紧急。",
+          "销售要给一个大客户修 bug，PM 想周三前看 demo，安全团队发现了一个有已知漏洞的老库。",
+          "如果什么都紧急，这个词就已经没有意义了。"
+        ],
+        [
+          "大家把需求标成紧急，是因为这样才能被注意到。",
+          "这不是不诚实；面对一个忙碌的团队，这是理性的反应。",
+          "你的任务不是看谁嗓门最大，而是搞清楚每件事拖一拖真正的代价是什么。"
+        ],
+        [
+          "不这么做的话，优先级就归最能磨的那个人，团队一整周都在被动应付。",
+          "工程师一天切换五次任务，几乎什么都做不完。",
+          "到了周五，最重要的那个需求往往是谁都没顾上的那个。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. One Question and a Shared List",
+      "paragraphs": [
+        [
+          "The most useful question is simple: what happens if this waits one week?",
+          "For the security library, the answer might be a real ==exposure== for customer data.",
+          "For the demo, the answer might be that the meeting moves to Thursday."
+        ],
+        [
+          "Then put the requests in one ranked list and share it with everyone who asked.",
+          "Ranking in public is uncomfortable, but it moves the argument to the right place.",
+          "If sales disagrees with the order, they can __take it up with__ the PM, instead of pressuring individual engineers in private messages."
+        ],
+        [
+          "**A visible ranking turns competing demands into a conversation about priorities.**",
+          "Keep a little ==slack== for true emergencies, and __revisit the list__ every week.",
+          "The list will never be perfect, but it will be ==transparent==, and that alone removes a lot of ==friction==."
+        ]
+      ],
+      "heading_zh": "2. 一个问题加一张共享清单",
+      "paragraphs_zh": [
+        [
+          "最有用的问题很简单：这件事等一周会怎样？",
+          "对那个安全库来说，答案可能是客户数据存在真实的暴露风险。",
+          "对那个 demo 来说，答案可能是会议挪到周四。"
+        ],
+        [
+          "然后把所有需求放进一张排好序的清单，分享给每个提需求的人。",
+          "公开排序是有点尴尬，但它把争论挪到了该在的地方。",
+          "如果销售不同意这个顺序，他们可以去找 PM 谈，而不是私聊给某个工程师施压。"
+        ],
+        [
+          "一张透明的排序，能把相互竞争的需求变成一场关于优先级的讨论。",
+          "给真正的紧急情况留一点余量，并且每周回顾一下这张清单。",
+          "这张清单永远不会完美，但它是透明的，光这一点就能减少很多摩擦。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么人人都把需求标成“紧急”？作者怎么看？",
+      "a": "这是在忙碌团队里获得关注的理性做法，不算不诚实；但“紧急”只是标签，不是事实。"
+    },
+    {
+      "q": "判断优先级最有用的问题是什么？",
+      "a": "如果这件事等一周会怎样？比如安全漏洞可能真的暴露客户数据，而演示只是改到周四。"
+    },
+    {
+      "q": "为什么要公开一份排序清单？",
+      "a": "把争论引到正确的地方（找 PM 而不是私下施压工程师），把竞争性需求变成关于优先级的讨论；同时留余量应对真急事，每周复看。"
+    }
+  ],
+  "dictation": [
+    "If everything is urgent, the word has stopped meaning anything.",
+    "Your job is not to judge who shouts loudest but to find out what each delay really costs.",
+    "The most useful question is simple: what happens if this waits one week?",
+    "A visible ranking turns competing demands into a conversation about priorities."
+  ],
+  "shadow": {
+    "text": "Then put the requests in one ranked list and share it with everyone who asked. Ranking in public is uncomfortable, but it moves the argument to the right place.",
+    "marked": "Then put the requests / in <b>one</b> ranked list / and <b>share</b> it with everyone who asked. //<br>Ranking in <b>public</b> / is <b>uncomfortable</b>, / but it moves the argument / to the <b>right</b> place. //"
+  },
+  "prompts": [
+    {
+      "q": "销售总监私信你的工程师，要求今天就修他客户的问题，打乱了排期。用 30 秒跟他沟通，用“等一周会怎样”来定优先级。",
+      "ref": "Hi, I saw your message to Leo about the client issue, and I want to help. To place it correctly, can I ask one thing: what happens if this waits until next week? If the client might cancel, that changes everything, and we'll move it up today. If it's more of an annoyance, it goes on our shared list, and you can see exactly where it sits.",
+      "ref_zh": "你好，我看到你给 Leo 发的关于客户问题的消息，我想帮忙。为了排准优先级，我能问一句吗：这件事等到下周会怎样？如果客户可能会解约，那就完全不一样了，我们今天就把它提上来。如果更多是个烦心事，它就会进我们的共享清单，你能清楚看到它排在哪里。"
+    },
+    {
+      "q": "周会上三个需求方都说自己最急。用 30 秒提出公开排序的做法。",
+      "ref": "I hear that all three of these feel urgent, and I'm sure they are, from where each of you sits. We can't do all three this week, so here's what I propose. I'll put them in one ranked list, based on what each delay actually costs, and share it in our channel by this afternoon. If anyone disagrees with the order, let's discuss it together with the PM.",
+      "ref_zh": "我知道这三件事都让人觉得很急，站在各自的角度，我相信确实都急。这周我们没法三件都做，所以我的提议是：我按每件事延期的实际代价排一张清单，今天下午之前发到群里。如果有人不同意这个顺序，我们拉上 PM 一起讨论。"
+    }
+  ],
+  "words": [
+    {
+      "w": "dishonest",
+      "ipa": "/dɪsˈɑːnɪst/",
+      "zh": "不诚实的",
+      "ex": "It would be dishonest to call this feature finished."
+    },
+    {
+      "w": "rational",
+      "ipa": "/ˈræʃənəl/",
+      "zh": "理性的、合理的",
+      "ex": "Given the deadline, cutting the feature was a rational choice."
+    },
+    {
+      "w": "persistent",
+      "ipa": "/pərˈsɪstənt/",
+      "zh": "坚持不懈的、反复纠缠的",
+      "ex": "He was persistent until the platform team fixed the quota."
+    },
+    {
+      "w": "exposure",
+      "ipa": "/ɪkˈspoʊʒər/",
+      "zh": "暴露（风险）",
+      "ex": "This bug creates an exposure for user email addresses."
+    },
+    {
+      "w": "slack",
+      "ipa": "/slæk/",
+      "zh": "余量、松弛空间",
+      "ex": "Leave some slack in the sprint for on-call work."
+    },
+    {
+      "w": "transparent",
+      "ipa": "/trænsˈperənt/",
+      "zh": "透明的、公开的",
+      "ex": "We try to be transparent about how we rank requests."
+    },
+    {
+      "w": "friction",
+      "ipa": "/ˈfrɪkʃən/",
+      "zh": "摩擦、阻力",
+      "ex": "A shared calendar removed a lot of friction between the two teams."
+    },
+    {
+      "w": "urgent",
+      "ipa": "/ˈɜːrdʒənt/",
+      "zh": "紧急的",
+      "ex": "Is this urgent, or can it wait until after the release?"
+    },
+    {
+      "w": "ranking",
+      "ipa": "/ˈræŋkɪŋ/",
+      "zh": "排序、排名",
+      "ex": "Let's agree on the ranking before we assign anyone."
+    }
+  ]
+}

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Telling the Story Behind a Metric · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "017", "title": "Telling the Story Behind a Metric", "meta": "B2 · 约 270 词 · 场景：指标解读", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Up and to the Right Is Not an Update", "heading_zh": "1. 曲线往上走不等于汇报", "rows": [[{"id": "s0_0_0", "md": "\"Daily active users grew eight percent this month.\"", "text": "\"Daily active users grew eight percent this month.\"", "zh": "「本月日活增长了百分之八。」", "sp": null}, {"id": "s0_0_1", "md": "In many weekly reviews, that sentence is the whole update, followed by a smile and the next slide.", "text": "In many weekly reviews, that sentence is the whole update, followed by a smile and the next slide.", "zh": "在很多周会上，这句话就是汇报的全部，接着一个微笑，翻到下一页。", "sp": null}, {"id": "s0_0_2", "md": "But it ==raises== more questions than it answers.", "text": "But it raises more questions than it answers.", "zh": "但它带出的问题比它回答的还多。", "sp": null}], [{"id": "s0_1_0", "md": "Did the new feature work, or did a holiday bring people back?", "text": "Did the new feature work, or did a holiday bring people back?", "zh": "是新功能起作用了，还是假期把人带回来了？", "sp": null}, {"id": "s0_1_1", "md": "Did all users grow, or did one marketing campaign pull in a wave of users who will leave next week?", "text": "Did all users grow, or did one marketing campaign pull in a wave of users who will leave next week?", "zh": "是所有用户都在涨，还是某次营销活动拉来了一波下周就会走的用户？", "sp": null}, {"id": "s0_1_2", "md": "Without a cause, a number cannot ==guide== any decision, so nobody knows whether to do more of something or stop it.", "text": "Without a cause, a number cannot guide any decision, so nobody knows whether to do more of something or stop it.", "zh": "不知道原因，数字就没法指导任何决策，所以没人知道这件事是该加码还是该叫停。", "sp": null}], [{"id": "s0_2_0", "md": "**A metric tells you what happened; your job is to explain why.**", "text": "A metric tells you what happened; your job is to explain why.", "zh": "指标告诉你发生了什么，你的工作是解释为什么。", "sp": null}, {"id": "s0_2_1", "md": "Leaders do not need you to read the chart to them.", "text": "Leaders do not need you to read the chart to them.", "zh": "领导不需要你把图表念给他们听。", "sp": null}, {"id": "s0_2_2", "md": "They need your ==interpretation==, and your honest view of how sure you are.", "text": "They need your interpretation, and your honest view of how sure you are.", "zh": "他们需要的是你的解读，以及你对自己有几分把握的坦诚判断。", "sp": null}]]}, {"heading": "2. What Moved, Why, and What Now", "heading_zh": "2. 什么变了、为什么、接下来怎么办", "rows": [[{"id": "s1_0_0", "md": "Start by saying what moved, and __break it down__ before anyone asks.", "text": "Start by saying what moved, and break it down before anyone asks.", "zh": "先说什么变了，并且在别人问之前就拆开来讲。", "sp": null}, {"id": "s1_0_1", "md": "\"Most of the growth came from new users in two markets, while existing users stayed flat.\"", "text": "\"Most of the growth came from new users in two markets, while existing users stayed flat.\"", "zh": "「增长主要来自两个市场的新用户，老用户基本持平。」", "sp": null}, {"id": "s1_0_2", "md": "That one split often changes the whole ==conversation==.", "text": "That one split often changes the whole conversation.", "zh": "光这一个拆分，往往就能改变整个讨论的走向。", "sp": null}], [{"id": "s1_1_0", "md": "Next, give your best explanation, and keep facts apart from guesses.", "text": "Next, give your best explanation, and keep facts apart from guesses.", "zh": "接着给出你最好的解释，并且把事实和猜测分开。", "sp": null}, {"id": "s1_1_1", "md": "\"We know the campaign launched on the third; we suspect the referral change helped too, but we haven't tested it yet.\"", "text": "\"We know the campaign launched on the third; we suspect the referral change helped too, but we haven't tested it yet.\"", "zh": "「我们知道活动是三号上线的；我们怀疑邀请机制的改动也有帮助，但还没验证。」", "sp": null}, {"id": "s1_1_2", "md": "**Being clear about what you suspect is as important as being clear about what you know.**", "text": "Being clear about what you suspect is as important as being clear about what you know.", "zh": "讲清楚你怀疑什么，和讲清楚你知道什么同样重要。", "sp": null}], [{"id": "s1_2_0", "md": "Then say what happens next.", "text": "Then say what happens next.", "zh": "然后说接下来怎么做。", "sp": null}, {"id": "s1_2_1", "md": "\"We'll check retention for these new users in two weeks before we __double down__ on the campaign.\"", "text": "\"We'll check retention for these new users in two weeks before we double down on the campaign.\"", "zh": "「在活动上加大投入之前，我们会在两周后看一下这批新用户的留存。」", "sp": null}], [{"id": "s1_3_0", "md": "Finally, treat good news with the same ==suspicion== as bad news.", "text": "Finally, treat good news with the same suspicion as bad news.", "zh": "最后，对好消息要像对坏消息一样保持怀疑。", "sp": null}, {"id": "s1_3_1", "md": "Teams dig deep when a number drops, but they rarely question a number that __makes them look good__.", "text": "Teams dig deep when a number drops, but they rarely question a number that makes them look good.", "zh": "数字一掉，团队就会刨根问底，但很少有人去质疑一个让自己脸上有光的数字。", "sp": null}, {"id": "s1_3_2", "md": "Asking \"Why did this go up?\" with real ==curiosity== is what makes your reports worth trusting.", "text": "Asking \"Why did this go up?\" with real curiosity is what makes your reports worth trusting.", "zh": "带着真正的好奇心去问「这个为什么涨了？」，才让你的汇报值得信赖。", "sp": null}]]}], "gist": [{"q": "为什么“日活涨了百分之八”本身不算一个好的汇报？", "a": "没有原因，就不知道是新功能起效、节假日还是一次性活动，也无法据此做决策。"}, {"q": "讲指标故事的三步是什么？", "a": "说清什么变了并主动拆分；给出最佳解释并区分事实和猜测；说明下一步行动。"}, {"q": "作者为什么提醒对好消息也要保持怀疑？", "a": "团队常只深挖下跌而不追问上涨；对上涨同样追问原因，汇报才值得信任。"}], "dictation": [{"id": "s0_2_0", "text": "A metric tells you what happened; your job is to explain why."}, {"id": "s1_1_2", "text": "Being clear about what you suspect is as important as being clear about what you know."}, {"id": "s1_1_0", "text": "Next, give your best explanation, and keep facts apart from guesses."}, {"id": "s1_0_2", "text": "That one split often changes the whole conversation."}], "shadow": {"text": "Next, give your best explanation, and keep facts apart from guesses. \"We know the campaign launched on the third; we suspect the referral change helped too, but we haven't tested it yet.\"", "marked": "<b>Next</b>, / give your <b>best</b> explanation, / and keep <b>facts</b> apart from <b>guesses</b>. //<br>\"We <b>know</b> the campaign launched on the <b>third</b>; / we <b>suspect</b> the referral change helped too, / but we <b>haven't</b> tested it yet.\" //"}, "prompts": [{"q": "周会上你要汇报：本周搜索点击率下降了百分之五。用 30 秒讲清楚：哪里在降、你知道的原因和猜测、下一步怎么做。", "ref": "Search click-through dropped about five percent this week, but it isn't across the board. Almost all of the drop is on Android, and only on the latest app version. We know that version changed the result layout. We suspect the new thumbnails are pushing results below the fold, but we haven't confirmed it. We're running a quick test with the old layout and should have an answer by Friday.", "ref_zh": "这周搜索点击率下降了大约百分之五，但并不是全面下降。几乎所有的下降都在安卓端，而且只在最新版本上。我们知道这个版本改了结果页的布局。我们怀疑新加的缩略图把结果挤到了首屏以下，但还没证实。我们正在用旧布局跑一个快速实验，周五前应该能有结论。", "id": "ref0"}, {"q": "你的团队指标大涨，大家都很开心。用 30 秒在汇报里提醒大家先别急着庆祝，说明你会如何验证原因。", "ref": "This is great news, and I don't want to downplay it. But before we celebrate, I want to understand why it went up. The jump lines up with the holiday weekend, and we saw a similar spike last year that disappeared a week later. So over the next two weeks, we'll compare it with the same period last year and check if new users are sticking around. Then we'll know how much credit the feature really deserves.", "ref_zh": "这是个好消息，我不想给它泼冷水。但在庆祝之前，我想先搞清楚它为什么涨。这次上涨正好赶上假期周末，而去年我们也见过类似的峰值，一周后就消失了。所以接下来两周，我们会跟去年同期做对比，再看看新用户有没有留下来。到时候就知道这个功能到底该记多少功劳了。", "id": "ref1"}], "words": [{"w": "raise (questions)", "ipa": "/reɪz/", "zh": "引出、提出（问题）", "ex": "The spike in refunds raises questions about the new checkout.", "tts_w": "raise", "id": "w0"}, {"w": "guide (v.)", "ipa": "/ɡaɪd/", "zh": "指导、引导", "ex": "Let the user research guide the roadmap, not our opinions.", "tts_w": "guide", "id": "w1"}, {"w": "interpretation", "ipa": "/ɪnˌtɜːrprɪˈteɪʃən/", "zh": "解读", "ex": "My interpretation is that users like the feature but can't find it.", "id": "w2"}, {"w": "conversation", "ipa": "/ˌkɑːnvərˈseɪʃən/", "zh": "讨论、对话", "ex": "Showing the cost per user changed the conversation with finance.", "id": "w3"}, {"w": "suspicion", "ipa": "/səˈspɪʃən/", "zh": "怀疑", "ex": "My suspicion is that the bot traffic is inflating our numbers.", "id": "w4"}, {"w": "curiosity", "ipa": "/ˌkjʊriˈɑːsəti/", "zh": "好奇心", "ex": "Approach the outage with curiosity, not blame.", "id": "w5"}, {"w": "break down", "ipa": "/breɪk daʊn/", "zh": "拆分、细分", "ex": "Can you break down the latency by region?", "id": "w6"}, {"w": "double down (on)", "ipa": "/ˈdʌbəl daʊn/", "zh": "加倍投入", "ex": "Before we double down on video, let's check the retention data.", "tts_w": "double down", "id": "w7"}, {"w": "suspect (v.)", "ipa": "/səˈspekt/", "zh": "怀疑、猜想", "ex": "I suspect the slowdown comes from the new logging library.", "tts_w": "suspect", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Up and to the Right Is Not an Update", "zh": "1. 曲线往上走不等于汇报", "start": 0.0, "end": 3.288, "words": [[0.118, 0.382], [0.934, 1.145], [1.263, 1.329], [1.342, 1.434], [1.447, 1.553], [1.566, 1.908], [2.0, 2.092], [2.105, 2.316], [2.329, 2.408], [2.421, 2.908]]}, {"kind": "s", "id": "s0_0_0", "md": "\"Daily active users grew eight percent this month.\"", "zh": "「本月日活增长了百分之八。」", "sp": null, "gap": false, "start": 3.288, "end": 6.672, "words": [[3.472, 3.683], [3.762, 4.077], [4.091, 4.525], [4.538, 4.854], [4.972, 5.17], [5.183, 5.63], [5.643, 5.814], [5.827, 6.262]]}, {"kind": "s", "id": "s0_0_1", "md": "In many weekly reviews, that sentence is the whole update, followed by a smile and the next slide.", "zh": "在很多周会上，这句话就是汇报的全部，接着一个微笑，翻到下一页。", "sp": null, "gap": false, "start": 6.672, "end": 13.56, "words": [[6.777, 6.922], [6.935, 7.251], [7.264, 7.633], [7.646, 8.304], [8.567, 8.751], [8.764, 9.29], [9.396, 9.501], [9.514, 9.593], [9.606, 9.935], [10.001, 10.461], [10.843, 11.238], [11.251, 11.422], [11.435, 11.501], [11.514, 12.054], [12.277, 12.33], [12.343, 12.409], [12.422, 12.711], [12.725, 13.172]]}, {"kind": "s", "id": "s0_0_2", "md": "But it ==raises== more questions than it answers.", "zh": "但它带出的问题比它回答的还多。", "sp": null, "gap": false, "start": 13.56, "end": 16.368, "words": [[13.678, 13.757], [13.771, 13.902], [13.915, 14.271], [14.284, 14.52], [14.534, 15.099], [15.113, 15.257], [15.271, 15.363], [15.376, 15.968]]}, {"kind": "s", "id": "s0_1_0", "md": "Did the new feature work, or did a holiday bring people back?", "zh": "是新功能起作用了，还是假期把人带回来了？", "sp": null, "gap": true, "start": 16.368, "end": 20.136, "words": [[16.418, 16.615], [16.629, 16.694], [16.707, 16.944], [16.957, 17.339], [17.352, 17.629], [18.036, 18.102], [18.115, 18.247], [18.26, 18.3], [18.313, 18.8], [18.813, 19.01], [19.023, 19.3], [19.313, 19.747]]}, {"kind": "s", "id": "s0_1_1", "md": "Did all users grow, or did one marketing campaign pull in a wave of users who will leave next week?", "zh": "是所有用户都在涨，还是某次营销活动拉来了一波下周就会走的用户？", "sp": null, "gap": false, "start": 20.136, "end": 26.64, "words": [[20.254, 20.531], [20.544, 20.781], [20.794, 21.254], [21.268, 21.649], [22.057, 22.136], [22.149, 22.32], [22.333, 22.557], [22.57, 23.044], [23.057, 23.636], [23.649, 23.939], [23.952, 24.004], [24.018, 24.097], [24.11, 24.373], [24.386, 24.491], [24.504, 25.044], [25.057, 25.175], [25.189, 25.346], [25.36, 25.583], [25.597, 25.912], [25.925, 26.254]]}, {"kind": "s", "id": "s0_1_2", "md": "Without a cause, a number cannot ==guide== any decision, so nobody knows whether to do more of something or stop it.", "zh": "不知道原因，数字就没法指导任何决策，所以没人知道这件事是该加码还是该叫停。", "sp": null, "gap": false, "start": 26.64, "end": 33.864, "words": [[26.758, 27.035], [27.048, 27.101], [27.114, 27.64], [27.916, 27.943], [27.956, 28.311], [28.324, 28.758], [28.772, 29.127], [29.272, 29.429], [29.443, 29.982], [30.377, 30.508], [30.522, 30.903], [30.916, 31.206], [31.219, 31.482], [31.495, 31.574], [31.587, 31.811], [31.824, 32.127], [32.14, 32.232], [32.245, 32.732], [32.851, 32.916], [32.929, 33.285], [33.298, 33.482]]}, {"kind": "s", "id": "s0_2_0", "md": "**A metric tells you what happened; your job is to explain why.**", "zh": "指标告诉你发生了什么，你的工作是解释为什么。", "sp": null, "gap": true, "start": 33.864, "end": 37.752, "words": [[33.956, 33.996], [34.009, 34.39], [34.403, 34.693], [34.706, 34.785], [34.798, 34.917], [34.93, 35.351], [35.772, 35.89], [35.903, 36.298], [36.39, 36.469], [36.482, 36.588], [36.601, 37.061], [37.075, 37.351]]}, {"kind": "s", "id": "s0_2_1", "md": "Leaders do not need you to read the chart to them.", "zh": "领导不需要你把图表念给他们听。", "sp": null, "gap": false, "start": 37.752, "end": 40.728, "words": [[37.857, 38.252], [38.344, 38.476], [38.489, 38.805], [38.818, 39.094], [39.107, 39.226], [39.239, 39.357], [39.37, 39.581], [39.594, 39.66], [39.673, 39.976], [39.989, 40.094], [40.107, 40.331]]}, {"kind": "s", "id": "s0_2_2", "md": "They need your ==interpretation==, and your honest view of how sure you are.", "zh": "他们需要的是你的解读，以及你对自己有几分把握的坦诚判断。", "sp": null, "gap": false, "start": 40.728, "end": 44.904, "words": [[40.846, 40.939], [40.952, 41.149], [41.162, 41.294], [41.307, 42.189], [42.504, 42.557], [42.57, 42.781], [42.794, 43.123], [43.136, 43.425], [43.504, 43.583], [43.596, 43.728], [43.741, 44.044], [44.057, 44.202], [44.215, 44.504]]}, {"kind": "h", "id": "h1", "md": "2. What Moved, Why, and What Now", "zh": "2. 什么变了、为什么、接下来怎么办", "start": 44.904, "end": 48.144, "words": [[45.009, 45.22], [45.68, 45.878], [45.891, 46.443], [46.72, 47.049], [47.075, 47.193], [47.207, 47.43], [47.443, 47.746]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by saying what moved, and __break it down__ before anyone asks.", "zh": "先说什么变了，并且在别人问之前就拆开来讲。", "sp": null, "gap": false, "start": 48.144, "end": 52.608, "words": [[48.249, 48.565], [48.578, 48.71], [48.723, 49.052], [49.065, 49.249], [49.262, 49.776], [50.078, 50.17], [50.183, 50.473], [50.486, 50.578], [50.591, 50.868], [50.881, 51.249], [51.262, 51.605], [51.618, 52.223]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Most of the growth came from new users in two markets, while existing users stayed flat.\"", "zh": "「增长主要来自两个市场的新用户，老用户基本持平。」", "sp": null, "gap": false, "start": 52.608, "end": 58.728, "words": [[52.792, 52.897], [52.976, 53.042], [53.055, 53.134], [53.147, 53.476], [53.49, 53.819], [53.832, 54.042], [54.055, 54.279], [54.292, 54.845], [54.858, 54.976], [54.99, 55.24], [55.253, 55.845], [56.147, 56.318], [56.332, 56.95], [56.963, 57.437], [57.45, 57.819], [57.832, 58.305]]}, {"kind": "s", "id": "s1_0_2", "md": "That one split often changes the whole ==conversation==.", "zh": "光这一个拆分，往往就能改变整个讨论的走向。", "sp": null, "gap": false, "start": 58.728, "end": 62.232, "words": [[58.846, 59.004], [59.017, 59.267], [59.281, 59.702], [59.807, 60.215], [60.228, 60.728], [60.741, 60.833], [60.846, 61.07], [61.083, 61.846]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, give your best explanation, and keep facts apart from guesses.", "zh": "接着给出你最好的解释，并且把事实和猜测分开。", "sp": null, "gap": true, "start": 62.232, "end": 66.936, "words": [[62.337, 62.811], [63.061, 63.206], [63.219, 63.35], [63.364, 63.693], [63.706, 64.456], [64.732, 64.837], [64.85, 65.1], [65.114, 65.495], [65.508, 65.837], [65.85, 66.008], [66.021, 66.548]]}, {"kind": "s", "id": "s1_1_1", "md": "\"We know the campaign launched on the third; we suspect the referral change helped too, but we haven't tested it yet.\"", "zh": "「我们知道活动是三号上线的；我们怀疑邀请机制的改动也有帮助，但还没验证。」", "sp": null, "gap": false, "start": 66.936, "end": 73.872, "words": [[67.133, 67.173], [67.173, 67.304], [67.318, 67.41], [67.423, 67.989], [68.002, 68.37], [68.383, 68.476], [68.489, 68.554], [68.568, 69.002], [69.397, 69.502], [69.515, 69.962], [69.975, 70.054], [70.068, 70.502], [70.515, 70.844], [70.857, 71.12], [71.133, 71.502], [71.818, 71.949], [71.962, 72.081], [72.094, 72.449], [72.462, 72.857], [72.87, 72.989], [73.002, 73.37]]}, {"kind": "s", "id": "s1_1_2", "md": "**Being clear about what you suspect is as important as being clear about what you know.**", "zh": "讲清楚你怀疑什么，和讲清楚你知道什么同样重要。", "sp": null, "gap": false, "start": 73.872, "end": 78.696, "words": [[73.977, 74.227], [74.24, 74.543], [74.556, 74.819], [74.833, 74.99], [75.004, 75.096], [75.109, 75.701], [75.793, 75.938], [75.951, 76.069], [76.083, 76.675], [76.767, 76.885], [76.898, 77.135], [77.148, 77.464], [77.477, 77.74], [77.754, 77.911], [77.925, 78.017], [78.03, 78.306]]}, {"kind": "s", "id": "s1_2_0", "md": "Then say what happens next.", "zh": "然后说接下来怎么做。", "sp": null, "gap": true, "start": 78.696, "end": 80.52, "words": [[78.814, 78.92], [78.933, 79.091], [79.104, 79.235], [79.249, 79.617], [79.63, 80.13]]}, {"kind": "s", "id": "s1_2_1", "md": "\"We'll check retention for these new users in two weeks before we __double down__ on the campaign.\"", "zh": "「在活动上加大投入之前，我们会在两周后看一下这批新用户的留存。」", "sp": null, "gap": false, "start": 80.52, "end": 86.04, "words": [[80.704, 80.704], [80.783, 81.007], [81.02, 81.546], [81.559, 81.678], [81.691, 81.902], [81.915, 82.138], [82.152, 82.665], [82.678, 82.796], [82.809, 83.073], [83.086, 83.454], [83.533, 83.994], [84.007, 84.138], [84.152, 84.441], [84.454, 84.862], [84.875, 84.954], [84.967, 85.033], [85.046, 85.638]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, treat good news with the same ==suspicion== as bad news.", "zh": "最后，对好消息要像对坏消息一样保持怀疑。", "sp": null, "gap": true, "start": 86.04, "end": 90.528, "words": [[86.211, 86.658], [86.935, 87.264], [87.277, 87.461], [87.474, 87.79], [87.803, 87.948], [87.961, 88.04], [88.053, 88.369], [88.382, 89.04], [89.185, 89.316], [89.329, 89.645], [89.658, 90.145]]}, {"kind": "s", "id": "s1_3_1", "md": "Teams dig deep when a number drops, but they rarely question a number that __makes them look good__.", "zh": "数字一掉，团队就会刨根问底，但很少有人去质疑一个让自己脸上有光的数字。", "sp": null, "gap": false, "start": 90.528, "end": 96.48, "words": [[90.646, 91.002], [91.015, 91.331], [91.436, 91.752], [91.831, 91.936], [91.949, 91.988], [92.002, 92.291], [92.304, 92.883], [93.146, 93.278], [93.291, 93.436], [93.449, 93.87], [93.883, 94.357], [94.37, 94.41], [94.423, 94.883], [94.896, 95.054], [95.067, 95.344], [95.357, 95.502], [95.515, 95.752], [95.765, 96.081]]}, {"kind": "s", "id": "s1_3_2", "md": "Asking \"Why did this go up?\" with real ==curiosity== is what makes your reports worth trusting.", "zh": "带着真正的好奇心去问「这个为什么涨了？」，才让你的汇报值得信赖。", "sp": null, "gap": false, "start": 96.48, "end": 102.6, "words": [[96.585, 97.072], [97.335, 97.48], [97.493, 97.651], [97.664, 97.835], [97.848, 98.125], [98.138, 98.401], [98.717, 98.901], [98.914, 99.191], [99.204, 100.085], [100.23, 100.348], [100.362, 100.572], [100.585, 100.875], [100.888, 101.019], [101.033, 101.454], [101.467, 101.651], [101.664, 102.204]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

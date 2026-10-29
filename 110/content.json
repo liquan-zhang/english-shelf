@@ -1,0 +1,237 @@
+{
+  "id": "110",
+  "type": "dialogue",
+  "title": "Ordering at a Hawker Centre",
+  "meta": "B2 · 约 260 词 · 场景：熟食中心点鸡饭与打包",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Hawker",
+      "name_zh": "摊主",
+      "voice": "en-AU-WilliamMultilingualNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. At the Chicken Rice Stall",
+      "heading_zh": "1. 在鸡饭摊点餐",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Hi, boss. What would you like?",
+          "zh": "老板，要什么？"
+        },
+        {
+          "sp": "A",
+          "en": "**Hi. One chicken rice, please. Can I have roasted instead of steamed?**",
+          "zh": "你好，一份鸡饭。能要烧鸡，不要白斩鸡吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Sure. Breast or thigh? Thigh is more tender.",
+          "zh": "可以。要鸡胸还是鸡腿？鸡腿比较嫩。"
+        },
+        {
+          "sp": "A",
+          "en": "Thigh, please. And one more, a ==small portion== for my son, with no chilli.",
+          "zh": "鸡腿。再来一份小份给我儿子，不要辣椒。"
+        },
+        {
+          "sp": "B",
+          "en": "Okay, one small, no chilli. Eating here or ==takeaway==?",
+          "zh": "好，一份小的，不要辣。在这里吃还是打包？"
+        },
+        {
+          "sp": "A",
+          "en": "Eating here. We're at table forty-two, near the drinks stall.",
+          "zh": "在这里吃。我们坐四十二号桌，饮料摊旁边。"
+        },
+        {
+          "sp": "B",
+          "en": "Okay, I'll bring it over. Want any extras? We have ==braised== egg and ==beansprouts==.",
+          "zh": "好，我端过去。要加什么吗？有卤蛋和豆芽。"
+        },
+        {
+          "sp": "A",
+          "en": "One braised egg, please. And could you __put the sauce on the side__ for the small one?",
+          "zh": "加一个卤蛋。小份的酱能另外放吗？"
+        },
+        {
+          "sp": "B",
+          "en": "No problem. That's eight fifty altogether.",
+          "zh": "没问题。一共八块五。"
+        },
+        {
+          "sp": "A",
+          "en": "**Can I pay by PayNow?**",
+          "zh": "可以用 PayNow 付吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Sure, scan the code here. Just __show me the screen__ after.",
+          "zh": "可以，扫这里的码。付完给我看一下屏幕。"
+        }
+      ]
+    },
+    {
+      "heading": "2. A Mix-up and a Takeaway Order",
+      "heading_zh": "2. 搞错了，再打包一份",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "Hi, sorry, I ordered here a few minutes ago. I think the small portion came with chilli by mistake.",
+          "zh": "你好，不好意思，我几分钟前在这里点的。小份那盘好像不小心放了辣椒。"
+        },
+        {
+          "sp": "B",
+          "en": "Oh, sorry about that. I'll make you a new one, no chilli this time.",
+          "zh": "哦，不好意思。我给你重新做一份，这次不放辣。"
+        },
+        {
+          "sp": "A",
+          "en": "Thanks. And while I'm here, could I __order one to go__? My wife is working late.",
+          "zh": "谢谢。顺便再打包一份可以吗？我太太加班晚回来。"
+        },
+        {
+          "sp": "B",
+          "en": "Sure. Same as yours?",
+          "zh": "好。跟你的一样？"
+        },
+        {
+          "sp": "A",
+          "en": "Roasted chicken rice, but with less rice and more ==cucumber==. And please __pack the chilli separately__.",
+          "zh": "烧鸡饭，饭少一点，黄瓜多一点。辣椒请另外装。"
+        },
+        {
+          "sp": "B",
+          "en": "Okay. For takeaway, there's a twenty cent charge for the ==container==. Is that alright?",
+          "zh": "好。打包的话餐盒要收两毛钱，可以吗？"
+        },
+        {
+          "sp": "A",
+          "en": "That's fine. Could you also pack the soup? Make sure it's tied tight so it doesn't ==spill==.",
+          "zh": "可以。汤也帮我装一下？绑紧一点，别洒了。"
+        },
+        {
+          "sp": "B",
+          "en": "Will do. Do you need any ==cutlery==?",
+          "zh": "好的。要餐具吗？"
+        },
+        {
+          "sp": "A",
+          "en": "**No need, we have some at home. We're trying to use less plastic.**",
+          "zh": "不用，家里有。我们在尽量少用塑料。"
+        },
+        {
+          "sp": "B",
+          "en": "Good on you. Here's the new plate for your boy. I'll call you when the takeaway's ready.",
+          "zh": "真不错。这是给你儿子的新一份。打包的好了我叫你。"
+        },
+        {
+          "sp": "A",
+          "en": "Great, thanks for __sorting it out__ so quickly.",
+          "zh": "好的，谢谢你这么快就弄好了。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "「你」给自己和儿子各点了什么？",
+      "a": "自己要烧鸡饭配鸡腿，加一个卤蛋；儿子要小份、不要辣椒，酱另外放。"
+    },
+    {
+      "q": "儿子那份出了什么问题？摊主怎么处理？",
+      "a": "不小心放了辣椒；摊主重新做了一份不辣的。"
+    },
+    {
+      "q": "给太太打包时「你」提了哪些要求？",
+      "a": "烧鸡饭，饭少黄瓜多，辣椒另装，汤要绑紧别洒；餐盒收两毛钱，不要餐具。"
+    }
+  ],
+  "dictation": [
+    "Hi. One chicken rice, please. Can I have roasted instead of steamed?",
+    "Can I pay by PayNow?",
+    "Roasted chicken rice, but with less rice and more cucumber. And please pack the chilli separately.",
+    "No need, we have some at home. We're trying to use less plastic."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Hi, sorry, I ordered here a few minutes ago. I think the small portion came with chilli by mistake.",
+    "marked": "Hi, sorry, / I ordered here / a few <b>minutes</b> ago. //<br>I think the <b>small</b> portion / came with <b>chilli</b> / by <b>mistake</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你在咖啡摊想点一杯少糖的冰奶茶，和一杯给孩子的热美禄，还想要一个袋子提走。跟摊主说清楚。",
+      "ref": "Hi, uncle. Can I have one iced milk tea, less sugar, and one hot Milo for my son? Not too hot, please, he's only four. Both to take away. Could you put them in a bag with a handle, so I can carry them? I'm also buying food from the next stall. Thanks.",
+      "ref_zh": "你好，大叔。一杯少糖冰奶茶，再给我儿子一杯热美禄，别太烫，他才四岁。都打包。能用带提手的袋子装吗？方便我拎着，我还要去隔壁摊买吃的。谢谢。"
+    },
+    {
+      "q": "找不到座位，你看到一张桌子上放着纸巾包（有人占座）。礼貌地问旁边的人能不能拼桌。",
+      "ref": "Excuse me, is anyone sitting here? I see the tissue packet, so I wasn't sure. If your friends are coming, no problem, we'll look somewhere else. But if there's space, would you mind if my son and I shared the table with you? We'll only be about fifteen minutes.",
+      "ref_zh": "不好意思，这里有人坐吗？我看到放着纸巾，所以不太确定。如果你朋友要来，没关系，我们去别处找。不过如果有空位，介意我和儿子跟你们拼个桌吗？我们大概只坐十五分钟。"
+    }
+  ],
+  "words": [
+    {
+      "w": "small portion",
+      "ipa": "/smɔːl ˈpɔːrʃən/",
+      "zh": "小份",
+      "ex": "One small portion of fried rice, please."
+    },
+    {
+      "w": "takeaway",
+      "ipa": "/ˈteɪkəweɪ/",
+      "zh": "外带；打包",
+      "ex": "Is this for here or takeaway?"
+    },
+    {
+      "w": "braised",
+      "ipa": "/breɪzd/",
+      "zh": "卤的；炖的",
+      "ex": "The braised pork belly melts in your mouth."
+    },
+    {
+      "w": "beansprouts",
+      "ipa": "/ˈbiːnspraʊts/",
+      "zh": "豆芽",
+      "ex": "Add some beansprouts to the noodles, please."
+    },
+    {
+      "w": "container",
+      "ipa": "/kənˈteɪnər/",
+      "zh": "容器；餐盒",
+      "ex": "Bring your own container and get a discount."
+    },
+    {
+      "w": "cutlery",
+      "ipa": "/ˈkʌtləri/",
+      "zh": "餐具",
+      "ex": "Do you need cutlery with your order?"
+    },
+    {
+      "w": "cucumber",
+      "ipa": "/ˈkjuːkʌmbər/",
+      "zh": "黄瓜",
+      "ex": "Could I have extra cucumber with my rice?"
+    },
+    {
+      "w": "spill",
+      "ipa": "/spɪl/",
+      "zh": "洒出来",
+      "ex": "Hold the cup straight so it doesn't spill."
+    },
+    {
+      "w": "sort out",
+      "ipa": "/sɔːrt aʊt/",
+      "zh": "解决；处理好",
+      "ex": "Thanks for sorting out the problem so fast."
+    }
+  ]
+}

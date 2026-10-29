@@ -1,0 +1,189 @@
+{
+  "id": "017",
+  "title": "Telling the Story Behind a Metric",
+  "meta": "B2 · 约 270 词 · 场景：指标解读",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Up and to the Right Is Not an Update",
+      "paragraphs": [
+        [
+          "\"Daily active users grew eight percent this month.\"",
+          "In many weekly reviews, that sentence is the whole update, followed by a smile and the next slide.",
+          "But it ==raises== more questions than it answers."
+        ],
+        [
+          "Did the new feature work, or did a holiday bring people back?",
+          "Did all users grow, or did one marketing campaign pull in a wave of users who will leave next week?",
+          "Without a cause, a number cannot ==guide== any decision, so nobody knows whether to do more of something or stop it."
+        ],
+        [
+          "**A metric tells you what happened; your job is to explain why.**",
+          "Leaders do not need you to read the chart to them.",
+          "They need your ==interpretation==, and your honest view of how sure you are."
+        ]
+      ],
+      "heading_zh": "1. 曲线往上走不等于汇报",
+      "paragraphs_zh": [
+        [
+          "「本月日活增长了百分之八。」",
+          "在很多周会上，这句话就是汇报的全部，接着一个微笑，翻到下一页。",
+          "但它带出的问题比它回答的还多。"
+        ],
+        [
+          "是新功能起作用了，还是假期把人带回来了？",
+          "是所有用户都在涨，还是某次营销活动拉来了一波下周就会走的用户？",
+          "不知道原因，数字就没法指导任何决策，所以没人知道这件事是该加码还是该叫停。"
+        ],
+        [
+          "指标告诉你发生了什么，你的工作是解释为什么。",
+          "领导不需要你把图表念给他们听。",
+          "他们需要的是你的解读，以及你对自己有几分把握的坦诚判断。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. What Moved, Why, and What Now",
+      "paragraphs": [
+        [
+          "Start by saying what moved, and __break it down__ before anyone asks.",
+          "\"Most of the growth came from new users in two markets, while existing users stayed flat.\"",
+          "That one split often changes the whole ==conversation==."
+        ],
+        [
+          "Next, give your best explanation, and keep facts apart from guesses.",
+          "\"We know the campaign launched on the third; we suspect the referral change helped too, but we haven't tested it yet.\"",
+          "**Being clear about what you suspect is as important as being clear about what you know.**"
+        ],
+        [
+          "Then say what happens next.",
+          "\"We'll check retention for these new users in two weeks before we __double down__ on the campaign.\""
+        ],
+        [
+          "Finally, treat good news with the same ==suspicion== as bad news.",
+          "Teams dig deep when a number drops, but they rarely question a number that __makes them look good__.",
+          "Asking \"Why did this go up?\" with real ==curiosity== is what makes your reports worth trusting."
+        ]
+      ],
+      "heading_zh": "2. 什么变了、为什么、接下来怎么办",
+      "paragraphs_zh": [
+        [
+          "先说什么变了，并且在别人问之前就拆开来讲。",
+          "「增长主要来自两个市场的新用户，老用户基本持平。」",
+          "光这一个拆分，往往就能改变整个讨论的走向。"
+        ],
+        [
+          "接着给出你最好的解释，并且把事实和猜测分开。",
+          "「我们知道活动是三号上线的；我们怀疑邀请机制的改动也有帮助，但还没验证。」",
+          "讲清楚你怀疑什么，和讲清楚你知道什么同样重要。"
+        ],
+        [
+          "然后说接下来怎么做。",
+          "「在活动上加大投入之前，我们会在两周后看一下这批新用户的留存。」"
+        ],
+        [
+          "最后，对好消息要像对坏消息一样保持怀疑。",
+          "数字一掉，团队就会刨根问底，但很少有人去质疑一个让自己脸上有光的数字。",
+          "带着真正的好奇心去问「这个为什么涨了？」，才让你的汇报值得信赖。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么“日活涨了百分之八”本身不算一个好的汇报？",
+      "a": "没有原因，就不知道是新功能起效、节假日还是一次性活动，也无法据此做决策。"
+    },
+    {
+      "q": "讲指标故事的三步是什么？",
+      "a": "说清什么变了并主动拆分；给出最佳解释并区分事实和猜测；说明下一步行动。"
+    },
+    {
+      "q": "作者为什么提醒对好消息也要保持怀疑？",
+      "a": "团队常只深挖下跌而不追问上涨；对上涨同样追问原因，汇报才值得信任。"
+    }
+  ],
+  "dictation": [
+    "A metric tells you what happened; your job is to explain why.",
+    "Being clear about what you suspect is as important as being clear about what you know.",
+    "Next, give your best explanation, and keep facts apart from guesses.",
+    "That one split often changes the whole conversation."
+  ],
+  "shadow": {
+    "text": "Next, give your best explanation, and keep facts apart from guesses. \"We know the campaign launched on the third; we suspect the referral change helped too, but we haven't tested it yet.\"",
+    "marked": "<b>Next</b>, / give your <b>best</b> explanation, / and keep <b>facts</b> apart from <b>guesses</b>. //<br>\"We <b>know</b> the campaign launched on the <b>third</b>; / we <b>suspect</b> the referral change helped too, / but we <b>haven't</b> tested it yet.\" //"
+  },
+  "prompts": [
+    {
+      "q": "周会上你要汇报：本周搜索点击率下降了百分之五。用 30 秒讲清楚：哪里在降、你知道的原因和猜测、下一步怎么做。",
+      "ref": "Search click-through dropped about five percent this week, but it isn't across the board. Almost all of the drop is on Android, and only on the latest app version. We know that version changed the result layout. We suspect the new thumbnails are pushing results below the fold, but we haven't confirmed it. We're running a quick test with the old layout and should have an answer by Friday.",
+      "ref_zh": "这周搜索点击率下降了大约百分之五，但并不是全面下降。几乎所有的下降都在安卓端，而且只在最新版本上。我们知道这个版本改了结果页的布局。我们怀疑新加的缩略图把结果挤到了首屏以下，但还没证实。我们正在用旧布局跑一个快速实验，周五前应该能有结论。"
+    },
+    {
+      "q": "你的团队指标大涨，大家都很开心。用 30 秒在汇报里提醒大家先别急着庆祝，说明你会如何验证原因。",
+      "ref": "This is great news, and I don't want to downplay it. But before we celebrate, I want to understand why it went up. The jump lines up with the holiday weekend, and we saw a similar spike last year that disappeared a week later. So over the next two weeks, we'll compare it with the same period last year and check if new users are sticking around. Then we'll know how much credit the feature really deserves.",
+      "ref_zh": "这是个好消息，我不想给它泼冷水。但在庆祝之前，我想先搞清楚它为什么涨。这次上涨正好赶上假期周末，而去年我们也见过类似的峰值，一周后就消失了。所以接下来两周，我们会跟去年同期做对比，再看看新用户有没有留下来。到时候就知道这个功能到底该记多少功劳了。"
+    }
+  ],
+  "words": [
+    {
+      "w": "raise (questions)",
+      "ipa": "/reɪz/",
+      "zh": "引出、提出（问题）",
+      "ex": "The spike in refunds raises questions about the new checkout.",
+      "tts_w": "raise"
+    },
+    {
+      "w": "guide (v.)",
+      "ipa": "/ɡaɪd/",
+      "zh": "指导、引导",
+      "ex": "Let the user research guide the roadmap, not our opinions.",
+      "tts_w": "guide"
+    },
+    {
+      "w": "interpretation",
+      "ipa": "/ɪnˌtɜːrprɪˈteɪʃən/",
+      "zh": "解读",
+      "ex": "My interpretation is that users like the feature but can't find it."
+    },
+    {
+      "w": "conversation",
+      "ipa": "/ˌkɑːnvərˈseɪʃən/",
+      "zh": "讨论、对话",
+      "ex": "Showing the cost per user changed the conversation with finance."
+    },
+    {
+      "w": "suspicion",
+      "ipa": "/səˈspɪʃən/",
+      "zh": "怀疑",
+      "ex": "My suspicion is that the bot traffic is inflating our numbers."
+    },
+    {
+      "w": "curiosity",
+      "ipa": "/ˌkjʊriˈɑːsəti/",
+      "zh": "好奇心",
+      "ex": "Approach the outage with curiosity, not blame."
+    },
+    {
+      "w": "break down",
+      "ipa": "/breɪk daʊn/",
+      "zh": "拆分、细分",
+      "ex": "Can you break down the latency by region?"
+    },
+    {
+      "w": "double down (on)",
+      "ipa": "/ˈdʌbəl daʊn/",
+      "zh": "加倍投入",
+      "ex": "Before we double down on video, let's check the retention data.",
+      "tts_w": "double down"
+    },
+    {
+      "w": "suspect (v.)",
+      "ipa": "/səˈspekt/",
+      "zh": "怀疑、猜想",
+      "ex": "I suspect the slowdown comes from the new logging library.",
+      "tts_w": "suspect"
+    }
+  ]
+}

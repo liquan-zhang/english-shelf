@@ -1,0 +1,233 @@
+{
+  "id": "109",
+  "type": "dialogue",
+  "title": "Paying and Splitting the Bill",
+  "meta": "B2 · 约 250 词 · 场景：结账分单、刷卡失败与开发票",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Server",
+      "name_zh": "服务员",
+      "voice": "en-IN-NeerjaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Checking the Bill",
+      "heading_zh": "1. 核对账单",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "**Excuse me, could we get the bill, please?**",
+          "zh": "不好意思，麻烦买单。"
+        },
+        {
+          "sp": "B",
+          "en": "Sure, here you go. Take your time.",
+          "zh": "好的，给您。您慢慢看。"
+        },
+        {
+          "sp": "A",
+          "en": "Thanks. Quick question. What's this ten percent here?",
+          "zh": "谢谢。问一下，这里的百分之十是什么？"
+        },
+        {
+          "sp": "B",
+          "en": "That's the ==service charge==, and the nine percent below it is ==GST==.",
+          "zh": "那是服务费，下面的百分之九是消费税。"
+        },
+        {
+          "sp": "A",
+          "en": "I see. And I think we've been ==overcharged== for the water. We only had one bottle of sparkling, not two.",
+          "zh": "明白了。另外水好像多收了。我们只要了一瓶气泡水，不是两瓶。"
+        },
+        {
+          "sp": "B",
+          "en": "Let me check. You're right, sorry about that. I'll __take it off__ right away.",
+          "zh": "我查一下。您说得对，不好意思。我马上去掉。"
+        },
+        {
+          "sp": "A",
+          "en": "**Thanks. Is it possible to split the bill four ways?**",
+          "zh": "谢谢。账单能分成四份吗？"
+        },
+        {
+          "sp": "B",
+          "en": "We can split it evenly, or ==itemise== it by what each person ordered. Which would you prefer?",
+          "zh": "可以平均分，也可以按每个人点的分开算。您想怎么分？"
+        },
+        {
+          "sp": "A",
+          "en": "Evenly is fine. Two of us will pay by card, and the other two will __pay by PayNow__.",
+          "zh": "平均分就行。我们两个刷卡，另外两个用 PayNow 付。"
+        },
+        {
+          "sp": "B",
+          "en": "No problem. The PayNow code is on the counter.",
+          "zh": "没问题。PayNow 的二维码在柜台上。"
+        }
+      ]
+    },
+    {
+      "heading": "2. A Card Problem and a Receipt",
+      "heading_zh": "2. 刷卡失败与开发票",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Sorry, sir, your card has been ==declined==.",
+          "zh": "不好意思，先生，您的卡被拒了。"
+        },
+        {
+          "sp": "A",
+          "en": "Really? That's strange. Could you try it once more? Maybe __tap it__ instead of inserting it.",
+          "zh": "真的吗？奇怪。能再试一次吗？也许用拍卡的，不要插卡。"
+        },
+        {
+          "sp": "B",
+          "en": "Same result, I'm afraid. Do you have another card?",
+          "zh": "恐怕还是一样。您有别的卡吗？"
+        },
+        {
+          "sp": "A",
+          "en": "**Let me try this one. Could you check that the first one didn't go through? I don't want to be charged twice.**",
+          "zh": "我试试这张。能确认一下第一张没扣款成功吗？我不想被扣两次。"
+        },
+        {
+          "sp": "B",
+          "en": "Don't worry, it didn't go through. This one's ==approved==.",
+          "zh": "放心，第一张没扣成功。这张通过了。"
+        },
+        {
+          "sp": "A",
+          "en": "Great. Could I also get a ==tax invoice== with the company name on it? It's for a team dinner.",
+          "zh": "好的。能开一张抬头是公司名字的发票吗？这是团队聚餐。"
+        },
+        {
+          "sp": "B",
+          "en": "Sure. I'll need the company name and registration number.",
+          "zh": "可以。我需要公司名称和注册号。"
+        },
+        {
+          "sp": "A",
+          "en": "I'll __write it down__ for you. It's quite a long name.",
+          "zh": "我给你写下来，名字挺长的。"
+        },
+        {
+          "sp": "B",
+          "en": "Thank you. Here's the invoice, and here's a ==breakdown== for everyone.",
+          "zh": "谢谢。这是发票，这是给大家的分账明细。"
+        },
+        {
+          "sp": "A",
+          "en": "**Thanks. That was a lovely dinner, by the way.**",
+          "zh": "谢谢。对了，今晚的饭很好吃。"
+        },
+        {
+          "sp": "B",
+          "en": "Glad you enjoyed it. Please come again.",
+          "zh": "很高兴您喜欢。欢迎再来。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "账单上「你」问了哪两项费用？发现了什么错误？",
+      "a": "百分之十是服务费，百分之九是消费税；气泡水只点了一瓶却收了两瓶的钱。"
+    },
+    {
+      "q": "四个人怎么分账、怎么付？",
+      "a": "平均分成四份；两个人刷卡，两个人用 PayNow。"
+    },
+    {
+      "q": "第一张卡出了什么问题？「你」最后要了什么？",
+      "a": "第一张卡被拒，换了一张才通过，「你」确认了第一张没扣款；最后要了抬头是公司名的发票。"
+    }
+  ],
+  "dictation": [
+    "Excuse me, could we get the bill, please?",
+    "Thanks. Is it possible to split the bill four ways?",
+    "Let me try this one. Could you check that the first one didn't go through? I don't want to be charged twice.",
+    "Great. Could I also get a tax invoice with the company name on it? It's for a team dinner."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Really? That's strange. Could you try it once more? Maybe tap it instead of inserting it.",
+    "marked": "Really? //<br>That's <b>strange</b>. //<br>Could you try it <b>once more</b>? //<br>Maybe <b>tap</b> it / instead of <b>inserting</b> it. //"
+  },
+  "prompts": [
+    {
+      "q": "你和三个朋友吃饭，其中一个人点了很贵的酒，你们不想平均分。跟服务员说明你们想怎么分。",
+      "ref": "Hi, could we split the bill? But not evenly, if that's okay. Could you put the bottle of wine on one bill, for my friend here? Then split everything else three ways between the rest of us. And could you print separate receipts, please? Sorry, I know that's a bit complicated.",
+      "ref_zh": "你好，账单能分开吗？不过不平均分，可以吗？那瓶酒单独算一张单，给我这位朋友。其余的我们三个人平分。麻烦分别打印收据。不好意思，我知道有点复杂。"
+    },
+    {
+      "q": "回家后看银行通知，发现餐厅扣了你两次钱。打电话给餐厅，说明日期、金额，要求退回多扣的那笔。",
+      "ref": "Hi, I had dinner at your restaurant last Friday evening, a table of four. I just checked my bank app, and I've been charged twice for the same amount, about one hundred and twenty dollars. I think the first payment went through after all. Could you check your records and refund the second charge? I can send you a screenshot.",
+      "ref_zh": "你好，我上周五晚上在你们餐厅吃饭，四个人一桌。我刚看了银行应用，同样的金额被扣了两次，每次大概一百二十块。我想第一笔其实是扣成功了。能查一下记录、把第二笔退给我吗？我可以发截图给你们。"
+    }
+  ],
+  "words": [
+    {
+      "w": "service charge",
+      "ipa": "/ˈsɜːrvɪs tʃɑːrdʒ/",
+      "zh": "服务费",
+      "ex": "Most restaurants here add a ten percent service charge."
+    },
+    {
+      "w": "GST",
+      "ipa": "/ˌdʒiː es ˈtiː/",
+      "zh": "消费税（新加坡）",
+      "ex": "Is GST included in this price?"
+    },
+    {
+      "w": "overcharge (v.)",
+      "ipa": "/ˌoʊvərˈtʃɑːrdʒ/",
+      "zh": "多收钱",
+      "ex": "I think the shop overcharged me for the eggs.",
+      "tts_w": "overcharge"
+    },
+    {
+      "w": "itemise",
+      "ipa": "/ˈaɪtəmaɪz/",
+      "zh": "逐项列出",
+      "ex": "Could you itemise the bill for us?"
+    },
+    {
+      "w": "split the bill",
+      "ipa": "/splɪt ðə bɪl/",
+      "zh": "分摊账单",
+      "ex": "Let's split the bill. It's easier."
+    },
+    {
+      "w": "declined",
+      "ipa": "/dɪˈklaɪnd/",
+      "zh": "（卡）被拒",
+      "ex": "My card was declined at the supermarket."
+    },
+    {
+      "w": "approved",
+      "ipa": "/əˈpruːvd/",
+      "zh": "（交易）通过",
+      "ex": "Your payment has been approved."
+    },
+    {
+      "w": "tax invoice",
+      "ipa": "/tæks ˈɪnvɔɪs/",
+      "zh": "税务发票",
+      "ex": "Please send me a tax invoice for the repair."
+    },
+    {
+      "w": "breakdown",
+      "ipa": "/ˈbreɪkdaʊn/",
+      "zh": "明细；分项",
+      "ex": "Can I see a breakdown of the costs?"
+    }
+  ]
+}

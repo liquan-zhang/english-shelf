@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Handling a Turf War · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "050", "title": "Handling a Turf War", "meta": "B2 · 约 280 词 · 场景：团队边界冲突", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. How Turf Wars Start", "heading_zh": "1. 地盘之争是怎么开始的", "rows": [[{"id": "s0_0_0", "md": "Two teams discover, in the same quarterly review, that both are building a notification service.", "text": "Two teams discover, in the same quarterly review, that both are building a notification service.", "zh": "两个团队在同一次季度 review 上发现，双方都在做一个通知服务。", "sp": null}, {"id": "s0_0_1", "md": "Each has a design doc, a roadmap, and a manager who has already promised it upward.", "text": "Each has a design doc, a roadmap, and a manager who has already promised it upward.", "zh": "每边都有设计文档、有 roadmap，还有一个已经向上承诺过的老板。", "sp": null}, {"id": "s0_0_2", "md": "Within a week, design reviews turn into ==debates== about history, and nobody shares code.", "text": "Within a week, design reviews turn into debates about history, and nobody shares code.", "zh": "不到一周，设计评审就变成了翻旧账，谁也不共享代码。", "sp": null}], [{"id": "s0_1_0", "md": "Turf wars are rarely about ego alone.", "text": "Turf wars are rarely about ego alone.", "zh": "地盘之争很少只是面子问题。", "sp": null}, {"id": "s0_1_1", "md": "Owning a system means headcount, visibility, and a story for promotion.", "text": "Owning a system means headcount, visibility, and a story for promotion.", "zh": "拥有一个系统，意味着 HC、能见度，以及一个能拿去晋升的故事。", "sp": null}, {"id": "s0_1_2", "md": "So when ==boundaries== are unclear, smart people __dig in__, because losing the project feels like losing their future.", "text": "So when boundaries are unclear, smart people dig in, because losing the project feels like losing their future.", "zh": "所以边界一不清楚，聪明人就会死守，因为丢了项目感觉就像丢了前途。", "sp": null}], [{"id": "s0_2_0", "md": "**You will not end a turf war by proving who was there first.**", "text": "You will not end a turf war by proving who was there first.", "zh": "你没法靠证明谁先来的来结束地盘之争。", "sp": null}, {"id": "s0_2_1", "md": "History is ==ambiguous==, and every side has a version that makes them look right.", "text": "History is ambiguous, and every side has a version that makes them look right.", "zh": "历史本身就说不清，每一方都有一个让自己显得占理的版本。", "sp": null}, {"id": "s0_2_2", "md": "The only exit is to change the question.", "text": "The only exit is to change the question.", "zh": "唯一的出路是换一个问题。", "sp": null}]]}, {"heading": "2. Changing the Question", "heading_zh": "2. 换一个问题", "rows": [[{"id": "s1_0_0", "md": "Move the discussion from \"who owns it\" to \"what do our users need.\"", "text": "Move the discussion from \"who owns it\" to \"what do our users need.\"", "zh": "把讨论从「这归谁」转到「我们的用户需要什么」。", "sp": null}, {"id": "s1_0_1", "md": "Write down the use cases together, and you will often find that the two teams need different things.", "text": "Write down the use cases together, and you will often find that the two teams need different things.", "zh": "一起把使用场景写下来，你往往会发现两个团队需要的是不同的东西。", "sp": null}, {"id": "s1_0_2", "md": "One needs fast push alerts, the other needs reliable email at scale.", "text": "One needs fast push alerts, the other needs reliable email at scale.", "zh": "一个需要快速的推送提醒，另一个需要大规模、可靠的邮件。", "sp": null}], [{"id": "s1_1_0", "md": "That opens the door to a split by ==interface==, not by people.", "text": "That opens the door to a split by interface, not by people.", "zh": "这就为按接口拆分、而不是按人拆分打开了口子。", "sp": null}, {"id": "s1_1_1", "md": "One team owns delivery, the other owns templates and scheduling, and a clear contract sits between them.", "text": "One team owns delivery, the other owns templates and scheduling, and a clear contract sits between them.", "zh": "一个团队负责投递，另一个负责模板和调度，中间是一份清晰的接口约定。", "sp": null}, {"id": "s1_1_2", "md": "Both teams __walk away with__ something real to own.", "text": "Both teams walk away with something real to own.", "zh": "两个团队都能拿到真正属于自己的东西。", "sp": null}], [{"id": "s1_2_0", "md": "If the teams still cannot agree, do not let the fight __drag on__ for months.", "text": "If the teams still cannot agree, do not let the fight drag on for months.", "zh": "如果两个团队还是谈不拢，别让这场仗拖上几个月。", "sp": null}, {"id": "s1_2_1", "md": "Ask a shared manager to decide, and give them a short, ==neutral== document with both options and their costs.", "text": "Ask a shared manager to decide, and give them a short, neutral document with both options and their costs.", "zh": "请共同的上级来拍板，并给他一份简短、中立的文档，列出两个方案和各自的代价。", "sp": null}, {"id": "s1_2_2", "md": "**A fast, imperfect decision is better than a slow war that burns both teams out.**", "text": "A fast, imperfect decision is better than a slow war that burns both teams out.", "zh": "一个快速但不完美的决定，好过一场把两个团队都拖垮的持久战。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, be generous after the ==outcome==.", "text": "Finally, be generous after the outcome.", "zh": "最后，结果出来之后要大度。", "sp": null}, {"id": "s1_3_1", "md": "If your side wins, invite the other team into design reviews.", "text": "If your side wins, invite the other team into design reviews.", "zh": "如果你这边赢了，就邀请对方团队来参加设计评审。", "sp": null}, {"id": "s1_3_2", "md": "If your side loses, help them succeed, because people will remember how you behaved far longer than who won.", "text": "If your side loses, help them succeed, because people will remember how you behaved far longer than who won.", "zh": "如果你这边输了，就帮他们做成，因为人们记住你当时的表现，会比记住谁赢了久得多。", "sp": null}]]}], "gist": [{"q": "为什么团队会陷入地盘之争？", "a": "拥有一个系统意味着人头编制、能见度和晋升故事；归属不清时，丢掉项目就像丢掉前途，所以大家会死守。"}, {"q": "作者说怎样才能走出地盘之争？", "a": "不去争谁先来的（历史总是模糊的），而是换个问题：从「谁拥有」变成「用户需要什么」，再按接口而不是按人拆分。"}, {"q": "如果仍然谈不拢怎么办？结果出来后呢？", "a": "请共同上级拍板，提供一份中立的文档列出两个方案和代价；结果出来后要大度，赢了邀请对方参与评审，输了帮对方成功。"}], "dictation": [{"id": "s0_2_0", "text": "You will not end a turf war by proving who was there first."}, {"id": "s1_0_1", "text": "Write down the use cases together, and you will often find that the two teams need different things."}, {"id": "s1_2_2", "text": "A fast, imperfect decision is better than a slow war that burns both teams out."}, {"id": "s1_1_2", "text": "Both teams walk away with something real to own."}], "shadow": {"text": "Turf wars are rarely about ego alone. Owning a system means headcount, visibility, and a story for promotion.", "marked": "Turf wars are <b>rarely</b> about <b>ego</b> alone. //<br><b>Owning</b> a system means <b>headcount</b>, / <b>visibility</b>, / and a <b>story</b> for promotion. //"}, "prompts": [{"q": "你的团队和另一个团队都想负责新的配置中心，会议开始变得火药味很浓。用 30 秒把讨论从「谁拥有」拉回到「用户需要什么」。", "ref": "I think we could argue about history all afternoon and still not agree. Can we try a different question? What do the services using this config center actually need? If we list the use cases on the board, we might find that one team cares about fast rollout and the other about audit and approvals. Then we can talk about splitting by interface instead of picking a winner.", "ref_zh": "我觉得我们就算争一下午历史，也还是谈不拢。我们能不能换个问题？用这个配置中心的服务到底需要什么？如果我们把使用场景列在白板上，可能会发现一个团队在乎的是快速发布，另一个在乎的是审计和审批。那我们就可以讨论按接口拆分，而不是非要决出一个赢家。", "id": "ref0"}, {"q": "两个团队争了一个月仍无结论。用 30 秒向共同的上级提出请他拍板，并说明你会准备一份中立的方案对比。", "ref": "We've been going back and forth on the notification service for a month, and both teams are losing time. I'd like to ask you to make the call. Kevin and I will write one short document together, with both options, the cost of each, and the risks. We'll send it by Thursday. Whatever you decide, my team will support it fully.", "ref_zh": "通知服务这件事我们已经来回拉扯了一个月，两个团队都在浪费时间。我想请你来拍板。Kevin 和我会一起写一份简短的文档，列出两个方案、各自的成本和风险。我们周四前发给你。不管你怎么定，我的团队都会全力支持。", "id": "ref1"}], "words": [{"w": "debate", "ipa": "/dɪˈbeɪt/", "zh": "争论、辩论", "ex": "Let's not turn the design review into a debate about who started it.", "id": "w0"}, {"w": "boundary", "ipa": "/ˈbaʊndri/", "zh": "边界", "ex": "We need a clear boundary between the API team and the client team.", "id": "w1"}, {"w": "ambiguous", "ipa": "/æmˈbɪɡjuəs/", "zh": "模糊的、有歧义的", "ex": "The requirements are ambiguous, so let's confirm with the PM.", "id": "w2"}, {"w": "interface", "ipa": "/ˈɪntərfeɪs/", "zh": "接口、边界", "ex": "If we agree on the interface, both teams can work in parallel.", "id": "w3"}, {"w": "neutral", "ipa": "/ˈnuːtrəl/", "zh": "中立的", "ex": "Please keep the comparison doc neutral; list costs for both options.", "id": "w4"}, {"w": "outcome", "ipa": "/ˈaʊtkʌm/", "zh": "结果", "ex": "Whatever the outcome, we'll update the roadmap by Monday.", "id": "w5"}, {"w": "headcount", "ipa": "/ˈhedkaʊnt/", "zh": "人员编制", "ex": "We asked for two more headcount to support the new service.", "id": "w6"}, {"w": "dig in", "ipa": "/dɪɡ ɪn/", "zh": "坚持立场、死守", "ex": "Once both leads dig in, the meeting stops being useful.", "id": "w7"}, {"w": "generous", "ipa": "/ˈdʒenərəs/", "zh": "大度的、慷慨的", "ex": "Be generous with credit when the other team helps you ship.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. How Turf Wars Start", "zh": "1. 地盘之争是怎么开始的", "start": 0.0, "end": 2.28, "words": [[0.105, 0.395], [0.763, 0.895], [0.908, 1.224], [1.237, 1.474], [1.487, 1.882]]}, {"kind": "s", "id": "s0_0_0", "md": "Two teams discover, in the same quarterly review, that both are building a notification service.", "zh": "两个团队在同一次季度 review 上发现，双方都在做一个通知服务。", "sp": null, "gap": false, "start": 2.28, "end": 8.928, "words": [[2.398, 2.569], [2.583, 2.898], [2.912, 3.504], [3.793, 3.859], [3.872, 3.964], [3.977, 4.398], [4.412, 4.964], [4.977, 5.425], [5.846, 6.043], [6.056, 6.372], [6.385, 6.504], [6.517, 6.964], [7.043, 7.083], [7.096, 7.912], [7.925, 8.53]]}, {"kind": "s", "id": "s0_0_1", "md": "Each has a design doc, a roadmap, and a manager who has already promised it upward.", "zh": "每边都有设计文档、有 roadmap，还有一个已经向上承诺过的老板。", "sp": null, "gap": false, "start": 8.928, "end": 14.28, "words": [[9.033, 9.178], [9.191, 9.362], [9.375, 9.415], [9.428, 9.836], [9.849, 10.231], [10.454, 10.481], [10.494, 11.152], [11.467, 11.52], [11.533, 11.573], [11.586, 12.112], [12.125, 12.244], [12.257, 12.415], [12.428, 12.862], [12.875, 13.349], [13.362, 13.441], [13.454, 13.889]]}, {"kind": "s", "id": "s0_0_2", "md": "Within a week, design reviews turn into ==debates== about history, and nobody shares code.", "zh": "不到一周，设计评审就变成了翻旧账，谁也不共享代码。", "sp": null, "gap": false, "start": 14.28, "end": 20.184, "words": [[14.398, 14.648], [14.662, 14.741], [14.754, 15.135], [15.359, 15.767], [15.78, 16.241], [16.254, 16.569], [16.583, 16.846], [16.859, 17.346], [17.359, 17.609], [17.622, 18.162], [18.438, 18.569], [18.583, 18.977], [18.991, 19.372], [19.385, 19.793]]}, {"kind": "s", "id": "s0_1_0", "md": "Turf wars are rarely about ego alone.", "zh": "地盘之争很少只是面子问题。", "sp": null, "gap": true, "start": 20.184, "end": 23.016, "words": [[20.289, 20.513], [20.526, 20.829], [20.842, 21.079], [21.092, 21.5], [21.513, 21.776], [21.868, 22.184], [22.197, 22.618]]}, {"kind": "s", "id": "s0_1_1", "md": "Owning a system means headcount, visibility, and a story for promotion.", "zh": "拥有一个系统，意味着 HC、能见度，以及一个能拿去晋升的故事。", "sp": null, "gap": false, "start": 23.016, "end": 28.224, "words": [[23.121, 23.384], [23.398, 23.45], [23.463, 24.003], [24.134, 24.384], [24.398, 25.029], [25.411, 26.148], [26.45, 26.569], [26.582, 26.621], [26.634, 27.095], [27.108, 27.266], [27.279, 27.832]]}, {"kind": "s", "id": "s0_1_2", "md": "So when ==boundaries== are unclear, smart people __dig in__, because losing the project feels like losing their future.", "zh": "所以边界一不清楚，聪明人就会死守，因为丢了项目感觉就像丢了前途。", "sp": null, "gap": false, "start": 28.224, "end": 35.184, "words": [[28.329, 28.461], [28.474, 28.632], [28.645, 29.237], [29.25, 29.382], [29.395, 30.04], [30.277, 30.619], [30.632, 30.934], [30.948, 31.158], [31.171, 31.461], [31.79, 32.106], [32.119, 32.474], [32.487, 32.566], [32.579, 33.092], [33.106, 33.487], [33.5, 33.685], [33.698, 34.106], [34.119, 34.25], [34.263, 34.79]]}, {"kind": "s", "id": "s0_2_0", "md": "**You will not end a turf war by proving who was there first.**", "zh": "你没法靠证明谁先来的来结束地盘之争。", "sp": null, "gap": true, "start": 35.184, "end": 38.76, "words": [[35.289, 35.368], [35.381, 35.5], [35.513, 35.71], [35.723, 35.829], [35.842, 35.895], [35.908, 36.263], [36.276, 36.579], [36.71, 36.842], [36.855, 37.355], [37.368, 37.473], [37.487, 37.618], [37.631, 37.776], [37.789, 38.368]]}, {"kind": "s", "id": "s0_2_1", "md": "History is ==ambiguous==, and every side has a version that makes them look right.", "zh": "历史本身就说不清，每一方都有一个让自己显得占理的版本。", "sp": null, "gap": false, "start": 38.76, "end": 43.848, "words": [[38.892, 39.418], [39.523, 39.668], [39.681, 40.589], [40.826, 40.971], [40.984, 41.234], [41.247, 41.589], [41.602, 41.773], [41.786, 41.839], [41.852, 42.326], [42.339, 42.484], [42.497, 42.747], [42.76, 42.918], [42.931, 43.128], [43.142, 43.457]]}, {"kind": "s", "id": "s0_2_2", "md": "The only exit is to change the question.", "zh": "唯一的出路是换一个问题。", "sp": null, "gap": false, "start": 43.848, "end": 46.464, "words": [[43.966, 44.072], [44.085, 44.387], [44.401, 44.835], [44.901, 45.019], [45.032, 45.124], [45.137, 45.493], [45.506, 45.585], [45.598, 46.085]]}, {"kind": "h", "id": "h1", "md": "2. Changing the Question", "zh": "2. 换一个问题", "start": 46.464, "end": 48.6, "words": [[46.582, 46.793], [47.253, 47.622], [47.635, 47.701], [47.714, 48.201]]}, {"kind": "s", "id": "s1_0_0", "md": "Move the discussion from \"who owns it\" to \"what do our users need.\"", "zh": "把讨论从「这归谁」转到「我们的用户需要什么」。", "sp": null, "gap": false, "start": 48.6, "end": 53.04, "words": [[48.705, 48.942], [48.955, 49.034], [49.047, 49.626], [49.639, 49.929], [50.113, 50.35], [50.363, 50.666], [50.679, 50.876], [51.074, 51.192], [51.218, 51.376], [51.389, 51.587], [51.6, 51.732], [51.745, 52.205], [52.218, 52.626]]}, {"kind": "s", "id": "s1_0_1", "md": "Write down the use cases together, and you will often find that the two teams need different things.", "zh": "一起把使用场景写下来，你往往会发现两个团队需要的是不同的东西。", "sp": null, "gap": false, "start": 53.04, "end": 58.656, "words": [[53.145, 53.316], [53.329, 53.566], [53.579, 53.645], [53.658, 53.908], [53.922, 54.303], [54.316, 54.79], [55.198, 55.251], [55.264, 55.343], [55.356, 55.487], [55.501, 55.895], [55.908, 56.224], [56.237, 56.356], [56.369, 56.448], [56.461, 56.711], [56.724, 57.145], [57.158, 57.395], [57.408, 57.724], [57.737, 58.277]]}, {"kind": "s", "id": "s1_0_2", "md": "One needs fast push alerts, the other needs reliable email at scale.", "zh": "一个需要快速的推送提醒，另一个需要大规模、可靠的邮件。", "sp": null, "gap": false, "start": 58.656, "end": 63.288, "words": [[58.774, 58.945], [58.959, 59.209], [59.222, 59.617], [59.63, 59.84], [59.853, 60.393], [60.643, 60.774], [60.788, 61.051], [61.064, 61.34], [61.353, 61.919], [61.932, 62.314], [62.327, 62.406], [62.419, 62.906]]}, {"kind": "s", "id": "s1_1_0", "md": "That opens the door to a split by ==interface==, not by people.", "zh": "这就为按接口拆分、而不是按人拆分打开了口子。", "sp": null, "gap": true, "start": 63.288, "end": 67.368, "words": [[63.406, 63.538], [63.551, 63.893], [63.906, 64.012], [64.025, 64.327], [64.341, 64.472], [64.485, 64.564], [64.577, 65.051], [65.064, 65.222], [65.235, 65.972], [66.222, 66.42], [66.433, 66.578], [66.591, 66.985]]}, {"kind": "s", "id": "s1_1_1", "md": "One team owns delivery, the other owns templates and scheduling, and a clear contract sits between them.", "zh": "一个团队负责投递，另一个负责模板和调度，中间是一份清晰的接口约定。", "sp": null, "gap": false, "start": 67.368, "end": 73.848, "words": [[67.486, 67.71], [67.723, 68.039], [68.144, 68.368], [68.381, 68.947], [69.197, 69.315], [69.329, 69.605], [69.618, 69.855], [69.868, 70.407], [70.421, 70.526], [70.539, 71.197], [71.513, 71.565], [71.579, 71.644], [71.657, 71.96], [71.973, 72.631], [72.644, 72.868], [72.881, 73.276], [73.289, 73.46]]}, {"kind": "s", "id": "s1_1_2", "md": "Both teams __walk away with__ something real to own.", "zh": "两个团队都能拿到真正属于自己的东西。", "sp": null, "gap": false, "start": 73.848, "end": 76.8, "words": [[73.966, 74.177], [74.19, 74.506], [74.519, 74.769], [74.782, 75.111], [75.124, 75.282], [75.295, 75.677], [75.69, 75.914], [75.927, 76.085], [76.098, 76.401]]}, {"kind": "s", "id": "s1_2_0", "md": "If the teams still cannot agree, do not let the fight __drag on__ for months.", "zh": "如果两个团队还是谈不拢，别让这场仗拖上几个月。", "sp": null, "gap": true, "start": 76.8, "end": 81.504, "words": [[76.905, 77.01], [77.024, 77.116], [77.129, 77.497], [77.511, 77.774], [77.787, 78.168], [78.182, 78.576], [78.879, 78.997], [79.011, 79.234], [79.247, 79.392], [79.405, 79.484], [79.497, 79.866], [79.879, 80.221], [80.234, 80.392], [80.405, 80.537], [80.55, 81.103]]}, {"kind": "s", "id": "s1_2_1", "md": "Ask a shared manager to decide, and give them a short, ==neutral== document with both options and their costs.", "zh": "请共同的上级来拍板，并给他一份简短、中立的文档，列出两个方案和各自的代价。", "sp": null, "gap": false, "start": 81.504, "end": 88.584, "words": [[81.609, 81.872], [81.886, 81.925], [81.938, 82.307], [82.32, 82.767], [82.78, 82.872], [82.886, 83.451], [83.833, 83.912], [83.925, 84.109], [84.122, 84.241], [84.254, 84.293], [84.307, 84.767], [85.03, 85.465], [85.478, 86.004], [86.017, 86.162], [86.175, 86.478], [86.491, 87.162], [87.28, 87.412], [87.425, 87.57], [87.583, 88.201]]}, {"kind": "s", "id": "s1_2_2", "md": "**A fast, imperfect decision is better than a slow war that burns both teams out.**", "zh": "一个快速但不完美的决定，好过一场把两个团队都拖垮的持久战。", "sp": null, "gap": false, "start": 88.584, "end": 93.936, "words": [[88.689, 88.755], [88.768, 89.347], [89.545, 90.084], [90.097, 90.584], [90.597, 90.742], [90.755, 91.084], [91.097, 91.242], [91.255, 91.308], [91.321, 91.742], [91.755, 92.044], [92.058, 92.229], [92.242, 92.584], [92.597, 92.9], [92.913, 93.255], [93.268, 93.545]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, be generous after the ==outcome==.", "zh": "最后，结果出来之后要大度。", "sp": null, "gap": true, "start": 93.936, "end": 96.72, "words": [[94.107, 94.568], [94.857, 94.989], [95.002, 95.502], [95.515, 95.752], [95.765, 95.883], [95.897, 96.331]]}, {"kind": "s", "id": "s1_3_1", "md": "If your side wins, invite the other team into design reviews.", "zh": "如果你这边赢了，就邀请对方团队来参加设计评审。", "sp": null, "gap": false, "start": 96.72, "end": 100.968, "words": [[96.825, 96.944], [96.957, 97.088], [97.102, 97.417], [97.431, 97.878], [98.102, 98.457], [98.47, 98.602], [98.615, 98.825], [98.838, 99.22], [99.338, 99.536], [99.549, 99.957], [99.97, 100.575]]}, {"kind": "s", "id": "s1_3_2", "md": "If your side loses, help them succeed, because people will remember how you behaved far longer than who won.", "zh": "如果你这边输了，就帮他们做成，因为人们记住你当时的表现，会比记住谁赢了久得多。", "sp": null, "gap": false, "start": 100.968, "end": 107.736, "words": [[101.073, 101.178], [101.192, 101.297], [101.31, 101.626], [101.639, 102.139], [102.336, 102.56], [102.573, 102.705], [102.718, 103.336], [103.652, 103.955], [103.968, 104.336], [104.35, 104.494], [104.507, 104.968], [104.981, 105.179], [105.192, 105.35], [105.363, 105.836], [105.85, 106.231], [106.244, 106.705], [106.718, 106.863], [106.876, 107.047], [107.06, 107.336]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

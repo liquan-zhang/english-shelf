@@ -1,0 +1,88 @@
+{
+  "id": "125",
+  "type": "dialogue",
+  "title": "Calling for an Urgent Appointment",
+  "meta": "B2 · 约 320 词 · 场景：电话争取当天急诊号",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Clinic Receptionist", "name_zh": "诊所前台", "voice": "en-US-AvaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. Trying to Get Seen Today",
+      "heading_zh": "1. 争取今天就看上",
+      "lines": [
+        {"sp": "B", "en": "Good morning, Riverside Family Clinic. How can I help you?", "zh": "早上好，这里是河畔家庭诊所。有什么可以帮您？"},
+        {"sp": "A", "en": "**Hi, I need to see a doctor today. It's fairly urgent.**", "zh": "你好，我今天需要看医生，挺急的。"},
+        {"sp": "B", "en": "I'm afraid we're __fully booked__ today. Can you tell me a little about what's going on?", "zh": "恐怕今天的号都约满了。能简单说说是什么情况吗？"},
+        {"sp": "A", "en": "My right eye has been red and painful since last night. This morning my vision is a bit ==blurry==.", "zh": "我右眼从昨晚开始又红又疼。今天早上看东西有点模糊。"},
+        {"sp": "B", "en": "Okay. Did anything get into your eye, or do you wear ==contact lenses==?", "zh": "好的。有东西进眼睛了吗？您戴隐形眼镜吗？"},
+        {"sp": "A", "en": "I do wear contacts. I took them out last night, but the pain hasn't __eased off__ at all.", "zh": "我戴隐形。昨晚已经摘了，但疼得一点没减轻。"},
+        {"sp": "B", "en": "Thanks. Pain with blurry vision isn't something we want to wait on. Let me check with the doctor.", "zh": "谢谢。眼睛疼还看不清，这种情况不能拖。我问一下医生。"},
+        {"sp": "B", "en": "She can __squeeze you in__ as a ==walk-in==, but you might have to wait up to an hour.", "zh": "她可以按现场挂号给您加个号，不过可能要等一个小时左右。"},
+        {"sp": "A", "en": "**That's fine. I'd rather wait than leave it until tomorrow.**", "zh": "没关系。我宁可等，也不想拖到明天。"},
+        {"sp": "B", "en": "One more thing. If the pain becomes severe or you can't see properly, go straight to the ==emergency== department.", "zh": "还有一点。如果疼得很厉害或者看不清了，直接去急诊。"}
+      ]
+    },
+    {
+      "heading": "2. A Call Back from the Clinic",
+      "heading_zh": "2. 诊所回电",
+      "lines": [
+        {"sp": "B", "en": "Hi, is this Mr. Zhang? It's Riverside Clinic. We've just had a ==cancellation== at two forty.", "zh": "您好，是张先生吗？这里是河畔诊所。刚有人取消了两点四十的号。"},
+        {"sp": "A", "en": "Oh, great timing. I was about to head over. Is that with the same doctor?", "zh": "哦，来得正好，我正准备过去。是同一位医生吗？"},
+        {"sp": "B", "en": "Yes, Doctor Morgan. Can you make it by two thirty to fill in the forms?", "zh": "是的，摩根医生。您能两点半之前到吗？要填一下表。"},
+        {"sp": "A", "en": "Yes, I'll be there. Should I bring anything with me?", "zh": "可以，我会到。需要带什么东西吗？"},
+        {"sp": "B", "en": "Your ID, your insurance card, and your contact lens case, if you still have it.", "zh": "身份证件、保险卡，还有您的隐形眼镜盒，如果还在的话。"},
+        {"sp": "A", "en": "Sure. I'll take a taxi, since I probably shouldn't drive. Can you ==bill== my insurance directly?", "zh": "好的。我打车过去，估计不该开车。你们能直接跟我的保险结算吗？"},
+        {"sp": "B", "en": "If your company is on our ==panel==, yes. Otherwise you pay first and claim later.", "zh": "如果您公司在我们的合作名单上就可以。不然就得先付钱再去报销。"},
+        {"sp": "A", "en": "It should be. My company is Northwind Tech. Could you __double check__ for me?", "zh": "应该在。我公司叫北风科技。能帮我核实一下吗？"},
+        {"sp": "B", "en": "Let me see. Yes, you're ==covered==. Just bring your staff pass.", "zh": "我看看。是的，可以报。带上您的员工卡就行。"},
+        {"sp": "A", "en": "Perfect. And if I'm running a few minutes late, will I lose the slot?", "zh": "太好了。如果我晚到几分钟，号会被取消吗？"},
+        {"sp": "B", "en": "Just __give us a call__ and we'll hold it for ten minutes.", "zh": "给我们打个电话，我们会帮您保留十分钟。"},
+        {"sp": "A", "en": "**Thanks so much for calling me back. See you at two thirty.**", "zh": "非常感谢你回电话。两点半见。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "「你」的眼睛有什么症状？前台为什么愿意加号？", "a": "右眼从昨晚开始又红又疼，今早视线模糊，而且戴隐形眼镜；眼疼加视线模糊不能拖，所以医生同意加号。"},
+    {"q": "前台提醒「你」什么情况要直接去急诊？", "a": "如果疼得很厉害或看不清东西，就直接去急诊。"},
+    {"q": "诊所回电带来了什么消息？「你」要带哪些东西？", "a": "有人取消了两点四十的号，要两点半前到填表；带证件、保险卡、隐形眼镜盒和员工卡。"}
+  ],
+  "dictation": [
+    "Hi, I need to see a doctor today. It's fairly urgent.",
+    "My right eye has been red and painful since last night. This morning my vision is a bit blurry.",
+    "That's fine. I'd rather wait than leave it until tomorrow.",
+    "Perfect. And if I'm running a few minutes late, will I lose the slot?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "My right eye has been red and painful since last night. This morning my vision is a bit blurry.",
+    "marked": "My <b>right eye</b> / has been <b>red</b> and <b>painful</b> / since <b>last night</b>. //<br>This <b>morning</b> / my vision is a bit <b>blurry</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你打电话给常去的诊所，前台说今天约满了。你的症状是高烧三天不退。说清情况，争取今天被看到。",
+      "ref": "Hi, I understand you're fully booked, but I've had a high fever for three days now, and it's not coming down even with paracetamol. Last night it was almost forty. I'm also getting a bad headache. Is there any chance the doctor could see me today? I'm happy to come in as a walk-in and wait.",
+      "ref_zh": "你好，我知道你们今天约满了，但我已经高烧三天了，吃了退烧药也不退。昨晚差不多四十度，头也疼得厉害。医生今天有没有可能给我看一下？我可以现场挂号排队等。"
+    },
+    {
+      "q": "你约的号要迟到二十分钟，打电话给诊所，道歉并问能不能保留或改时间。",
+      "ref": "Hi, this is Zhang. I have an appointment at four with Doctor Morgan. I'm really sorry, but I'm stuck in traffic, and I'll be about twenty minutes late. Would it still be possible to see her? If not, could you move me to a later slot today, or first thing tomorrow?",
+      "ref_zh": "你好，我是张先生，约了四点摩根医生的号。真的很抱歉，我堵在路上了，大概要晚二十分钟。还能看吗？如果不行，能帮我改到今天晚一点的号，或者明天一早吗？"
+    }
+  ],
+  "words": [
+    {"w": "blurry", "ipa": "/ˈblɜːri/", "zh": "模糊的", "ex": "The photo is a bit blurry. Can you take another one?"},
+    {"w": "contact lenses", "ipa": "/ˈkɑːntækt ˌlenzɪz/", "zh": "隐形眼镜", "ex": "Don't sleep with your contact lenses in."},
+    {"w": "walk-in", "ipa": "/ˈwɔːk ɪn/", "zh": "不预约直接来的（病人/客人）", "ex": "The clinic accepts walk-ins until five.", "tts_w": "walk in"},
+    {"w": "emergency", "ipa": "/ɪˈmɜːrdʒənsi/", "zh": "急诊；紧急情况", "ex": "We spent the whole night in the emergency department."},
+    {"w": "cancellation", "ipa": "/ˌkænsəˈleɪʃən/", "zh": "取消（的预约）", "ex": "Put me on the list in case there's a cancellation."},
+    {"w": "bill (v.)", "ipa": "/bɪl/", "zh": "向……开账单，直接结算", "ex": "The hospital will bill your insurer directly.", "tts_w": "bill"},
+    {"w": "panel", "ipa": "/ˈpænəl/", "zh": "（公司保险的）合作诊所名单", "ex": "Is this clinic on our company's panel?"},
+    {"w": "covered", "ipa": "/ˈkʌvərd/", "zh": "（保险）覆盖的，可报销的", "ex": "Is physiotherapy covered by your plan?"},
+    {"w": "squeeze in", "ipa": "/skwiːz ɪn/", "zh": "（日程里）挤出时间加进来", "ex": "The barber squeezed me in before closing."},
+    {"w": "ease off", "ipa": "/iːz ɔːf/", "zh": "（疼痛、雨等）减轻", "ex": "Wait until the rain eases off before you leave."}
+  ]
+}

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Writing Goals That Can Be Measured · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "072", "title": "Writing Goals That Can Be Measured", "meta": "B2 · 约 270 词 · 场景：目标设定", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. A Goal That Cannot Fail", "heading_zh": "1. 一个不可能失败的目标", "rows": [[{"id": "s0_0_0", "md": "\"Improve app performance\" appears in a lot of quarterly plans.", "text": "\"Improve app performance\" appears in a lot of quarterly plans.", "zh": "「提升 App 性能」出现在很多季度规划里。", "sp": null}, {"id": "s0_0_1", "md": "It sounds ==ambitious==, and nobody can argue with it.", "text": "It sounds ambitious, and nobody can argue with it.", "zh": "听起来很有野心，谁也挑不出毛病。", "sp": null}, {"id": "s0_0_2", "md": "That is exactly the problem.", "text": "That is exactly the problem.", "zh": "问题恰恰就在这里。", "sp": null}], [{"id": "s0_1_0", "md": "At the end of the quarter, the team will have done some performance work, so the goal will look met.", "text": "At the end of the quarter, the team will have done some performance work, so the goal will look met.", "zh": "到季度末，团队总会做了些性能相关的活儿，所以目标看起来是完成了。", "sp": null}, {"id": "s0_1_1", "md": "But nobody can say whether the work mattered, or whether a different project would have mattered more.", "text": "But nobody can say whether the work mattered, or whether a different project would have mattered more.", "zh": "但没人说得清这些活儿到底有没有用，或者换个项目会不会更有价值。", "sp": null}, {"id": "s0_1_2", "md": "**A goal that cannot fail also cannot tell you anything.**", "text": "A goal that cannot fail also cannot tell you anything.", "zh": "一个不可能失败的目标，也不可能告诉你任何东西。", "sp": null}], [{"id": "s0_2_0", "md": "Measurable goals feel risky because they make it obvious when you miss.", "text": "Measurable goals feel risky because they make it obvious when you miss.", "zh": "可衡量的目标让人觉得有风险，因为没达成的时候一眼就能看出来。", "sp": null}, {"id": "s0_2_1", "md": "That ==visibility== is the whole point.", "text": "That visibility is the whole point.", "zh": "这种透明恰恰是关键所在。", "sp": null}, {"id": "s0_2_2", "md": "A clear miss teaches the team far more than a ==fuzzy== success, because it forces an honest conversation about why.", "text": "A clear miss teaches the team far more than a fuzzy success, because it forces an honest conversation about why.", "zh": "一次清清楚楚的没达成，比一次模模糊糊的成功能教给团队多得多，因为它逼着大家坦诚地讨论原因。", "sp": null}]]}, {"heading": "2. Baseline, Target, Guardrail", "heading_zh": "2. 基线、目标值、护栏", "rows": [[{"id": "s1_0_0", "md": "A measurable goal starts with three parts.", "text": "A measurable goal starts with three parts.", "zh": "一个可衡量的目标从三部分开始。", "sp": null}, {"id": "s1_0_1", "md": "The ==baseline== is where you are today, like a cold start time of two point four seconds.", "text": "The baseline is where you are today, like a cold start time of two point four seconds.", "zh": "基线是你现在的位置，比如冷启动时间二点四秒。", "sp": null}, {"id": "s1_0_2", "md": "The target is where you want to be, like one point five seconds, and the date is when you will check.", "text": "The target is where you want to be, like one point five seconds, and the date is when you will check.", "zh": "目标值是你想达到的位置，比如一点五秒，再加上你什么时候来检查。", "sp": null}], [{"id": "s1_1_0", "md": "Then add a ==guardrail==, a metric that must not get worse.", "text": "Then add a guardrail, a metric that must not get worse.", "zh": "然后加一条护栏，也就是一个不能变差的指标。", "sp": null}, {"id": "s1_1_1", "md": "Teams under pressure will find shortcuts, like loading less content so the first screen appears faster.", "text": "Teams under pressure will find shortcuts, like loading less content so the first screen appears faster.", "zh": "压力之下，团队会找捷径，比如少加载点内容，让首屏出得更快。", "sp": null}, {"id": "s1_1_2", "md": "A guardrail such as \"crash rate and session length stay flat\" keeps everyone __playing fair__.", "text": "A guardrail such as \"crash rate and session length stay flat\" keeps everyone playing fair.", "zh": "像「崩溃率和使用时长保持持平」这样的护栏，能让大家都规规矩矩地玩。", "sp": null}], [{"id": "s1_2_0", "md": "Some goals are hard to measure directly, especially in the first quarter of a new project.", "text": "Some goals are hard to measure directly, especially in the first quarter of a new project.", "zh": "有些目标很难直接衡量，尤其是新项目的第一个季度。", "sp": null}, {"id": "s1_2_1", "md": "**If you can't measure the outcome yet, measure the step that leads to it, and say so.**", "text": "If you can't measure the outcome yet, measure the step that leads to it, and say so.", "zh": "如果结果暂时还量不了，就去量通往结果的那一步，并且把这一点讲明白。", "sp": null}, {"id": "s1_2_2", "md": "\"Ship the new image pipeline to all regions\" is not perfect, but at least it is ==verifiable==.", "text": "\"Ship the new image pipeline to all regions\" is not perfect, but at least it is verifiable.", "zh": "「新的图片链路全量覆盖所有地区」不算完美，但至少是可验证的。", "sp": null}, {"id": "s1_2_3", "md": "Just don't pretend that an ==output== is the same as a result, and __come back to__ the real metric once you can track it.", "text": "Just don't pretend that an output is the same as a result, and come back to the real metric once you can track it.", "zh": "只是别假装产出就等于结果，等能追踪真正的指标了，再回到那个指标上来。", "sp": null}]]}], "gist": [{"q": "“提升 App 性能”这类目标有什么问题？", "a": "听起来宏大没人反对，但不可能失败，因此也无法告诉你做的事是否有价值。"}, {"q": "一个可衡量的目标包括哪几部分？为什么要加护栏指标？", "a": "基线、目标值、检查日期；再加一个不能变差的护栏指标，防止团队在压力下走捷径（比如少加载内容来刷快首屏）。"}, {"q": "暂时无法直接衡量结果时怎么办？", "a": "衡量通往结果的那一步并明说，比如“新图片管线上线到所有区域”；但不要把产出当成结果，能追踪时回到真正的指标。"}], "dictation": [{"id": "s0_1_2", "text": "A goal that cannot fail also cannot tell you anything."}, {"id": "s0_2_0", "text": "Measurable goals feel risky because they make it obvious when you miss."}, {"id": "s1_1_0", "text": "Then add a guardrail, a metric that must not get worse."}, {"id": "s1_2_1", "text": "If you can't measure the outcome yet, measure the step that leads to it, and say so."}], "shadow": {"text": "Then add a guardrail, a metric that must not get worse. Teams under pressure will find shortcuts, like loading less content so the first screen appears faster.", "marked": "Then add a <b>guardrail</b>, / a metric that must <b>not</b> get worse. //<br>Teams under <b>pressure</b> / will find <b>shortcuts</b>, / like loading <b>less</b> content / so the first screen appears <b>faster</b>. //"}, "prompts": [{"q": "你下属交来的季度目标写着“提升搜索体验”。用 30 秒帮他改成可衡量的目标，包括基线、目标和护栏。", "ref": "I like the focus on search, but as written, we can't tell at the end of the quarter if we succeeded. Let's make it measurable. Right now, about forty percent of searches end with a click. Could we aim for fifty percent by the end of the quarter? And let's add a guardrail: search latency shouldn't go up. That way nobody can hit the target by just showing fewer results.", "ref_zh": "我认同把重点放在搜索上，但按现在的写法，到季度末我们没法判断有没有成功。我们把它改成可衡量的。现在大约百分之四十的搜索最后有点击。我们能不能把季度末的目标定在百分之五十？再加一条护栏：搜索延迟不能涨。这样就没人能靠少展示结果来凑数了。", "id": "ref0"}, {"q": "一个新项目第一季度很难直接衡量业务结果。用 30 秒向你的总监解释为什么本季度用里程碑代替结果指标。", "ref": "For this quarter, I'd suggest a milestone goal rather than a business metric. The new recommendation service won't have real traffic until late in the quarter, so any retention number would be noise. Instead, we'll commit to having it live in all three regions by week ten. That's verifiable. Next quarter, once traffic is real, we switch to measuring retention directly.", "ref_zh": "这个季度我建议定一个里程碑目标，而不是业务指标。新的推荐服务要到季度末才会有真实流量，所以任何留存数字都只是噪音。我们改为承诺第十周之前在三个地区全部上线。这是可验证的。下个季度等有了真实流量，我们再改成直接看留存。", "id": "ref1"}], "words": [{"w": "ambitious", "ipa": "/æmˈbɪʃəs/", "zh": "雄心勃勃的、宏大的", "ex": "Halving latency in one quarter is ambitious but possible.", "id": "w0"}, {"w": "visibility", "ipa": "/ˌvɪzəˈbɪləti/", "zh": "可见度、透明度", "ex": "A weekly dashboard gives leadership visibility into our progress.", "id": "w1"}, {"w": "fuzzy", "ipa": "/ˈfʌzi/", "zh": "模糊不清的", "ex": "The requirements are still fuzzy, so let's not estimate yet.", "id": "w2"}, {"w": "baseline", "ipa": "/ˈbeɪsˌlaɪn/", "zh": "基线、基准值", "ex": "We need a baseline before we can say the change helped.", "id": "w3"}, {"w": "guardrail", "ipa": "/ˈɡɑːrdˌreɪl/", "zh": "护栏指标、防护底线", "ex": "Crash rate is our guardrail for this experiment.", "id": "w4"}, {"w": "verifiable", "ipa": "/ˈverəˌfaɪəbəl/", "zh": "可验证的", "ex": "Every goal on this list should be verifiable by someone outside the team.", "id": "w5"}, {"w": "output", "ipa": "/ˈaʊtˌpʊt/", "zh": "产出（相对于结果）", "ex": "Shipping ten features is output; more paying users is the outcome.", "id": "w6"}, {"w": "shortcut", "ipa": "/ˈʃɔːrtˌkʌt/", "zh": "捷径", "ex": "Skipping the integration tests is a shortcut we'll regret.", "id": "w7"}, {"w": "measurable", "ipa": "/ˈmeʒərəbəl/", "zh": "可衡量的", "ex": "Let's rewrite this objective so it's measurable.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. A Goal That Cannot Fail", "zh": "1. 一个不可能失败的目标", "start": 0.0, "end": 2.544, "words": [[0.105, 0.342], [0.776, 0.868], [0.882, 1.171], [1.184, 1.342], [1.355, 1.697], [1.711, 2.145]]}, {"kind": "s", "id": "s0_0_0", "md": "\"Improve app performance\" appears in a lot of quarterly plans.", "zh": "「提升 App 性能」出现在很多季度规划里。", "sp": null, "gap": false, "start": 2.544, "end": 6.936, "words": [[2.728, 3.07], [3.149, 3.32], [3.333, 4.057], [4.241, 4.768], [4.781, 4.899], [4.912, 4.965], [4.978, 5.347], [5.36, 5.465], [5.478, 5.926], [5.939, 6.544]]}, {"kind": "s", "id": "s0_0_1", "md": "It sounds ==ambitious==, and nobody can argue with it.", "zh": "听起来很有野心，谁也挑不出毛病。", "sp": null, "gap": false, "start": 6.936, "end": 10.296, "words": [[7.041, 7.133], [7.147, 7.515], [7.528, 8.265], [8.475, 8.62], [8.633, 8.989], [9.002, 9.147], [9.16, 9.489], [9.502, 9.699], [9.712, 9.897]]}, {"kind": "s", "id": "s0_0_2", "md": "That is exactly the problem.", "zh": "问题恰恰就在这里。", "sp": null, "gap": false, "start": 10.296, "end": 12.072, "words": [[10.414, 10.507], [10.52, 10.612], [10.625, 11.112], [11.125, 11.217], [11.23, 11.691]]}, {"kind": "s", "id": "s0_1_0", "md": "At the end of the quarter, the team will have done some performance work, so the goal will look met.", "zh": "到季度末，团队总会做了些性能相关的活儿，所以目标看起来是完成了。", "sp": null, "gap": true, "start": 12.072, "end": 17.472, "words": [[12.177, 12.269], [12.283, 12.375], [12.388, 12.572], [12.585, 12.664], [12.677, 12.756], [12.769, 13.217], [13.493, 13.585], [13.598, 13.861], [13.875, 13.993], [14.006, 14.204], [14.217, 14.414], [14.427, 14.572], [14.585, 15.111], [15.125, 15.44], [15.717, 15.875], [15.888, 15.993], [16.006, 16.322], [16.335, 16.493], [16.506, 16.69], [16.704, 17.072]]}, {"kind": "s", "id": "s0_1_1", "md": "But nobody can say whether the work mattered, or whether a different project would have mattered more.", "zh": "但没人说得清这些活儿到底有没有用，或者换个项目会不会更有价值。", "sp": null, "gap": false, "start": 17.472, "end": 22.656, "words": [[17.59, 17.683], [17.696, 18.104], [18.117, 18.262], [18.275, 18.59], [18.604, 18.893], [18.906, 18.985], [18.998, 19.235], [19.248, 19.643], [20.051, 20.117], [20.13, 20.406], [20.419, 20.472], [20.485, 20.801], [20.814, 21.34], [21.354, 21.459], [21.472, 21.577], [21.59, 21.906], [21.919, 22.262]]}, {"kind": "s", "id": "s0_1_2", "md": "**A goal that cannot fail also cannot tell you anything.**", "zh": "一个不可能失败的目标，也不可能告诉你任何东西。", "sp": null, "gap": false, "start": 22.656, "end": 26.16, "words": [[22.761, 22.84], [22.853, 23.117], [23.13, 23.274], [23.288, 23.656], [23.669, 24.117], [24.209, 24.538], [24.551, 24.932], [24.945, 25.143], [25.156, 25.288], [25.301, 25.761]]}, {"kind": "s", "id": "s0_2_0", "md": "Measurable goals feel risky because they make it obvious when you miss.", "zh": "可衡量的目标让人觉得有风险，因为没达成的时候一眼就能看出来。", "sp": null, "gap": true, "start": 26.16, "end": 30.384, "words": [[26.265, 26.699], [26.713, 27.055], [27.068, 27.344], [27.357, 27.818], [27.831, 28.147], [28.16, 28.265], [28.278, 28.502], [28.515, 28.607], [28.686, 29.239], [29.252, 29.397], [29.41, 29.502], [29.515, 30.002]]}, {"kind": "s", "id": "s0_2_1", "md": "That ==visibility== is the whole point.", "zh": "这种透明恰恰是关键所在。", "sp": null, "gap": false, "start": 30.384, "end": 32.856, "words": [[30.502, 30.647], [30.66, 31.437], [31.581, 31.687], [31.7, 31.779], [31.792, 32.029], [32.042, 32.463]]}, {"kind": "s", "id": "s0_2_2", "md": "A clear miss teaches the team far more than a ==fuzzy== success, because it forces an honest conversation about why.", "zh": "一次清清楚楚的没达成，比一次模模糊糊的成功能教给团队多得多，因为它逼着大家坦诚地讨论原因。", "sp": null, "gap": false, "start": 32.856, "end": 40.488, "words": [[32.961, 33.04], [33.053, 33.382], [33.395, 33.645], [33.659, 34.093], [34.106, 34.211], [34.224, 34.606], [34.619, 35.027], [35.04, 35.448], [35.461, 35.58], [35.593, 35.632], [35.645, 36.027], [36.04, 36.777], [37.067, 37.369], [37.382, 37.488], [37.501, 38.08], [38.093, 38.224], [38.33, 38.698], [38.711, 39.395], [39.409, 39.724], [39.738, 40.106]]}, {"kind": "h", "id": "h1", "md": "2. Baseline, Target, Guardrail", "zh": "2. 基线、目标值、护栏", "start": 40.488, "end": 43.704, "words": [[40.593, 40.856], [41.185, 41.843], [42.067, 42.527], [42.699, 43.304]]}, {"kind": "s", "id": "s1_0_0", "md": "A measurable goal starts with three parts.", "zh": "一个可衡量的目标从三部分开始。", "sp": null, "gap": false, "start": 43.704, "end": 46.416, "words": [[43.796, 43.836], [43.849, 44.322], [44.336, 44.665], [44.678, 45.033], [45.046, 45.191], [45.204, 45.454], [45.467, 46.033]]}, {"kind": "s", "id": "s1_0_1", "md": "The ==baseline== is where you are today, like a cold start time of two point four seconds.", "zh": "基线是你现在的位置，比如冷启动时间二点四秒。", "sp": null, "gap": false, "start": 46.416, "end": 51.696, "words": [[46.534, 46.627], [46.64, 47.205], [47.219, 47.337], [47.35, 47.548], [47.561, 47.679], [47.692, 47.837], [47.85, 48.298], [48.613, 48.745], [48.758, 48.824], [48.837, 49.219], [49.232, 49.561], [49.574, 49.903], [49.916, 50.021], [50.034, 50.258], [50.271, 50.534], [50.548, 50.732], [50.745, 51.311]]}, {"kind": "s", "id": "s1_0_2", "md": "The target is where you want to be, like one point five seconds, and the date is when you will check.", "zh": "目标值是你想达到的位置，比如一点五秒，再加上你什么时候来检查。", "sp": null, "gap": false, "start": 51.696, "end": 57.576, "words": [[51.814, 51.88], [51.893, 52.301], [52.314, 52.433], [52.446, 52.617], [52.63, 52.722], [52.735, 52.88], [52.893, 52.946], [52.959, 53.262], [53.591, 53.762], [53.775, 53.999], [54.012, 54.275], [54.288, 54.578], [54.591, 55.235], [55.499, 55.617], [55.63, 55.735], [55.749, 56.051], [56.222, 56.328], [56.341, 56.499], [56.512, 56.591], [56.604, 56.696], [56.709, 57.196]]}, {"kind": "s", "id": "s1_1_0", "md": "Then add a ==guardrail==, a metric that must not get worse.", "zh": "然后加一条护栏，也就是一个不能变差的指标。", "sp": null, "gap": true, "start": 57.576, "end": 61.248, "words": [[57.681, 57.879], [57.892, 58.023], [58.037, 58.076], [58.089, 58.668], [59.076, 59.102], [59.115, 59.536], [59.55, 59.681], [59.694, 59.944], [59.958, 60.168], [60.181, 60.352], [60.365, 60.865]]}, {"kind": "s", "id": "s1_1_1", "md": "Teams under pressure will find shortcuts, like loading less content so the first screen appears faster.", "zh": "压力之下，团队会找捷径，比如少加载点内容，让首屏出得更快。", "sp": null, "gap": false, "start": 61.248, "end": 67.824, "words": [[61.366, 61.709], [61.722, 61.958], [61.972, 62.419], [62.432, 62.551], [62.564, 62.88], [62.893, 63.63], [63.906, 64.064], [64.077, 64.459], [64.472, 64.682], [64.695, 65.261], [65.498, 65.643], [65.656, 65.761], [65.774, 66.13], [66.143, 66.459], [66.472, 66.853], [66.866, 67.432]]}, {"kind": "s", "id": "s1_1_2", "md": "A guardrail such as \"crash rate and session length stay flat\" keeps everyone __playing fair__.", "zh": "像「崩溃率和使用时长保持持平」这样的护栏，能让大家都规规矩矩地玩。", "sp": null, "gap": false, "start": 67.824, "end": 73.896, "words": [[67.929, 68.008], [68.021, 68.548], [68.561, 68.798], [68.811, 68.982], [69.008, 69.456], [69.469, 69.771], [69.877, 69.982], [69.995, 70.495], [70.508, 70.732], [70.745, 71.034], [71.048, 71.521], [71.811, 72.153], [72.298, 72.719], [72.732, 73.061], [73.074, 73.508]]}, {"kind": "s", "id": "s1_2_0", "md": "Some goals are hard to measure directly, especially in the first quarter of a new project.", "zh": "有些目标很难直接衡量，尤其是新项目的第一个季度。", "sp": null, "gap": true, "start": 73.896, "end": 79.632, "words": [[74.014, 74.251], [74.264, 74.593], [74.607, 74.699], [74.712, 75.028], [75.041, 75.12], [75.133, 75.462], [75.475, 76.054], [76.501, 77.225], [77.238, 77.33], [77.343, 77.436], [77.449, 77.817], [77.83, 78.264], [78.278, 78.357], [78.37, 78.396], [78.409, 78.62], [78.633, 79.251]]}, {"kind": "s", "id": "s1_2_1", "md": "**If you can't measure the outcome yet, measure the step that leads to it, and say so.**", "zh": "如果结果暂时还量不了，就去量通往结果的那一步，并且把这一点讲明白。", "sp": null, "gap": false, "start": 79.632, "end": 84.744, "words": [[79.75, 79.856], [79.869, 79.961], [79.974, 80.25], [80.264, 80.553], [80.566, 80.698], [80.711, 81.119], [81.132, 81.382], [81.685, 81.974], [81.987, 82.079], [82.093, 82.435], [82.448, 82.632], [82.645, 82.921], [82.935, 83.093], [83.106, 83.264], [83.579, 83.658], [83.671, 83.961], [83.974, 84.343]]}, {"kind": "s", "id": "s1_2_2", "md": "\"Ship the new image pipeline to all regions\" is not perfect, but at least it is ==verifiable==.", "zh": "「新的图片链路全量覆盖所有地区」不算完美，但至少是可验证的。", "sp": null, "gap": false, "start": 84.744, "end": 90.768, "words": [[84.928, 85.073], [85.152, 85.244], [85.257, 85.455], [85.468, 85.797], [85.81, 86.389], [86.402, 86.573], [86.586, 86.849], [86.862, 87.481], [87.586, 87.718], [87.731, 87.994], [88.007, 88.547], [88.836, 88.968], [88.981, 89.099], [89.112, 89.376], [89.389, 89.468], [89.481, 89.612], [89.626, 90.376]]}, {"kind": "s", "id": "s1_2_3", "md": "Just don't pretend that an ==output== is the same as a result, and __come back to__ the real metric once you can track it.", "zh": "只是别假装产出就等于结果，等能追踪真正的指标了，再回到那个指标上来。", "sp": null, "gap": false, "start": 90.768, "end": 97.032, "words": [[90.873, 91.057], [91.071, 91.281], [91.294, 91.729], [91.742, 91.86], [91.873, 91.978], [91.992, 92.478], [92.544, 92.663], [92.676, 92.768], [92.781, 93.163], [93.176, 93.281], [93.294, 93.334], [93.347, 93.847], [94.176, 94.242], [94.255, 94.465], [94.479, 94.742], [94.755, 94.847], [94.86, 94.965], [94.979, 95.229], [95.242, 95.65], [95.663, 95.886], [95.9, 95.979], [95.992, 96.097], [96.11, 96.479], [96.492, 96.65]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+{
+  "id": "060",
+  "title": "Asking for Feedback on Yourself",
+  "meta": "B2 · 约 280 词 · 场景：向他人要反馈",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Why \"Any Feedback?\" Gets Nothing",
+      "paragraphs": [
+        [
+          "At the end of a one-on-one, you ask your engineer, \"Any feedback for me?\"",
+          "She smiles and says, \"No, all good.\"",
+          "You both move on, and you learn nothing."
+        ],
+        [
+          "She is not lying.",
+          "The question is simply too broad, and the ==power== gap makes honesty risky.",
+          "Telling your manager what they do badly feels like a career gamble, so the safe answer wins every time.",
+          "**The more power you have, the less honest feedback you get by default.**"
+        ],
+        [
+          "As a lead, this creates a dangerous ==blind spot==.",
+          "Your habits in meetings, your tone in code reviews, and your decisions under pressure all affect the team.",
+          "Yet you are the last person to hear about them, unless you __go looking for__ it ==deliberately==."
+        ]
+      ],
+      "heading_zh": "1. 为什么「有什么反馈吗？」问不出东西",
+      "paragraphs_zh": [
+        [
+          "1:1 快结束时，你问你的工程师：「对我有什么反馈吗？」",
+          "她笑笑说：「没有，都挺好的。」",
+          "你们俩就翻篇了，你什么也没了解到。"
+        ],
+        [
+          "她没有撒谎。",
+          "只是这个问题太宽泛了，而且上下级之间的权力差距让说实话变得有风险。",
+          "告诉老板他哪里做得不好，感觉像是拿职业前途在赌，所以每次都是安全的回答胜出。",
+          "你的权力越大，默认情况下你听到的真话就越少。"
+        ],
+        [
+          "作为 lead，这会造成一个危险的盲区。",
+          "你开会的习惯、你在 code review 里的语气、你在压力下做的决定，都会影响团队。",
+          "可你却是最后一个听说这些的人，除非你刻意去找。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Make It Easy and Safe to Answer",
+      "paragraphs": [
+        [
+          "Replace the broad question with a narrow one.",
+          "\"What's one thing I could do differently in our sprint planning?\" is much easier to answer.",
+          "Asking for one thing also signals that you expect something, so \"all good\" __no longer works__."
+        ],
+        [
+          "Give people time, too.",
+          "Send the question a day before the meeting, so they can think instead of ==improvise==.",
+          "Some will feel safer writing it down than saying it to your face."
+        ],
+        [
+          "When the feedback comes, your reaction decides whether you get more.",
+          "Do not explain, defend, or __correct the details__.",
+          "Just say, \"Thank you, that's really ==useful==,\" and ask one follow-up question if you need clarity.",
+          "**If you argue with the first piece of feedback, it will be the last one you get.**"
+        ],
+        [
+          "Finally, show that it mattered.",
+          "A few weeks later, tell them what you changed because of what they said.",
+          "That visible ==follow-through== is what turns one brave comment into a habit."
+        ]
+      ],
+      "heading_zh": "2. 让回答变得容易又安全",
+      "paragraphs_zh": [
+        [
+          "把宽泛的问题换成具体的问题。",
+          "「在 sprint 规划会上，有哪一件事是我可以换个做法的？」这就好回答多了。",
+          "只要一件事，也是在表明你期待听到点什么，所以「都挺好的」就不管用了。"
+        ],
+        [
+          "也要给对方时间。",
+          "提前一天把问题发过去，这样他们可以想一想，而不是临场发挥。",
+          "有些人觉得写下来比当面说更安全。"
+        ],
+        [
+          "反馈来了之后，你的反应决定了你以后还能不能听到更多。",
+          "别解释，别辩护，也别去纠正细节。",
+          "就说一句「谢谢，这很有用」，如果需要弄清楚，再追问一个问题。",
+          "如果你跟第一条反馈争起来，它就会是你收到的最后一条。"
+        ],
+        [
+          "最后，让对方看到这条反馈起了作用。",
+          "几周之后，告诉他们你因为他们的话改了什么。",
+          "正是这种看得见的跟进，把一次鼓起勇气的发言变成了一种习惯。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么问 \"Any feedback for me?\" 什么也得不到？",
+      "a": "问题太宽泛，加上权力差距让说真话有风险，安全的回答总会胜出；你权力越大，默认得到的真话越少。"
+    },
+    {
+      "q": "怎样问才更容易得到真实反馈？",
+      "a": "换成很窄的问题，比如「我在迭代规划会上可以改的一件事是什么」；提前一天发问题，让对方有时间想，也可以书面回答。"
+    },
+    {
+      "q": "收到反馈后应该怎么做？",
+      "a": "不解释、不辩护、不纠正细节，只说谢谢，必要时追问一句；几周后告诉对方你因此改了什么。"
+    }
+  ],
+  "dictation": [
+    "The more power you have, the less honest feedback you get by default.",
+    "Replace the broad question with a narrow one.",
+    "When the feedback comes, your reaction decides whether you get more.",
+    "If you argue with the first piece of feedback, it will be the last one you get."
+  ],
+  "shadow": {
+    "text": "When the feedback comes, your reaction decides whether you get more. Do not explain, defend, or correct the details.",
+    "marked": "When the feedback comes, / your <b>reaction</b> decides / whether you get <b>more</b>. //<br>Do <b>not</b> explain, / <b>defend</b>, / or <b>correct</b> the details. //"
+  },
+  "prompts": [
+    {
+      "q": "你想知道自己在周会上主持得怎么样。用 30 秒向一位下属要反馈：问题要窄，让对方觉得说真话是安全的。",
+      "ref": "Can I ask you for a favor? I'm trying to get better at running our weekly sync, and I suspect I talk too much. What's one thing I could do differently in that meeting? It doesn't have to be big, and you don't need to answer now. Feel free to think about it and send me a message tomorrow. I genuinely want to hear it.",
+      "ref_zh": "能请你帮个忙吗？我想把我们的周会开得更好，我怀疑我说得太多了。在那个会上，有哪一件事是我可以换个做法的？不用是什么大事，也不用现在就回答。你可以想一想，明天给我发个消息。我是真心想听。"
+    },
+    {
+      "q": "一位同事给了你一条有点刺耳的反馈：你在代码评审里的评论语气太硬。用 30 秒回应：不辩解，感谢，并问一个追问。",
+      "ref": "Thank you, honestly. That's not easy to say to someone, and it's really useful to hear. I hadn't realized my comments came across that way. Could you point me to one or two reviews where it felt harsh, so I can see what I'm doing? I'll try to change it, and I'd appreciate it if you tell me in a month whether it's better.",
+      "ref_zh": "真的谢谢你。这种话不好跟人说，听到对我很有用。我之前没意识到我的评论给人的感觉是这样的。你能给我指一两个让你觉得说话很冲的 review 吗？这样我能看看自己是怎么做的。我会试着改，如果一个月后你能告诉我有没有好一点，我会很感激。"
+    }
+  ],
+  "words": [
+    {
+      "w": "power",
+      "ipa": "/ˈpaʊər/",
+      "zh": "权力",
+      "ex": "The power gap means juniors rarely challenge the tech lead in public."
+    },
+    {
+      "w": "blind spot",
+      "ipa": "/ˈblaɪnd spɑːt/",
+      "zh": "盲点",
+      "ex": "Monitoring for the batch jobs is a blind spot in our setup."
+    },
+    {
+      "w": "deliberately",
+      "ipa": "/dɪˈlɪbərətli/",
+      "zh": "刻意地、有意地",
+      "ex": "We deliberately kept the first version small to learn faster."
+    },
+    {
+      "w": "improvise",
+      "ipa": "/ˈɪmprəvaɪz/",
+      "zh": "即兴发挥",
+      "ex": "The demo broke, so he had to improvise with screenshots."
+    },
+    {
+      "w": "useful",
+      "ipa": "/ˈjuːsfl/",
+      "zh": "有用的",
+      "ex": "That comparison table was really useful for the decision."
+    },
+    {
+      "w": "follow-through",
+      "ipa": "/ˈfɑːloʊ θruː/",
+      "zh": "后续落实",
+      "ex": "Good postmortems need follow-through on the action items."
+    },
+    {
+      "w": "gamble",
+      "ipa": "/ˈɡæmbl/",
+      "zh": "冒险、赌博",
+      "ex": "Skipping the canary stage is a gamble we don't need to take."
+    },
+    {
+      "w": "clarity",
+      "ipa": "/ˈklærəti/",
+      "zh": "清晰、明确",
+      "ex": "We need more clarity on who owns the alerting."
+    },
+    {
+      "w": "signal (v.)",
+      "ipa": "/ˈsɪɡnəl/",
+      "zh": "表明、示意",
+      "ex": "Moving the launch date signals that quality comes first.",
+      "tts_w": "signal"
+    }
+  ]
+}

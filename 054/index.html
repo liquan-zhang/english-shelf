@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Talking to Someone Who Is Underperforming · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "054", "title": "Talking to Someone Who Is Underperforming", "meta": "B2 · 约 290 词 · 场景：绩效谈话", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Conversation Managers Delay", "heading_zh": "1. 管理者总在拖延的那场谈话", "rows": [[{"id": "s0_0_0", "md": "For three sprints in a row, one of your engineers has missed estimates, and his code reviews keep coming back with basic bugs.", "text": "For three sprints in a row, one of your engineers has missed estimates, and his code reviews keep coming back with basic bugs.", "zh": "连续三个 sprint，你的一位工程师都没达到预估，他的代码 review 还老是被打回来，都是些低级 bug。", "sp": null}, {"id": "s0_0_1", "md": "You notice it, the team notices it, and you tell yourself that next sprint will be different.", "text": "You notice it, the team notices it, and you tell yourself that next sprint will be different.", "zh": "你注意到了，团队也注意到了，你跟自己说下个 sprint 会不一样。", "sp": null}, {"id": "s0_0_2", "md": "It usually is not.", "text": "It usually is not.", "zh": "通常并不会。", "sp": null}], [{"id": "s0_1_0", "md": "Managers delay this conversation because it feels ==confrontational==.", "text": "Managers delay this conversation because it feels confrontational.", "zh": "管理者拖延这场谈话，是因为感觉像是在对抗。", "sp": null}, {"id": "s0_1_1", "md": "But silence is not neutral.", "text": "But silence is not neutral.", "zh": "但沉默并不是中立的。", "sp": null}, {"id": "s0_1_2", "md": "The engineer assumes everything is fine, the team starts to __pick up the slack__ and quietly resent it, and the problem grows.", "text": "The engineer assumes everything is fine, the team starts to pick up the slack and quietly resent it, and the problem grows.", "zh": "那位工程师以为一切都好，团队开始帮他兜底并在心里暗暗不满，问题越来越大。", "sp": null}, {"id": "s0_1_3", "md": "**Waiting does not protect the person; it only makes the eventual conversation harder.**", "text": "Waiting does not protect the person; it only makes the eventual conversation harder.", "zh": "等待并不能保护这个人；只会让最终的那场谈话更难开口。", "sp": null}], [{"id": "s0_2_0", "md": "Remember that ==underperformance== has many causes.", "text": "Remember that underperformance has many causes.", "zh": "要记住，表现不佳的原因有很多。", "sp": null}, {"id": "s0_2_1", "md": "It might be unclear expectations, a skill gap, or a problem at home.", "text": "It might be unclear expectations, a skill gap, or a problem at home.", "zh": "可能是预期没讲清楚，可能是能力有缺口，也可能是家里出了事。", "sp": null}, {"id": "s0_2_2", "md": "You cannot fix it until you __get to the bottom of__ it, and you cannot do that without ==raising== it.", "text": "You cannot fix it until you get to the bottom of it, and you cannot do that without raising it.", "zh": "不搞清楚根源你就没法解决，而不把问题提出来你就没法搞清楚。", "sp": null}]]}, {"heading": "2. Running the Conversation", "heading_zh": "2. 怎么谈", "rows": [[{"id": "s1_0_0", "md": "Hold it in private, and say why you are there in the first minute.", "text": "Hold it in private, and say why you are there in the first minute.", "zh": "私下谈，并且在第一分钟就说明来意。", "sp": null}, {"id": "s1_0_1", "md": "\"I want to talk about the last few sprints, because I'm worried, and I want to help.\"", "text": "\"I want to talk about the last few sprints, because I'm worried, and I want to help.\"", "zh": "「我想聊聊最近几个 sprint，因为我有点担心，也想帮你。」", "sp": null}, {"id": "s1_0_2", "md": "Long warm-ups make people anxious and ==dilute== the message.", "text": "Long warm-ups make people anxious and dilute the message.", "zh": "铺垫太长会让人焦虑，还会冲淡你要说的事。", "sp": null}], [{"id": "s1_1_0", "md": "Then share facts, not ==labels==.", "text": "Then share facts, not labels.", "zh": "然后，讲事实，不贴标签。", "sp": null}, {"id": "s1_1_1", "md": "\"Three of your last five reviews needed major rework\" is something you can discuss.", "text": "\"Three of your last five reviews needed major rework\" is something you can discuss.", "zh": "「你最近五次 review 里有三次需要大改」，这是可以讨论的。", "sp": null}, {"id": "s1_1_2", "md": "\"You seem careless\" is something people can only defend against.", "text": "\"You seem careless\" is something people can only defend against.", "zh": "「你好像挺粗心的」，这只会让人去辩解。", "sp": null}], [{"id": "s1_2_0", "md": "Next, stop talking and ask for their view.", "text": "Next, stop talking and ask for their view.", "zh": "接着，停下来，问问他的看法。", "sp": null}, {"id": "s1_2_1", "md": "\"What's your read on what's been happening?\"", "text": "\"What's your read on what's been happening?\"", "zh": "「你自己怎么看最近发生的事？」", "sp": null}, {"id": "s1_2_2", "md": "You may learn about an unclear spec, a personal ==struggle==, or a task that was simply too big for their level.", "text": "You may learn about an unclear spec, a personal struggle, or a task that was simply too big for their level.", "zh": "你可能会了解到需求文档不清楚、个人遇到困难，或者某个任务对他的级别来说本来就太大了。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, agree on a concrete plan with dates.", "text": "Finally, agree on a concrete plan with dates.", "zh": "最后，约定一个带日期的具体计划。", "sp": null}, {"id": "s1_3_1", "md": "One or two clear goals, the support you will provide, and a time to __check in__ two weeks later.", "text": "One or two clear goals, the support you will provide, and a time to check in two weeks later.", "zh": "一两个清晰的目标、你会提供的支持，以及两周后约个时间复盘。", "sp": null}, {"id": "s1_3_2", "md": "**Be kind about the person and clear about the gap.**", "text": "Be kind about the person and clear about the gap.", "zh": "对人要温和，对差距要说清楚。", "sp": null}, {"id": "s1_3_3", "md": "Leaving someone confused about where they stand is the least kind option of all.", "text": "Leaving someone confused about where they stand is the least kind option of all.", "zh": "让一个人搞不清自己处在什么位置，才是最不善意的做法。", "sp": null}]]}], "gist": [{"q": "经理为什么常常拖延绩效谈话？拖延的后果是什么？", "a": "觉得像对抗；但沉默不中立，当事人以为没问题，团队替他补位并暗生怨气，问题越来越大，最后的谈话更难。"}, {"q": "谈话时为什么要讲事实而不是贴标签？", "a": "事实（五次评审有三次需要大改）可以讨论；标签（你很粗心）只会让人防御。"}, {"q": "谈话的最后一步是什么？", "a": "约定具体计划：一两个明确目标、你提供的支持、两周后的检查时间；对人友善、对差距清楚。"}], "dictation": [{"id": "s0_1_3", "text": "Waiting does not protect the person; it only makes the eventual conversation harder."}, {"id": "s1_0_2", "text": "Long warm-ups make people anxious and dilute the message."}, {"id": "s1_3_2", "text": "Be kind about the person and clear about the gap."}, {"id": "s1_3_3", "text": "Leaving someone confused about where they stand is the least kind option of all."}], "shadow": {"text": "Then share facts, not labels. \"Three of your last five reviews needed major rework\" is something you can discuss. \"You seem careless\" is something people can only defend against.", "marked": "Then share <b>facts</b>, / <b>not</b> labels. //<br>\"<b>Three</b> of your last <b>five</b> reviews / needed <b>major</b> rework\" / is something you can <b>discuss</b>. //<br>\"You seem <b>careless</b>\" / is something people can <b>only</b> defend against. //"}, "prompts": [{"q": "你要和一位最近连续几次延期、代码质量下降的下属谈话。用 30 秒开场：第一分钟讲明来意，讲事实，然后请他说说他的看法。", "ref": "Thanks for making time. I want to talk about the last few sprints, because I'm a bit worried and I want to help. Two of your last three tasks slipped by more than a week, and the payment fix needed a second rollback. I'm not assuming I know why. What's your read on what's been happening?", "ref_zh": "谢谢你抽时间。我想聊聊最近几个 sprint，因为我有点担心，也想帮你。你最近三个任务里有两个延期超过一周，支付那个修复还回滚了两次。我不预设自己知道原因。你自己怎么看最近发生的事？", "id": "ref0"}, {"q": "谈话接近尾声，你们已经找到原因（需求不清 + 任务太大）。用 30 秒总结一个带日期的改进计划和你的支持。", "ref": "Okay, so it sounds like unclear specs and oversized tasks are the main problems. Here's what I suggest. For the next two weeks, we'll split every task into pieces of two days or less, and I'll join your first spec review with the PM. Your goal is to hit your estimates on those smaller tasks. Let's check in on the twentieth and see how it's going. Does that feel fair?", "ref_zh": "好，听下来主要问题是需求不清楚和任务太大。我的建议是这样。接下来两周，我们把每个任务都拆成两天以内的小块，你跟 PM 的第一次需求评审我也会参加。你的目标是在这些小任务上达到自己的预估。我们二十号对一下，看看进展如何。你觉得这样公平吗？", "id": "ref1"}], "words": [{"w": "confrontational", "ipa": "/ˌkɑːnfrʌnˈteɪʃənl/", "zh": "对抗性的", "ex": "I want this to be a conversation, not a confrontational review.", "id": "w0"}, {"w": "underperformance", "ipa": "/ˌʌndərpərˈfɔːrməns/", "zh": "表现不佳", "ex": "We need to address the underperformance before the review cycle.", "id": "w1"}, {"w": "raise (v.)", "ipa": "/reɪz/", "zh": "提出（问题）", "ex": "I'd like to raise a concern about the test coverage.", "tts_w": "raise", "id": "w2"}, {"w": "dilute", "ipa": "/daɪˈluːt/", "zh": "冲淡、削弱", "ex": "Adding ten minor points will dilute the main message.", "id": "w3"}, {"w": "label", "ipa": "/ˈleɪbl/", "zh": "标签", "ex": "Avoid labels like lazy; describe what actually happened.", "id": "w4"}, {"w": "struggle", "ipa": "/ˈstrʌɡl/", "zh": "困难、挣扎", "ex": "She mentioned a struggle with the new framework.", "id": "w5"}, {"w": "resent", "ipa": "/rɪˈzent/", "zh": "怨恨、不满", "ex": "The team will resent covering his on-call shifts every week.", "id": "w6"}, {"w": "rework", "ipa": "/ˈriːwɜːrk/", "zh": "返工", "ex": "The unclear spec caused a week of rework.", "id": "w7"}, {"w": "eventual", "ipa": "/ɪˈventʃuəl/", "zh": "最终的", "ex": "The eventual fix was a single line in the config.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Conversation Managers Delay", "zh": "1. 管理者总在拖延的那场谈话", "start": 0.0, "end": 2.856, "words": [[0.105, 0.368], [0.697, 0.789], [0.803, 1.513], [1.526, 2.0], [2.013, 2.461]]}, {"kind": "s", "id": "s0_0_0", "md": "For three sprints in a row, one of your engineers has missed estimates, and his code reviews keep coming back with basic bugs.", "zh": "连续三个 sprint，你的一位工程师都没达到预估，他的代码 review 还老是被打回来，都是些低级 bug。", "sp": null, "gap": false, "start": 2.856, "end": 10.8, "words": [[3.067, 3.264], [3.277, 3.566], [3.58, 3.974], [3.988, 4.119], [4.132, 4.185], [4.198, 4.54], [4.948, 5.027], [5.04, 5.106], [5.119, 5.251], [5.264, 5.843], [5.856, 6.053], [6.067, 6.409], [6.422, 7.027], [7.317, 7.435], [7.448, 7.567], [7.58, 7.83], [7.843, 8.33], [8.343, 8.632], [8.645, 8.948], [8.961, 9.29], [9.303, 9.474], [9.488, 9.882], [9.895, 10.409]]}, {"kind": "s", "id": "s0_0_1", "md": "You notice it, the team notices it, and you tell yourself that next sprint will be different.", "zh": "你注意到了，团队也注意到了，你跟自己说下个 sprint 会不一样。", "sp": null, "gap": false, "start": 10.8, "end": 16.128, "words": [[10.918, 10.997], [11.011, 11.366], [11.379, 11.55], [11.826, 11.918], [11.932, 12.208], [12.221, 12.708], [12.721, 12.892], [13.208, 13.274], [13.287, 13.379], [13.392, 13.603], [13.616, 14.05], [14.063, 14.247], [14.261, 14.642], [14.655, 15.024], [15.037, 15.129], [15.142, 15.247], [15.261, 15.734]]}, {"kind": "s", "id": "s0_0_2", "md": "It usually is not.", "zh": "通常并不会。", "sp": null, "gap": false, "start": 16.128, "end": 18.0, "words": [[16.233, 16.352], [16.365, 16.773], [16.786, 16.904], [16.917, 17.286]]}, {"kind": "s", "id": "s0_1_0", "md": "Managers delay this conversation because it feels ==confrontational==.", "zh": "管理者拖延这场谈话，是因为感觉像是在对抗。", "sp": null, "gap": true, "start": 18.0, "end": 22.152, "words": [[18.105, 18.605], [18.618, 18.961], [18.974, 19.145], [19.158, 19.974], [20.039, 20.342], [20.355, 20.447], [20.461, 20.816], [20.829, 21.75]]}, {"kind": "s", "id": "s0_1_1", "md": "But silence is not neutral.", "zh": "但沉默并不是中立的。", "sp": null, "gap": false, "start": 22.152, "end": 24.096, "words": [[22.27, 22.363], [22.376, 22.862], [22.876, 22.968], [22.981, 23.205], [23.218, 23.691]]}, {"kind": "s", "id": "s0_1_2", "md": "The engineer assumes everything is fine, the team starts to __pick up the slack__ and quietly resent it, and the problem grows.", "zh": "那位工程师以为一切都好，团队开始帮他兜底并在心里暗暗不满，问题越来越大。", "sp": null, "gap": false, "start": 24.096, "end": 31.68, "words": [[24.201, 24.267], [24.28, 24.793], [24.807, 25.333], [25.438, 25.886], [25.899, 26.03], [26.043, 26.491], [26.82, 26.899], [26.912, 27.188], [27.201, 27.504], [27.517, 27.596], [27.609, 27.833], [27.846, 27.978], [27.991, 28.07], [28.083, 28.556], [28.78, 28.885], [28.899, 29.359], [29.372, 29.741], [29.754, 29.899], [30.228, 30.28], [30.293, 30.372], [30.385, 30.78], [30.793, 31.28]]}, {"kind": "s", "id": "s0_1_3", "md": "**Waiting does not protect the person; it only makes the eventual conversation harder.**", "zh": "等待并不能保护这个人；只会让最终的那场谈话更难开口。", "sp": null, "gap": false, "start": 31.68, "end": 37.08, "words": [[31.785, 32.141], [32.154, 32.325], [32.338, 32.614], [32.627, 33.048], [33.062, 33.141], [33.154, 33.588], [34.009, 34.088], [34.101, 34.404], [34.417, 34.733], [34.746, 34.825], [34.838, 35.483], [35.496, 36.233], [36.246, 36.693]]}, {"kind": "s", "id": "s0_2_0", "md": "Remember that ==underperformance== has many causes.", "zh": "要记住，表现不佳的原因有很多。", "sp": null, "gap": true, "start": 37.08, "end": 40.128, "words": [[37.185, 37.541], [37.554, 37.725], [37.738, 38.606], [38.619, 38.804], [38.817, 39.106], [39.119, 39.725]]}, {"kind": "s", "id": "s0_2_1", "md": "It might be unclear expectations, a skill gap, or a problem at home.", "zh": "可能是预期没讲清楚，可能是能力有缺口，也可能是家里出了事。", "sp": null, "gap": false, "start": 40.128, "end": 44.856, "words": [[40.233, 40.312], [40.325, 40.523], [40.536, 40.733], [40.746, 41.26], [41.273, 42.233], [42.431, 42.47], [42.483, 42.839], [42.852, 43.194], [43.496, 43.575], [43.589, 43.628], [43.641, 44.049], [44.062, 44.154], [44.167, 44.47]]}, {"kind": "s", "id": "s0_2_2", "md": "You cannot fix it until you __get to the bottom of__ it, and you cannot do that without ==raising== it.", "zh": "不搞清楚根源你就没法解决，而不把问题提出来你就没法搞清楚。", "sp": null, "gap": false, "start": 44.856, "end": 50.064, "words": [[44.974, 45.053], [45.067, 45.395], [45.409, 45.751], [45.764, 45.843], [45.856, 46.145], [46.159, 46.277], [46.29, 46.474], [46.488, 46.553], [46.567, 46.659], [46.672, 47.04], [47.053, 47.159], [47.172, 47.33], [47.659, 47.724], [47.738, 47.843], [47.856, 48.251], [48.264, 48.461], [48.474, 48.711], [48.724, 49.093], [49.106, 49.488], [49.501, 49.672]]}, {"kind": "h", "id": "h1", "md": "2. Running the Conversation", "zh": "2. 怎么谈", "start": 50.064, "end": 52.272, "words": [[50.182, 50.419], [50.775, 50.985], [50.998, 51.077], [51.09, 51.88]]}, {"kind": "s", "id": "s1_0_0", "md": "Hold it in private, and say why you are there in the first minute.", "zh": "私下谈，并且在第一分钟就说明来意。", "sp": null, "gap": false, "start": 52.272, "end": 56.088, "words": [[52.39, 52.588], [52.601, 52.667], [52.68, 52.772], [52.785, 53.259], [53.667, 53.733], [53.746, 53.996], [54.009, 54.232], [54.246, 54.39], [54.404, 54.522], [54.535, 54.785], [54.798, 54.864], [54.877, 54.943], [54.956, 55.338], [55.351, 55.693]]}, {"kind": "s", "id": "s1_0_1", "md": "\"I want to talk about the last few sprints, because I'm worried, and I want to help.\"", "zh": "「我想聊聊最近几个 sprint，因为我有点担心，也想帮你。」", "sp": null, "gap": false, "start": 56.088, "end": 60.792, "words": [[56.233, 56.259], [56.259, 56.377], [56.391, 56.443], [56.456, 56.68], [56.693, 56.904], [56.917, 57.009], [57.022, 57.338], [57.351, 57.509], [57.522, 58.127], [58.325, 58.654], [58.667, 58.785], [58.799, 59.259], [59.535, 59.601], [59.614, 59.654], [59.667, 59.877], [59.891, 59.93], [59.943, 60.299]]}, {"kind": "s", "id": "s1_0_2", "md": "Long warm-ups make people anxious and ==dilute== the message.", "zh": "铺垫太长会让人焦虑，还会冲淡你要说的事。", "sp": null, "gap": false, "start": 60.792, "end": 64.632, "words": [[60.897, 61.187], [61.2, 61.713], [61.726, 61.95], [61.963, 62.397], [62.41, 62.976], [63.042, 63.16], [63.174, 63.608], [63.621, 63.7], [63.713, 64.252]]}, {"kind": "s", "id": "s1_1_0", "md": "Then share facts, not ==labels==.", "zh": "然后，讲事实，不贴标签。", "sp": null, "gap": true, "start": 64.632, "end": 67.056, "words": [[64.75, 64.856], [64.869, 65.119], [65.132, 65.698], [65.895, 66.119], [66.132, 66.658]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Three of your last five reviews needed major rework\" is something you can discuss.", "zh": "「你最近五次 review 里有三次需要大改」，这是可以讨论的。", "sp": null, "gap": false, "start": 67.056, "end": 72.24, "words": [[67.306, 67.372], [67.451, 67.517], [67.53, 67.648], [67.661, 67.99], [68.003, 68.293], [68.306, 68.753], [68.767, 69.135], [69.148, 69.53], [69.543, 70.043], [70.477, 70.569], [70.582, 70.938], [70.951, 71.056], [71.069, 71.201], [71.214, 71.859]]}, {"kind": "s", "id": "s1_1_2", "md": "\"You seem careless\" is something people can only defend against.", "zh": "「你好像挺粗心的」，这只会让人去辩解。", "sp": null, "gap": false, "start": 72.24, "end": 76.368, "words": [[72.424, 72.464], [72.543, 72.845], [72.858, 73.477], [73.701, 73.832], [73.845, 74.174], [74.187, 74.543], [74.556, 74.74], [74.806, 75.069], [75.082, 75.464], [75.477, 75.977]]}, {"kind": "s", "id": "s1_2_0", "md": "Next, stop talking and ask for their view.", "zh": "接着，停下来，问问他的看法。", "sp": null, "gap": true, "start": 76.368, "end": 79.512, "words": [[76.473, 76.868], [77.118, 77.421], [77.434, 77.921], [78.131, 78.223], [78.236, 78.5], [78.513, 78.631], [78.644, 78.802], [78.815, 79.118]]}, {"kind": "s", "id": "s1_2_1", "md": "\"What's your read on what's been happening?\"", "zh": "「你自己怎么看最近发生的事？」", "sp": null, "gap": false, "start": 79.512, "end": 81.624, "words": [[79.709, 79.762], [79.841, 79.986], [79.999, 80.262], [80.275, 80.407], [80.42, 80.591], [80.604, 80.723], [80.736, 81.222]]}, {"kind": "s", "id": "s1_2_2", "md": "You may learn about an unclear spec, a personal ==struggle==, or a task that was simply too big for their level.", "zh": "你可能会了解到需求文档不清楚、个人遇到困难，或者某个任务对他的级别来说本来就太大了。", "sp": null, "gap": false, "start": 81.624, "end": 88.704, "words": [[81.729, 81.834], [81.848, 81.992], [82.006, 82.256], [82.269, 82.545], [82.558, 82.69], [82.703, 83.282], [83.295, 83.795], [84.098, 84.15], [84.163, 84.69], [84.703, 85.203], [85.624, 85.729], [85.742, 85.795], [85.808, 86.256], [86.269, 86.361], [86.374, 86.519], [86.532, 86.94], [86.953, 87.242], [87.256, 87.611], [87.624, 87.769], [87.782, 87.94], [87.953, 88.308]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, agree on a concrete plan with dates.", "zh": "最后，约定一个带日期的具体计划。", "sp": null, "gap": true, "start": 88.704, "end": 91.992, "words": [[88.875, 89.322], [89.638, 89.928], [89.941, 90.033], [90.046, 90.099], [90.112, 90.612], [90.625, 90.914], [90.928, 91.099], [91.112, 91.599]]}, {"kind": "s", "id": "s1_3_1", "md": "One or two clear goals, the support you will provide, and a time to __check in__ two weeks later.", "zh": "一两个清晰的目标、你会提供的支持，以及两周后约个时间复盘。", "sp": null, "gap": false, "start": 91.992, "end": 97.92, "words": [[92.097, 92.492], [92.505, 92.637], [92.65, 92.939], [92.953, 93.308], [93.321, 93.781], [94.018, 94.11], [94.124, 94.584], [94.597, 94.689], [94.703, 94.821], [94.834, 95.387], [95.716, 95.795], [95.808, 95.86], [95.874, 96.189], [96.203, 96.268], [96.281, 96.571], [96.584, 96.663], [96.676, 96.86], [96.874, 97.137], [97.15, 97.518]]}, {"kind": "s", "id": "s1_3_2", "md": "**Be kind about the person and clear about the gap.**", "zh": "对人要温和，对差距要说清楚。", "sp": null, "gap": false, "start": 97.92, "end": 100.992, "words": [[98.038, 98.117], [98.131, 98.407], [98.42, 98.631], [98.644, 98.723], [98.736, 99.288], [99.407, 99.525], [99.538, 99.841], [99.854, 100.091], [100.104, 100.183], [100.196, 100.591]]}, {"kind": "s", "id": "s1_3_3", "md": "Leaving someone confused about where they stand is the least kind option of all.", "zh": "让一个人搞不清自己处在什么位置，才是最不善意的做法。", "sp": null, "gap": false, "start": 100.992, "end": 105.816, "words": [[101.097, 101.387], [101.4, 101.742], [101.755, 102.308], [102.321, 102.571], [102.584, 102.716], [102.729, 102.847], [102.86, 103.36], [103.571, 103.676], [103.689, 103.821], [103.834, 104.216], [104.229, 104.597], [104.61, 104.979], [104.992, 105.097], [105.11, 105.413]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

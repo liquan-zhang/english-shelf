@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Writing for Readers Whose First Language Isn't English · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "093", "title": "Writing for Readers Whose First Language Isn't English", "meta": "B2 · 约 280 词 · 场景：写给非母语读者", "voice": "en-GB-RyanNeural", "rate": "-5%", "sections": [{"heading": "1. Clever Writing Gets Lost", "heading_zh": "1. 写得巧，读者就丢了", "rows": [[{"id": "s0_0_0", "md": "Imagine you send a message saying the new feature is \"a bit of a __long shot__\" and that you would like to \"park it for now\".", "text": "Imagine you send a message saying the new feature is \"a bit of a long shot\" and that you would like to \"park it for now\".", "zh": "想象一下，你发了条消息，说新功能「有点悬」，想「先放一放」。", "sp": null}, {"id": "s0_0_1", "md": "To a reader in Seoul or Jakarta, reading in their second or third language late at night, that sentence can mean almost anything.", "text": "To a reader in Seoul or Jakarta, reading in their second or third language late at night, that sentence can mean almost anything.", "zh": "对一个在首尔或雅加达、深夜用第二甚至第三语言读消息的人来说，这句话几乎可以理解成任何意思。", "sp": null}, {"id": "s0_0_2", "md": "Some will paste it into a translation tool, and the result may be complete ==nonsense==.", "text": "Some will paste it into a translation tool, and the result may be complete nonsense.", "zh": "有些人会把它贴进翻译工具，翻出来的可能完全是胡话。", "sp": null}], [{"id": "s0_1_0", "md": "Most of our readers are smart, but they read quickly, between meetings, and often on a phone.", "text": "Most of our readers are smart, but they read quickly, between meetings, and often on a phone.", "zh": "我们的读者大多很聪明，但他们读得很快，在会议间隙读，而且经常是在手机上。", "sp": null}, {"id": "s0_1_1", "md": "Idioms, jokes and long sentences make them work harder, and ==ambiguous== words leave them guessing.", "text": "Idioms, jokes and long sentences make them work harder, and ambiguous words leave them guessing.", "zh": "习语、玩笑和长句会让他们读得更费劲，有歧义的词则让他们只能靠猜。", "sp": null}, {"id": "s0_1_2", "md": "**If your reader has to guess what you mean, you have not finished writing.**", "text": "If your reader has to guess what you mean, you have not finished writing.", "zh": "如果读者还得猜你什么意思，那你就还没写完。", "sp": null}], [{"id": "s0_2_0", "md": "This is not about writing simple ideas.", "text": "This is not about writing simple ideas.", "zh": "这不是说只能写简单的想法。", "sp": null}, {"id": "s0_2_1", "md": "It is about writing complex ideas in plain, ==predictable== language.", "text": "It is about writing complex ideas in plain, predictable language.", "zh": "而是要用平实、好预测的语言，把复杂的想法写清楚。", "sp": null}]]}, {"heading": "2. Four Rules for Global Readers", "heading_zh": "2. 写给全球读者的四条规矩", "rows": [[{"id": "s1_0_0", "md": "Put the request in the first line.", "text": "Put the request in the first line.", "zh": "把请求放在第一行。", "sp": null}, {"id": "s1_0_1", "md": "\"Please review the design by Thursday\" should come before the background, not at the end of the third paragraph.", "text": "\"Please review the design by Thursday\" should come before the background, not at the end of the third paragraph.", "zh": "「请在周四前评审一下设计」应该放在背景之前，而不是藏在第三段末尾。", "sp": null}], [{"id": "s1_1_0", "md": "Keep one idea per sentence, and prefer common verbs.", "text": "Keep one idea per sentence, and prefer common verbs.", "zh": "一句话只讲一个意思，尽量用常见动词。", "sp": null}, {"id": "s1_1_1", "md": "\"We will delay the launch\" is clearer than \"We are going to __push the launch back__ a bit.\"", "text": "\"We will delay the launch\" is clearer than \"We are going to push the launch back a bit.\"", "zh": "「我们会推迟上线」比「我们打算把上线往后挪一挪」更清楚。", "sp": null}, {"id": "s1_1_2", "md": "==Phrasal verbs== feel natural to native speakers, but they are often the hardest part for everyone else.", "text": "Phrasal verbs feel natural to native speakers, but they are often the hardest part for everyone else.", "zh": "短语动词对母语者来说很自然，但对其他人往往是最难的部分。", "sp": null}], [{"id": "s1_2_0", "md": "Write dates and numbers so they cannot be misunderstood.", "text": "Write dates and numbers so they cannot be misunderstood.", "zh": "日期和数字要写得不可能被误解。", "sp": null}, {"id": "s1_2_1", "md": "Spell out the month, because a date written only in numbers is ==interpreted== differently in London and New York.", "text": "Spell out the month, because a date written only in numbers is interpreted differently in London and New York.", "zh": "月份要用单词写出来，因为纯数字写的日期，在伦敦和纽约会被读成不同的意思。", "sp": null}, {"id": "s1_2_2", "md": "Give the time zone too, even when it feels obvious to you.", "text": "Give the time zone too, even when it feels obvious to you.", "zh": "时区也要写上，哪怕你觉得再明显不过。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, __save the idioms for__ calls, where tone and facial expressions help.", "text": "Finally, save the idioms for calls, where tone and facial expressions help.", "zh": "最后，习语留到打电话的时候用，那时有语气和表情帮忙。", "sp": null}, {"id": "s1_3_1", "md": "**In writing, clear beats clever every time.**", "text": "In writing, clear beats clever every time.", "zh": "写东西的时候，清楚永远胜过巧妙。", "sp": null}, {"id": "s1_3_2", "md": "Your readers will not remember your style, but they will remember that your messages were easy to ==act on==.", "text": "Your readers will not remember your style, but they will remember that your messages were easy to act on.", "zh": "读者不会记得你的文风，但会记得你的消息拿来就能执行。", "sp": null}]]}], "gist": [{"q": "为什么像 long shot、park it 这样的说法在全球团队的书面沟通里有问题？", "a": "读者用第二、第三语言在深夜快速阅读，可能看不懂，或用翻译工具翻出一堆胡话。"}, {"q": "作者说这篇讲的是写简单的想法吗？", "a": "不是；是用平实、可预测的语言写复杂的想法。读者要靠猜，说明还没写完。"}, {"q": "给全球读者写作的四条规则是什么？", "a": "请求放第一行；一句一个意思，多用常见动词少用短语动词；日期写出月份并注明时区；习语留到通话里用。"}], "dictation": [{"id": "s0_1_2", "text": "If your reader has to guess what you mean, you have not finished writing."}, {"id": "s1_0_0", "text": "Put the request in the first line."}, {"id": "s1_1_0", "text": "Keep one idea per sentence, and prefer common verbs."}, {"id": "s1_3_1", "text": "In writing, clear beats clever every time."}], "shadow": {"text": "Most of our readers are smart, but they read quickly, between meetings, and often on a phone. Idioms, jokes and long sentences make them work harder, and ambiguous words leave them guessing. If your reader has to guess what you mean, you have not finished writing.", "marked": "Most of our readers are <b>smart</b>, / but they read <b>quickly</b>, / between <b>meetings</b>, / and often on a <b>phone</b>. //<br><b>Idioms</b>, jokes and long sentences / make them work <b>harder</b>, / and <b>ambiguous</b> words / leave them <b>guessing</b>. //<br>If your reader has to <b>guess</b> what you mean, / you have <b>not finished</b> writing. //"}, "prompts": [{"q": "你在会上口头向多国同事宣布上线推迟一周。按文中的写法说：先说结论和请求，一句一个意思，日期说清楚，30 秒。", "ref": "Here is the main point. We will delay the launch by one week, to the twelfth of June. The reason is a bug in the payment flow. The fix is ready, but we need three more days to test it. Please update your plans. If this delay blocks your team, tell me by Friday.", "ref_zh": "先说重点。我们会把上线推迟一周，改到六月十二日。原因是支付流程里有个 bug。修复已经好了，但我们还需要三天来测试。请大家相应调整计划。如果这次延期会卡住你们团队，请在周五前告诉我。", "id": "ref0"}, {"q": "下属给海外团队写的邮件里全是 touch base、circle back、low-hanging fruit。给他 30 秒反馈。", "ref": "The content of this email is good, but I think some readers will struggle with it. Phrases like circle back and low-hanging fruit are hard for people reading in a second language, and translation tools often get them wrong. Could you replace them with plain verbs and put the request in the first line? Then it's ready to send.", "ref_zh": "这封邮件内容挺好的，但我觉得有些读者会读得很吃力。像 circle back、low-hanging fruit 这种说法，用第二语言读的人很难看懂，翻译工具也经常翻错。能不能换成平实的动词，再把请求放到第一行？这样就可以发了。", "id": "ref1"}], "words": [{"w": "nonsense", "ipa": "/ˈnɑːnsens/", "zh": "胡话、毫无意义的东西", "ex": "The machine translation of that idiom was complete nonsense.", "id": "w0"}, {"w": "ambiguous", "ipa": "/æmˈbɪɡjuəs/", "zh": "模棱两可的", "ex": "\"Soon\" is ambiguous, please give an actual date.", "id": "w1"}, {"w": "predictable", "ipa": "/prɪˈdɪktəbəl/", "zh": "可预测的", "ex": "Use a predictable structure: request, context, deadline.", "id": "w2"}, {"w": "phrasal verb", "ipa": "/ˈfreɪzəl vɜːrb/", "zh": "短语动词", "ex": "\"Roll out\" is a phrasal verb that many readers look up.", "id": "w3"}, {"w": "interpret", "ipa": "/ɪnˈtɜːrprɪt/", "zh": "理解、解读", "ex": "Different teams interpreted the requirement in different ways.", "id": "w4"}, {"w": "act on", "ipa": "/ækt ɑːn/", "zh": "根据……采取行动", "ex": "Write feedback that people can act on, not just agree with.", "id": "w5"}, {"w": "long shot", "ipa": "/lɔːŋ ʃɑːt/", "zh": "希望渺茫的事", "ex": "Getting this into the current release is a long shot.", "id": "w6"}, {"w": "plain", "ipa": "/pleɪn/", "zh": "平实的、简明的", "ex": "Write the summary in plain English so the whole region can use it.", "id": "w7"}, {"w": "spell out", "ipa": "/spel aʊt/", "zh": "清楚说明、拼写出来", "ex": "Spell out what you need from each team, don't assume they know.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Clever Writing Gets Lost", "zh": "1. 写得巧，读者就丢了", "start": 0.0, "end": 3.288, "words": [[0.1, 0.508], [0.718, 1.034], [1.047, 1.508], [1.521, 1.771], [1.784, 2.363]]}, {"kind": "s", "id": "s0_0_0", "md": "Imagine you send a message saying the new feature is \"a bit of a __long shot__\" and that you would like to \"park it for now\".", "zh": "想象一下，你发了条消息，说新功能「有点悬」，想「先放一放」。", "sp": null, "gap": false, "start": 3.288, "end": 10.08, "words": [[3.388, 3.888], [3.901, 3.993], [4.006, 4.23], [4.243, 4.283], [4.296, 4.638], [4.651, 4.967], [4.98, 5.046], [5.059, 5.296], [5.309, 5.704], [5.717, 5.901], [6.085, 6.151], [6.164, 6.349], [6.362, 6.441], [6.454, 6.493], [6.506, 6.796], [6.809, 7.204], [7.23, 7.335], [7.349, 7.48], [7.493, 7.585], [7.599, 7.73], [7.743, 7.941], [7.954, 8.059], [8.151, 8.454], [8.467, 8.585], [8.599, 8.73], [8.743, 9.151]]}, {"kind": "s", "id": "s0_0_1", "md": "To a reader in Seoul or Jakarta, reading in their second or third language late at night, that sentence can mean almost anything.", "zh": "对一个在首尔或雅加达、深夜用第二甚至第三语言读消息的人来说，这句话几乎可以理解成任何意思。", "sp": null, "gap": false, "start": 10.08, "end": 18.216, "words": [[10.18, 10.377], [10.391, 10.469], [10.483, 10.851], [10.864, 11.048], [11.062, 11.443], [11.456, 11.562], [11.575, 12.154], [12.391, 12.719], [12.733, 12.812], [12.825, 12.943], [12.956, 13.377], [13.391, 13.469], [13.483, 13.851], [13.864, 14.259], [14.272, 14.535], [14.548, 14.627], [14.641, 15.035], [15.272, 15.443], [15.456, 15.877], [15.891, 16.048], [16.062, 16.312], [16.325, 16.746], [16.759, 17.285]]}, {"kind": "s", "id": "s0_0_2", "md": "Some will paste it into a translation tool, and the result may be complete ==nonsense==.", "zh": "有些人会把它贴进翻译工具，翻出来的可能完全是胡话。", "sp": null, "gap": false, "start": 18.216, "end": 23.784, "words": [[18.316, 18.645], [18.658, 18.79], [18.803, 19.119], [19.132, 19.224], [19.237, 19.526], [19.54, 19.605], [19.619, 20.303], [20.316, 20.553], [20.816, 20.908], [20.921, 21.0], [21.013, 21.434], [21.448, 21.619], [21.632, 21.763], [21.777, 22.224], [22.237, 22.855]]}, {"kind": "s", "id": "s0_1_0", "md": "Most of our readers are smart, but they read quickly, between meetings, and often on a phone.", "zh": "我们的读者大多很聪明，但他们读得很快，在会议间隙读，而且经常是在手机上。", "sp": null, "gap": true, "start": 23.784, "end": 30.36, "words": [[23.884, 24.266], [24.279, 24.358], [24.371, 24.568], [24.581, 24.963], [24.976, 25.081], [25.095, 25.687], [25.818, 25.95], [25.963, 26.068], [26.081, 26.371], [26.384, 26.805], [26.989, 27.397], [27.41, 28.016], [28.213, 28.371], [28.384, 28.726], [28.739, 28.845], [28.858, 28.897], [28.91, 29.437]]}, {"kind": "s", "id": "s0_1_1", "md": "Idioms, jokes and long sentences make them work harder, and ==ambiguous== words leave them guessing.", "zh": "习语、玩笑和长句会让他们读得更费劲，有歧义的词则让他们只能靠猜。", "sp": null, "gap": false, "start": 30.36, "end": 37.08, "words": [[30.46, 31.065], [31.236, 31.644], [31.657, 31.763], [31.776, 32.026], [32.039, 32.644], [32.657, 32.894], [32.907, 33.052], [33.065, 33.355], [33.368, 33.802], [34.039, 34.171], [34.184, 34.776], [34.789, 35.21], [35.223, 35.473], [35.486, 35.644], [35.657, 36.171]]}, {"kind": "s", "id": "s0_1_2", "md": "**If your reader has to guess what you mean, you have not finished writing.**", "zh": "如果读者还得猜你什么意思，那你就还没写完。", "sp": null, "gap": false, "start": 37.08, "end": 41.736, "words": [[37.18, 37.391], [37.404, 37.535], [37.548, 37.891], [37.904, 38.101], [38.114, 38.206], [38.219, 38.496], [38.509, 38.706], [38.719, 38.825], [38.838, 39.14], [39.377, 39.456], [39.469, 39.64], [39.654, 39.89], [39.904, 40.259], [40.272, 40.825]]}, {"kind": "s", "id": "s0_2_0", "md": "This is not about writing simple ideas.", "zh": "这不是说只能写简单的想法。", "sp": null, "gap": true, "start": 41.736, "end": 45.144, "words": [[41.836, 42.099], [42.112, 42.231], [42.244, 42.454], [42.468, 42.797], [42.81, 43.178], [43.191, 43.546], [43.56, 44.218]]}, {"kind": "s", "id": "s0_2_1", "md": "It is about writing complex ideas in plain, ==predictable== language.", "zh": "而是要用平实、好预测的语言，把复杂的想法写清楚。", "sp": null, "gap": false, "start": 45.144, "end": 50.28, "words": [[45.244, 45.441], [45.455, 45.547], [45.56, 45.876], [45.889, 46.244], [46.257, 46.77], [46.783, 47.231], [47.244, 47.362], [47.376, 47.823], [48.06, 48.678], [48.691, 49.349]]}, {"kind": "h", "id": "h1", "md": "2. Four Rules for Global Readers", "zh": "2. 写给全球读者的四条规矩", "start": 50.28, "end": 53.712, "words": [[50.38, 50.748], [51.091, 51.209], [51.222, 51.63], [51.643, 51.762], [51.775, 52.222], [52.235, 52.788]]}, {"kind": "s", "id": "s1_0_0", "md": "Put the request in the first line.", "zh": "把请求放在第一行。", "sp": null, "gap": false, "start": 53.712, "end": 56.568, "words": [[53.812, 54.036], [54.049, 54.128], [54.141, 54.601], [54.615, 54.694], [54.707, 54.773], [54.786, 55.194], [55.207, 55.654]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Please review the design by Thursday\" should come before the background, not at the end of the third paragraph.", "zh": "「请在周四前评审一下设计」应该放在背景之前，而不是藏在第三段末尾。", "sp": null, "gap": false, "start": 56.568, "end": 63.408, "words": [[56.668, 56.957], [56.971, 57.286], [57.3, 57.392], [57.405, 57.813], [57.826, 58.023], [58.036, 58.615], [58.642, 58.852], [58.865, 59.063], [59.076, 59.392], [59.405, 59.51], [59.523, 60.155], [60.405, 60.668], [60.681, 60.734], [60.747, 60.905], [60.918, 61.115], [61.129, 61.194], [61.207, 61.286], [61.3, 61.681], [61.694, 62.484]]}, {"kind": "s", "id": "s1_1_0", "md": "Keep one idea per sentence, and prefer common verbs.", "zh": "一句话只讲一个意思，尽量用常见动词。", "sp": null, "gap": true, "start": 63.408, "end": 67.848, "words": [[63.508, 63.811], [63.824, 64.061], [64.074, 64.482], [64.495, 64.6], [64.613, 65.192], [65.429, 65.534], [65.547, 65.942], [65.955, 66.324], [66.337, 66.916]]}, {"kind": "s", "id": "s1_1_1", "md": "\"We will delay the launch\" is clearer than \"We are going to __push the launch back__ a bit.\"", "zh": "「我们会推迟上线」比「我们打算把上线往后挪一挪」更清楚。", "sp": null, "gap": false, "start": 67.848, "end": 72.744, "words": [[67.948, 68.159], [68.172, 68.303], [68.316, 68.593], [68.606, 68.698], [68.711, 69.027], [69.08, 69.185], [69.198, 69.606], [69.619, 69.777], [69.803, 69.974], [69.987, 70.027], [70.04, 70.303], [70.316, 70.422], [70.435, 70.724], [70.737, 70.83], [70.843, 71.185], [71.198, 71.435], [71.448, 71.514], [71.527, 71.816]]}, {"kind": "s", "id": "s1_1_2", "md": "==Phrasal verbs== feel natural to native speakers, but they are often the hardest part for everyone else.", "zh": "短语动词对母语者来说很自然，但对其他人往往是最难的部分。", "sp": null, "gap": false, "start": 72.744, "end": 79.224, "words": [[72.844, 73.331], [73.344, 73.699], [73.712, 73.989], [74.002, 74.41], [74.423, 74.528], [74.541, 74.897], [74.91, 75.462], [75.726, 75.831], [75.844, 75.962], [75.976, 76.094], [76.107, 76.423], [76.436, 76.502], [76.515, 76.976], [76.989, 77.265], [77.278, 77.423], [77.436, 77.844], [77.857, 78.291]]}, {"kind": "s", "id": "s1_2_0", "md": "Write dates and numbers so they cannot be misunderstood.", "zh": "日期和数字要写得不可能被误解。", "sp": null, "gap": true, "start": 79.224, "end": 83.208, "words": [[79.324, 79.706], [79.719, 80.035], [80.048, 80.192], [80.206, 80.535], [80.548, 80.666], [80.679, 80.824], [80.837, 81.258], [81.271, 81.39], [81.403, 82.298]]}, {"kind": "s", "id": "s1_2_1", "md": "Spell out the month, because a date written only in numbers is ==interpreted== differently in London and New York.", "zh": "月份要用单词写出来，因为纯数字写的日期，在伦敦和纽约会被读成不同的意思。", "sp": null, "gap": false, "start": 83.208, "end": 89.976, "words": [[83.308, 83.663], [83.676, 83.834], [83.847, 83.913], [83.926, 84.374], [84.492, 84.716], [84.729, 84.808], [84.821, 85.111], [85.124, 85.453], [85.466, 85.716], [85.729, 85.874], [85.887, 86.242], [86.255, 86.426], [86.44, 87.084], [87.097, 87.597], [87.611, 87.742], [87.755, 88.137], [88.15, 88.347], [88.361, 88.558], [88.571, 89.058]]}, {"kind": "s", "id": "s1_2_2", "md": "Give the time zone too, even when it feels obvious to you.", "zh": "时区也要写上，哪怕你觉得再明显不过。", "sp": null, "gap": false, "start": 89.976, "end": 94.56, "words": [[90.076, 90.3], [90.313, 90.405], [90.418, 90.734], [90.747, 91.05], [91.063, 91.365], [91.655, 91.984], [91.997, 92.142], [92.155, 92.26], [92.273, 92.642], [92.655, 93.102], [93.115, 93.234], [93.247, 93.629]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, __save the idioms for__ calls, where tone and facial expressions help.", "zh": "最后，习语留到打电话的时候用，那时有语气和表情帮忙。", "sp": null, "gap": true, "start": 94.56, "end": 100.344, "words": [[94.66, 95.292], [95.515, 95.818], [95.831, 95.923], [95.936, 96.371], [96.384, 96.489], [96.502, 96.963], [97.134, 97.305], [97.318, 97.699], [97.778, 97.923], [97.936, 98.331], [98.344, 98.989], [99.002, 99.423]]}, {"kind": "s", "id": "s1_3_1", "md": "**In writing, clear beats clever every time.**", "zh": "写东西的时候，清楚永远胜过巧妙。", "sp": null, "gap": false, "start": 100.344, "end": 104.184, "words": [[100.444, 100.681], [100.694, 101.194], [101.405, 101.747], [101.76, 102.023], [102.036, 102.405], [102.418, 102.733], [102.747, 103.273]]}, {"kind": "s", "id": "s1_3_2", "md": "Your readers will not remember your style, but they will remember that your messages were easy to ==act on==.", "zh": "读者不会记得你的文风，但会记得你的消息拿来就能执行。", "sp": null, "gap": false, "start": 104.184, "end": 110.448, "words": [[104.284, 104.495], [104.508, 104.916], [104.929, 105.087], [105.1, 105.35], [105.363, 105.692], [105.705, 105.85], [105.863, 106.376], [106.587, 106.705], [106.718, 106.81], [106.823, 106.994], [107.008, 107.376], [107.389, 107.547], [107.56, 107.679], [107.692, 108.218], [108.231, 108.389], [108.402, 108.758], [108.771, 108.902], [108.916, 109.179], [109.192, 109.521]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

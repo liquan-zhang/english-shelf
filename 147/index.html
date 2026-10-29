@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Sending a Parcel at the Post Office · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "147", "type": "dialogue", "title": "Sending a Parcel at the Post Office", "meta": "B2 · 约 270 词 · 场景：邮局寄国际包裹", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Counter Staff", "name_zh": "邮局柜台职员", "voice": "en-SG-LunaNeural"}}, "gist": [{"q": "航空和快递在时效和价格上有什么区别？「你」选了哪个，为什么？", "a": "航空七到十个工作日、四十二块；快递三到五天、七十九块。选了航空，因为是给妈妈的生日礼物，还有两周时间。"}, {"q": "海关申报和保价分别要注意什么？", "a": "每样物品都要列出来并如实写大概价值，否则可能被海关扣下；超过一百块建议保价，多三块钱，最高赔五百。"}, {"q": "封箱前出了什么问题？丢件怎么索赔？", "a": "里面有个充电宝，锂电池不能空运，只好拿出来重新封箱；丢件的话六个月内带收据回来办理。"}], "dictation": [{"id": "s0_1_0", "text": "Hi. I'd like to send this parcel to Shanghai. What are my options?"}, {"id": "s0_6_0", "text": "I'll go with airmail. It's a birthday present for my mum, and there are still two weeks."}, {"id": "s1_3_0", "text": "No problem, I'll take it out now. Could I borrow some tape?"}, {"id": "s1_7_0", "text": "And if it gets lost, what's the process for making a claim?"}], "shadow": {"speaker": "A", "text": "What should I put for the value? It's mostly clothes and some snacks.", "marked": "What should I put / for the <b>value</b>? //<br>It's <b>mostly</b> clothes / and some <b>snacks</b>. //"}, "prompts": [{"q": "你要从新加坡寄一箱孩子的旧绘本回国内老家。用 30 秒问清：最便宜的方式、多久到、书要不要申报。", "ref": "Hi, I'd like to send this box of children's books to my parents in China. They're not urgent at all, so what's the cheapest way to send them? Is there a surface mail option, and roughly how long would that take? Also, do I need to declare used books, and what value should I put down?", "ref_zh": "你好，我想把这箱儿童书寄给国内的父母。一点都不急，最便宜的寄法是什么？有没有海运，大概要多久？另外旧书需要申报吗？价值该填多少？", "id": "ref0"}, {"q": "你寄的包裹物流显示「已送达」，但家人说没收到。去邮局柜台说明情况并要求调查。", "ref": "Hi, I sent a parcel to Shanghai two weeks ago. The tracking says it was delivered on Monday, but my mum says she never got it. I've brought the receipt with the tracking number. Could you look into where it was actually delivered? And if it's lost, I'd like to make a claim. I did pay for insurance.", "ref_zh": "你好，我两周前寄了一个包裹到上海。物流显示周一已经送达，但我妈说根本没收到。我带了有跟踪号码的收据。能帮我查一下到底送到哪里了吗？如果丢了，我想申请索赔，我是买了保价的。", "id": "ref1"}], "words": [{"w": "airmail", "ipa": "/ˈermeɪl/", "zh": "航空邮寄", "ex": "Airmail is slower than express, but much cheaper.", "id": "w0"}, {"w": "customs", "ipa": "/ˈkʌstəmz/", "zh": "海关", "ex": "My package has been stuck at customs for a week.", "id": "w1"}, {"w": "declaration", "ipa": "/ˌdekləˈreɪʃən/", "zh": "申报（单）", "ex": "Fill in the declaration form and sign at the bottom.", "id": "w2"}, {"w": "value", "ipa": "/ˈvæljuː/", "zh": "价值，价格", "ex": "What's the total value of the items in the box?", "id": "w3"}, {"w": "cover (v.)", "ipa": "/ˈkʌvər/", "zh": "（保险）承保，赔付", "ex": "Does the insurance cover damage during delivery?", "tts_w": "cover", "id": "w4"}, {"w": "battery", "ipa": "/ˈbætəri/", "zh": "电池", "ex": "The remote control needs new batteries.", "id": "w5"}, {"w": "power bank", "ipa": "/ˈpaʊər bæŋk/", "zh": "充电宝", "ex": "Power banks must go in your hand luggage.", "id": "w6"}, {"w": "reseal", "ipa": "/ˌriːˈsiːl/", "zh": "重新封好", "ex": "Please reseal the bag after you take out the snacks.", "id": "w7"}, {"w": "receipt", "ipa": "/rɪˈsiːt/", "zh": "收据", "ex": "Keep the receipt in case you need to return it.", "id": "w8"}, {"w": "tracking number", "ipa": "/ˈtrækɪŋ ˈnʌmbər/", "zh": "快递跟踪号", "ex": "The seller emailed me the tracking number this morning.", "id": "w9"}], "sections": [{"heading": "1. Choosing a Service", "heading_zh": "1. 选择寄送方式", "rows": [[{"id": "s0_0_0", "md": "Next, please. What can I do for you?", "text": "Next, please. What can I do for you?", "zh": "下一位。请问要办什么？", "sp": "B"}], [{"id": "s0_1_0", "md": "**Hi. I'd like to send this parcel to Shanghai. What are my options?**", "text": "Hi. I'd like to send this parcel to Shanghai. What are my options?", "zh": "你好，我想把这个包裹寄到上海。有哪些方式可以选？", "sp": "A"}], [{"id": "s0_2_0", "md": "Let me weigh it first. Okay, it's just over two kilos.", "text": "Let me weigh it first. Okay, it's just over two kilos.", "zh": "我先称一下。好，两公斤多一点。", "sp": "B"}], [{"id": "s0_3_0", "md": "By ==airmail==, it takes about seven to ten working days. Express is three to five, but it's almost double the price.", "text": "By airmail, it takes about seven to ten working days. Express is three to five, but it's almost double the price.", "zh": "寄航空大概七到十个工作日。快递三到五天，但价格差不多翻倍。", "sp": "B"}], [{"id": "s0_4_0", "md": "How much is each one?", "text": "How much is each one?", "zh": "分别多少钱？", "sp": "A"}], [{"id": "s0_5_0", "md": "Airmail is forty-two dollars, and express is seventy-nine.", "text": "Airmail is forty-two dollars, and express is seventy-nine.", "zh": "航空四十二块，快递七十九。", "sp": "B"}], [{"id": "s0_6_0", "md": "I'll __go with__ airmail. It's a birthday present for my mum, and there are still two weeks.", "text": "I'll go with airmail. It's a birthday present for my mum, and there are still two weeks.", "zh": "那就寄航空吧。是给我妈的生日礼物，还有两周时间。", "sp": "A"}], [{"id": "s0_7_0", "md": "Sure. You'll need to fill in this ==customs== ==declaration== form.", "text": "Sure. You'll need to fill in this customs declaration form.", "zh": "好的。您需要填一下这张海关申报单。", "sp": "B"}], [{"id": "s0_8_0", "md": "What should I put for the ==value==? It's mostly clothes and some snacks.", "text": "What should I put for the value? It's mostly clothes and some snacks.", "zh": "价值那一栏该怎么填？里面主要是衣服和一些零食。", "sp": "A"}], [{"id": "s0_9_0", "md": "Just list each item and a rough value. Be accurate, or it might be held at customs.", "text": "Just list each item and a rough value. Be accurate, or it might be held at customs.", "zh": "把每样东西列出来，写个大概价值就行。要如实写，不然可能会被海关扣下。", "sp": "B"}], [{"id": "s0_10_0", "md": "Got it. __Is it worth__ getting insurance?", "text": "Got it. Is it worth getting insurance?", "zh": "明白。值得买保价吗？", "sp": "A"}], [{"id": "s0_11_0", "md": "If it's over a hundred dollars, I'd say yes. It's three dollars extra and ==covers== up to five hundred.", "text": "If it's over a hundred dollars, I'd say yes. It's three dollars extra and covers up to five hundred.", "zh": "如果超过一百块，我建议买。多三块钱，最高赔五百。", "sp": "B"}]]}, {"heading": "2. A Problem with the Contents", "heading_zh": "2. 包裹里有违禁品", "rows": [[{"id": "s1_0_0", "md": "Before I seal it, is there anything with a ==battery== inside?", "text": "Before I seal it, is there anything with a battery inside?", "zh": "封箱之前问一下，里面有带电池的东西吗？", "sp": "B"}], [{"id": "s1_1_0", "md": "Oh, there's a small ==power bank== in there. Is that a problem?", "text": "Oh, there's a small power bank in there. Is that a problem?", "zh": "哦，里面有个小充电宝。这有问题吗？", "sp": "A"}], [{"id": "s1_2_0", "md": "I'm afraid so. Lithium batteries can't go by air. You'll have to take it out.", "text": "I'm afraid so. Lithium batteries can't go by air. You'll have to take it out.", "zh": "恐怕是的。锂电池不能走空运，您得拿出来。", "sp": "B"}], [{"id": "s1_3_0", "md": "**No problem, I'll take it out now. Could I borrow some tape?**", "text": "No problem, I'll take it out now. Could I borrow some tape?", "zh": "没问题，我现在就拿出来。能借我点胶带吗？", "sp": "A"}], [{"id": "s1_4_0", "md": "Here you go. Please make sure you ==reseal== the box properly.", "text": "Here you go. Please make sure you reseal the box properly.", "zh": "给您。请把箱子重新封好。", "sp": "B"}], [{"id": "s1_5_0", "md": "Done. And how can I __keep track of__ it?", "text": "Done. And how can I keep track of it?", "zh": "好了。那我怎么查包裹到哪儿了？", "sp": "A"}], [{"id": "s1_6_0", "md": "Here's your ==receipt==. The ==tracking== number is at the top, and you can check it on our website.", "text": "Here's your receipt. The tracking number is at the top, and you can check it on our website.", "zh": "这是您的收据。跟踪号码在最上面，可以在我们官网查。", "sp": "B"}], [{"id": "s1_7_0", "md": "And if it gets lost, __what's the process__ for making a claim?", "text": "And if it gets lost, what's the process for making a claim?", "zh": "那如果包裹丢了，索赔流程是怎样的？", "sp": "A"}], [{"id": "s1_8_0", "md": "Bring the receipt back here within six months, and we'll look into it.", "text": "Bring the receipt back here within six months, and we'll look into it.", "zh": "六个月内带着收据回来这里，我们会帮您调查。", "sp": "B"}], [{"id": "s1_9_0", "md": "**Great, thanks. I'll hang on to this receipt.**", "text": "Great, thanks. I'll hang on to this receipt.", "zh": "好的，谢谢。这张收据我会留好。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Choosing a Service", "zh": "1. 选择寄送方式", "start": 0.0, "end": 2.04, "words": [[0.105, 0.355], [0.697, 1.04], [1.053, 1.092], [1.105, 1.658]]}, {"kind": "s", "id": "s0_0_0", "md": "Next, please. What can I do for you?", "zh": "下一位。请问要办什么？", "sp": "B", "gap": false, "start": 2.04, "end": 6.984, "words": [[2.143, 2.827], [3.051, 3.735], [4.645, 4.882], [4.895, 5.066], [5.079, 5.185], [5.198, 5.382], [5.395, 5.606], [5.619, 6.053]]}, {"kind": "s", "id": "s0_1_0", "md": "**Hi. I'd like to send this parcel to Shanghai. What are my options?**", "zh": "你好，我想把这个包裹寄到上海。有哪些方式可以选？", "sp": "A", "gap": false, "start": 6.984, "end": 11.472, "words": [[7.116, 7.366], [7.8, 7.905], [7.918, 8.05], [8.063, 8.142], [8.155, 8.418], [8.431, 8.576], [8.589, 8.971], [8.984, 9.037], [9.05, 9.668], [10.102, 10.168], [10.181, 10.234], [10.247, 10.431], [10.445, 11.076]]}, {"kind": "s", "id": "s0_2_0", "md": "Let me weigh it first. Okay, it's just over two kilos.", "zh": "我先称一下。好，两公斤多一点。", "sp": "B", "gap": false, "start": 11.472, "end": 18.168, "words": [[11.575, 11.851], [11.864, 12.061], [12.075, 12.325], [12.338, 12.535], [12.548, 13.18], [14.104, 14.801], [15.051, 15.367], [15.38, 15.761], [15.775, 16.13], [16.143, 16.38], [16.393, 17.248]]}, {"kind": "s", "id": "s0_3_0", "md": "By ==airmail==, it takes about seven to ten working days. Express is three to five, but it's almost double the price.", "zh": "寄航空大概七到十个工作日。快递三到五天，但价格差不多翻倍。", "sp": "B", "gap": false, "start": 18.168, "end": 27.888, "words": [[18.271, 18.521], [18.534, 19.192], [19.389, 19.586], [19.6, 19.863], [19.876, 20.178], [20.192, 20.573], [20.586, 20.718], [20.731, 21.007], [21.021, 21.415], [21.429, 22.073], [22.997, 23.55], [23.563, 23.734], [23.747, 23.997], [24.01, 24.168], [24.181, 24.734], [24.957, 25.168], [25.181, 25.365], [25.379, 25.786], [25.8, 26.115], [26.129, 26.247], [26.26, 26.957]]}, {"kind": "s", "id": "s0_4_0", "md": "How much is each one?", "zh": "分别多少钱？", "sp": "A", "gap": false, "start": 27.888, "end": 29.76, "words": [[28.006, 28.112], [28.125, 28.296], [28.309, 28.427], [28.441, 28.638], [28.651, 28.967]]}, {"kind": "s", "id": "s0_5_0", "md": "Airmail is forty-two dollars, and express is seventy-nine.", "zh": "航空四十二块，快递七十九。", "sp": "B", "gap": false, "start": 29.76, "end": 34.944, "words": [[29.863, 30.271], [30.284, 30.468], [30.481, 31.047], [31.06, 31.823], [32.073, 32.284], [32.297, 32.863], [32.876, 33.034], [33.047, 34.007]]}, {"kind": "s", "id": "s0_6_0", "md": "I'll __go with__ airmail. It's a birthday present for my mum, and there are still two weeks.", "zh": "那就寄航空吧。是给我妈的生日礼物，还有两周时间。", "sp": "A", "gap": false, "start": 34.944, "end": 40.2, "words": [[35.049, 35.155], [35.168, 35.286], [35.299, 35.47], [35.483, 35.931], [36.365, 36.47], [36.483, 36.562], [36.576, 36.997], [37.01, 37.405], [37.418, 37.549], [37.562, 37.694], [37.707, 38.076], [38.405, 38.457], [38.47, 38.589], [38.602, 38.694], [38.707, 39.01], [39.023, 39.247], [39.26, 39.799]]}, {"kind": "s", "id": "s0_7_0", "md": "Sure. You'll need to fill in this ==customs== ==declaration== form.", "zh": "好的。您需要填一下这张海关申报单。", "sp": "B", "gap": false, "start": 40.2, "end": 46.08, "words": [[40.303, 41.026], [41.924, 42.174], [42.187, 42.424], [42.437, 42.568], [42.582, 42.858], [42.871, 43.042], [43.055, 43.279], [43.292, 43.871], [43.884, 44.582], [44.595, 45.161]]}, {"kind": "s", "id": "s0_8_0", "md": "What should I put for the ==value==? It's mostly clothes and some snacks.", "zh": "价值那一栏该怎么填？里面主要是衣服和一些零食。", "sp": "A", "gap": false, "start": 46.08, "end": 50.064, "words": [[46.185, 46.291], [46.304, 46.475], [46.488, 46.554], [46.567, 46.804], [46.817, 46.935], [46.948, 47.014], [47.027, 47.462], [47.896, 48.014], [48.027, 48.369], [48.383, 48.804], [48.817, 48.883], [48.896, 49.041], [49.054, 49.672]]}, {"kind": "s", "id": "s0_9_0", "md": "Just list each item and a rough value. Be accurate, or it might be held at customs.", "zh": "把每样东西列出来，写个大概价值就行。要如实写，不然可能会被海关扣下。", "sp": "B", "gap": false, "start": 50.064, "end": 57.864, "words": [[50.167, 50.482], [50.496, 50.825], [50.838, 51.074], [51.088, 51.535], [51.548, 51.732], [51.746, 51.798], [51.811, 52.127], [52.14, 52.732], [53.656, 53.867], [53.88, 54.511], [54.775, 54.972], [54.985, 55.117], [55.13, 55.38], [55.393, 55.551], [55.564, 55.867], [55.88, 56.051], [56.064, 56.932]]}, {"kind": "s", "id": "s0_10_0", "md": "Got it. __Is it worth__ getting insurance?", "zh": "明白。值得买保价吗？", "sp": "A", "gap": false, "start": 57.864, "end": 60.408, "words": [[57.969, 58.14], [58.153, 58.272], [58.706, 58.798], [58.811, 58.89], [58.903, 59.114], [59.127, 59.364], [59.377, 60.022]]}, {"kind": "s", "id": "s0_11_0", "md": "If it's over a hundred dollars, I'd say yes. It's three dollars extra and ==covers== up to five hundred.", "zh": "如果超过一百块，我建议买。多三块钱，最高赔五百。", "sp": "B", "gap": false, "start": 60.408, "end": 69.744, "words": [[60.511, 60.734], [60.747, 60.958], [60.971, 61.3], [61.313, 61.353], [61.366, 61.813], [61.826, 62.616], [62.84, 63.103], [63.116, 63.458], [63.471, 64.142], [65.066, 65.355], [65.369, 65.619], [65.632, 66.105], [66.119, 66.671], [66.684, 66.869], [66.882, 67.329], [67.342, 67.54], [67.553, 67.671], [67.684, 68.026], [68.04, 68.816]]}, {"kind": "h", "id": "h1", "md": "2. A Problem with the Contents", "zh": "2. 包裹里有违禁品", "start": 69.744, "end": 72.264, "words": [[69.862, 70.139], [70.481, 70.547], [70.56, 70.928], [70.941, 71.06], [71.073, 71.152], [71.165, 71.862]]}, {"kind": "s", "id": "s1_0_0", "md": "Before I seal it, is there anything with a ==battery== inside?", "zh": "封箱之前问一下，里面有带电池的东西吗？", "sp": "B", "gap": false, "start": 72.264, "end": 76.992, "words": [[72.367, 72.774], [72.788, 72.867], [72.88, 73.196], [73.209, 73.577], [73.775, 73.998], [74.011, 74.196], [74.209, 74.656], [74.669, 74.827], [74.84, 74.919], [74.932, 75.406], [75.419, 76.064]]}, {"kind": "s", "id": "s1_1_0", "md": "Oh, there's a small ==power bank== in there. Is that a problem?", "zh": "哦，里面有个小充电宝。这有问题吗？", "sp": "A", "gap": false, "start": 76.992, "end": 80.664, "words": [[77.097, 77.295], [77.61, 77.781], [77.795, 77.847], [77.86, 78.163], [78.176, 78.466], [78.479, 78.716], [78.729, 78.821], [78.834, 79.097], [79.531, 79.61], [79.624, 79.742], [79.755, 79.808], [79.821, 80.268]]}, {"kind": "s", "id": "s1_2_0", "md": "I'm afraid so. Lithium batteries can't go by air. You'll have to take it out.", "zh": "恐怕是的。锂电池不能走空运，您得拿出来。", "sp": "B", "gap": false, "start": 80.664, "end": 88.56, "words": [[80.767, 81.003], [81.017, 81.438], [81.451, 81.951], [82.875, 83.335], [83.348, 83.901], [83.914, 84.203], [84.217, 84.414], [84.427, 84.69], [84.703, 85.217], [86.138, 86.388], [86.401, 86.624], [86.638, 86.756], [86.769, 87.006], [87.019, 87.19], [87.203, 87.638]]}, {"kind": "s", "id": "s1_3_0", "md": "**No problem, I'll take it out now. Could I borrow some tape?**", "zh": "没问题，我现在就拿出来。能借我点胶带吗？", "sp": "A", "gap": false, "start": 88.56, "end": 92.448, "words": [[88.665, 88.797], [88.81, 89.257], [89.652, 89.718], [89.731, 89.915], [89.928, 89.994], [90.007, 90.165], [90.178, 90.494], [90.928, 91.021], [91.034, 91.152], [91.165, 91.494], [91.507, 91.692], [91.705, 92.06]]}, {"kind": "s", "id": "s1_4_0", "md": "Here you go. Please make sure you ==reseal== the box properly.", "zh": "给您。请把箱子重新封好。", "sp": "B", "gap": false, "start": 92.448, "end": 98.04, "words": [[92.551, 92.827], [92.84, 93.024], [93.037, 93.498], [94.409, 94.737], [94.751, 94.974], [94.987, 95.277], [95.29, 95.422], [95.435, 95.882], [95.895, 96.027], [96.04, 96.369], [96.382, 97.119]]}, {"kind": "s", "id": "s1_5_0", "md": "Done. And how can I __keep track of__ it?", "zh": "好了。那我怎么查包裹到哪儿了？", "sp": "A", "gap": false, "start": 98.04, "end": 100.44, "words": [[98.145, 98.408], [98.843, 98.895], [98.908, 99.04], [99.053, 99.158], [99.172, 99.224], [99.237, 99.435], [99.448, 99.764], [99.777, 99.869], [99.882, 100.053]]}, {"kind": "s", "id": "s1_6_0", "md": "Here's your ==receipt==. The ==tracking== number is at the top, and you can check it on our website.", "zh": "这是您的收据。跟踪号码在最上面，可以在我们官网查。", "sp": "B", "gap": false, "start": 100.44, "end": 108.264, "words": [[100.543, 101.003], [101.016, 101.201], [101.214, 101.937], [102.861, 103.019], [103.032, 103.466], [103.479, 103.861], [103.874, 104.058], [104.072, 104.203], [104.216, 104.335], [104.348, 104.795], [105.032, 105.243], [105.256, 105.374], [105.387, 105.598], [105.611, 105.887], [105.901, 106.111], [106.124, 106.348], [106.361, 106.572], [106.585, 107.322]]}, {"kind": "s", "id": "s1_7_0", "md": "And if it gets lost, __what's the process__ for making a claim?", "zh": "那如果包裹丢了，索赔流程是怎样的？", "sp": "A", "gap": false, "start": 108.264, "end": 111.936, "words": [[108.369, 108.435], [108.448, 108.553], [108.567, 108.646], [108.659, 108.856], [108.869, 109.422], [109.803, 110.001], [110.014, 110.106], [110.119, 110.606], [110.619, 110.751], [110.764, 111.053], [111.067, 111.106], [111.119, 111.54]]}, {"kind": "s", "id": "s1_8_0", "md": "Bring the receipt back here within six months, and we'll look into it.", "zh": "六个月内带着收据回来这里，我们会帮您调查。", "sp": "B", "gap": false, "start": 111.936, "end": 117.528, "words": [[112.039, 112.328], [112.341, 112.433], [112.447, 112.881], [112.894, 113.118], [113.131, 113.46], [113.473, 113.815], [113.828, 114.21], [114.223, 114.775], [115.025, 115.262], [115.275, 115.473], [115.486, 115.723], [115.736, 116.078], [116.091, 116.591]]}, {"kind": "s", "id": "s1_9_0", "md": "**Great, thanks. I'll hang on to this receipt.**", "zh": "好的，谢谢。这张收据我会留好。", "sp": "A", "gap": false, "start": 117.528, "end": 120.552, "words": [[117.633, 117.87], [118.028, 118.475], [118.91, 119.028], [119.041, 119.252], [119.265, 119.396], [119.41, 119.489], [119.502, 119.686], [119.699, 120.173]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

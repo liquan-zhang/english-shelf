@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>How to Disagree Without Making Enemies · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "000", "title": "How to Disagree Without Making Enemies", "meta": "B2 · 约 270 词 · 场景：会议发言", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Why Silence Is Expensive", "heading_zh": "1. 沉默的代价很高", "rows": [[{"id": "s0_0_0", "md": "In many teams, the most dangerous moment in a meeting is not an argument.", "text": "In many teams, the most dangerous moment in a meeting is not an argument.", "zh": "在很多团队里，会议中最危险的时刻不是争论。", "sp": null}, {"id": "s0_0_1", "md": "It is the quiet agreement.", "text": "It is the quiet agreement.", "zh": "而是一片安静的同意。", "sp": null}, {"id": "s0_0_2", "md": "Someone presents a plan, nobody ==objects==, and the decision is made.", "text": "Someone presents a plan, nobody objects, and the decision is made.", "zh": "有人提出一个方案，没人反对，决定就这么定了。", "sp": null}, {"id": "s0_0_3", "md": "Two weeks later, half the room ==admits== they had doubts from the start.", "text": "Two weeks later, half the room admits they had doubts from the start.", "zh": "两周后，半屋子的人承认自己一开始就有疑虑。", "sp": null}], [{"id": "s0_1_0", "md": "This happens because disagreeing feels risky.", "text": "This happens because disagreeing feels risky.", "zh": "之所以会这样，是因为提反对意见让人觉得有风险。", "sp": null}, {"id": "s0_1_1", "md": "We worry about __coming across as__ negative, or about __putting someone on the spot__ in front of their manager.", "text": "We worry about coming across as negative, or about putting someone on the spot in front of their manager.", "zh": "我们担心显得太消极，或者担心当着别人经理的面让人下不来台。", "sp": null}, {"id": "s0_1_2", "md": "So we stay silent, and the team pays later.", "text": "So we stay silent, and the team pays later.", "zh": "于是我们保持沉默，代价则由团队事后来付。", "sp": null}, {"id": "s0_1_3", "md": "**A concern raised in the meeting costs five minutes; the same concern raised after launch costs five weeks.**", "text": "A concern raised in the meeting costs five minutes; the same concern raised after launch costs five weeks.", "zh": "一个顾虑在会上提出来只要五分钟；同样的顾虑等上线后再提，要花五周。", "sp": null}], [{"id": "s0_2_0", "md": "Good teams treat disagreement as a ==contribution==, not an attack.", "text": "Good teams treat disagreement as a contribution, not an attack.", "zh": "好的团队把不同意见当作贡献，而不是攻击。", "sp": null}, {"id": "s0_2_1", "md": "The goal is not to win the argument.", "text": "The goal is not to win the argument.", "zh": "目的不是赢下争论。", "sp": null}, {"id": "s0_2_2", "md": "The goal is to ==surface== risks while they are still cheap to fix.", "text": "The goal is to surface risks while they are still cheap to fix.", "zh": "目的是趁风险还容易修的时候，把它摆到桌面上。", "sp": null}]]}, {"heading": "2. Three Moves That Make Disagreement Safe", "heading_zh": "2. 让反对变得安全的三个动作", "rows": [[{"id": "s1_0_0", "md": "**First, agree on the goal before you challenge the method.**", "text": "First, agree on the goal before you challenge the method.", "zh": "第一，先对齐目标，再质疑方法。", "sp": null}, {"id": "s1_0_1", "md": "Saying \"We both want this release to be stable\" __sets the frame__.", "text": "Saying \"We both want this release to be stable\" sets the frame.", "zh": "说一句「我们都希望这次发布是稳定的」，就先把框架定下来了。", "sp": null}, {"id": "s1_0_2", "md": "Now your objection sounds like help, not opposition.", "text": "Now your objection sounds like help, not opposition.", "zh": "这样你的反对听起来像是在帮忙，而不是在唱反调。", "sp": null}], [{"id": "s1_1_0", "md": "Second, ask instead of assert.", "text": "Second, ask instead of assert.", "zh": "第二，用提问代替断言。", "sp": null}, {"id": "s1_1_1", "md": "\"What happens if traffic doubles?\" is easier to hear than \"This won't scale.\"", "text": "\"What happens if traffic doubles?\" is easier to hear than \"This won't scale.\"", "zh": "「如果流量翻倍会怎样？」比「这扛不住」更容易让人听进去。", "sp": null}, {"id": "s1_1_2", "md": "A question invites the other person to find the gap themselves, which makes them far more likely to ==acknowledge== it.", "text": "A question invites the other person to find the gap themselves, which makes them far more likely to acknowledge it.", "zh": "提问会让对方自己去发现漏洞，这样他们承认问题的可能性就大得多。", "sp": null}], [{"id": "s1_2_0", "md": "Third, be specific.", "text": "Third, be specific.", "zh": "第三，说具体。", "sp": null}, {"id": "s1_2_1", "md": "==Vague== concerns like \"I'm not sure about this\" __leave people guessing__.", "text": "Vague concerns like \"I'm not sure about this\" leave people guessing.", "zh": "「我对这个不太确定」这种模糊的顾虑，只会让人去猜你到底担心什么。", "sp": null}, {"id": "s1_2_2", "md": "Point to one number, one dependency, or one ==scenario==.", "text": "Point to one number, one dependency, or one scenario.", "zh": "指出一个数字、一个依赖，或者一个具体场景。", "sp": null}, {"id": "s1_2_3", "md": "**Specific doubts get fixed; vague doubts get ignored.**", "text": "Specific doubts get fixed; vague doubts get ignored.", "zh": "具体的疑虑会被解决；模糊的疑虑会被忽略。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, once the team decides, __commit to the decision__, even if it wasn't your choice.", "text": "Finally, once the team decides, commit to the decision, even if it wasn't your choice.", "zh": "最后，团队一旦做了决定，就全力执行，哪怕那不是你选的方案。", "sp": null}, {"id": "s1_3_1", "md": "Disagreeing openly and then supporting the outcome is what builds ==credibility==.", "text": "Disagreeing openly and then supporting the outcome is what builds credibility.", "zh": "公开提出异议，然后支持最终结果，这才是建立信誉的方式。", "sp": null}, {"id": "s1_3_2", "md": "People will listen to your next objection because they know you are not just being difficult.", "text": "People will listen to your next objection because they know you are not just being difficult.", "zh": "下次你再反对时，大家会听，因为他们知道你不是在故意找茬。", "sp": null}]]}], "gist": [{"q": "作者说会议里最危险的时刻是什么？", "a": "The quiet agreement：没人反对、决定就这么定了，事后一半人承认一开始就有疑虑。"}, {"q": "为什么要在会上就提出顾虑？用文中的数字回答。", "a": "会上提只花 5 分钟，上线后再提要花 5 周。"}, {"q": "安全地表达反对有哪几步？", "a": "先对齐目标再质疑方法；用提问代替断言；说具体（一个数字/依赖/场景）；团队定了之后全力执行。"}], "dictation": [{"id": "s0_1_3", "text": "A concern raised in the meeting costs five minutes; the same concern raised after launch costs five weeks."}, {"id": "s1_0_0", "text": "First, agree on the goal before you challenge the method."}, {"id": "s1_1_2", "text": "A question invites the other person to find the gap themselves, which makes them far more likely to acknowledge it."}, {"id": "s1_2_3", "text": "Specific doubts get fixed; vague doubts get ignored."}], "shadow": {"text": "First, agree on the goal before you challenge the method. Saying \"We both want this release to be stable\" sets the frame. Now your objection sounds like help, not opposition.", "marked": "First, <b>agree</b> on the <b>goal</b> / before you <b>challenge</b> the <b>method</b>. //<br>Saying \"We <b>both</b> want this release / to be <b>stable</b>\" / sets the <b>frame</b>. //<br>Now your objection sounds like <b>help</b>, / <b>not</b> opposition. //"}, "prompts": [{"q": "PM 想跳过灰度，周五直接全量上线。用 30 秒反对他，先对齐目标，再用一个问题指出风险。", "ref": "I think we all want this launch to go smoothly, without a rollback over the weekend. What happens if the new logic breaks in a region we haven't tested? If we start with a ten percent rollout on Friday and watch the crash rate for a day, we only lose twenty-four hours, and we get a real number to decide on.", "ref_zh": "我想我们都希望这次上线顺顺利利，周末不用回滚。如果新逻辑在我们没测过的地区出问题怎么办？如果周五先放百分之十的量，观察一天崩溃率，我们只损失二十四小时，却能拿到一个真实的数字来做决定。", "id": "ref0"}, {"q": "TL 提议这个季度把服务用新框架重写。你对排期有顾虑，提一个具体的担忧，并给出替代方案。", "ref": "I like the direction, and I agree the current code is hard to maintain. My concern is the timeline. Three other projects depend on this service this quarter, so if the rewrite slips by even two weeks, they slip with it. Could we migrate one endpoint first and see how long it actually takes?", "ref_zh": "我认同这个方向，也同意现在的代码很难维护。我担心的是排期。这个季度有三个项目依赖这个服务，重写哪怕晚两周，它们也会跟着延期。我们能不能先迁移一个接口，看看实际要花多久？", "id": "ref1"}], "words": [{"w": "vague", "ipa": "/veɪɡ/", "zh": "模糊的、含糊的", "ex": "\"Faster\" is too vague. Can we say p99 under 200 ms?", "tts": "\"Faster\" is too vague. Can we say P ninety-nine under two hundred milliseconds?", "id": "w0"}, {"w": "surface (v.)", "ipa": "/ˈsɜːrfɪs/", "zh": "提出、使浮出水面", "ex": "I want to surface a risk before we commit to the timeline.", "tts_w": "surface", "id": "w1"}, {"w": "acknowledge", "ipa": "/əkˈnɑːlɪdʒ/", "zh": "承认、认可", "ex": "He acknowledged the latency issue and agreed to add a cache.", "id": "w2"}, {"w": "credibility", "ipa": "/ˌkredəˈbɪləti/", "zh": "可信度", "ex": "Hitting the last two deadlines gave us credibility with the PM.", "id": "w3"}, {"w": "scenario", "ipa": "/səˈnæriˌoʊ/", "zh": "情形、场景", "ex": "In the worst-case scenario, we roll back within ten minutes.", "id": "w4"}, {"w": "contribution", "ipa": "/ˌkɑːntrɪˈbjuːʃən/", "zh": "贡献", "ex": "That pushback was a real contribution to the design review.", "id": "w5"}, {"w": "object (v.)", "ipa": "/əbˈdʒekt/", "zh": "反对", "ex": "If no one objects, we'll go with option B.", "tts_w": "object", "id": "w6"}, {"w": "admit", "ipa": "/ədˈmɪt/", "zh": "承认", "ex": "I'll admit I underestimated the migration cost.", "id": "w7"}, {"w": "assert", "ipa": "/əˈsɜːrt/", "zh": "断言", "ex": "Rather than assert it's broken, let's look at the logs.", "id": "w8"}, {"w": "opposition", "ipa": "/ˌɑːpəˈzɪʃən/", "zh": "反对、对立", "ex": "There was some opposition to moving the launch date.", "id": "w9"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Why Silence Is Expensive", "zh": "1. 沉默的代价很高", "start": 0.0, "end": 2.616, "words": [[0.118, 0.421], [0.789, 1.0], [1.013, 1.487], [1.5, 1.592], [1.605, 2.237]]}, {"kind": "s", "id": "s0_0_0", "md": "In many teams, the most dangerous moment in a meeting is not an argument.", "zh": "在很多团队里，会议中最危险的时刻不是争论。", "sp": null, "gap": false, "start": 2.616, "end": 7.56, "words": [[2.721, 2.84], [2.853, 3.103], [3.116, 3.695], [3.905, 3.998], [4.011, 4.3], [4.313, 4.813], [4.827, 5.248], [5.261, 5.366], [5.379, 5.419], [5.432, 5.971], [6.103, 6.208], [6.221, 6.524], [6.537, 6.616], [6.629, 7.182]]}, {"kind": "s", "id": "s0_0_1", "md": "It is the quiet agreement.", "zh": "而是一片安静的同意。", "sp": null, "gap": false, "start": 7.56, "end": 9.432, "words": [[7.665, 7.744], [7.757, 7.863], [7.876, 7.981], [7.994, 8.336], [8.349, 8.876]]}, {"kind": "s", "id": "s0_0_2", "md": "Someone presents a plan, nobody ==objects==, and the decision is made.", "zh": "有人提出一个方案，没人反对，决定就这么定了。", "sp": null, "gap": false, "start": 9.432, "end": 14.256, "words": [[9.537, 9.893], [9.906, 10.314], [10.327, 10.379], [10.393, 10.866], [11.287, 11.682], [11.695, 12.366], [12.603, 12.708], [12.721, 12.8], [12.814, 13.34], [13.353, 13.471], [13.485, 13.866]]}, {"kind": "s", "id": "s0_0_3", "md": "Two weeks later, half the room ==admits== they had doubts from the start.", "zh": "两周后，半屋子的人承认自己一开始就有疑虑。", "sp": null, "gap": false, "start": 14.256, "end": 18.384, "words": [[14.374, 14.519], [14.532, 14.795], [14.809, 15.124], [15.519, 15.73], [15.743, 15.822], [15.835, 16.098], [16.111, 16.598], [16.611, 16.73], [16.743, 16.953], [16.967, 17.282], [17.295, 17.453], [17.467, 17.532], [17.545, 17.993]]}, {"kind": "s", "id": "s0_1_0", "md": "This happens because disagreeing feels risky.", "zh": "之所以会这样，是因为提反对意见让人觉得有风险。", "sp": null, "gap": true, "start": 18.384, "end": 21.24, "words": [[18.502, 18.647], [18.66, 19.055], [19.068, 19.45], [19.463, 20.081], [20.095, 20.41], [20.423, 20.858]]}, {"kind": "s", "id": "s0_1_1", "md": "We worry about __coming across as__ negative, or about __putting someone on the spot__ in front of their manager.", "zh": "我们担心显得太消极，或者担心当着别人经理的面让人下不来台。", "sp": null, "gap": false, "start": 21.24, "end": 26.976, "words": [[21.358, 21.451], [21.464, 21.74], [21.753, 22.029], [22.043, 22.319], [22.332, 22.819], [22.832, 22.937], [22.951, 23.529], [23.937, 24.003], [24.016, 24.253], [24.266, 24.569], [24.582, 24.898], [24.911, 25.003], [25.016, 25.082], [25.095, 25.464], [25.477, 25.556], [25.569, 25.819], [25.832, 25.885], [25.898, 26.016], [26.029, 26.595]]}, {"kind": "s", "id": "s0_1_2", "md": "So we stay silent, and the team pays later.", "zh": "于是我们保持沉默，代价则由团队事后来付。", "sp": null, "gap": false, "start": 26.976, "end": 30.0, "words": [[27.094, 27.226], [27.239, 27.344], [27.358, 27.568], [27.581, 28.108], [28.45, 28.502], [28.515, 28.594], [28.608, 28.858], [28.871, 29.2], [29.213, 29.621]]}, {"kind": "s", "id": "s0_1_3", "md": "**A concern raised in the meeting costs five minutes; the same concern raised after launch costs five weeks.**", "zh": "一个顾虑在会上提出来只要五分钟；同样的顾虑等上线后再提，要花五周。", "sp": null, "gap": false, "start": 30.0, "end": 36.936, "words": [[30.105, 30.158], [30.171, 30.724], [30.737, 31.105], [31.118, 31.184], [31.197, 31.263], [31.276, 31.632], [31.645, 32.132], [32.145, 32.5], [32.513, 33.0], [33.303, 33.408], [33.421, 33.697], [33.711, 34.25], [34.263, 34.618], [34.632, 34.895], [34.908, 35.237], [35.25, 35.684], [35.697, 36.0], [36.013, 36.539]]}, {"kind": "s", "id": "s0_2_0", "md": "Good teams treat disagreement as a ==contribution==, not an attack.", "zh": "好的团队把不同意见当作贡献，而不是攻击。", "sp": null, "gap": true, "start": 36.936, "end": 41.376, "words": [[37.041, 37.252], [37.265, 37.62], [37.633, 37.989], [38.002, 38.712], [38.818, 38.91], [38.923, 38.975], [38.989, 39.739], [40.147, 40.318], [40.331, 40.41], [40.423, 40.989]]}, {"kind": "s", "id": "s0_2_1", "md": "The goal is not to win the argument.", "zh": "目的不是赢下争论。", "sp": null, "gap": false, "start": 41.376, "end": 43.8, "words": [[41.494, 41.56], [41.573, 41.876], [42.047, 42.139], [42.152, 42.429], [42.442, 42.534], [42.547, 42.718], [42.731, 42.81], [42.823, 43.402]]}, {"kind": "s", "id": "s0_2_2", "md": "The goal is to ==surface== risks while they are still cheap to fix.", "zh": "目的是趁风险还容易修的时候，把它摆到桌面上。", "sp": null, "gap": false, "start": 43.8, "end": 47.496, "words": [[43.918, 43.984], [43.997, 44.287], [44.3, 44.405], [44.418, 44.511], [44.524, 44.997], [45.011, 45.458], [45.471, 45.642], [45.655, 45.747], [45.761, 45.853], [45.866, 46.142], [46.155, 46.432], [46.445, 46.537], [46.55, 47.103]]}, {"kind": "h", "id": "h1", "md": "2. Three Moves That Make Disagreement Safe", "zh": "2. 让反对变得安全的三个动作", "start": 47.496, "end": 50.76, "words": [[47.614, 47.851], [48.299, 48.549], [48.562, 48.878], [48.891, 49.035], [49.049, 49.351], [49.364, 49.93], [49.943, 50.378]]}, {"kind": "s", "id": "s1_0_0", "md": "**First, agree on the goal before you challenge the method.**", "zh": "第一，先对齐目标，再质疑方法。", "sp": null, "gap": false, "start": 50.76, "end": 54.264, "words": [[50.944, 51.299], [51.576, 51.865], [51.878, 51.984], [51.997, 52.076], [52.089, 52.392], [52.405, 52.773], [52.786, 52.878], [52.892, 53.326], [53.339, 53.418], [53.431, 53.878]]}, {"kind": "s", "id": "s1_0_1", "md": "Saying \"We both want this release to be stable\" __sets the frame__.", "zh": "说一句「我们都希望这次发布是稳定的」，就先把框架定下来了。", "sp": null, "gap": false, "start": 54.264, "end": 58.416, "words": [[54.369, 54.711], [54.961, 55.093], [55.106, 55.448], [55.461, 55.711], [55.725, 55.909], [55.922, 56.29], [56.303, 56.396], [56.409, 56.54], [56.553, 57.067], [57.172, 57.501], [57.514, 57.593], [57.606, 58.027]]}, {"kind": "s", "id": "s1_0_2", "md": "Now your objection sounds like help, not opposition.", "zh": "这样你的反对听起来像是在帮忙，而不是在唱反调。", "sp": null, "gap": false, "start": 58.416, "end": 61.728, "words": [[58.521, 58.679], [58.692, 58.837], [58.85, 59.363], [59.377, 59.705], [59.719, 59.85], [59.863, 60.192], [60.613, 60.745], [60.758, 61.35]]}, {"kind": "s", "id": "s1_1_0", "md": "Second, ask instead of assert.", "zh": "第二，用提问代替断言。", "sp": null, "gap": true, "start": 61.728, "end": 64.272, "words": [[61.846, 62.281], [62.689, 62.939], [62.952, 63.281], [63.294, 63.36], [63.373, 63.873]]}, {"kind": "s", "id": "s1_1_1", "md": "\"What happens if traffic doubles?\" is easier to hear than \"This won't scale.\"", "zh": "「如果流量翻倍会怎样？」比「这扛不住」更容易让人听进去。", "sp": null, "gap": false, "start": 64.272, "end": 69.192, "words": [[64.469, 64.535], [64.535, 64.956], [64.969, 65.088], [65.101, 65.667], [65.68, 66.206], [66.535, 66.706], [66.719, 67.114], [67.127, 67.167], [67.18, 67.535], [67.548, 67.719], [67.746, 67.982], [67.996, 68.246], [68.259, 68.785]]}, {"kind": "s", "id": "s1_1_2", "md": "A question invites the other person to find the gap themselves, which makes them far more likely to ==acknowledge== it.", "zh": "提问会让对方自己去发现漏洞，这样他们承认问题的可能性就大得多。", "sp": null, "gap": false, "start": 69.192, "end": 75.96, "words": [[69.297, 69.376], [69.389, 69.863], [69.876, 70.337], [70.35, 70.481], [70.495, 70.745], [70.758, 71.192], [71.205, 71.297], [71.31, 71.679], [71.692, 71.758], [71.771, 72.06], [72.074, 72.758], [73.034, 73.218], [73.231, 73.468], [73.481, 73.639], [73.653, 74.021], [74.034, 74.284], [74.297, 74.679], [74.692, 74.824], [74.837, 75.363], [75.376, 75.56]]}, {"kind": "s", "id": "s1_2_0", "md": "Third, be specific.", "zh": "第三，说具体。", "sp": null, "gap": true, "start": 75.96, "end": 77.976, "words": [[76.118, 76.565], [76.802, 76.921], [76.934, 77.578]]}, {"kind": "s", "id": "s1_2_1", "md": "==Vague== concerns like \"I'm not sure about this\" __leave people guessing__.", "zh": "「我对这个不太确定」这种模糊的顾虑，只会让人去猜你到底担心什么。", "sp": null, "gap": false, "start": 77.976, "end": 82.344, "words": [[78.081, 78.305], [78.318, 78.805], [78.818, 79.068], [79.489, 79.581], [79.594, 79.779], [79.792, 80.068], [80.081, 80.358], [80.371, 80.752], [80.95, 81.213], [81.226, 81.555], [81.568, 81.963]]}, {"kind": "s", "id": "s1_2_2", "md": "Point to one number, one dependency, or one ==scenario==.", "zh": "指出一个数字、一个依赖，或者一个具体场景。", "sp": null, "gap": false, "start": 82.344, "end": 86.328, "words": [[82.462, 82.686], [82.699, 82.804], [82.818, 83.081], [83.094, 83.436], [83.831, 83.989], [84.002, 84.673], [84.962, 85.107], [85.12, 85.331], [85.344, 85.949]]}, {"kind": "s", "id": "s1_2_3", "md": "**Specific doubts get fixed; vague doubts get ignored.**", "zh": "具体的疑虑会被解决；模糊的疑虑会被忽略。", "sp": null, "gap": false, "start": 86.328, "end": 90.216, "words": [[86.446, 86.999], [87.012, 87.341], [87.354, 87.525], [87.539, 88.131], [88.446, 88.789], [88.802, 89.157], [89.17, 89.328], [89.341, 89.828]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, once the team decides, __commit to the decision__, even if it wasn't your choice.", "zh": "最后，团队一旦做了决定，就全力执行，哪怕那不是你选的方案。", "sp": null, "gap": true, "start": 90.216, "end": 96.096, "words": [[90.4, 90.861], [91.15, 91.387], [91.4, 91.505], [91.519, 91.769], [91.782, 92.466], [92.677, 93.058], [93.071, 93.163], [93.177, 93.269], [93.282, 93.821], [94.255, 94.453], [94.466, 94.584], [94.598, 94.703], [94.716, 94.992], [95.005, 95.111], [95.124, 95.716]]}, {"kind": "s", "id": "s1_3_1", "md": "Disagreeing openly and then supporting the outcome is what builds ==credibility==.", "zh": "公开提出异议，然后支持最终结果，这才是建立信誉的方式。", "sp": null, "gap": false, "start": 96.096, "end": 101.088, "words": [[96.201, 96.899], [96.951, 97.478], [97.728, 97.846], [97.859, 97.991], [98.004, 98.504], [98.517, 98.635], [98.649, 99.188], [99.307, 99.412], [99.425, 99.662], [99.675, 99.964], [99.978, 100.688]]}, {"kind": "s", "id": "s1_3_2", "md": "People will listen to your next objection because they know you are not just being difficult.", "zh": "下次你再反对时，大家会听，因为他们知道你不是在故意找茬。", "sp": null, "gap": false, "start": 101.088, "end": 105.96, "words": [[101.206, 101.47], [101.483, 101.614], [101.627, 101.917], [101.93, 102.035], [102.049, 102.18], [102.193, 102.47], [102.483, 103.049], [103.154, 103.443], [103.456, 103.562], [103.575, 103.825], [103.838, 103.983], [103.996, 104.101], [104.114, 104.47], [104.483, 104.72], [104.733, 104.983], [104.996, 105.562]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

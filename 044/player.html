@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Saying No Without Closing the Door · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "044", "title": "Saying No Without Closing the Door", "meta": "B2 · 约 280 词 · 场景：拒绝请求", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. What a Bare No Costs You", "heading_zh": "1. 一句干巴巴的「不」会让你付出什么", "rows": [[{"id": "s0_0_0", "md": "A partner team asks you to build a custom report for their launch next month.", "text": "A partner team asks you to build a custom report for their launch next month.", "zh": "一个合作团队请你为他们下个月的上线做一份定制报表。", "sp": null}, {"id": "s0_0_1", "md": "Your team is already stretched, so you reply, \"Sorry, we don't have the bandwidth.\"", "text": "Your team is already stretched, so you reply, \"Sorry, we don't have the bandwidth.\"", "zh": "你的团队已经忙不过来了，于是你回复：「抱歉，我们没有人力。」", "sp": null}, {"id": "s0_0_2", "md": "It feels efficient, but the other side hears something else.", "text": "It feels efficient, but the other side hears something else.", "zh": "感觉挺高效，但对方听到的是另一回事。", "sp": null}, {"id": "s0_0_3", "md": "They hear that their problem does not matter to you.", "text": "They hear that their problem does not matter to you.", "zh": "他们听到的是：他们的问题在你这儿无所谓。", "sp": null}], [{"id": "s0_1_0", "md": "A bare no has a long memory.", "text": "A bare no has a long memory.", "zh": "一句干巴巴的「不」，别人会记很久。", "sp": null}, {"id": "s0_1_1", "md": "Months later, when you need a favor from that team, someone will ==recall== that you were the person who __shut them down__.", "text": "Months later, when you need a favor from that team, someone will recall that you were the person who shut them down.", "zh": "几个月后，当你需要那个团队帮忙时，会有人想起来你就是当初把他们打发走的那个人。", "sp": null}, {"id": "s0_1_2", "md": "**The words you use to refuse often matter more than the refusal itself.**", "text": "The words you use to refuse often matter more than the refusal itself.", "zh": "你拒绝时用的措辞，往往比拒绝本身更重要。", "sp": null}], [{"id": "s0_2_0", "md": "You will have to say no often as a lead, and that is healthy.", "text": "You will have to say no often as a lead, and that is healthy.", "zh": "作为 lead，你会经常需要说不，这很正常。", "sp": null}, {"id": "s0_2_1", "md": "Protecting your team's ==focus== is part of the job.", "text": "Protecting your team's focus is part of the job.", "zh": "保护团队的专注度本来就是工作的一部分。", "sp": null}, {"id": "s0_2_2", "md": "The skill is to decline the request while keeping the ==relationship== intact.", "text": "The skill is to decline the request while keeping the relationship intact.", "zh": "真正的功夫在于拒绝了请求，关系却还完好无损。", "sp": null}]]}, {"heading": "2. The Shape of a Good No", "heading_zh": "2. 好的拒绝长什么样", "rows": [[{"id": "s1_0_0", "md": "Start by showing that you understood the request.", "text": "Start by showing that you understood the request.", "zh": "先表明你听懂了对方的请求。", "sp": null}, {"id": "s1_0_1", "md": "Repeat their goal in one sentence, so they know you are not ==brushing them off==.", "text": "Repeat their goal in one sentence, so they know you are not brushing them off.", "zh": "用一句话复述他们的目标，让他们知道你不是在敷衍。", "sp": null}, {"id": "s1_0_2", "md": "\"You need launch numbers your leadership can trust by the twentieth.\"", "text": "\"You need launch numbers your leadership can trust by the twentieth.\"", "zh": "「你们需要在二十号之前拿到领导能信得过的上线数据。」", "sp": null}], [{"id": "s1_1_0", "md": "Then give the real reason, briefly and without ==apology== theatre.", "text": "Then give the real reason, briefly and without apology theatre.", "zh": "然后给出真实的理由，简短，别演那种道歉戏码。", "sp": null}, {"id": "s1_1_1", "md": "\"We are __heads down on__ the payment migration until the end of the month.\"", "text": "\"We are heads down on the payment migration until the end of the month.\"", "zh": "「到月底之前我们都在埋头做支付迁移。」", "sp": null}, {"id": "s1_1_2", "md": "One honest reason is more convincing than three weak ones.", "text": "One honest reason is more convincing than three weak ones.", "zh": "一个真实的理由比三个站不住的理由更有说服力。", "sp": null}], [{"id": "s1_2_0", "md": "Now open a door.", "text": "Now open a door.", "zh": "接着，给对方留一扇门。", "sp": null}, {"id": "s1_2_1", "md": "Offer a smaller version, a later date, or a person who can help.", "text": "Offer a smaller version, a later date, or a person who can help.", "zh": "提供一个缩小的版本、一个更晚的时间，或者一个能帮上忙的人。", "sp": null}, {"id": "s1_2_2", "md": "\"We can't build a custom report, but we can __give you access to__ the raw table and an example query today.\"", "text": "\"We can't build a custom report, but we can give you access to the raw table and an example query today.\"", "zh": "「定制报表我们做不了，但今天就可以给你们开原始表的权限，再附一个示例查询。」", "sp": null}, {"id": "s1_2_3", "md": "**A no with an alternative still feels like help.**", "text": "A no with an alternative still feels like help.", "zh": "带着替代方案的拒绝，听起来依然是在帮忙。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, name the condition that would turn it into a yes.", "text": "Finally, name the condition that would turn it into a yes.", "zh": "最后，说清楚在什么条件下会变成同意。", "sp": null}, {"id": "s1_3_1", "md": "\"If this is still needed after the migration, let's __put it on the list__ for next quarter.\"", "text": "\"If this is still needed after the migration, let's put it on the list for next quarter.\"", "zh": "「如果迁移完了你们还需要，我们就把它放进下个季度的清单。」", "sp": null}, {"id": "s1_3_2", "md": "A clear condition shows that the door is closed for now, not ==permanently==.", "text": "A clear condition shows that the door is closed for now, not permanently.", "zh": "一个清楚的条件表明，这扇门只是暂时关上，不是永远关上。", "sp": null}]]}], "gist": [{"q": "简单地回一句 \"We don't have the bandwidth\" 有什么代价？", "a": "对方听到的是「你的问题对我不重要」；几个月后你求他们时，他们会记得你曾经直接回绝。"}, {"q": "一个好的拒绝包括哪几部分？", "a": "先复述对方目标表明理解；给一个真实的简短理由；提供替代方案（缩小版、晚一点或别人能帮）；说明什么条件下能变成 yes。"}, {"q": "为什么只给一个理由？", "a": "一个诚实的理由比三个站不住的理由更有说服力。"}], "dictation": [{"id": "s0_1_2", "text": "The words you use to refuse often matter more than the refusal itself."}, {"id": "s1_1_2", "text": "One honest reason is more convincing than three weak ones."}, {"id": "s1_2_3", "text": "A no with an alternative still feels like help."}, {"id": "s0_2_1", "text": "Protecting your team's focus is part of the job."}], "shadow": {"text": "Now open a door. Offer a smaller version, a later date, or a person who can help.", "marked": "Now <b>open</b> a <b>door</b>. //<br>Offer a <b>smaller</b> version, / a <b>later</b> date, / or a <b>person</b> who can help. //"}, "prompts": [{"q": "隔壁团队请你们帮忙做一次压测，但你们这两周在赶支付迁移。用 30 秒拒绝，但给出替代方案和可以答应的条件。", "ref": "I understand you need confidence in the new service before the sale event. Honestly, we're heads down on the payment migration for the next two weeks, so we can't run the load test ourselves. What we can do is share our test scripts today and spend thirty minutes walking your engineer through them. If you still need us after the migration, I'm happy to put it on our list.", "ref_zh": "我理解你们在大促之前需要对新服务有信心。说实话，接下来两周我们都在埋头做支付迁移，所以压测没法我们自己来跑。我们能做的是今天就把测试脚本共享给你们，再花三十分钟带你们的工程师过一遍。如果迁移完之后你们还需要我们，我很乐意把它排进我们的清单。", "id": "ref0"}, {"q": "你的老板临时问你能不能接一个新的内部工具项目。你认为团队现在接不了。用 30 秒说 no，但不关上门。", "ref": "Thanks for thinking of us, and I can see why this tool matters. Right now, though, taking it on would put the search launch at risk, and that's the commitment we made to the business. My suggestion is that we scope it properly in the next planning cycle. If it's urgent before then, Ken's team built something similar last year, and they might be able to reuse it.", "ref_zh": "谢谢你们想到我们，我也明白这个工具为什么重要。不过现在接下来的话，会让搜索的上线有风险，而那是我们对业务做过的承诺。我的建议是在下一个规划周期里把它好好评估一下范围。如果在那之前就很急，Ken 的团队去年做过一个类似的东西，也许可以直接复用。", "id": "ref1"}], "words": [{"w": "recall", "ipa": "/rɪˈkɔːl/", "zh": "回想起、记得", "ex": "I recall that we had the same timeout issue last spring.", "id": "w0"}, {"w": "focus", "ipa": "/ˈfoʊkəs/", "zh": "专注、重点", "ex": "Our focus this month is the payment migration, nothing else.", "id": "w1"}, {"w": "relationship", "ipa": "/rɪˈleɪʃənʃɪp/", "zh": "关系", "ex": "We have a good working relationship with the data team.", "id": "w2"}, {"w": "brush off", "ipa": "/brʌʃ ɔːf/", "zh": "敷衍、打发", "ex": "I don't want to brush off their concern, so let's set up a call.", "id": "w3"}, {"w": "apology", "ipa": "/əˈpɑːlədʒi/", "zh": "道歉", "ex": "A short apology is enough; then explain the fix.", "id": "w4"}, {"w": "permanently", "ipa": "/ˈpɜːrmənəntli/", "zh": "永久地", "ex": "We're not removing the feature permanently, just disabling it for now.", "id": "w5"}, {"w": "bandwidth", "ipa": "/ˈbændwɪdθ/", "zh": "（人的）精力、余力", "ex": "Do you have the bandwidth to review this before Friday?", "id": "w6"}, {"w": "decline", "ipa": "/dɪˈklaɪn/", "zh": "婉拒", "ex": "We had to decline the request because of the code freeze.", "id": "w7"}, {"w": "intact", "ipa": "/ɪnˈtækt/", "zh": "完好无损的", "ex": "The rollback kept all user data intact.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. What a Bare No Costs You", "zh": "1. 一句干巴巴的「不」会让你付出什么", "start": 0.0, "end": 2.232, "words": [[0.105, 0.316], [0.684, 0.789], [0.803, 0.855], [0.868, 1.079], [1.092, 1.237], [1.25, 1.618], [1.632, 1.842]]}, {"kind": "s", "id": "s0_0_0", "md": "A partner team asks you to build a custom report for their launch next month.", "zh": "一个合作团队请你为他们下个月的上线做一份定制报表。", "sp": null, "gap": false, "start": 2.232, "end": 6.672, "words": [[2.337, 2.403], [2.416, 2.771], [2.785, 3.035], [3.087, 3.403], [3.416, 3.508], [3.521, 3.614], [3.627, 3.877], [3.89, 3.942], [3.956, 4.403], [4.416, 4.85], [4.864, 4.982], [4.995, 5.14], [5.153, 5.561], [5.574, 5.877], [5.89, 6.271]]}, {"kind": "s", "id": "s0_0_1", "md": "Your team is already stretched, so you reply, \"Sorry, we don't have the bandwidth.\"", "zh": "你的团队已经忙不过来了，于是你回复：「抱歉，我们没有人力。」", "sp": null, "gap": false, "start": 6.672, "end": 12.792, "words": [[6.777, 6.896], [6.909, 7.225], [7.422, 7.567], [7.58, 7.975], [7.988, 8.606], [8.843, 8.975], [8.988, 9.133], [9.146, 9.593], [10.159, 10.58], [11.04, 11.133], [11.146, 11.356], [11.369, 11.567], [11.58, 11.659], [11.672, 12.277]]}, {"kind": "s", "id": "s0_0_2", "md": "It feels efficient, but the other side hears something else.", "zh": "感觉挺高效，但对方听到的是另一回事。", "sp": null, "gap": false, "start": 12.792, "end": 16.512, "words": [[12.897, 12.989], [13.003, 13.331], [13.345, 13.884], [14.2, 14.331], [14.345, 14.476], [14.489, 14.713], [14.726, 15.081], [15.095, 15.345], [15.358, 15.674], [15.687, 16.121]]}, {"kind": "s", "id": "s0_0_3", "md": "They hear that their problem does not matter to you.", "zh": "他们听到的是：他们的问题在你这儿无所谓。", "sp": null, "gap": false, "start": 16.512, "end": 19.2, "words": [[16.63, 16.709], [16.723, 16.907], [16.92, 17.038], [17.051, 17.196], [17.209, 17.67], [17.749, 17.907], [17.92, 18.144], [18.157, 18.446], [18.459, 18.591], [18.604, 18.815]]}, {"kind": "s", "id": "s0_1_0", "md": "A bare no has a long memory.", "zh": "一句干巴巴的「不」，别人会记很久。", "sp": null, "gap": true, "start": 19.2, "end": 21.192, "words": [[19.305, 19.384], [19.397, 19.634], [19.647, 19.832], [19.845, 19.976], [19.989, 20.029], [20.042, 20.345], [20.358, 20.805]]}, {"kind": "s", "id": "s0_1_1", "md": "Months later, when you need a favor from that team, someone will ==recall== that you were the person who __shut them down__.", "zh": "几个月后，当你需要那个团队帮忙时，会有人想起来你就是当初把他们打发走的那个人。", "sp": null, "gap": false, "start": 21.192, "end": 27.36, "words": [[21.297, 21.534], [21.547, 21.902], [22.218, 22.337], [22.35, 22.442], [22.455, 22.639], [22.653, 22.692], [22.705, 23.087], [23.1, 23.245], [23.258, 23.468], [23.481, 23.85], [24.166, 24.468], [24.481, 24.626], [24.639, 25.074], [25.087, 25.232], [25.245, 25.337], [25.35, 25.429], [25.442, 25.547], [25.56, 26.047], [26.06, 26.153], [26.166, 26.455], [26.468, 26.6], [26.613, 26.981]]}, {"kind": "s", "id": "s0_1_2", "md": "**The words you use to refuse often matter more than the refusal itself.**", "zh": "你拒绝时用的措辞，往往比拒绝本身更重要。", "sp": null, "gap": false, "start": 27.36, "end": 32.136, "words": [[27.478, 27.544], [27.557, 27.899], [27.913, 28.031], [28.044, 28.386], [28.399, 28.505], [28.518, 29.149], [29.307, 29.702], [29.715, 30.057], [30.071, 30.439], [30.452, 30.584], [30.597, 30.676], [30.689, 31.202], [31.215, 31.755]]}, {"kind": "s", "id": "s0_2_0", "md": "You will have to say no often as a lead, and that is healthy.", "zh": "作为 lead，你会经常需要说不，这很正常。", "sp": null, "gap": true, "start": 32.136, "end": 35.784, "words": [[32.254, 32.32], [32.333, 32.452], [32.465, 32.662], [32.675, 32.768], [32.781, 33.004], [33.018, 33.294], [33.307, 33.715], [33.728, 33.833], [33.847, 33.886], [33.899, 34.294], [34.636, 34.702], [34.715, 34.873], [34.886, 34.978], [34.991, 35.399]]}, {"kind": "s", "id": "s0_2_1", "md": "Protecting your team's ==focus== is part of the job.", "zh": "保护团队的专注度本来就是工作的一部分。", "sp": null, "gap": false, "start": 35.784, "end": 38.88, "words": [[35.902, 36.35], [36.363, 36.481], [36.495, 36.837], [36.85, 37.389], [37.495, 37.613], [37.626, 37.902], [37.916, 37.981], [37.995, 38.06], [38.073, 38.494]]}, {"kind": "s", "id": "s0_2_2", "md": "The skill is to decline the request while keeping the ==relationship== intact.", "zh": "真正的功夫在于拒绝了请求，关系却还完好无损。", "sp": null, "gap": false, "start": 38.88, "end": 43.464, "words": [[38.998, 39.051], [39.064, 39.446], [39.459, 39.577], [39.591, 39.683], [39.696, 40.183], [40.196, 40.275], [40.288, 40.933], [41.183, 41.341], [41.354, 41.709], [41.722, 41.801], [41.814, 42.498], [42.512, 43.077]]}, {"kind": "h", "id": "h1", "md": "2. The Shape of a Good No", "zh": "2. 好的拒绝长什么样", "start": 43.464, "end": 45.624, "words": [[43.569, 43.819], [44.175, 44.253], [44.267, 44.609], [44.622, 44.688], [44.701, 44.753], [44.767, 44.938], [44.951, 45.227]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by showing that you understood the request.", "zh": "先表明你听懂了对方的请求。", "sp": null, "gap": false, "start": 45.624, "end": 48.504, "words": [[45.742, 46.019], [46.032, 46.15], [46.163, 46.545], [46.558, 46.69], [46.703, 46.861], [46.874, 47.374], [47.387, 47.466], [47.479, 48.111]]}, {"kind": "s", "id": "s1_0_1", "md": "Repeat their goal in one sentence, so they know you are not ==brushing them off==.", "zh": "用一句话复述他们的目标，让他们知道你不是在敷衍。", "sp": null, "gap": false, "start": 48.504, "end": 53.184, "words": [[48.609, 48.951], [48.965, 49.136], [49.149, 49.557], [49.622, 49.754], [49.767, 49.978], [49.991, 50.583], [50.872, 50.991], [51.004, 51.122], [51.136, 51.333], [51.346, 51.465], [51.478, 51.57], [51.583, 51.886], [51.899, 52.228], [52.241, 52.372], [52.386, 52.78]]}, {"kind": "s", "id": "s1_0_2", "md": "\"You need launch numbers your leadership can trust by the twentieth.\"", "zh": "「你们需要在二十号之前拿到领导能信得过的上线数据。」", "sp": null, "gap": false, "start": 53.184, "end": 56.976, "words": [[53.368, 53.434], [53.434, 53.658], [53.671, 54.026], [54.039, 54.408], [54.421, 54.539], [54.552, 55.118], [55.158, 55.302], [55.316, 55.737], [55.75, 55.868], [55.881, 55.96], [55.973, 56.579]]}, {"kind": "s", "id": "s1_1_0", "md": "Then give the real reason, briefly and without ==apology== theatre.", "zh": "然后给出真实的理由，简短，别演那种道歉戏码。", "sp": null, "gap": true, "start": 56.976, "end": 61.392, "words": [[57.081, 57.252], [57.265, 57.489], [57.502, 57.594], [57.608, 57.963], [57.976, 58.423], [58.805, 59.423], [59.555, 59.66], [59.673, 60.015], [60.029, 60.529], [60.542, 60.989]]}, {"kind": "s", "id": "s1_1_1", "md": "\"We are __heads down on__ the payment migration until the end of the month.\"", "zh": "「到月底之前我们都在埋头做支付迁移。」", "sp": null, "gap": false, "start": 61.392, "end": 65.496, "words": [[61.589, 61.603], [61.681, 61.787], [61.8, 62.089], [62.103, 62.392], [62.405, 62.484], [62.497, 62.576], [62.589, 62.958], [62.971, 63.655], [63.787, 64.037], [64.05, 64.168], [64.181, 64.405], [64.418, 64.484], [64.497, 64.563], [64.576, 65.076]]}, {"kind": "s", "id": "s1_1_2", "md": "One honest reason is more convincing than three weak ones.", "zh": "一个真实的理由比三个站不住的理由更有说服力。", "sp": null, "gap": false, "start": 65.496, "end": 69.312, "words": [[65.614, 65.812], [65.825, 66.167], [66.18, 66.588], [66.72, 66.838], [66.851, 67.088], [67.101, 67.706], [67.72, 67.851], [67.864, 68.167], [68.18, 68.417], [68.43, 68.93]]}, {"kind": "s", "id": "s1_2_0", "md": "Now open a door.", "zh": "接着，给对方留一扇门。", "sp": null, "gap": true, "start": 69.312, "end": 71.184, "words": [[69.417, 69.615], [69.628, 69.825], [69.838, 69.891], [69.904, 70.286]]}, {"kind": "s", "id": "s1_2_1", "md": "Offer a smaller version, a later date, or a person who can help.", "zh": "提供一个缩小的版本、一个更晚的时间，或者一个能帮上忙的人。", "sp": null, "gap": false, "start": 71.184, "end": 75.576, "words": [[71.289, 71.566], [71.579, 71.631], [71.645, 72.039], [72.052, 72.46], [72.868, 72.895], [72.908, 73.184], [73.197, 73.513], [73.96, 74.052], [74.066, 74.118], [74.131, 74.566], [74.579, 74.697], [74.71, 74.842], [74.855, 75.184]]}, {"kind": "s", "id": "s1_2_2", "md": "\"We can't build a custom report, but we can __give you access to__ the raw table and an example query today.\"", "zh": "「定制报表我们做不了，但今天就可以给你们开原始表的权限，再附一个示例查询。」", "sp": null, "gap": false, "start": 75.576, "end": 81.888, "words": [[75.773, 75.813], [75.813, 76.076], [76.089, 76.3], [76.313, 76.365], [76.379, 76.76], [76.773, 77.26], [77.563, 77.668], [77.681, 77.786], [77.8, 77.931], [77.944, 78.102], [78.115, 78.234], [78.247, 78.786], [78.8, 78.905], [78.918, 79.037], [79.05, 79.286], [79.3, 79.826], [80.05, 80.129], [80.142, 80.221], [80.234, 80.708], [80.721, 81.063], [81.076, 81.484]]}, {"kind": "s", "id": "s1_2_3", "md": "**A no with an alternative still feels like help.**", "zh": "带着替代方案的拒绝，听起来依然是在帮忙。", "sp": null, "gap": false, "start": 81.888, "end": 84.648, "words": [[81.98, 82.006], [82.02, 82.191], [82.204, 82.335], [82.349, 82.441], [82.454, 83.033], [83.046, 83.349], [83.362, 83.704], [83.717, 83.888], [83.901, 84.243]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, name the condition that would turn it into a yes.", "zh": "最后，说清楚在什么条件下会变成同意。", "sp": null, "gap": true, "start": 84.648, "end": 88.344, "words": [[84.832, 85.24], [85.622, 85.78], [85.793, 85.885], [85.898, 86.398], [86.411, 86.53], [86.543, 86.674], [86.687, 86.924], [86.937, 87.03], [87.043, 87.293], [87.306, 87.358], [87.372, 87.951]]}, {"kind": "s", "id": "s1_3_1", "md": "\"If this is still needed after the migration, let's __put it on the list__ for next quarter.\"", "zh": "「如果迁移完了你们还需要，我们就把它放进下个季度的清单。」", "sp": null, "gap": false, "start": 88.344, "end": 93.384, "words": [[88.528, 88.555], [88.633, 88.844], [88.857, 88.976], [88.989, 89.278], [89.291, 89.633], [89.647, 89.883], [89.897, 89.962], [89.976, 90.581], [91.002, 91.147], [91.16, 91.331], [91.344, 91.423], [91.436, 91.555], [91.568, 91.66], [91.673, 92.068], [92.081, 92.212], [92.226, 92.515], [92.528, 92.976]]}, {"kind": "s", "id": "s1_3_2", "md": "A clear condition shows that the door is closed for now, not ==permanently==.", "zh": "一个清楚的条件表明，这扇门只是暂时关上，不是永远关上。", "sp": null, "gap": false, "start": 93.384, "end": 98.016, "words": [[93.489, 93.542], [93.555, 93.831], [93.845, 94.358], [94.371, 94.687], [94.7, 94.845], [94.858, 94.95], [94.963, 95.358], [95.423, 95.542], [95.555, 95.923], [95.937, 96.055], [96.068, 96.384], [96.805, 96.989], [97.002, 97.634]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

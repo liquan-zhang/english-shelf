@@ -1,0 +1,196 @@
+{
+  "id": "045",
+  "title": "Aligning Two Teams on One Goal",
+  "meta": "B2 · 约 260 词 · 场景：跨团队对齐",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Two Scoreboards, One Product",
+      "paragraphs": [
+        [
+          "The growth team wants more pop-ups to drive sign-ups.",
+          "The app performance team wants fewer, because every pop-up adds load time.",
+          "Both teams are smart, both have data, and both are measured on different numbers."
+        ],
+        [
+          "This is the usual root of cross-team conflict.",
+          "It is rarely about ==personalities==.",
+          "**When two teams keep different scoreboards, every meeting turns into a negotiation.**",
+          "Each side ==defends== its own metric, and the user __gets lost in the middle__."
+        ],
+        [
+          "You cannot fix this with more meetings or a nicer tone.",
+          "You fix it by changing what both teams are __held accountable for__.",
+          "In other words, you need a shared definition of winning that neither team can ==achieve== alone."
+        ]
+      ],
+      "heading_zh": "1. 两块记分牌，一个产品",
+      "paragraphs_zh": [
+        [
+          "增长团队想多加弹窗来拉注册。",
+          "App 性能团队想少加，因为每个弹窗都会拖慢加载时间。",
+          "两个团队都很聪明，手里都有数据，而且考核的是不同的指标。"
+        ],
+        [
+          "这就是跨团队冲突最常见的根源。",
+          "问题很少出在人的性格上。",
+          "两个团队各看各的记分牌，每次开会就都变成了谈判。",
+          "每一方都在守自己的指标，用户就在中间被弄丢了。"
+        ],
+        [
+          "这事靠多开几次会、语气客气一点是解决不了的。",
+          "要解决，就得改变两个团队各自要背的东西。",
+          "换句话说，你需要一个双方共同认可的「赢」的定义，而且任何一个团队单靠自己都做不到。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Building the Shared Number",
+      "paragraphs": [
+        [
+          "Get both leads in one room and ask a simple question.",
+          "\"If this project goes perfectly, what changes for the user?\"",
+          "Keep asking until the answer is something both teams would __sign off on__."
+        ],
+        [
+          "In our example, the answer might be \"more new users who are still active after a week.\"",
+          "Sign-ups alone can be gamed, and load time alone ignores the business.",
+          "Retention ==captures== what both teams actually care about."
+        ],
+        [
+          "Then add a ==guardrail== for each side.",
+          "The growth team can try any idea, as long as load time stays under an agreed limit.",
+          "**A shared goal plus clear guardrails turns rivals into partners.**"
+        ],
+        [
+          "Finally, review the number together, in the same meeting, from the same dashboard.",
+          "When both teams look at one chart every week, arguments about whose data is right slowly ==disappear==.",
+          "The conversation shifts from \"your team\" to \"our number,\" which is exactly the point."
+        ]
+      ],
+      "heading_zh": "2. 建立一个共同的指标",
+      "paragraphs_zh": [
+        [
+          "把两边的 lead 拉到一个房间里，问一个简单的问题。",
+          "「如果这个项目做得完美，用户那边会有什么变化？」",
+          "一直追问，直到答案是两个团队都愿意签字认可的。"
+        ],
+        [
+          "拿我们的例子来说，答案可能是「一周后仍然活跃的新用户更多了」。",
+          "光看注册量可以刷，光看加载时间又不管业务。",
+          "留存才真正体现了两个团队都在乎的东西。"
+        ],
+        [
+          "然后给每一方各加一条护栏。",
+          "增长团队想试什么点子都行，只要加载时间不超过约定的上限。",
+          "共同的目标加上清晰的护栏，能把对手变成搭档。"
+        ],
+        [
+          "最后，一起看这个指标：同一个会、同一个 dashboard。",
+          "当两个团队每周都看同一张图，关于谁的数据对的争论就会慢慢消失。",
+          "对话会从「你们团队」变成「我们的指标」，这恰恰就是目的所在。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "跨团队冲突通常的根源是什么？",
+      "a": "不是性格问题，而是两个团队用不同的指标（记分牌）考核，每次开会都变成谈判。"
+    },
+    {
+      "q": "例子中两个团队的共同目标最后是什么？为什么选它？",
+      "a": "一周后仍活跃的新用户数（留存）；单看注册量能被刷，单看加载时间忽略业务，留存同时反映双方关心的东西。"
+    },
+    {
+      "q": "除了共同目标，还要加什么？",
+      "a": "给每一方设护栏指标，比如增长团队可以随便试，但加载时间必须低于约定上限；并每周用同一个看板一起复盘。"
+    }
+  ],
+  "dictation": [
+    "When two teams keep different scoreboards, every meeting turns into a negotiation.",
+    "\"If this project goes perfectly, what changes for the user?\"",
+    "A shared goal plus clear guardrails turns rivals into partners.",
+    "Sign-ups alone can be gamed, and load time alone ignores the business."
+  ],
+  "shadow": {
+    "text": "Then add a guardrail for each side. The growth team can try any idea, as long as load time stays under an agreed limit. A shared goal plus clear guardrails turns rivals into partners.",
+    "marked": "Then add a <b>guardrail</b> / for <b>each</b> side. //<br>The growth team can try <b>any</b> idea, / as long as <b>load time</b> stays under an <b>agreed</b> limit. //<br>A <b>shared</b> goal / plus clear <b>guardrails</b> / turns <b>rivals</b> into <b>partners</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "推荐算法组想提高点击率，内容安全组想减少违规内容曝光，两边在会上吵起来了。你主持会议，用 30 秒提出一个共同目标加护栏的方案。",
+      "ref": "Can I suggest we step back for a second? I think we're arguing because we're looking at two different numbers. What we both want is users who come back tomorrow because they enjoyed their feed. So let's make next-day return rate the shared goal. Recommendations can test anything they like, as long as the rate of flagged content doesn't go up. Does that work for both teams?",
+      "ref_zh": "我能不能建议大家先退一步？我觉得我们在吵，是因为我们看的是两个不同的数字。我们双方真正想要的，是用户因为喜欢自己的 feed，第二天还会回来。所以我们就把次日回访率作为共同目标吧。推荐团队想试什么都行，只要被举报内容的比例不上升。两个团队觉得这样可以吗？"
+    },
+    {
+      "q": "两个团队每周都在争论谁的数据是对的。用 30 秒提议统一看板和复盘方式。",
+      "ref": "Every week we spend the first twenty minutes debating whose numbers are right, and that's time we never get back. I'd like to propose one dashboard that both teams agree on, built from the same data source. We review it together every Monday, in one meeting. If someone thinks a number is wrong, we fix the dashboard, not the argument.",
+      "ref_zh": "每周我们都要花前二十分钟争论谁的数据是对的，这些时间是再也找不回来的。我想提议做一个两个团队都认可的 dashboard，用同一个数据源。每周一我们一起在一个会上看。如果有人觉得哪个数字不对，我们就去修 dashboard，而不是继续吵。"
+    }
+  ],
+  "words": [
+    {
+      "w": "personality",
+      "ipa": "/ˌpɜːrsəˈnæləti/",
+      "zh": "性格、个性",
+      "ex": "This isn't a personality clash; their goals are just different."
+    },
+    {
+      "w": "achieve",
+      "ipa": "/əˈtʃiːv/",
+      "zh": "达成、实现",
+      "ex": "We can't achieve the latency target without their help."
+    },
+    {
+      "w": "capture (v.)",
+      "ipa": "/ˈkæptʃər/",
+      "zh": "体现、捕捉",
+      "ex": "Does this metric really capture how users feel about search?",
+      "tts_w": "capture"
+    },
+    {
+      "w": "guardrail",
+      "ipa": "/ˈɡɑːrdreɪl/",
+      "zh": "护栏（底线指标）",
+      "ex": "Crash rate is our guardrail; if it goes up, we stop the test."
+    },
+    {
+      "w": "disappear",
+      "ipa": "/ˌdɪsəˈpɪr/",
+      "zh": "消失",
+      "ex": "After the fix, the timeout errors disappeared completely."
+    },
+    {
+      "w": "accountable",
+      "ipa": "/əˈkaʊntəbl/",
+      "zh": "负有责任的",
+      "ex": "Who is accountable for the release if both teams ship code?"
+    },
+    {
+      "w": "retention",
+      "ipa": "/rɪˈtenʃən/",
+      "zh": "留存",
+      "ex": "Week one retention dropped after we changed the onboarding flow."
+    },
+    {
+      "w": "rival",
+      "ipa": "/ˈraɪvl/",
+      "zh": "对手",
+      "ex": "We should treat the infra team as partners, not rivals."
+    },
+    {
+      "w": "sign off on",
+      "ipa": "/saɪn ɔːf ɑːn/",
+      "zh": "签字同意、批准",
+      "ex": "Legal needs to sign off on the new privacy text first."
+    },
+    {
+      "w": "defend",
+      "ipa": "/dɪˈfend/",
+      "zh": "维护、辩护",
+      "ex": "Every team will defend its own roadmap unless we agree on one goal."
+    }
+  ]
+}

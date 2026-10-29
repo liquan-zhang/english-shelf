@@ -1,0 +1,244 @@
+{
+  "id": "147",
+  "type": "dialogue",
+  "title": "Sending a Parcel at the Post Office",
+  "meta": "B2 · 约 270 词 · 场景：邮局寄国际包裹",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Counter Staff",
+      "name_zh": "邮局柜台职员",
+      "voice": "en-SG-LunaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Choosing a Service",
+      "heading_zh": "1. 选择寄送方式",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Next, please. What can I do for you?",
+          "zh": "下一位。请问要办什么？"
+        },
+        {
+          "sp": "A",
+          "en": "**Hi. I'd like to send this parcel to Shanghai. What are my options?**",
+          "zh": "你好，我想把这个包裹寄到上海。有哪些方式可以选？"
+        },
+        {
+          "sp": "B",
+          "en": "Let me weigh it first. Okay, it's just over two kilos.",
+          "zh": "我先称一下。好，两公斤多一点。"
+        },
+        {
+          "sp": "B",
+          "en": "By ==airmail==, it takes about seven to ten working days. Express is three to five, but it's almost double the price.",
+          "zh": "寄航空大概七到十个工作日。快递三到五天，但价格差不多翻倍。"
+        },
+        {
+          "sp": "A",
+          "en": "How much is each one?",
+          "zh": "分别多少钱？"
+        },
+        {
+          "sp": "B",
+          "en": "Airmail is forty-two dollars, and express is seventy-nine.",
+          "zh": "航空四十二块，快递七十九。"
+        },
+        {
+          "sp": "A",
+          "en": "I'll __go with__ airmail. It's a birthday present for my mum, and there are still two weeks.",
+          "zh": "那就寄航空吧。是给我妈的生日礼物，还有两周时间。"
+        },
+        {
+          "sp": "B",
+          "en": "Sure. You'll need to fill in this ==customs== ==declaration== form.",
+          "zh": "好的。您需要填一下这张海关申报单。"
+        },
+        {
+          "sp": "A",
+          "en": "What should I put for the ==value==? It's mostly clothes and some snacks.",
+          "zh": "价值那一栏该怎么填？里面主要是衣服和一些零食。"
+        },
+        {
+          "sp": "B",
+          "en": "Just list each item and a rough value. Be accurate, or it might be held at customs.",
+          "zh": "把每样东西列出来，写个大概价值就行。要如实写，不然可能会被海关扣下。"
+        },
+        {
+          "sp": "A",
+          "en": "Got it. __Is it worth__ getting insurance?",
+          "zh": "明白。值得买保价吗？"
+        },
+        {
+          "sp": "B",
+          "en": "If it's over a hundred dollars, I'd say yes. It's three dollars extra and ==covers== up to five hundred.",
+          "zh": "如果超过一百块，我建议买。多三块钱，最高赔五百。"
+        }
+      ]
+    },
+    {
+      "heading": "2. A Problem with the Contents",
+      "heading_zh": "2. 包裹里有违禁品",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Before I seal it, is there anything with a ==battery== inside?",
+          "zh": "封箱之前问一下，里面有带电池的东西吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Oh, there's a small ==power bank== in there. Is that a problem?",
+          "zh": "哦，里面有个小充电宝。这有问题吗？"
+        },
+        {
+          "sp": "B",
+          "en": "I'm afraid so. Lithium batteries can't go by air. You'll have to take it out.",
+          "zh": "恐怕是的。锂电池不能走空运，您得拿出来。"
+        },
+        {
+          "sp": "A",
+          "en": "**No problem, I'll take it out now. Could I borrow some tape?**",
+          "zh": "没问题，我现在就拿出来。能借我点胶带吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Here you go. Please make sure you ==reseal== the box properly.",
+          "zh": "给您。请把箱子重新封好。"
+        },
+        {
+          "sp": "A",
+          "en": "Done. And how can I __keep track of__ it?",
+          "zh": "好了。那我怎么查包裹到哪儿了？"
+        },
+        {
+          "sp": "B",
+          "en": "Here's your ==receipt==. The ==tracking== number is at the top, and you can check it on our website.",
+          "zh": "这是您的收据。跟踪号码在最上面，可以在我们官网查。"
+        },
+        {
+          "sp": "A",
+          "en": "And if it gets lost, __what's the process__ for making a claim?",
+          "zh": "那如果包裹丢了，索赔流程是怎样的？"
+        },
+        {
+          "sp": "B",
+          "en": "Bring the receipt back here within six months, and we'll look into it.",
+          "zh": "六个月内带着收据回来这里，我们会帮您调查。"
+        },
+        {
+          "sp": "A",
+          "en": "**Great, thanks. I'll hang on to this receipt.**",
+          "zh": "好的，谢谢。这张收据我会留好。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "航空和快递在时效和价格上有什么区别？「你」选了哪个，为什么？",
+      "a": "航空七到十个工作日、四十二块；快递三到五天、七十九块。选了航空，因为是给妈妈的生日礼物，还有两周时间。"
+    },
+    {
+      "q": "海关申报和保价分别要注意什么？",
+      "a": "每样物品都要列出来并如实写大概价值，否则可能被海关扣下；超过一百块建议保价，多三块钱，最高赔五百。"
+    },
+    {
+      "q": "封箱前出了什么问题？丢件怎么索赔？",
+      "a": "里面有个充电宝，锂电池不能空运，只好拿出来重新封箱；丢件的话六个月内带收据回来办理。"
+    }
+  ],
+  "dictation": [
+    "Hi. I'd like to send this parcel to Shanghai. What are my options?",
+    "I'll go with airmail. It's a birthday present for my mum, and there are still two weeks.",
+    "No problem, I'll take it out now. Could I borrow some tape?",
+    "And if it gets lost, what's the process for making a claim?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "What should I put for the value? It's mostly clothes and some snacks.",
+    "marked": "What should I put / for the <b>value</b>? //<br>It's <b>mostly</b> clothes / and some <b>snacks</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你要从新加坡寄一箱孩子的旧绘本回国内老家。用 30 秒问清：最便宜的方式、多久到、书要不要申报。",
+      "ref": "Hi, I'd like to send this box of children's books to my parents in China. They're not urgent at all, so what's the cheapest way to send them? Is there a surface mail option, and roughly how long would that take? Also, do I need to declare used books, and what value should I put down?",
+      "ref_zh": "你好，我想把这箱儿童书寄给国内的父母。一点都不急，最便宜的寄法是什么？有没有海运，大概要多久？另外旧书需要申报吗？价值该填多少？"
+    },
+    {
+      "q": "你寄的包裹物流显示「已送达」，但家人说没收到。去邮局柜台说明情况并要求调查。",
+      "ref": "Hi, I sent a parcel to Shanghai two weeks ago. The tracking says it was delivered on Monday, but my mum says she never got it. I've brought the receipt with the tracking number. Could you look into where it was actually delivered? And if it's lost, I'd like to make a claim. I did pay for insurance.",
+      "ref_zh": "你好，我两周前寄了一个包裹到上海。物流显示周一已经送达，但我妈说根本没收到。我带了有跟踪号码的收据。能帮我查一下到底送到哪里了吗？如果丢了，我想申请索赔，我是买了保价的。"
+    }
+  ],
+  "words": [
+    {
+      "w": "airmail",
+      "ipa": "/ˈermeɪl/",
+      "zh": "航空邮寄",
+      "ex": "Airmail is slower than express, but much cheaper."
+    },
+    {
+      "w": "customs",
+      "ipa": "/ˈkʌstəmz/",
+      "zh": "海关",
+      "ex": "My package has been stuck at customs for a week."
+    },
+    {
+      "w": "declaration",
+      "ipa": "/ˌdekləˈreɪʃən/",
+      "zh": "申报（单）",
+      "ex": "Fill in the declaration form and sign at the bottom."
+    },
+    {
+      "w": "value",
+      "ipa": "/ˈvæljuː/",
+      "zh": "价值，价格",
+      "ex": "What's the total value of the items in the box?"
+    },
+    {
+      "w": "cover (v.)",
+      "ipa": "/ˈkʌvər/",
+      "zh": "（保险）承保，赔付",
+      "ex": "Does the insurance cover damage during delivery?",
+      "tts_w": "cover"
+    },
+    {
+      "w": "battery",
+      "ipa": "/ˈbætəri/",
+      "zh": "电池",
+      "ex": "The remote control needs new batteries."
+    },
+    {
+      "w": "power bank",
+      "ipa": "/ˈpaʊər bæŋk/",
+      "zh": "充电宝",
+      "ex": "Power banks must go in your hand luggage."
+    },
+    {
+      "w": "reseal",
+      "ipa": "/ˌriːˈsiːl/",
+      "zh": "重新封好",
+      "ex": "Please reseal the bag after you take out the snacks."
+    },
+    {
+      "w": "receipt",
+      "ipa": "/rɪˈsiːt/",
+      "zh": "收据",
+      "ex": "Keep the receipt in case you need to return it."
+    },
+    {
+      "w": "tracking number",
+      "ipa": "/ˈtrækɪŋ ˈnʌmbər/",
+      "zh": "快递跟踪号",
+      "ex": "The seller emailed me the tracking number this morning."
+    }
+  ]
+}

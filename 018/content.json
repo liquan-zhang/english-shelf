@@ -1,0 +1,186 @@
+{
+  "id": "018",
+  "title": "Presenting Bad News Upward",
+  "meta": "B2 · 约 280 词 · 场景：向上汇报",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Bad News Gets Worse with Age",
+      "paragraphs": [
+        [
+          "Bad news is like milk; it does not get better if you leave it in the fridge.",
+          "A project that is two weeks late on Monday is still fixable.",
+          "The same delay, ==revealed== the day before launch, becomes a crisis that pulls in three directors."
+        ],
+        [
+          "Most people delay bad news for a kind reason.",
+          "They hope to fix the problem quietly and never have to mention it.",
+          "Sometimes that works, but when it does not, your manager learns two things at once, that the project is in trouble and that you __kept it from them__."
+        ],
+        [
+          "**Managers can handle bad news; what they cannot handle is surprise.**",
+          "Early warning gives them time to move people, adjust ==commitments==, or warn their own boss.",
+          "In that sense, raising a problem early is not ==conceding== failure; it is giving them options."
+        ]
+      ],
+      "heading_zh": "1. 坏消息越放越坏",
+      "paragraphs_zh": [
+        [
+          "坏消息就像牛奶，放在冰箱里不会变好。",
+          "一个项目周一时延期两周，还有救。",
+          "同样的延期，拖到上线前一天才说出来，就成了要拉上三个总监的危机。"
+        ],
+        [
+          "大多数人拖着不报坏消息，出发点是好的。",
+          "他们希望悄悄把问题解决，永远不用提起。",
+          "有时候这样确实行得通，但一旦行不通，你的经理会同时得知两件事：项目出了问题，而且你一直瞒着他。"
+        ],
+        [
+          "经理能接受坏消息，他们接受不了的是意外。",
+          "提前预警能让他们有时间调人、调整承诺，或者给自己的老板打个预防针。",
+          "从这个意义上说，早点暴露问题不是认输，而是给他们留出选择的余地。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Headline, Impact, Options",
+      "paragraphs": [
+        [
+          "Open with the headline, not the history.",
+          "\"The payment migration will miss the end of the month by about two weeks.\"",
+          "If you start with a long story, your manager spends the whole time __bracing for__ the bad part."
+        ],
+        [
+          "Then explain the impact in their terms.",
+          "Which customers, which teams, and which promises are affected?",
+          "Keep the cause short and ==factual==, and avoid blaming another team, even if it is true."
+        ],
+        [
+          "Most importantly, bring options, with your ==recommendation==.",
+          "\"We can cut the refund feature and ship on time, or keep it and slip two weeks; I'd suggest cutting it.\"",
+          "**Never bring a problem upward without at least one way out.**"
+        ],
+        [
+          "End with exactly what you need, whether it is a decision, extra people, or help __managing expectations__ with another team.",
+          "Delivered this way, bad news can actually ==strengthen== your manager's trust in you."
+        ]
+      ],
+      "heading_zh": "2. 结论、影响、选项",
+      "paragraphs_zh": [
+        [
+          "开口先讲结论，不讲来龙去脉。",
+          "「支付迁移会比月底的节点晚两周左右。」",
+          "如果你从一个很长的故事讲起，你的经理整个过程都在提心吊胆地等坏消息。"
+        ],
+        [
+          "然后用他们关心的维度讲清影响。",
+          "影响到哪些客户、哪些团队、哪些承诺？",
+          "原因要讲得简短、客观，别甩锅给其他团队，哪怕确实是他们的问题。"
+        ],
+        [
+          "最重要的是，带着选项来，并给出你的建议。",
+          "「我们可以砍掉退款功能按时上线，或者保留它推迟两周；我建议砍掉。」",
+          "永远不要只把问题往上抛，至少要带一条出路。"
+        ],
+        [
+          "最后讲清楚你具体需要什么，不管是一个决定、更多人手，还是帮忙跟另一个团队管理预期。",
+          "用这种方式传达，坏消息反而能加深经理对你的信任。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者为什么把坏消息比作牛奶？",
+      "a": "坏消息放着不会变好，越晚说越严重，早说还能补救，晚说就成了危机。"
+    },
+    {
+      "q": "作者说管理者真正无法接受的是什么？",
+      "a": "不是坏消息本身，而是意外；提前预警能给他们调整人力、承诺和向上沟通的时间。"
+    },
+    {
+      "q": "向上汇报坏消息的结构是什么？",
+      "a": "先说结论；用对方的语言讲影响，原因简短客观不甩锅；带着选项和自己的建议；最后明确需要什么支持。"
+    }
+  ],
+  "dictation": [
+    "Managers can handle bad news; what they cannot handle is surprise.",
+    "Never bring a problem upward without at least one way out.",
+    "Open with the headline, not the history.",
+    "Bad news is like milk; it does not get better if you leave it in the fridge."
+  ],
+  "shadow": {
+    "text": "Most importantly, bring options, with your recommendation. \"We can cut the refund feature and ship on time, or keep it and slip two weeks; I'd suggest cutting it.\"",
+    "marked": "Most <b>importantly</b>, / bring <b>options</b>, / with your <b>recommendation</b>. //<br>\"We can <b>cut</b> the refund feature / and ship on <b>time</b>, / or <b>keep</b> it / and slip <b>two</b> weeks; // I'd suggest <b>cutting</b> it.\" //"
+  },
+  "prompts": [
+    {
+      "q": "你发现团队负责的数据迁移会比计划晚三周，原因是上游接口变更。用 30 秒向你的总监汇报：结论、影响、选项和建议。",
+      "ref": "I need to flag a risk early. The data migration is going to be about three weeks late. The upstream API changed last week, and we have to rewrite part of the sync logic. The main impact is on the finance reports, which depend on the new tables. We have two options. We can move only the finance tables first and hit the date, or move everything three weeks later. I'd recommend the first option.",
+      "ref_zh": "我需要提前同步一个风险。数据迁移会晚三周左右。上游 API 上周改了，我们得重写一部分同步逻辑。主要影响的是财务报表，它们依赖新表。我们有两个选项。可以先只迁财务相关的表，赶上原定日期；或者三周后整体迁移。我建议选第一个。"
+    },
+    {
+      "q": "线上出了一个影响部分用户的故障，已经止血。用 30 秒向上级简短汇报，并说明你需要他帮什么。",
+      "ref": "Quick heads-up on this morning's incident. For about forty minutes, roughly five percent of users couldn't log in. It's fixed now, and we've rolled back the change that caused it. We'll have a full write-up by Thursday. The one thing I need from you is help with the customer success team, since a few large clients noticed, and I think the message should come from your level.",
+      "ref_zh": "同步一下今天上午的事故。大约四十分钟里，约百分之五的用户登录不了。现在已经修好了，引发问题的改动也已经回滚。周四前我们会出完整的复盘报告。我唯一需要你帮忙的是客户成功团队那边，因为有几个大客户注意到了，我觉得这个口径应该由你这个层级来发。"
+    }
+  ],
+  "words": [
+    {
+      "w": "reveal",
+      "ipa": "/rɪˈviːl/",
+      "zh": "揭露、透露",
+      "ex": "The audit revealed three services still using the old password hash."
+    },
+    {
+      "w": "commitment",
+      "ipa": "/kəˈmɪtmənt/",
+      "zh": "承诺、已答应的事",
+      "ex": "We can't take this on without dropping another commitment."
+    },
+    {
+      "w": "concede",
+      "ipa": "/kənˈsiːd/",
+      "zh": "承认（失败、观点）",
+      "ex": "I'll concede that the old design was simpler to operate."
+    },
+    {
+      "w": "factual",
+      "ipa": "/ˈfæktʃuəl/",
+      "zh": "基于事实的、客观的",
+      "ex": "Keep the postmortem factual and avoid naming individuals."
+    },
+    {
+      "w": "recommendation",
+      "ipa": "/ˌrekəmenˈdeɪʃən/",
+      "zh": "建议、推荐方案",
+      "ex": "My recommendation is to delay the launch by one week."
+    },
+    {
+      "w": "strengthen",
+      "ipa": "/ˈstreŋkθən/",
+      "zh": "加强",
+      "ex": "The new tests strengthen our confidence in the release."
+    },
+    {
+      "w": "brace for",
+      "ipa": "/breɪs fɔːr/",
+      "zh": "做好（应对坏事的）准备",
+      "ex": "We're bracing for a traffic spike when the campaign goes live."
+    },
+    {
+      "w": "slip (v.)",
+      "ipa": "/slɪp/",
+      "zh": "（进度）延误",
+      "ex": "If the vendor is late, our launch will slip too.",
+      "tts_w": "slip"
+    },
+    {
+      "w": "crisis",
+      "ipa": "/ˈkraɪsɪs/",
+      "zh": "危机",
+      "ex": "We turned a small bug into a crisis by ignoring it for a month."
+    }
+  ]
+}

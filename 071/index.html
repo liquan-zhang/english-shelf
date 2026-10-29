@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Saying What You Will Not Do This Quarter · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "071", "title": "Saying What You Will Not Do This Quarter", "meta": "B2 · 约 280 词 · 场景：季度规划", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. A Plan Is Mostly No", "heading_zh": "1. 计划的大半是说不", "rows": [[{"id": "s0_0_0", "md": "Every quarterly plan looks reasonable when it lists what the team will build.", "text": "Every quarterly plan looks reasonable when it lists what the team will build.", "zh": "每份季度规划在列出团队要做什么的时候，看起来都挺合理。", "sp": null}, {"id": "s0_0_1", "md": "The trouble starts in week three, when a new request arrives and nobody knows whether it fits.", "text": "The trouble starts in week three, when a new request arrives and nobody knows whether it fits.", "zh": "麻烦从第三周开始，新需求来了，没人知道它该不该塞进去。", "sp": null}, {"id": "s0_0_2", "md": "Without a clear boundary, everything quietly becomes a priority, and the team ends the quarter with ten things half done.", "text": "Without a clear boundary, everything quietly becomes a priority, and the team ends the quarter with ten things half done.", "zh": "没有清晰的边界，所有事都会悄悄变成优先级，团队到季度末手里是十件做了一半的事。", "sp": null}], [{"id": "s0_1_0", "md": "**A plan only means something when it also says what you are not doing.**", "text": "A plan only means something when it also says what you are not doing.", "zh": "一份计划只有同时写明不做什么，才有意义。", "sp": null}, {"id": "s0_1_1", "md": "That list is uncomfortable to write, because every item on it belongs to someone who cares about it.", "text": "That list is uncomfortable to write, because every item on it belongs to someone who cares about it.", "zh": "这份清单写起来很难受，因为上面每一项背后都有一个在乎它的人。", "sp": null}, {"id": "s0_1_2", "md": "But leaving it ==implicit== does not avoid the conflict; it only moves the conflict to a worse moment, usually the quarterly review.", "text": "But leaving it implicit does not avoid the conflict; it only moves the conflict to a worse moment, usually the quarterly review.", "zh": "但不明说并不能回避冲突；它只是把冲突挪到一个更糟的时间点，通常是季度复盘。", "sp": null}], [{"id": "s0_2_0", "md": "An ==explicit== not-doing list protects the team.", "text": "An explicit not-doing list protects the team.", "zh": "一份明确的不做清单能保护团队。", "sp": null}, {"id": "s0_2_1", "md": "When someone asks for something new, you can point to the list and ask what they would like to __swap out__.", "text": "When someone asks for something new, you can point to the list and ask what they would like to swap out.", "zh": "有人提新需求时，你可以指着清单问他想拿哪一项来换。", "sp": null}, {"id": "s0_2_2", "md": "The conversation shifts from pressure to ==negotiation==, which is a much healthier place to be.", "text": "The conversation shifts from pressure to negotiation, which is a much healthier place to be.", "zh": "对话就从施压变成了谈判，这是一个健康得多的状态。", "sp": null}]]}, {"heading": "2. Saying Not Now Without Burning Bridges", "heading_zh": "2. 说「现在不做」又不伤关系", "rows": [[{"id": "s1_0_0", "md": "Don't let people find out from a slide in a big meeting.", "text": "Don't let people find out from a slide in a big meeting.", "zh": "别让人在大会上从一页 PPT 里才知道。", "sp": null}, {"id": "s1_0_1", "md": "__Reach out__ to the owners of the biggest ==deprioritized== items before the plan is published.", "text": "Reach out to the owners of the biggest deprioritized items before the plan is published.", "zh": "在计划发布之前，先私下找那些被降优先级的大项负责人聊一聊。", "sp": null}, {"id": "s1_0_2", "md": "A short private call beats a public surprise every time.", "text": "A short private call beats a public surprise every time.", "zh": "一通简短的私聊，永远好过当众给人一个意外。", "sp": null}], [{"id": "s1_1_0", "md": "Be specific about why the item didn't make the cut.", "text": "Be specific about why the item didn't make the cut.", "zh": "要具体说明这一项为什么没排进来。", "sp": null}, {"id": "s1_1_1", "md": "\"We're not doing the export feature this quarter because the latency work affects every customer, and we only have two backend engineers.\"", "text": "\"We're not doing the export feature this quarter because the latency work affects every customer, and we only have two backend engineers.\"", "zh": "「这个季度不做导出功能，是因为延迟优化影响所有客户，而我们只有两个后端工程师。」", "sp": null}, {"id": "s1_1_2", "md": "A reason tied to real ==constraints== is much easier to accept than a reason that sounds like personal taste.", "text": "A reason tied to real constraints is much easier to accept than a reason that sounds like personal taste.", "zh": "跟真实约束挂钩的理由，比听起来像个人喜好的理由容易接受得多。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, tell them what would change your answer.", "text": "Finally, tell them what would change your answer.", "zh": "最后，告诉他们什么情况下你的答案会变。", "sp": null}, {"id": "s1_2_1", "md": "\"If the latency work finishes early, export is first in line.\"", "text": "\"If the latency work finishes early, export is first in line.\"", "zh": "「如果延迟优化提前做完，导出功能第一个排上。」", "sp": null}, {"id": "s1_2_2", "md": "**Not now, with a condition, sounds very different from never.**", "text": "Not now, with a condition, sounds very different from never.", "zh": "带条件的「现在不做」，跟「永远不做」听起来完全不一样。", "sp": null}, {"id": "s1_2_3", "md": "It keeps the door open and keeps the ==stakeholder== on your side for the next round of planning.", "text": "It keeps the door open and keeps the stakeholder on your side for the next round of planning.", "zh": "它让门一直开着，也让这位相关方在下一轮规划时还站在你这边。", "sp": null}]]}], "gist": [{"q": "为什么季度计划必须写出“不做什么”？", "a": "否则新需求来了没人知道是否在范围内，所有事都悄悄变成优先级；不写只是把冲突推迟到更糟的时刻。"}, {"q": "明确的“不做清单”对团队有什么用？", "a": "有人提新需求时可以指着清单问要换掉哪一项，把施压变成协商。"}, {"q": "怎样告诉别人“这季度不做”而不伤关系？", "a": "发布前私下先沟通；用真实约束说明原因；告诉对方什么条件下会改变答案，“暂不做+条件”不同于“永远不做”。"}], "dictation": [{"id": "s0_1_0", "text": "A plan only means something when it also says what you are not doing."}, {"id": "s0_2_1", "text": "When someone asks for something new, you can point to the list and ask what they would like to swap out."}, {"id": "s1_1_2", "text": "A reason tied to real constraints is much easier to accept than a reason that sounds like personal taste."}, {"id": "s1_2_2", "text": "Not now, with a condition, sounds very different from never."}], "shadow": {"text": "Finally, tell them what would change your answer. \"If the latency work finishes early, export is first in line.\" Not now, with a condition, sounds very different from never.", "marked": "<b>Finally</b>, / tell them what would <b>change</b> your answer. //<br>\"If the latency work finishes <b>early</b>, / export is <b>first</b> in line.\" //<br>Not <b>now</b>, / with a <b>condition</b>, / sounds very <b>different</b> / from <b>never</b>. //"}, "prompts": [{"q": "运营负责人很想要的“批量导入”这季度排不上。用 30 秒在一对一里告诉她：不做的原因和什么情况下会做。", "ref": "I wanted to tell you this before the plan goes out. Bulk import didn't make it into this quarter. The main reason is that we're putting both backend engineers on the payment latency issue, which affects every customer. I know that's disappointing. If the latency work wraps up early, bulk import is the first thing we pick up, and I'll let you know by mid-quarter either way.", "ref_zh": "我想在计划发出去之前先跟你说一声。批量导入没排进这个季度。主要原因是我们要把两个后端工程师都放到支付延迟的问题上，这个影响所有客户。我知道这挺让人失望的。如果延迟优化提前收尾，批量导入就是我们第一个接的事，不管怎样，季度中我都会给你个准信。", "id": "ref0"}, {"q": "季度中一个兄弟团队临时塞来新需求。用 30 秒指着“不做清单”回应，把讨论变成取舍。", "ref": "Thanks for bringing this to us early. As you can see in our plan, we committed to three projects, and we listed what we're not doing to make room for them. I'm open to taking this on, but something has to come out. Looking at the list, would you rather we delay the search improvements or the reporting work? Let's agree on that first.", "ref_zh": "谢谢你这么早就来找我们。你也看到了，我们的计划里承诺了三个项目，也列了为了腾出精力不做哪些事。我愿意接这个需求，但总得拿掉点什么。看看这份清单，你更愿意我们推迟搜索优化，还是报表那块？我们先把这个对齐。", "id": "ref1"}], "words": [{"w": "implicit", "ipa": "/ɪmˈplɪsɪt/", "zh": "隐含的、未明说的", "ex": "There was an implicit expectation that we'd support the old version too.", "id": "w0"}, {"w": "explicit", "ipa": "/ɪkˈsplɪsɪt/", "zh": "明确的、明说的", "ex": "Let's make the scope explicit in the doc so nobody is surprised.", "id": "w1"}, {"w": "negotiation", "ipa": "/nɪˌɡoʊʃiˈeɪʃən/", "zh": "协商、谈判", "ex": "Scope is always a negotiation between product and engineering.", "id": "w2"}, {"w": "deprioritize", "ipa": "/ˌdiːpraɪˈɔːrəˌtaɪz/", "zh": "降低优先级", "ex": "We deprioritized dark mode to focus on crash fixes.", "id": "w3"}, {"w": "constraint", "ipa": "/kənˈstreɪnt/", "zh": "限制、约束条件", "ex": "Our main constraint is that only two people know this codebase.", "id": "w4"}, {"w": "stakeholder", "ipa": "/ˈsteɪkˌhoʊldər/", "zh": "利益相关方", "ex": "Let's update the key stakeholders before the plan goes public.", "id": "w5"}, {"w": "boundary", "ipa": "/ˈbaʊndəri/", "zh": "边界、界限", "ex": "We need a clear boundary between what our team owns and what the platform team owns.", "id": "w6"}, {"w": "swap out", "ipa": "/swɑːp aʊt/", "zh": "换掉、替换出去", "ex": "If you want this feature, which project should we swap out?", "id": "w7"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. A Plan Is Mostly No", "zh": "1. 计划的大半是说不", "start": 0.0, "end": 2.232, "words": [[0.105, 0.329], [0.684, 0.724], [0.737, 1.039], [1.053, 1.158], [1.171, 1.513], [1.526, 1.842]]}, {"kind": "s", "id": "s0_0_0", "md": "Every quarterly plan looks reasonable when it lists what the team will build.", "zh": "每份季度规划在列出团队要做什么的时候，看起来都挺合理。", "sp": null, "gap": false, "start": 2.232, "end": 6.888, "words": [[2.337, 2.653], [2.666, 3.179], [3.193, 3.627], [3.64, 3.89], [3.903, 4.561], [4.758, 4.89], [4.903, 5.048], [5.061, 5.364], [5.377, 5.495], [5.508, 5.6], [5.614, 5.929], [5.943, 6.087], [6.1, 6.495]]}, {"kind": "s", "id": "s0_0_1", "md": "The trouble starts in week three, when a new request arrives and nobody knows whether it fits.", "zh": "麻烦从第三周开始，新需求来了，没人知道它该不该塞进去。", "sp": null, "gap": false, "start": 6.888, "end": 13.056, "words": [[7.006, 7.059], [7.072, 7.427], [7.441, 7.809], [7.822, 7.927], [7.941, 8.164], [8.177, 8.664], [9.006, 9.125], [9.138, 9.177], [9.191, 9.493], [9.506, 9.98], [9.993, 10.612], [10.796, 10.98], [10.993, 11.414], [11.427, 11.704], [11.717, 12.006], [12.02, 12.112], [12.125, 12.664]]}, {"kind": "s", "id": "s0_0_2", "md": "Without a clear boundary, everything quietly becomes a priority, and the team ends the quarter with ten things half done.", "zh": "没有清晰的边界，所有事都会悄悄变成优先级，团队到季度末手里是十件做了一半的事。", "sp": null, "gap": false, "start": 13.056, "end": 20.688, "words": [[13.174, 13.477], [13.49, 13.543], [13.556, 13.872], [13.885, 14.464], [14.767, 15.24], [15.253, 15.872], [15.885, 16.267], [16.28, 16.332], [16.345, 17.043], [17.372, 17.464], [17.477, 17.569], [17.582, 17.99], [18.161, 18.306], [18.319, 18.411], [18.424, 18.832], [18.845, 19.003], [19.017, 19.28], [19.293, 19.635], [19.648, 19.951], [19.964, 20.306]]}, {"kind": "s", "id": "s0_1_0", "md": "**A plan only means something when it also says what you are not doing.**", "zh": "一份计划只有同时写明不做什么，才有意义。", "sp": null, "gap": true, "start": 20.688, "end": 24.72, "words": [[20.793, 20.859], [20.872, 21.214], [21.227, 21.517], [21.53, 21.82], [21.833, 22.306], [22.477, 22.596], [22.609, 22.701], [22.714, 23.07], [23.083, 23.359], [23.372, 23.517], [23.53, 23.622], [23.635, 23.701], [23.714, 23.977], [23.991, 24.32]]}, {"kind": "s", "id": "s0_1_1", "md": "That list is uncomfortable to write, because every item on it belongs to someone who cares about it.", "zh": "这份清单写起来很难受，因为上面每一项背后都有一个在乎它的人。", "sp": null, "gap": false, "start": 24.72, "end": 30.984, "words": [[24.838, 25.023], [25.036, 25.338], [25.352, 25.509], [25.523, 26.391], [26.404, 26.496], [26.509, 26.878], [27.194, 27.575], [27.681, 28.023], [28.036, 28.312], [28.325, 28.483], [28.496, 28.575], [28.588, 29.075], [29.088, 29.194], [29.207, 29.628], [29.641, 29.773], [29.786, 30.088], [30.102, 30.417], [30.431, 30.588]]}, {"kind": "s", "id": "s0_1_2", "md": "But leaving it ==implicit== does not avoid the conflict; it only moves the conflict to a worse moment, usually the quarterly review.", "zh": "但不明说并不能回避冲突；它只是把冲突挪到一个更糟的时间点，通常是季度复盘。", "sp": null, "gap": false, "start": 30.984, "end": 39.096, "words": [[31.102, 31.234], [31.247, 31.576], [31.589, 31.655], [31.668, 32.247], [32.3, 32.471], [32.484, 32.8], [32.813, 33.168], [33.181, 33.26], [33.273, 33.826], [34.168, 34.247], [34.26, 34.537], [34.55, 34.852], [34.866, 34.971], [34.984, 35.576], [35.589, 35.747], [35.76, 35.852], [35.866, 36.195], [36.208, 36.616], [37.116, 37.576], [37.589, 37.708], [37.721, 38.247], [38.26, 38.695]]}, {"kind": "s", "id": "s0_2_0", "md": "An ==explicit== not-doing list protects the team.", "zh": "一份明确的不做清单能保护团队。", "sp": null, "gap": true, "start": 39.096, "end": 42.192, "words": [[39.201, 39.267], [39.28, 39.912], [39.925, 40.635], [40.649, 40.872], [40.885, 41.346], [41.359, 41.451], [41.464, 41.793]]}, {"kind": "s", "id": "s0_2_1", "md": "When someone asks for something new, you can point to the list and ask what they would like to __swap out__.", "zh": "有人提新需求时，你可以指着清单问他想拿哪一项来换。", "sp": null, "gap": false, "start": 42.192, "end": 47.712, "words": [[42.297, 42.403], [42.416, 42.758], [42.771, 43.047], [43.06, 43.192], [43.205, 43.6], [43.613, 43.876], [44.153, 44.231], [44.245, 44.363], [44.376, 44.639], [44.653, 44.718], [44.731, 44.837], [44.85, 45.258], [45.574, 45.705], [45.718, 46.008], [46.021, 46.126], [46.139, 46.218], [46.231, 46.363], [46.376, 46.547], [46.56, 46.639], [46.653, 47.008], [47.021, 47.324]]}, {"kind": "s", "id": "s0_2_2", "md": "The conversation shifts from pressure to ==negotiation==, which is a much healthier place to be.", "zh": "对话就从施压变成了谈判，这是一个健康得多的状态。", "sp": null, "gap": false, "start": 47.712, "end": 53.328, "words": [[47.83, 47.883], [47.896, 48.673], [48.686, 49.12], [49.133, 49.344], [49.357, 49.83], [49.844, 49.975], [49.988, 50.909], [51.291, 51.409], [51.423, 51.528], [51.541, 51.58], [51.594, 51.857], [51.87, 52.291], [52.304, 52.58], [52.594, 52.686], [52.699, 52.936]]}, {"kind": "h", "id": "h1", "md": "2. Saying Not Now Without Burning Bridges", "zh": "2. 说「现在不做」又不伤关系", "start": 53.328, "end": 56.736, "words": [[53.446, 53.696], [54.025, 54.394], [54.407, 54.67], [54.683, 55.052], [55.065, 55.486], [55.499, 55.802], [55.815, 56.341]]}, {"kind": "s", "id": "s1_0_0", "md": "Don't let people find out from a slide in a big meeting.", "zh": "别让人在大会上从一页 PPT 里才知道。", "sp": null, "gap": false, "start": 56.736, "end": 60.0, "words": [[56.841, 56.986], [56.999, 57.144], [57.157, 57.486], [57.499, 57.854], [57.868, 58.025], [58.039, 58.197], [58.21, 58.262], [58.275, 58.762], [58.775, 58.907], [58.92, 58.986], [58.999, 59.236], [59.249, 59.604]]}, {"kind": "s", "id": "s1_0_1", "md": "__Reach out__ to the owners of the biggest ==deprioritized== items before the plan is published.", "zh": "在计划发布之前，先私下找那些被降优先级的大项负责人聊一聊。", "sp": null, "gap": false, "start": 60.0, "end": 65.472, "words": [[60.105, 60.355], [60.368, 60.513], [60.526, 60.605], [60.618, 60.763], [60.776, 61.197], [61.211, 61.289], [61.303, 61.408], [61.487, 62.039], [62.053, 63.132], [63.145, 63.539], [63.553, 63.934], [63.947, 64.026], [64.039, 64.355], [64.368, 64.461], [64.474, 65.092]]}, {"kind": "s", "id": "s1_0_2", "md": "A short private call beats a public surprise every time.", "zh": "一通简短的私聊，永远好过当众给人一个意外。", "sp": null, "gap": false, "start": 65.472, "end": 69.12, "words": [[65.577, 65.617], [65.63, 65.919], [65.933, 66.314], [66.327, 66.617], [66.63, 66.906], [66.919, 66.972], [66.985, 67.34], [67.354, 67.998], [68.169, 68.367], [68.38, 68.735]]}, {"kind": "s", "id": "s1_1_0", "md": "Be specific about why the item didn't make the cut.", "zh": "要具体说明这一项为什么没排进来。", "sp": null, "gap": true, "start": 69.12, "end": 72.36, "words": [[69.225, 69.304], [69.317, 69.883], [69.896, 70.186], [70.199, 70.409], [70.423, 70.567], [70.581, 70.936], [71.067, 71.317], [71.331, 71.488], [71.502, 71.581], [71.594, 71.975]]}, {"kind": "s", "id": "s1_1_1", "md": "\"We're not doing the export feature this quarter because the latency work affects every customer, and we only have two backend engineers.\"", "zh": "「这个季度不做导出功能，是因为延迟优化影响所有客户，而我们只有两个后端工程师。」", "sp": null, "gap": false, "start": 72.36, "end": 80.76, "words": [[72.557, 72.61], [72.61, 72.821], [72.834, 73.084], [73.097, 73.202], [73.215, 73.715], [73.728, 74.071], [74.084, 74.242], [74.255, 74.65], [74.768, 75.044], [75.057, 75.176], [75.189, 75.702], [75.715, 76.018], [76.031, 76.492], [76.649, 76.926], [76.939, 77.478], [77.939, 78.005], [78.018, 78.163], [78.176, 78.452], [78.465, 78.728], [78.742, 79.031], [79.044, 79.518], [79.531, 80.242]]}, {"kind": "s", "id": "s1_1_2", "md": "A reason tied to real ==constraints== is much easier to accept than a reason that sounds like personal taste.", "zh": "跟真实约束挂钩的理由，比听起来像个人喜好的理由容易接受得多。", "sp": null, "gap": false, "start": 80.76, "end": 87.648, "words": [[80.865, 80.918], [80.931, 81.339], [81.352, 81.76], [81.773, 81.905], [81.918, 82.194], [82.207, 82.826], [82.944, 83.089], [83.102, 83.431], [83.549, 83.97], [83.984, 84.115], [84.128, 84.628], [84.707, 84.852], [84.865, 84.918], [84.931, 85.418], [85.549, 85.694], [85.707, 86.115], [86.128, 86.286], [86.299, 86.773], [86.786, 87.26]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, tell them what would change your answer.", "zh": "最后，告诉他们什么情况下你的答案会变。", "sp": null, "gap": true, "start": 87.648, "end": 90.36, "words": [[87.819, 88.24], [88.556, 88.714], [88.727, 88.845], [88.859, 88.977], [88.99, 89.122], [89.135, 89.411], [89.424, 89.543], [89.556, 89.964]]}, {"kind": "s", "id": "s1_2_1", "md": "\"If the latency work finishes early, export is first in line.\"", "zh": "「如果延迟优化提前做完，导出功能第一个排上。」", "sp": null, "gap": false, "start": 90.36, "end": 94.632, "words": [[90.544, 90.597], [90.597, 90.689], [90.702, 91.189], [91.202, 91.465], [91.478, 91.992], [92.005, 92.452], [92.689, 93.189], [93.202, 93.307], [93.321, 93.742], [93.755, 93.86], [93.873, 94.242]]}, {"kind": "s", "id": "s1_2_2", "md": "**Not now, with a condition, sounds very different from never.**", "zh": "带条件的「现在不做」，跟「永远不做」听起来完全不一样。", "sp": null, "gap": false, "start": 94.632, "end": 98.76, "words": [[94.737, 94.935], [94.948, 95.277], [95.671, 95.803], [95.816, 95.869], [95.882, 96.421], [96.79, 97.079], [97.093, 97.369], [97.382, 97.75], [97.764, 97.948], [97.961, 98.382]]}, {"kind": "s", "id": "s1_2_3", "md": "It keeps the door open and keeps the ==stakeholder== on your side for the next round of planning.", "zh": "它让门一直开着，也让这位相关方在下一轮规划时还站在你这边。", "sp": null, "gap": false, "start": 98.76, "end": 103.8, "words": [[98.865, 98.971], [98.984, 99.273], [99.286, 99.405], [99.418, 99.734], [99.747, 100.102], [100.181, 100.313], [100.326, 100.628], [100.642, 100.747], [100.76, 101.392], [101.405, 101.51], [101.523, 101.681], [101.694, 102.089], [102.102, 102.194], [102.207, 102.3], [102.313, 102.668], [102.681, 102.878], [102.892, 102.957], [102.971, 103.418]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

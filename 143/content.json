@@ -1,0 +1,249 @@
+{
+  "id": "143",
+  "type": "dialogue",
+  "title": "Joining a Gym",
+  "meta": "B2 · 约 320 词 · 场景：健身房办卡与会员条款",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Gym Consultant",
+      "name_zh": "健身顾问",
+      "voice": "en-GB-SoniaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Asking About Memberships",
+      "heading_zh": "1. 咨询会员卡",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Hi there, welcome. Are you interested in a membership, or just having a look around?",
+          "zh": "你好，欢迎。您是想办会员，还是先随便看看？"
+        },
+        {
+          "sp": "A",
+          "en": "I'm thinking of joining. __What kind of__ memberships do you offer?",
+          "zh": "我在考虑办卡。你们有哪几种会员？"
+        },
+        {
+          "sp": "B",
+          "en": "We have a full membership, which gives you access anytime, and an ==off-peak== one for weekdays before five.",
+          "zh": "有全时段会员，随时都能来；还有非高峰会员，工作日五点前可以用。"
+        },
+        {
+          "sp": "A",
+          "en": "I usually work out early in the morning or late at night. Are you open twenty-four hours?",
+          "zh": "我一般是早上很早或者晚上很晚去练。你们是二十四小时开的吗？"
+        },
+        {
+          "sp": "B",
+          "en": "We are, seven days a week. The full membership is one hundred and twenty dollars a month.",
+          "zh": "是的，一周七天都开。全时段会员每月一百二十块。"
+        },
+        {
+          "sp": "A",
+          "en": "**Is that with a contract, or can I pay month to month?**",
+          "zh": "这个要签合约吗，还是可以按月付？"
+        },
+        {
+          "sp": "B",
+          "en": "There's a twelve-month ==contract==, or you can go month to month for twenty dollars more.",
+          "zh": "可以签十二个月的合约，也可以按月付，每月多二十块。"
+        },
+        {
+          "sp": "A",
+          "en": "And is there a joining ==fee==?",
+          "zh": "那有入会费吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Normally it's ninety-nine dollars, but we're ==waiving== it for anyone who signs up this week.",
+          "zh": "平时是九十九块，不过这周办卡的都免掉。"
+        },
+        {
+          "sp": "A",
+          "en": "Good to know. Could I __try it out__ before I decide? Maybe a day pass?",
+          "zh": "好的。我能先试一下再决定吗？比如办个单日体验？"
+        },
+        {
+          "sp": "B",
+          "en": "Absolutely. I can give you a free three-day pass right now.",
+          "zh": "当然可以。我现在就给您一张三天免费体验卡。"
+        }
+      ]
+    },
+    {
+      "heading": "2. Reading the Fine Print",
+      "heading_zh": "2. 问清条款细节",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "I tried it, and I like it. But before I sign, I have a couple of questions.",
+          "zh": "我试过了，挺喜欢的。不过签之前我有几个问题。"
+        },
+        {
+          "sp": "B",
+          "en": "Of course, go ahead.",
+          "zh": "当然，您问吧。"
+        },
+        {
+          "sp": "A",
+          "en": "**I travel for work quite a lot. Can I freeze my membership if I'm away for a few weeks?**",
+          "zh": "我经常出差。如果我离开几周，能冻结会员吗？"
+        },
+        {
+          "sp": "B",
+          "en": "Yes, you can ==freeze== it for up to two months a year. It's ten dollars a month while it's frozen.",
+          "zh": "可以，每年最多冻结两个月。冻结期间每月收十块。"
+        },
+        {
+          "sp": "A",
+          "en": "Okay. And what if I need to ==cancel== before the twelve months are up?",
+          "zh": "好的。那如果十二个月没到我就要退卡呢？"
+        },
+        {
+          "sp": "B",
+          "en": "You'd need to give thirty days' notice and pay a ==termination== fee of two hundred dollars.",
+          "zh": "需要提前三十天通知，并付两百块的解约费。"
+        },
+        {
+          "sp": "A",
+          "en": "Hmm, that's quite steep. __Is there any flexibility__ on that if I'm ==relocating== overseas?",
+          "zh": "嗯，这有点贵。如果我是搬去国外，这个能通融吗？"
+        },
+        {
+          "sp": "B",
+          "en": "If you show us proof of relocation, we'll waive it.",
+          "zh": "如果您能提供搬迁证明，我们就免掉。"
+        },
+        {
+          "sp": "A",
+          "en": "That's fair. I'm also interested in personal training. How does that work?",
+          "zh": "这个合理。我对私教课也有兴趣，是怎么安排的？"
+        },
+        {
+          "sp": "B",
+          "en": "Sessions are ninety dollars each, or ten for eight hundred. The first one is a free ==assessment==.",
+          "zh": "单节九十块，或者十节八百。第一节是免费的体能评估。"
+        },
+        {
+          "sp": "A",
+          "en": "**Great. Let's start with the free session and see how it goes.**",
+          "zh": "好的。那就先上免费的那节，看看效果。"
+        },
+        {
+          "sp": "B",
+          "en": "Perfect. I'll get your forms ready and book you in with a trainer.",
+          "zh": "好的。我把表格准备好，再帮您约一位教练。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "全时段会员多少钱？按月付和签合约有什么区别？",
+      "a": "每月一百二十块；签十二个月合约是这个价，按月付每月多二十块。这周办卡免九十九块入会费。"
+    },
+    {
+      "q": "「你」经常出差，冻卡和提前退卡的规则是什么？",
+      "a": "每年最多冻结两个月，冻结期每月十块；提前退卡要提前三十天通知并付两百块解约费，搬去国外有证明可以免。"
+    },
+    {
+      "q": "私教课怎么收费？「你」最后决定怎么做？",
+      "a": "单节九十，十节八百，第一节免费评估；「你」决定先上免费那节再说。"
+    }
+  ],
+  "dictation": [
+    "Is that with a contract, or can I pay month to month?",
+    "Good to know. Could I try it out before I decide? Maybe a day pass?",
+    "I travel for work quite a lot. Can I freeze my membership if I'm away for a few weeks?",
+    "Hmm, that's quite steep. Is there any flexibility on that if I'm relocating overseas?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Hmm, that's quite steep. Is there any flexibility on that if I'm relocating overseas?",
+    "marked": "<b>Hmm</b>, / that's quite <b>steep</b>. //<br>Is there any <b>flexibility</b> on that / if I'm <b>relocating</b> overseas? //"
+  },
+  "prompts": [
+    {
+      "q": "你想办游泳馆的家庭卡，带三岁孩子。用 30 秒问清：孩子收不收费、有没有亲子时段、能不能先试。",
+      "ref": "Hi, I'm interested in a family membership. It's for my wife, me, and our son, who's three. Do kids his age need to pay, or are they free? Also, do you have any parent and child swimming sessions on weekends? And before we sign up, could we come in for a trial swim first?",
+      "ref_zh": "你好，我想办家庭卡，是我、我太太和我们三岁的儿子。这么大的孩子要收费吗，还是免费？另外周末有没有亲子游泳时段？办卡之前，我们能先来试游一次吗？"
+    },
+    {
+      "q": "你搬家了，想取消健身房会员，但合约还剩四个月。打电话礼貌地争取免掉解约费。",
+      "ref": "Hi, I'd like to cancel my membership. I know I still have four months left on my contract, but we've just moved to the east side, and it's over an hour away now. I've been a member for almost two years. Is there any way you could waive the termination fee, or maybe transfer me to a branch closer to home?",
+      "ref_zh": "你好，我想取消会员。我知道合约还剩四个月，但我们刚搬到东部，现在过来要一个多小时。我已经是快两年的会员了。解约费有没有办法免掉，或者能不能帮我转到离家近一点的分店？"
+    }
+  ],
+  "words": [
+    {
+      "w": "off-peak",
+      "ipa": "/ˌɔːf ˈpiːk/",
+      "zh": "非高峰时段的",
+      "ex": "Off-peak tickets are cheaper on weekday mornings."
+    },
+    {
+      "w": "contract",
+      "ipa": "/ˈkɑːntrækt/",
+      "zh": "合约",
+      "ex": "I don't want to be locked into a long contract."
+    },
+    {
+      "w": "fee",
+      "ipa": "/fiː/",
+      "zh": "费用",
+      "ex": "Is there a fee for using the pool?"
+    },
+    {
+      "w": "waive",
+      "ipa": "/weɪv/",
+      "zh": "免除（费用等）",
+      "ex": "The bank agreed to waive the late payment charge."
+    },
+    {
+      "w": "freeze (v.)",
+      "ipa": "/friːz/",
+      "zh": "冻结（会员、账户）",
+      "ex": "I froze my gym membership while I was in China.",
+      "tts_w": "freeze"
+    },
+    {
+      "w": "cancel",
+      "ipa": "/ˈkænsəl/",
+      "zh": "取消",
+      "ex": "I need to cancel my appointment for tomorrow."
+    },
+    {
+      "w": "termination fee",
+      "ipa": "/ˌtɜːrmɪˈneɪʃən fiː/",
+      "zh": "解约费",
+      "ex": "Breaking the phone contract early means a termination fee."
+    },
+    {
+      "w": "relocate",
+      "ipa": "/ˌriːˈloʊkeɪt/",
+      "zh": "搬迁，调往别处",
+      "ex": "My company is relocating me to Tokyo next year."
+    },
+    {
+      "w": "assessment",
+      "ipa": "/əˈsesmənt/",
+      "zh": "评估",
+      "ex": "The trainer did a quick fitness assessment before we started."
+    },
+    {
+      "w": "try out",
+      "ipa": "/traɪ aʊt/",
+      "zh": "试用，试一试",
+      "ex": "You can try out the class for free this week."
+    }
+  ]
+}

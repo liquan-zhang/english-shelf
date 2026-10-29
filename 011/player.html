@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Opening a Tech Demo with the Problem, Not the Feature · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "011", "title": "Opening a Tech Demo with the Problem, Not the Feature", "meta": "B2 · 约 260 词 · 场景：技术演示", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Nobody Cares About the Button Yet", "heading_zh": "1. 现在还没人关心那个按钮", "rows": [[{"id": "s0_0_0", "md": "Most tech demos open the same way.", "text": "Most tech demos open the same way.", "zh": "大多数技术 demo 的开场都一个样。", "sp": null}, {"id": "s0_0_1", "md": "\"So this is our new deployment dashboard, and here you can see the config panel.\"", "text": "\"So this is our new deployment dashboard, and here you can see the config panel.\"", "zh": "「这是我们新的部署看板，这里可以看到配置面板。」", "sp": null}, {"id": "s0_0_2", "md": "Within a minute, half the audience is checking their messages.", "text": "Within a minute, half the audience is checking their messages.", "zh": "不到一分钟，半数听众就开始看消息了。", "sp": null}], [{"id": "s0_1_0", "md": "The team is proud of what they built, so they start with the thing itself.", "text": "The team is proud of what they built, so they start with the thing itself.", "zh": "团队为自己做出来的东西骄傲，所以一上来就展示东西本身。", "sp": null}, {"id": "s0_1_1", "md": "But the audience has not yet felt the pain that the thing removes.", "text": "But the audience has not yet felt the pain that the thing removes.", "zh": "但听众还没感受过这个东西要解决的痛点。", "sp": null}, {"id": "s0_1_2", "md": "Without that pain, every feature looks like a nice ==extra==, not a ==necessity==.", "text": "Without that pain, every feature looks like a nice extra, not a necessity.", "zh": "没有这份痛，每个功能看起来都只是锦上添花，而不是刚需。", "sp": null}], [{"id": "s0_2_0", "md": "**People do not remember features; they remember the problem that went away.**", "text": "People do not remember features; they remember the problem that went away.", "zh": "人们记不住功能，他们记住的是消失了的那个问题。", "sp": null}, {"id": "s0_2_1", "md": "If you open with the problem, every screen that follows __lands harder__, because people already know why it matters.", "text": "If you open with the problem, every screen that follows lands harder, because people already know why it matters.", "zh": "如果你从问题讲起，后面每一屏都会更有冲击力，因为大家已经知道它为什么重要。", "sp": null}, {"id": "s0_2_2", "md": "You turn a product tour into a short story with a ==tension== and a ==payoff==.", "text": "You turn a product tour into a short story with a tension and a payoff.", "zh": "你就把一次产品导览变成了一个有冲突、有回报的小故事。", "sp": null}]]}, {"heading": "2. Before, Moment, After", "heading_zh": "2. 之前、转折、之后", "rows": [[{"id": "s1_0_0", "md": "Start with a concrete \"before.\"", "text": "Start with a concrete \"before.\"", "zh": "先讲一个具体的「之前」。", "sp": null}, {"id": "s1_0_1", "md": "\"Last month, rolling back a bad release took forty minutes and three people on a call at midnight.\"", "text": "\"Last month, rolling back a bad release took forty minutes and three people on a call at midnight.\"", "zh": "「上个月回滚一个有问题的版本，花了四十分钟，半夜拉了三个人上会。」", "sp": null}, {"id": "s1_0_2", "md": "Use a real ==incident==, a real number, and if possible a real name from the room.", "text": "Use a real incident, a real number, and if possible a real name from the room.", "zh": "用真实的事故、真实的数字，可能的话再加上在场某个人的真名。", "sp": null}], [{"id": "s1_1_0", "md": "Then show the moment of change, live and fast.", "text": "Then show the moment of change, live and fast.", "zh": "然后现场快速展示转折的那一刻。", "sp": null}, {"id": "s1_1_1", "md": "\"Here's the same rollback today,\" __click once__, and let the screen speak for a few seconds.", "text": "\"Here's the same rollback today,\" click once, and let the screen speak for a few seconds.", "zh": "「这是今天做同样的回滚」，点一下，让屏幕自己说话几秒钟。", "sp": null}, {"id": "s1_1_2", "md": "**Silence after a good moment is more powerful than any explanation.**", "text": "Silence after a good moment is more powerful than any explanation.", "zh": "精彩时刻之后的沉默，比任何解释都有力量。", "sp": null}], [{"id": "s1_2_0", "md": "Only now do you explain how it works.", "text": "Only now do you explain how it works.", "zh": "直到这时候，才去讲它是怎么做到的。", "sp": null}, {"id": "s1_2_1", "md": "Keep it to the two or three features that made that moment possible, and __leave the rest__ for questions.", "text": "Keep it to the two or three features that made that moment possible, and leave the rest for questions.", "zh": "只讲让那一刻成为可能的两三个功能，其余的留到提问环节。", "sp": null}, {"id": "s1_2_2", "md": "Your audience is ==curious== at this point, so they will actually listen.", "text": "Your audience is curious at this point, so they will actually listen.", "zh": "这时候听众已经好奇了，所以他们会真的听进去。", "sp": null}], [{"id": "s1_3_0", "md": "Close by ==circling== back to the problem.", "text": "Close by circling back to the problem.", "zh": "结尾再绕回到那个问题上。", "sp": null}, {"id": "s1_3_1", "md": "\"Forty minutes became thirty seconds, and nobody needs to wake up.\"", "text": "\"Forty minutes became thirty seconds, and nobody needs to wake up.\"", "zh": "「四十分钟变成了三十秒，而且没人需要半夜爬起来。」", "sp": null}, {"id": "s1_3_2", "md": "That one line is what people will __repeat to their teams__ afterward.", "text": "That one line is what people will repeat to their teams afterward.", "zh": "这句话就是大家会后会转述给自己团队的那句。", "sp": null}]]}], "gist": [{"q": "为什么从功能讲起的演示容易让人走神？", "a": "观众还没感受到这个东西要解决的痛点，功能看起来只是锦上添花。"}, {"q": "作者提出的演示结构是什么？", "a": "先讲具体的“之前”（真实事故、数字、人）；再现场快速展示改变的瞬间；然后只讲两三个关键功能；最后回到问题收尾。"}, {"q": "演示中出现精彩瞬间之后，作者建议怎么做？", "a": "停下来沉默几秒，让屏幕自己说话，这比任何解释都有力。"}], "dictation": [{"id": "s0_2_0", "text": "People do not remember features; they remember the problem that went away."}, {"id": "s1_1_2", "text": "Silence after a good moment is more powerful than any explanation."}, {"id": "s1_0_2", "text": "Use a real incident, a real number, and if possible a real name from the room."}, {"id": "s1_2_0", "text": "Only now do you explain how it works."}], "shadow": {"text": "Start with a concrete \"before.\" \"Last month, rolling back a bad release took forty minutes and three people on a call at midnight.\"", "marked": "Start with a <b>concrete</b> \"before.\" //<br>\"<b>Last</b> month, / rolling back a bad release / took <b>forty</b> minutes / and <b>three</b> people on a call / at <b>midnight</b>.\" //"}, "prompts": [{"q": "你要向几个业务团队演示新的日志检索工具。用 30 秒开场：先讲一个具体的“之前”痛点，再引出演示。", "ref": "Let me start with a quick story. Two weeks ago, a customer reported failed payments, and it took our on-call engineer almost an hour just to find the right logs. She had to search four different systems by hand. Today I want to show you what that same search looks like now. Watch the clock, because it's going to be a lot shorter.", "ref_zh": "我先讲个小故事。两周前，有客户反馈支付失败，我们的 on-call 工程师光是找到对应的日志就花了将近一个小时。她得在四个不同的系统里手动搜。今天我想给大家看看，现在做同样的搜索是什么样子。大家盯着时间，因为这次会短得多。", "id": "ref0"}, {"q": "演示刚展示完一键回滚。用 30 秒收尾：回到最初的问题，给出一句让人记得住的对比。", "ref": "So let's go back to where we started. Last month, a bad release cost us forty minutes, three engineers, and one very unhappy night. What you just saw took under thirty seconds, and it was one click. Nobody had to wake up. If you only remember one thing from today, remember that rollbacks are no longer scary, so we can afford to ship more often.", "ref_zh": "我们回到开头。上个月，一次有问题的发布让我们搭进去了四十分钟、三个工程师，还有一个非常糟心的夜晚。刚才大家看到的，不到三十秒，点一下就搞定了。没有人需要半夜爬起来。如果今天大家只记住一件事，那就记住回滚不再可怕了，所以我们可以更频繁地发版。", "id": "ref1"}], "words": [{"w": "extra (n.)", "ipa": "/ˈekstrə/", "zh": "附加的东西、额外项", "ex": "Dark mode is a nice extra, but it's not blocking the launch.", "tts_w": "extra", "id": "w0"}, {"w": "necessity", "ipa": "/nəˈsesəti/", "zh": "必需品、必要", "ex": "For a payments team, audit logs are a necessity.", "id": "w1"}, {"w": "tension", "ipa": "/ˈtenʃən/", "zh": "张力、紧张感", "ex": "There's real tension between shipping fast and keeping the API stable.", "id": "w2"}, {"w": "payoff", "ipa": "/ˈpeɪˌɔːf/", "zh": "回报、高潮", "ex": "The payoff of the refactor is that new features take days, not weeks.", "id": "w3"}, {"w": "incident", "ipa": "/ˈɪnsɪdənt/", "zh": "事故、事件", "ex": "We wrote a postmortem for every major incident this quarter.", "id": "w4"}, {"w": "curious", "ipa": "/ˈkjʊriəs/", "zh": "好奇的", "ex": "I'm curious how the new scheduler handles retries.", "id": "w5"}, {"w": "land (v.)", "ipa": "/lænd/", "zh": "（信息）被接受、产生效果", "ex": "The joke didn't land, but the demo did.", "tts_w": "land", "id": "w6"}, {"w": "roll back", "ipa": "/roʊl bæk/", "zh": "回滚", "ex": "We rolled back the release after the error rate doubled.", "id": "w7"}, {"w": "circle back", "ipa": "/ˈsɜːrkəl bæk/", "zh": "回到（某话题）", "ex": "Let's circle back to the pricing question once we have the numbers.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Nobody Cares About the Button Yet", "zh": "1. 现在还没人关心那个按钮", "start": 0.0, "end": 2.784, "words": [[0.118, 0.329], [0.776, 1.092], [1.105, 1.434], [1.447, 1.671], [1.684, 1.763], [1.776, 2.092], [2.105, 2.395]]}, {"kind": "s", "id": "s0_0_0", "md": "Most tech demos open the same way.", "zh": "大多数技术 demo 的开场都一个样。", "sp": null, "gap": false, "start": 2.784, "end": 5.088, "words": [[2.889, 3.126], [3.139, 3.389], [3.402, 3.797], [3.81, 4.021], [4.034, 4.113], [4.126, 4.416], [4.429, 4.705]]}, {"kind": "s", "id": "s0_0_1", "md": "\"So this is our new deployment dashboard, and here you can see the config panel.\"", "zh": "「这是我们新的部署看板，这里可以看到配置面板。」", "sp": null, "gap": false, "start": 5.088, "end": 9.768, "words": [[5.272, 5.299], [5.377, 5.548], [5.562, 5.68], [5.693, 5.798], [5.812, 6.022], [6.035, 6.535], [6.549, 7.127], [7.522, 7.575], [7.588, 7.785], [7.799, 7.904], [7.917, 8.049], [8.062, 8.312], [8.325, 8.43], [8.443, 8.93], [8.943, 9.325]]}, {"kind": "s", "id": "s0_0_2", "md": "Within a minute, half the audience is checking their messages.", "zh": "不到一分钟，半数听众就开始看消息了。", "sp": null, "gap": false, "start": 9.768, "end": 13.488, "words": [[9.886, 10.136], [10.15, 10.189], [10.202, 10.584], [10.979, 11.189], [11.202, 11.321], [11.334, 11.807], [11.821, 11.926], [11.939, 12.281], [12.294, 12.413], [12.426, 13.097]]}, {"kind": "s", "id": "s0_1_0", "md": "The team is proud of what they built, so they start with the thing itself.", "zh": "团队为自己做出来的东西骄傲，所以一上来就展示东西本身。", "sp": null, "gap": true, "start": 13.488, "end": 17.784, "words": [[13.606, 13.685], [13.699, 14.041], [14.054, 14.172], [14.185, 14.567], [14.58, 14.659], [14.672, 14.817], [14.83, 14.962], [14.975, 15.37], [15.764, 15.883], [15.896, 16.014], [16.027, 16.33], [16.343, 16.462], [16.475, 16.567], [16.58, 16.804], [16.817, 17.396]]}, {"kind": "s", "id": "s0_1_1", "md": "But the audience has not yet felt the pain that the thing removes.", "zh": "但听众还没感受过这个东西要解决的痛点。", "sp": null, "gap": false, "start": 17.784, "end": 21.624, "words": [[17.902, 17.981], [17.995, 18.1], [18.113, 18.547], [18.56, 18.692], [18.705, 18.981], [18.995, 19.231], [19.245, 19.521], [19.534, 19.613], [19.626, 20.008], [20.021, 20.139], [20.152, 20.231], [20.245, 20.547], [20.56, 21.231]]}, {"kind": "s", "id": "s0_1_2", "md": "Without that pain, every feature looks like a nice ==extra==, not a ==necessity==.", "zh": "没有这份痛，每个功能看起来都只是锦上添花，而不是刚需。", "sp": null, "gap": false, "start": 21.624, "end": 26.616, "words": [[21.742, 22.045], [22.058, 22.282], [22.295, 22.69], [23.019, 23.269], [23.282, 23.663], [23.677, 23.887], [23.9, 24.045], [24.058, 24.085], [24.098, 24.479], [24.532, 24.979], [25.4, 25.532], [25.545, 25.571], [25.585, 26.229]]}, {"kind": "s", "id": "s0_2_0", "md": "**People do not remember features; they remember the problem that went away.**", "zh": "人们记不住功能，他们记住的是消失了的那个问题。", "sp": null, "gap": true, "start": 26.616, "end": 31.104, "words": [[26.734, 26.984], [26.998, 27.129], [27.142, 27.392], [27.405, 27.774], [27.787, 28.392], [28.787, 28.879], [28.892, 29.248], [29.261, 29.353], [29.366, 29.879], [29.998, 30.169], [30.182, 30.327], [30.34, 30.721]]}, {"kind": "s", "id": "s0_2_1", "md": "If you open with the problem, every screen that follows __lands harder__, because people already know why it matters.", "zh": "如果你从问题讲起，后面每一屏都会更有冲击力，因为大家已经知道它为什么重要。", "sp": null, "gap": false, "start": 31.104, "end": 37.896, "words": [[31.222, 31.328], [31.341, 31.459], [31.472, 31.749], [31.762, 31.88], [31.893, 31.972], [31.986, 32.459], [32.841, 33.078], [33.091, 33.512], [33.525, 33.657], [33.67, 34.117], [34.13, 34.446], [34.459, 34.88], [35.157, 35.486], [35.499, 35.959], [35.972, 36.354], [36.367, 36.604], [36.617, 36.815], [36.828, 36.907], [36.92, 37.499]]}, {"kind": "s", "id": "s0_2_2", "md": "You turn a product tour into a short story with a ==tension== and a ==payoff==.", "zh": "你就把一次产品导览变成了一个有冲突、有回报的小故事。", "sp": null, "gap": false, "start": 37.896, "end": 42.648, "words": [[38.001, 38.12], [38.133, 38.343], [38.357, 38.409], [38.422, 38.857], [38.87, 39.225], [39.304, 39.567], [39.58, 39.633], [39.646, 39.962], [39.975, 40.488], [40.501, 40.672], [40.685, 40.738], [40.751, 41.317], [41.475, 41.554], [41.567, 41.62], [41.633, 42.264]]}, {"kind": "h", "id": "h1", "md": "2. Before, Moment, After", "zh": "2. 之前、转折、之后", "start": 42.648, "end": 45.336, "words": [[42.753, 42.977], [43.28, 43.832], [44.03, 44.372], [44.437, 44.951]]}, {"kind": "s", "id": "s1_0_0", "md": "Start with a concrete \"before.\"", "zh": "先讲一个具体的「之前」。", "sp": null, "gap": false, "start": 45.336, "end": 47.616, "words": [[45.441, 45.77], [45.783, 45.902], [45.915, 45.968], [45.981, 46.639], [46.665, 47.218]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Last month, rolling back a bad release took forty minutes and three people on a call at midnight.\"", "zh": "「上个月回滚一个有问题的版本，花了四十分钟，半夜拉了三个人上会。」", "sp": null, "gap": false, "start": 47.616, "end": 53.784, "words": [[47.8, 47.945], [48.024, 48.34], [48.577, 48.945], [48.958, 49.234], [49.248, 49.313], [49.327, 49.616], [49.629, 50.05], [50.063, 50.261], [50.274, 50.642], [50.655, 51.05], [51.261, 51.471], [51.484, 51.8], [51.813, 52.182], [52.195, 52.287], [52.3, 52.353], [52.366, 52.721], [52.734, 52.827], [52.84, 53.379]]}, {"kind": "s", "id": "s1_0_2", "md": "Use a real ==incident==, a real number, and if possible a real name from the room.", "zh": "用真实的事故、真实的数字，可能的话再加上在场某个人的真名。", "sp": null, "gap": false, "start": 53.784, "end": 59.088, "words": [[53.889, 54.139], [54.152, 54.218], [54.231, 54.613], [54.626, 55.126], [55.481, 55.508], [55.521, 55.876], [55.889, 56.258], [56.666, 56.718], [56.731, 56.837], [56.85, 57.455], [57.468, 57.534], [57.547, 57.889], [57.902, 58.126], [58.139, 58.31], [58.323, 58.389], [58.402, 58.705]]}, {"kind": "s", "id": "s1_1_0", "md": "Then show the moment of change, live and fast.", "zh": "然后现场快速展示转折的那一刻。", "sp": null, "gap": true, "start": 59.088, "end": 62.352, "words": [[59.206, 59.325], [59.338, 59.562], [59.575, 59.667], [59.68, 60.035], [60.049, 60.154], [60.167, 60.746], [60.97, 61.246], [61.259, 61.351], [61.364, 61.97]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Here's the same rollback today,\" __click once__, and let the screen speak for a few seconds.", "zh": "「这是今天做同样的回滚」，点一下，让屏幕自己说话几秒钟。", "sp": null, "gap": false, "start": 62.352, "end": 68.112, "words": [[62.563, 62.681], [62.76, 62.865], [62.878, 63.181], [63.194, 63.681], [63.694, 64.076], [64.47, 64.72], [64.734, 65.168], [65.549, 65.655], [65.668, 65.826], [65.839, 65.918], [65.931, 66.273], [66.286, 66.615], [66.628, 66.786], [66.799, 66.839], [66.852, 67.089], [67.102, 67.72]]}, {"kind": "s", "id": "s1_1_2", "md": "**Silence after a good moment is more powerful than any explanation.**", "zh": "精彩时刻之后的沉默，比任何解释都有力量。", "sp": null, "gap": false, "start": 68.112, "end": 72.984, "words": [[68.23, 68.73], [68.744, 69.099], [69.112, 69.178], [69.191, 69.401], [69.415, 69.849], [70.099, 70.204], [70.217, 70.507], [70.52, 71.178], [71.257, 71.428], [71.546, 71.823], [71.836, 72.599]]}, {"kind": "s", "id": "s1_2_0", "md": "Only now do you explain how it works.", "zh": "直到这时候，才去讲它是怎么做到的。", "sp": null, "gap": true, "start": 72.984, "end": 75.216, "words": [[73.089, 73.26], [73.273, 73.471], [73.484, 73.563], [73.576, 73.695], [73.708, 74.089], [74.102, 74.247], [74.26, 74.339], [74.352, 74.826]]}, {"kind": "s", "id": "s1_2_1", "md": "Keep it to the two or three features that made that moment possible, and __leave the rest__ for questions.", "zh": "只讲让那一刻成为可能的两三个功能，其余的留到提问环节。", "sp": null, "gap": false, "start": 75.216, "end": 81.312, "words": [[75.334, 75.505], [75.519, 75.611], [75.624, 75.716], [75.729, 75.861], [75.874, 76.282], [76.295, 76.453], [76.466, 76.834], [76.848, 77.413], [77.427, 77.598], [77.611, 77.913], [77.927, 78.111], [78.124, 78.492], [78.505, 79.071], [79.387, 79.492], [79.505, 79.716], [79.729, 79.808], [79.821, 80.098], [80.111, 80.229], [80.242, 80.913]]}, {"kind": "s", "id": "s1_2_2", "md": "Your audience is ==curious== at this point, so they will actually listen.", "zh": "这时候听众已经好奇了，所以他们会真的听进去。", "sp": null, "gap": false, "start": 81.312, "end": 85.344, "words": [[81.417, 81.575], [81.588, 82.009], [82.023, 82.154], [82.167, 82.694], [82.707, 82.812], [82.825, 83.009], [83.023, 83.391], [83.786, 83.917], [83.93, 84.049], [84.062, 84.207], [84.22, 84.549], [84.562, 84.957]]}, {"kind": "s", "id": "s1_3_0", "md": "Close by ==circling== back to the problem.", "zh": "结尾再绕回到那个问题上。", "sp": null, "gap": true, "start": 85.344, "end": 87.648, "words": [[85.449, 85.686], [85.699, 85.831], [85.844, 86.305], [86.318, 86.62], [86.633, 86.699], [86.712, 86.805], [86.818, 87.265]]}, {"kind": "s", "id": "s1_3_1", "md": "\"Forty minutes became thirty seconds, and nobody needs to wake up.\"", "zh": "「四十分钟变成了三十秒，而且没人需要半夜爬起来。」", "sp": null, "gap": false, "start": 87.648, "end": 92.112, "words": [[87.885, 87.977], [88.056, 88.372], [88.385, 88.819], [88.832, 89.227], [89.24, 89.859], [90.122, 90.293], [90.306, 90.766], [90.78, 91.016], [91.03, 91.122], [91.135, 91.424], [91.437, 91.701]]}, {"kind": "s", "id": "s1_3_2", "md": "That one line is what people will __repeat to their teams__ afterward.", "zh": "这句话就是大家会后会转述给自己团队的那句。", "sp": null, "gap": false, "start": 92.112, "end": 96.0, "words": [[92.23, 92.401], [92.415, 92.638], [92.651, 93.046], [93.151, 93.27], [93.283, 93.48], [93.494, 93.836], [93.849, 94.007], [94.02, 94.467], [94.48, 94.573], [94.586, 94.744], [94.757, 95.086], [95.099, 95.612]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

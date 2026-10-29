@@ -1,0 +1,180 @@
+{
+  "id": "030",
+  "title": "When to Approve with Comments",
+  "meta": "B2 · 约 260 词 · 场景：代码评审",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Middle Option",
+      "paragraphs": [
+        [
+          "Between \"approve\" and \"request changes,\" there is a quiet middle option.",
+          "You approve the change, leave a few comments, and trust the author to handle them before merging.",
+          "Used well, it removes a whole round of waiting, which matters a lot when your reviewer sleeps while you work."
+        ],
+        [
+          "Used badly, it becomes a ==loophole==.",
+          "A busy reviewer approves, mentions a serious bug in a comment, and the bug ships anyway because the author read the green check and nothing else.",
+          "**An approval is a promise that the code is safe to merge, not a polite way to end the review.**"
+        ],
+        [
+          "So the real question is not how many comments you have.",
+          "It is whether the remaining issues are ==cosmetic== or ==structural==.",
+          "Ten small naming comments can be fine, while one quiet comment about data loss is not."
+        ]
+      ],
+      "heading_zh": "1. 中间选项",
+      "paragraphs_zh": [
+        [
+          "在「通过」和「要求修改」之间，有一个不太起眼的中间选项。",
+          "你批准这个改动，留几条评论，相信作者会在合入前处理好。",
+          "用得好，它能省掉一整轮等待，尤其当你在干活时评审人正在睡觉，这一点就特别重要。"
+        ],
+        [
+          "用得不好，它就成了一个漏洞。",
+          "一个很忙的评审人点了通过，在评论里提了一个严重 bug，结果 bug 还是上线了，因为作者只看了那个绿色的勾，别的什么都没看。",
+          "批准代表你承诺这段代码可以安全合入，而不是一种客气地结束评审的方式。"
+        ],
+        [
+          "所以真正的问题不在于你有多少条评论。",
+          "而在于剩下的问题是表面的，还是结构性的。",
+          "十条小的命名评论可能没关系，而一条不起眼的、关于丢数据的评论就不行。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Three Conditions for a Conditional Yes",
+      "paragraphs": [
+        [
+          "Approve with comments only when three things are true.",
+          "The issues are small, like naming, a missing log line, or a clearer error message.",
+          "The change is easy to ==reverse== if something __slips through__.",
+          "And you trust this author to __follow through__ without being checked again."
+        ],
+        [
+          "If any of those is false, request changes.",
+          "Anything touching security, data correctness, or ==backward compatibility== deserves a second look, no matter how small the fix seems.",
+          "A day of delay is cheap compared with a broken client in production."
+        ],
+        [
+          "**Whatever you choose, make it explicit which comments are required and which are optional.**",
+          "A quick \"non-blocking\" tag on the optional ones __removes the guesswork__.",
+          "Over time, this habit builds ==mutual== trust, and reviews get faster for everyone."
+        ]
+      ],
+      "heading_zh": "2. 有条件通过的三个前提",
+      "paragraphs_zh": [
+        [
+          "只有同时满足三个条件时，才用「带评论通过」。",
+          "问题都很小，比如命名、少了一行日志，或者报错信息可以更清楚。",
+          "万一有什么漏过去了，这个改动也很容易回滚。",
+          "而且你相信这位作者不用再被检查一遍，也会把事情落实到位。"
+        ],
+        [
+          "只要有一条不满足，就要求修改。",
+          "凡是涉及安全、数据正确性或向后兼容的，都值得再看一遍，不管修复看起来多小。",
+          "跟线上客户端被搞挂相比，晚一天根本不算什么。"
+        ],
+        [
+          "不管你选哪个，都要明确说清楚哪些评论是必须改的，哪些是可选的。",
+          "在可选的评论上加个「non-blocking」标签，就省得对方去猜了。",
+          "时间长了，这个习惯能建立起彼此的信任，大家的评审都会变快。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "「带意见通过」用得好和用得不好分别会怎样？",
+      "a": "用得好能省掉一轮等待（尤其跨时区）；用得不好就成了漏洞，严重 bug 写在评论里却照样上线。"
+    },
+    {
+      "q": "作者说判断的关键是什么？",
+      "a": "不看评论数量，而看剩下的问题是表面的（命名等）还是结构性的（如数据丢失）。"
+    },
+    {
+      "q": "什么时候可以带意见通过？什么时候必须要求修改？",
+      "a": "问题很小、容易回滚、信任作者会跟进时可以通过；涉及安全、数据正确性、向后兼容时必须要求修改。"
+    }
+  ],
+  "dictation": [
+    "An approval is a promise that the code is safe to merge, not a polite way to end the review.",
+    "Whatever you choose, make it explicit which comments are required and which are optional.",
+    "If any of those is false, request changes.",
+    "So the real question is not how many comments you have."
+  ],
+  "shadow": {
+    "text": "So the real question is not how many comments you have. It is whether the remaining issues are cosmetic or structural. Ten small naming comments can be fine, while one quiet comment about data loss is not.",
+    "marked": "So the <b>real</b> question / is <b>not</b> how many comments you have. //<br>It is whether the remaining issues / are <b>cosmetic</b> / or <b>structural</b>. //<br><b>Ten</b> small naming comments / can be <b>fine</b>, / while <b>one</b> quiet comment about <b>data loss</b> / is <b>not</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你 approve 了一个 PR 并留了几条意见，作者在另一个时区。用 30 秒（语音留言）说明哪些必须改、哪些可选。",
+      "ref": "Hi, I've approved your change so you don't have to wait for me overnight. Two of my comments are required before you merge: please add the null check on the user ID, and log the request ID in the error path. The other three are optional, just naming ideas, so use your judgment. If the null check turns out to be more complicated than it looks, ping me and I'll take another look.",
+      "ref_zh": "嗨，我已经批准了你的改动，这样你不用等我一晚上。有两条评论是合入前必须改的：请给用户 ID 加上空值检查，并在错误分支里打印 request ID。另外三条是可选的，只是一些命名上的想法，你自己判断就好。如果空值检查比看起来复杂，ping 我一下，我再看一遍。"
+    },
+    {
+      "q": "组里有人习惯「先 approve 再在评论里提严重问题」。用 30 秒在团队会上提出新的约定。",
+      "ref": "I'd like to suggest a small rule for reviews. If a comment is about security, data correctness, or backward compatibility, please request changes instead of approving with comments. Last month we shipped a bug that was mentioned in a comment, but the approval made it look safe. For everything else, approving with comments is great, as long as you tag optional comments as non-blocking.",
+      "ref_zh": "我想给评审提一条小规则。如果评论涉及安全、数据正确性或向后兼容，请直接要求修改，而不是带评论通过。上个月我们上线了一个 bug，它其实在评论里被提到过，但那个批准让它看起来是安全的。其他情况下，带评论通过完全没问题，只要把可选的评论标成 non-blocking 就行。"
+    }
+  ],
+  "words": [
+    {
+      "w": "loophole",
+      "ipa": "/ˈluːphoʊl/",
+      "zh": "漏洞、空子",
+      "ex": "Approving with a blocking comment is a loophole in our process."
+    },
+    {
+      "w": "cosmetic",
+      "ipa": "/kɑːzˈmetɪk/",
+      "zh": "表面的、无关紧要的",
+      "ex": "The remaining issues are cosmetic, so I'm fine to ship."
+    },
+    {
+      "w": "structural",
+      "ipa": "/ˈstrʌktʃərəl/",
+      "zh": "结构性的",
+      "ex": "This is a structural problem; a quick patch won't fix it."
+    },
+    {
+      "w": "reverse (v.)",
+      "ipa": "/rɪˈvɜːrs/",
+      "zh": "撤销、逆转",
+      "ex": "A feature flag lets us reverse the change in seconds.",
+      "tts_w": "reverse"
+    },
+    {
+      "w": "backward compatibility",
+      "ipa": "/ˌbækwərd kəmˌpætəˈbɪləti/",
+      "zh": "向后兼容",
+      "ex": "Renaming this field breaks backward compatibility for older clients."
+    },
+    {
+      "w": "mutual",
+      "ipa": "/ˈmjuːtʃuəl/",
+      "zh": "相互的",
+      "ex": "Fast reviews depend on mutual trust between the teams."
+    },
+    {
+      "w": "explicit",
+      "ipa": "/ɪkˈsplɪsɪt/",
+      "zh": "明确的",
+      "ex": "Please be explicit about which comments block the merge."
+    },
+    {
+      "w": "guesswork",
+      "ipa": "/ˈɡeswɜːrk/",
+      "zh": "猜测",
+      "ex": "Clear labels take the guesswork out of code review."
+    },
+    {
+      "w": "conditional",
+      "ipa": "/kənˈdɪʃənl/",
+      "zh": "有条件的",
+      "ex": "It's a conditional yes: fix the logging and you can merge."
+    }
+  ]
+}

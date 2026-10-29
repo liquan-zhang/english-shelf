@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>When You Are Put on the Spot · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "005", "title": "When You Are Put on the Spot", "meta": "B2 · 约 270 词 · 场景：被突然点名", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Three-Second Panic", "heading_zh": "1. 三秒钟的慌乱", "rows": [[{"id": "s0_0_0", "md": "You are half listening in a planning call when a director suddenly says, \"What do you think about the timeline?\"", "text": "You are half listening in a planning call when a director suddenly says, \"What do you think about the timeline?\"", "zh": "你在一个规划会上半听不听，一位总监突然问：「你觉得这个时间线怎么样？」", "sp": null}, {"id": "s0_0_1", "md": "Your heart speeds up, your mind goes blank, and you start talking before you know what you want to say.", "text": "Your heart speeds up, your mind goes blank, and you start talking before you know what you want to say.", "zh": "你心跳加速，脑子一片空白，还没想好要说什么就开口了。", "sp": null}, {"id": "s0_0_2", "md": "Thirty seconds later, you have ==rambled== through three ideas and finished none of them.", "text": "Thirty seconds later, you have rambled through three ideas and finished none of them.", "zh": "三十秒后，你东拉西扯说了三个点，一个都没讲完。", "sp": null}], [{"id": "s0_1_0", "md": "This reaction is normal, especially in a second language.", "text": "This reaction is normal, especially in a second language.", "zh": "这种反应很正常，用第二语言的时候尤其如此。", "sp": null}, {"id": "s0_1_1", "md": "Your brain is doing two jobs at once, finding the answer and finding the words.", "text": "Your brain is doing two jobs at once, finding the answer and finding the words.", "zh": "你的大脑在同时干两件事：想答案，还要找词。", "sp": null}, {"id": "s0_1_2", "md": "**The mistake is not being slow; the mistake is filling the silence with noise.**", "text": "The mistake is not being slow; the mistake is filling the silence with noise.", "zh": "错不在反应慢，错在用噪音去填满沉默。", "sp": null}], [{"id": "s0_2_0", "md": "Experienced speakers are not faster thinkers.", "text": "Experienced speakers are not faster thinkers.", "zh": "有经验的人并不是想得更快。", "sp": null}, {"id": "s0_2_1", "md": "They simply have a few ==stock== phrases that __buy them time__ while sounding calm.", "text": "They simply have a few stock phrases that buy them time while sounding calm.", "zh": "他们只是手里有几句现成的话，既能争取时间，听起来又很从容。", "sp": null}, {"id": "s0_2_2", "md": "Those phrases let the ==panic== pass before the real answer begins.", "text": "Those phrases let the panic pass before the real answer begins.", "zh": "这些话能让慌乱先过去，再开始真正回答。", "sp": null}]]}, {"heading": "2. Buy Time, Then Give a Shape", "heading_zh": "2. 先争取时间，再给出框架", "rows": [[{"id": "s1_0_0", "md": "Start by ==clarifying== the question, even if you understood it.", "text": "Start by clarifying the question, even if you understood it.", "zh": "先澄清一下问题，哪怕你其实听懂了。", "sp": null}, {"id": "s1_0_1", "md": "\"Just to make sure, are you asking about the beta date or the full launch?\"", "text": "\"Just to make sure, are you asking about the beta date or the full launch?\"", "zh": "「我确认一下，你问的是 beta 的时间，还是全量上线？」", "sp": null}, {"id": "s1_0_2", "md": "This gives you five seconds and often makes the question easier to answer.", "text": "This gives you five seconds and often makes the question easier to answer.", "zh": "这能给你争取五秒钟，而且问题往往也会变得更好回答。", "sp": null}], [{"id": "s1_1_0", "md": "Next, tell people the shape of your answer before you fill it in.", "text": "Next, tell people the shape of your answer before you fill it in.", "zh": "接着，先告诉大家你回答的框架，再往里填内容。", "sp": null}, {"id": "s1_1_1", "md": "\"I'd say two things.\"", "text": "\"I'd say two things.\"", "zh": "「我说两点。」", "sp": null}, {"id": "s1_1_2", "md": "Now you only need to find two points, and listeners can __follow along__ even if your wording is rough.", "text": "Now you only need to find two points, and listeners can follow along even if your wording is rough.", "zh": "这样你只需要想出两个点，就算措辞粗糙，听的人也跟得上。", "sp": null}], [{"id": "s1_2_0", "md": "If you really do not know, split what you know from what you need to check.", "text": "If you really do not know, split what you know from what you need to check.", "zh": "如果你真的不知道，就把你知道的和需要确认的分开说。", "sp": null}, {"id": "s1_2_1", "md": "\"From what I've seen, the backend is on track, but I need to confirm the testing ==estimate== with QA.\"", "text": "\"From what I've seen, the backend is on track, but I need to confirm the testing estimate with QA.\"", "zh": "「从我看到的情况来说，后端进度正常，但测试的预估我得跟 QA 确认一下。」", "sp": null}, {"id": "s1_2_2", "md": "**A partial answer with a clear next step sounds more ==competent== than a complete guess.**", "text": "A partial answer with a clear next step sounds more competent than a complete guess.", "zh": "一个不完整但带着明确下一步的回答，比一个完整的瞎猜显得更专业。", "sp": null}], [{"id": "s1_3_0", "md": "Then __follow up in writing__ the same day.", "text": "Then follow up in writing the same day.", "zh": "然后当天就用文字跟进。", "sp": null}, {"id": "s1_3_1", "md": "That message turns an awkward moment into proof that you are ==reliable==.", "text": "That message turns an awkward moment into proof that you are reliable.", "zh": "这条消息能把一个尴尬的时刻，变成你靠谱的证明。", "sp": null}]]}], "gist": [{"q": "被突然点名时，作者说真正的错误是什么？", "a": "不是反应慢，而是用没想清楚的话填满沉默，结果东拉西扯、什么都没说完。"}, {"q": "作者给了哪几个争取时间、稳住的方法？", "a": "先澄清问题；先说回答的结构（比如“我说两点”）；不确定时区分已知和待确认；会后当天书面跟进。"}, {"q": "为什么“部分答案加明确下一步”比完整的猜测更好？", "a": "它显得更专业可靠，而猜测一旦错了会伤可信度。"}], "dictation": [{"id": "s0_1_2", "text": "The mistake is not being slow; the mistake is filling the silence with noise."}, {"id": "s1_2_2", "text": "A partial answer with a clear next step sounds more competent than a complete guess."}, {"id": "s1_1_0", "text": "Next, tell people the shape of your answer before you fill it in."}, {"id": "s0_1_1", "text": "Your brain is doing two jobs at once, finding the answer and finding the words."}], "shadow": {"text": "Next, tell people the shape of your answer before you fill it in. \"I'd say two things.\" Now you only need to find two points, and listeners can follow along even if your wording is rough.", "marked": "<b>Next</b>, / tell people the <b>shape</b> of your answer / <b>before</b> you fill it in. //<br>\"I'd say <b>two</b> things.\" //<br>Now you only need to find <b>two</b> points, / and listeners can <b>follow along</b> / even if your wording is <b>rough</b>. //"}, "prompts": [{"q": "季度规划会上，VP 突然问你：“你们组的支付重构能不能提前两周？”你还没准备。用 30 秒先争取时间，再给出有结构的回答。", "ref": "Good question. Just to make sure, do you mean the full migration or the first phase? For the first phase, I'd say two things. The code changes could probably move up a week. But the real constraint is testing with the bank partners, and I don't control their schedule. Let me check with them today and send you a realistic date by tomorrow morning.", "ref_zh": "好问题。我确认一下，你指的是整个迁移，还是第一期？第一期的话，我说两点。代码改动大概可以提前一周。但真正的卡点是跟银行合作方的联调测试，他们的排期不在我手里。我今天就去跟他们确认，明早之前给你一个靠谱的日期。", "id": "ref0"}, {"q": "跨部门会议上，有人突然问你某个线上指标为什么下降，你只知道一部分原因。用 30 秒区分已知和待确认的内容，并承诺跟进。", "ref": "Let me split this into what I know and what I don't. What I know is that the drop started on Tuesday, right after the new onboarding flow went out, so that's my main suspect. What I haven't confirmed is whether it's all regions or just one. I'll dig into the data with our analyst this afternoon and post an update in the channel before the end of the day.", "ref_zh": "我把这个分成我知道的和不知道的。我知道的是，下滑是从周二开始的，正好在新的注册引导流程上线之后，所以那是我的头号怀疑对象。我还没确认的是，是所有地区都掉了，还是只有一个地区。今天下午我跟分析师一起深挖一下数据，下班前在群里同步进展。", "id": "ref1"}], "words": [{"w": "ramble", "ipa": "/ˈræmbəl/", "zh": "东拉西扯、漫无边际地说", "ex": "Sorry, I'm rambling. The short answer is no, we're not ready.", "id": "w0"}, {"w": "stock (adj.)", "ipa": "/stɑːk/", "zh": "常备的、现成的", "ex": "\"Let me get back to you\" is a stock phrase, but it works.", "tts_w": "stock", "id": "w1"}, {"w": "panic", "ipa": "/ˈpænɪk/", "zh": "恐慌、慌乱", "ex": "There's no need to panic; the rollback is already running.", "id": "w2"}, {"w": "clarify", "ipa": "/ˈklærəˌfaɪ/", "zh": "澄清、说明", "ex": "Could you clarify whether the deadline includes QA?", "id": "w3"}, {"w": "estimate (n.)", "ipa": "/ˈestɪmət/", "zh": "估算", "ex": "Our first estimate was two sprints, but it took four.", "tts_w": "estimate", "id": "w4"}, {"w": "competent", "ipa": "/ˈkɑːmpɪtənt/", "zh": "能干的、称职的", "ex": "He handled the outage call in a calm, competent way.", "id": "w5"}, {"w": "reliable", "ipa": "/rɪˈlaɪəbəl/", "zh": "可靠的", "ex": "She's the most reliable person on the on-call rotation.", "id": "w6"}, {"w": "partial", "ipa": "/ˈpɑːrʃəl/", "zh": "部分的", "ex": "We have a partial fix that covers most users.", "id": "w7"}, {"w": "put someone on the spot", "ipa": "/pʊt ˈsʌmwʌn ɑːn ðə spɑːt/", "zh": "让人当场难堪、突然发难", "ex": "I didn't mean to put you on the spot about the budget.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Three-Second Panic", "zh": "1. 三秒钟的慌乱", "start": 0.0, "end": 2.28, "words": [[0.105, 0.368], [0.711, 0.816], [0.829, 1.447], [1.461, 1.882]]}, {"kind": "s", "id": "s0_0_0", "md": "You are half listening in a planning call when a director suddenly says, \"What do you think about the timeline?\"", "zh": "你在一个规划会上半听不听，一位总监突然问：「你觉得这个时间线怎么样？」", "sp": null, "gap": false, "start": 2.28, "end": 8.112, "words": [[2.385, 2.504], [2.517, 2.635], [2.648, 3.017], [3.03, 3.464], [3.477, 3.543], [3.556, 3.622], [3.635, 4.017], [4.03, 4.359], [4.372, 4.491], [4.504, 4.556], [4.569, 5.03], [5.043, 5.464], [5.477, 5.964], [6.28, 6.398], [6.412, 6.464], [6.477, 6.596], [6.609, 6.846], [6.859, 7.109], [7.122, 7.188], [7.201, 7.714]]}, {"kind": "s", "id": "s0_0_1", "md": "Your heart speeds up, your mind goes blank, and you start talking before you know what you want to say.", "zh": "你心跳加速，脑子一片空白，还没想好要说什么就开口了。", "sp": null, "gap": false, "start": 8.112, "end": 14.136, "words": [[8.217, 8.336], [8.349, 8.612], [8.625, 9.086], [9.099, 9.349], [9.651, 9.744], [9.757, 10.138], [10.151, 10.441], [10.454, 10.941], [11.27, 11.336], [11.349, 11.415], [11.428, 11.744], [11.757, 12.178], [12.191, 12.559], [12.573, 12.678], [12.691, 12.928], [12.941, 13.059], [13.073, 13.151], [13.165, 13.283], [13.296, 13.349], [13.362, 13.744]]}, {"kind": "s", "id": "s0_0_2", "md": "Thirty seconds later, you have ==rambled== through three ideas and finished none of them.", "zh": "三十秒后，你东拉西扯说了三个点，一个都没讲完。", "sp": null, "gap": false, "start": 14.136, "end": 19.44, "words": [[14.32, 14.557], [14.57, 14.965], [14.978, 15.32], [15.754, 15.82], [15.833, 16.018], [16.031, 16.452], [16.465, 16.662], [16.675, 17.044], [17.057, 17.781], [17.912, 18.044], [18.057, 18.478], [18.491, 18.728], [18.741, 18.833], [18.847, 19.044]]}, {"kind": "s", "id": "s0_1_0", "md": "This reaction is normal, especially in a second language.", "zh": "这种反应很正常，用第二语言的时候尤其如此。", "sp": null, "gap": true, "start": 19.44, "end": 23.76, "words": [[19.545, 19.716], [19.729, 20.335], [20.453, 20.611], [20.624, 21.111], [21.519, 22.243], [22.256, 22.348], [22.361, 22.414], [22.427, 22.795], [22.808, 23.361]]}, {"kind": "s", "id": "s0_1_1", "md": "Your brain is doing two jobs at once, finding the answer and finding the words.", "zh": "你的大脑在同时干两件事：想答案，还要找词。", "sp": null, "gap": false, "start": 23.76, "end": 28.944, "words": [[23.865, 23.971], [23.984, 24.299], [24.313, 24.431], [24.444, 24.76], [24.773, 25.049], [25.063, 25.471], [25.484, 25.589], [25.602, 26.128], [26.392, 26.734], [26.747, 26.826], [26.839, 27.339], [27.497, 27.563], [27.576, 27.971], [27.984, 28.063], [28.076, 28.563]]}, {"kind": "s", "id": "s0_1_2", "md": "**The mistake is not being slow; the mistake is filling the silence with noise.**", "zh": "错不在反应慢，错在用噪音去填满沉默。", "sp": null, "gap": false, "start": 28.944, "end": 34.032, "words": [[29.062, 29.102], [29.115, 29.589], [29.694, 29.812], [29.826, 30.102], [30.115, 30.378], [30.391, 30.865], [31.247, 31.326], [31.339, 31.799], [31.812, 31.931], [31.944, 32.299], [32.312, 32.391], [32.405, 32.905], [32.918, 33.076], [33.089, 33.641]]}, {"kind": "s", "id": "s0_2_0", "md": "Experienced speakers are not faster thinkers.", "zh": "有经验的人并不是想得更快。", "sp": null, "gap": true, "start": 34.032, "end": 37.248, "words": [[34.137, 34.769], [34.782, 35.282], [35.295, 35.44], [35.453, 35.795], [35.808, 36.295], [36.308, 36.848]]}, {"kind": "s", "id": "s0_2_1", "md": "They simply have a few ==stock== phrases that __buy them time__ while sounding calm.", "zh": "他们只是手里有几句现成的话，既能争取时间，听起来又很从容。", "sp": null, "gap": false, "start": 37.248, "end": 41.64, "words": [[37.366, 37.432], [37.445, 37.787], [37.801, 37.932], [37.945, 38.011], [38.024, 38.287], [38.301, 38.63], [38.643, 39.143], [39.156, 39.314], [39.327, 39.459], [39.472, 39.656], [39.669, 40.09], [40.34, 40.485], [40.498, 40.88], [40.893, 41.248]]}, {"kind": "s", "id": "s0_2_2", "md": "Those phrases let the ==panic== pass before the real answer begins.", "zh": "这些话能让慌乱先过去，再开始真正回答。", "sp": null, "gap": false, "start": 41.64, "end": 45.84, "words": [[41.758, 41.982], [41.995, 42.535], [42.548, 42.706], [42.719, 42.798], [42.811, 43.219], [43.232, 43.64], [43.653, 44.048], [44.061, 44.153], [44.166, 44.548], [44.561, 44.837], [44.851, 45.456]]}, {"kind": "h", "id": "h1", "md": "2. Buy Time, Then Give a Shape", "zh": "2. 先争取时间，再给出框架", "start": 45.84, "end": 48.552, "words": [[45.958, 46.182], [46.472, 46.616], [46.629, 47.077], [47.379, 47.511], [47.524, 47.669], [47.682, 47.708], [47.722, 48.156]]}, {"kind": "s", "id": "s1_0_0", "md": "Start by ==clarifying== the question, even if you understood it.", "zh": "先澄清一下问题，哪怕你其实听懂了。", "sp": null, "gap": false, "start": 48.552, "end": 52.296, "words": [[48.657, 48.96], [48.973, 49.131], [49.144, 49.789], [49.802, 49.881], [49.894, 50.381], [50.802, 50.973], [50.986, 51.091], [51.105, 51.249], [51.263, 51.71], [51.723, 51.907]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Just to make sure, are you asking about the beta date or the full launch?\"", "zh": "「我确认一下，你问的是 beta 的时间，还是全量上线？」", "sp": null, "gap": false, "start": 52.296, "end": 56.76, "words": [[52.48, 52.546], [52.625, 52.691], [52.704, 52.875], [52.888, 53.23], [53.638, 53.743], [53.757, 53.862], [53.875, 54.283], [54.296, 54.493], [54.507, 54.599], [54.612, 54.875], [54.888, 55.164], [55.243, 55.335], [55.349, 55.428], [55.441, 55.717], [55.73, 56.243]]}, {"kind": "s", "id": "s1_0_2", "md": "This gives you five seconds and often makes the question easier to answer.", "zh": "这能给你争取五秒钟，而且问题往往也会变得更好回答。", "sp": null, "gap": false, "start": 56.76, "end": 61.176, "words": [[56.865, 57.063], [57.076, 57.299], [57.313, 57.431], [57.444, 57.734], [57.747, 58.326], [58.484, 58.642], [58.655, 59.049], [59.063, 59.299], [59.313, 59.405], [59.418, 59.839], [59.852, 60.181], [60.194, 60.273], [60.286, 60.786]]}, {"kind": "s", "id": "s1_1_0", "md": "Next, tell people the shape of your answer before you fill it in.", "zh": "接着，先告诉大家你回答的框架，再往里填内容。", "sp": null, "gap": true, "start": 61.176, "end": 64.968, "words": [[61.281, 61.768], [62.044, 62.229], [62.242, 62.544], [62.558, 62.637], [62.65, 62.965], [62.979, 63.058], [63.071, 63.229], [63.242, 63.584], [63.597, 63.913], [63.926, 64.031], [64.044, 64.294], [64.308, 64.387], [64.4, 64.571]]}, {"kind": "s", "id": "s1_1_1", "md": "\"I'd say two things.\"", "zh": "「我说两点。」", "sp": null, "gap": false, "start": 64.968, "end": 66.84, "words": [[65.152, 65.152], [65.231, 65.389], [65.402, 65.6], [65.613, 66.139]]}, {"kind": "s", "id": "s1_1_2", "md": "Now you only need to find two points, and listeners can __follow along__ even if your wording is rough.", "zh": "这样你只需要想出两个点，就算措辞粗糙，听的人也跟得上。", "sp": null, "gap": false, "start": 66.84, "end": 72.504, "words": [[66.945, 67.09], [67.103, 67.248], [67.261, 67.498], [67.511, 67.669], [67.682, 67.748], [67.761, 68.077], [68.09, 68.274], [68.287, 68.827], [69.116, 69.261], [69.274, 69.735], [69.748, 69.893], [69.906, 70.274], [70.287, 70.656], [70.669, 70.932], [70.945, 71.05], [71.064, 71.182], [71.195, 71.511], [71.524, 71.656], [71.669, 72.103]]}, {"kind": "s", "id": "s1_2_0", "md": "If you really do not know, split what you know from what you need to check.", "zh": "如果你真的不知道，就把你知道的和需要确认的分开说。", "sp": null, "gap": true, "start": 72.504, "end": 76.488, "words": [[72.609, 72.728], [72.741, 72.859], [72.872, 73.122], [73.136, 73.254], [73.267, 73.517], [73.53, 73.807], [74.201, 74.491], [74.504, 74.636], [74.649, 74.754], [74.767, 74.991], [75.004, 75.162], [75.175, 75.307], [75.32, 75.399], [75.412, 75.583], [75.596, 75.649], [75.662, 76.096]]}, {"kind": "s", "id": "s1_2_1", "md": "\"From what I've seen, the backend is on track, but I need to confirm the testing ==estimate== with QA.\"", "zh": "「从我看到的情况来说，后端进度正常，但测试的预估我得跟 QA 确认一下。」", "sp": null, "gap": false, "start": 76.488, "end": 82.776, "words": [[76.725, 76.725], [76.804, 76.922], [76.935, 77.067], [77.08, 77.462], [77.843, 77.922], [77.935, 78.343], [78.356, 78.462], [78.475, 78.606], [78.62, 79.133], [79.396, 79.527], [79.541, 79.58], [79.593, 79.804], [79.817, 79.896], [79.909, 80.383], [80.396, 80.501], [80.514, 80.988], [81.001, 81.462], [81.475, 81.646], [81.659, 82.133]]}, {"kind": "s", "id": "s1_2_2", "md": "**A partial answer with a clear next step sounds more ==competent== than a complete guess.**", "zh": "一个不完整但带着明确下一步的回答，比一个完整的瞎猜显得更专业。", "sp": null, "gap": false, "start": 82.776, "end": 88.104, "words": [[82.894, 82.96], [82.973, 83.408], [83.421, 83.776], [83.789, 83.934], [83.947, 84.013], [84.026, 84.421], [84.434, 84.71], [84.723, 85.066], [85.263, 85.592], [85.605, 85.815], [85.829, 86.421], [86.539, 86.684], [86.697, 86.75], [86.763, 87.236], [87.25, 87.723]]}, {"kind": "s", "id": "s1_3_0", "md": "Then __follow up in writing__ the same day.", "zh": "然后当天就用文字跟进。", "sp": null, "gap": true, "start": 88.104, "end": 90.6, "words": [[88.222, 88.341], [88.354, 88.749], [88.762, 88.972], [89.065, 89.183], [89.196, 89.512], [89.525, 89.604], [89.617, 89.893], [89.907, 90.196]]}, {"kind": "s", "id": "s1_3_1", "md": "That message turns an awkward moment into proof that you are ==reliable==.", "zh": "这条消息能把一个尴尬的时刻，变成你靠谱的证明。", "sp": null, "gap": false, "start": 90.6, "end": 95.112, "words": [[90.718, 90.889], [90.903, 91.363], [91.376, 91.692], [91.705, 91.85], [91.955, 92.442], [92.455, 92.929], [92.995, 93.192], [93.205, 93.626], [93.639, 93.784], [93.797, 93.942], [93.955, 94.087], [94.1, 94.718]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

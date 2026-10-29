@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Getting Five Minutes with Your Skip-Level · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "031", "title": "Getting Five Minutes with Your Skip-Level", "meta": "B2 · 约 270 词 · 场景：隔级沟通", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. What Your Skip-Level Cannot See", "heading_zh": "1. 隔级老板看不到的东西", "rows": [[{"id": "s0_0_0", "md": "Your manager's manager runs a group of eighty people.", "text": "Your manager's manager runs a group of eighty people.", "zh": "你老板的老板管着一个八十人的大组。", "sp": null}, {"id": "s0_0_1", "md": "Most of what reaches them has been ==filtered== through two layers of managers and cleaned up for slides.", "text": "Most of what reaches them has been filtered through two layers of managers and cleaned up for slides.", "zh": "传到他那儿的大部分信息，都已经被两层经理过滤过，还为了做 slides 修饰过。", "sp": null}, {"id": "s0_0_2", "md": "That is why five minutes with someone close to the work can be worth more to them than another dashboard.", "text": "That is why five minutes with someone close to the work can be worth more to them than another dashboard.", "zh": "所以，跟一个离一线很近的人聊五分钟，对他来说可能比再看一个大盘更有价值。", "sp": null}], [{"id": "s0_1_0", "md": "**Your skip-level does not need a status update; they need a view they cannot get from a report.**", "text": "Your skip-level does not need a status update; they need a view they cannot get from a report.", "zh": "隔级老板不需要你汇报进度；他需要的是从报告里看不到的视角。", "sp": null}, {"id": "s0_1_1", "md": "Tell them what you see on the ground: where teams __get stuck__, which ==handoff== keeps failing, what users complain about most.", "text": "Tell them what you see on the ground: where teams get stuck, which handoff keeps failing, what users complain about most.", "zh": "告诉他你在一线看到了什么：团队在哪儿卡住、哪个交接环节老出问题、用户抱怨最多的是什么。", "sp": null}, {"id": "s0_1_2", "md": "Small, specific details are exactly what gets lost on the way up.", "text": "Small, specific details are exactly what gets lost on the way up.", "zh": "这些细小、具体的细节，恰恰是往上传的过程中最容易丢的。", "sp": null}], [{"id": "s0_2_0", "md": "Avoid using the time to complain about your manager.", "text": "Avoid using the time to complain about your manager.", "zh": "别把这个时间拿来抱怨你的直属经理。", "sp": null}, {"id": "s0_2_1", "md": "It puts your skip-level in an ==awkward== position and rarely changes anything.", "text": "It puts your skip-level in an awkward position and rarely changes anything.", "zh": "这会让隔级老板很尴尬，而且基本改变不了什么。", "sp": null}, {"id": "s0_2_2", "md": "If there is a real problem, __raise it with__ your manager first.", "text": "If there is a real problem, raise it with your manager first.", "zh": "如果真有问题，先跟你的经理提。", "sp": null}]]}, {"heading": "2. A Five-Minute Script", "heading_zh": "2. 五分钟谈话的准备", "rows": [[{"id": "s1_0_0", "md": "Prepare three things before the meeting.", "text": "Prepare three things before the meeting.", "zh": "开会前准备好三样东西。", "sp": null}, {"id": "s1_0_1", "md": "First, one ==observation== backed by a concrete example.", "text": "First, one observation backed by a concrete example.", "zh": "第一，一个有具体例子支撑的观察。", "sp": null}, {"id": "s1_0_2", "md": "\"Two of our launches slipped last month because the data team only takes requests through a form nobody checks.\"", "text": "\"Two of our launches slipped last month because the data team only takes requests through a form nobody checks.\"", "zh": "「上个月我们有两个项目延期了，因为数据团队只通过一个没人看的表单接需求。」", "sp": null}], [{"id": "s1_1_0", "md": "Second, one question that shows you think beyond your own team.", "text": "Second, one question that shows you think beyond your own team.", "zh": "第二，一个能体现你在思考本团队以外事情的问题。", "sp": null}, {"id": "s1_1_1", "md": "\"What is the biggest risk you see for our group next year?\"", "text": "\"What is the biggest risk you see for our group next year?\"", "zh": "「您觉得我们组明年最大的风险是什么？」", "sp": null}, {"id": "s1_1_2", "md": "Their answer tells you what they __lose sleep over__, which helps you ==prioritize== your own work.", "text": "Their answer tells you what they lose sleep over, which helps you prioritize your own work.", "zh": "他的回答会告诉你他最睡不着觉的是什么，这能帮你给自己的工作排优先级。", "sp": null}], [{"id": "s1_2_0", "md": "Third, one small ask, if you have one.", "text": "Third, one small ask, if you have one.", "zh": "第三，如果有的话，提一个小请求。", "sp": null}, {"id": "s1_2_1", "md": "It might be an introduction to another team, or ==sponsorship== for a fix that crosses team lines.", "text": "It might be an introduction to another team, or sponsorship for a fix that crosses team lines.", "zh": "可能是请他帮你引荐另一个团队，或者为一个跨团队的修复站台。", "sp": null}, {"id": "s1_2_2", "md": "**Keep the ask small enough that they can say yes on the spot.**", "text": "Keep the ask small enough that they can say yes on the spot.", "zh": "请求要小到他当场就能答应。", "sp": null}], [{"id": "s1_3_0", "md": "Afterwards, tell your manager what you discussed.", "text": "Afterwards, tell your manager what you discussed.", "zh": "事后，把聊了什么告诉你的经理。", "sp": null}, {"id": "s1_3_1", "md": "When your manager is never surprised, both relationships stay healthy, and the next meeting is easier to get.", "text": "When your manager is never surprised, both relationships stay healthy, and the next meeting is easier to get.", "zh": "经理永远不会被蒙在鼓里，两边的关系才能都保持健康，下次也更容易约到时间。", "sp": null}]]}], "gist": [{"q": "为什么和隔级老板的五分钟对他们有价值？", "a": "他们收到的信息经过两层经理过滤和美化，一线的具体细节正是他们缺少的视角。"}, {"q": "文章提醒不要在这个时间里做什么？", "a": "不要抱怨自己的直属经理，这会让隔级老板很尴尬，也很少改变什么；真有问题先找直属经理。"}, {"q": "五分钟里应该准备哪三样东西？之后还要做什么？", "a": "一个有具体例子的观察、一个超出本团队视角的问题、一个对方能当场答应的小请求；之后把谈话内容告诉直属经理。"}], "dictation": [{"id": "s0_1_0", "text": "Your skip-level does not need a status update; they need a view they cannot get from a report."}, {"id": "s1_2_2", "text": "Keep the ask small enough that they can say yes on the spot."}, {"id": "s0_1_2", "text": "Small, specific details are exactly what gets lost on the way up."}, {"id": "s0_2_2", "text": "If there is a real problem, raise it with your manager first."}], "shadow": {"text": "Third, one small ask, if you have one. It might be an introduction to another team, or sponsorship for a fix that crosses team lines. Keep the ask small enough that they can say yes on the spot.", "marked": "Third, / one <b>small</b> ask, / if you have one. //<br>It might be an <b>introduction</b> to another team, / or <b>sponsorship</b> for a fix / that <b>crosses</b> team lines. //<br>Keep the ask <b>small</b> enough / that they can say <b>yes</b> / on the <b>spot</b>. //"}, "prompts": [{"q": "电梯里碰到隔级老板，他问「最近怎么样？」用 30 秒给他一个一线观察，而不是汇报进度。", "ref": "Pretty good, thanks. One thing I've noticed might be useful for you. Our last two launches were delayed by about a week each, and both times the reason was the same: we were waiting on access approvals from the security team. It's not anyone's fault, the queue is just manual. If it's helpful, I can write up a short note on what's slowing it down.", "ref_zh": "挺好的，谢谢。有件事我注意到了，可能对您有用。我们最近两次上线都各推迟了大约一周，两次原因都一样：在等安全团队的权限审批。这不是谁的错，只是整个流程是人工排队的。如果有帮助的话，我可以写个简短的说明，讲讲是什么在拖慢它。", "id": "ref0"}, {"q": "隔级一对一快结束了，你想请他帮忙引荐另一个部门的负责人来推动一个跨团队修复。用 30 秒提出这个小请求。", "ref": "Before we wrap up, I have one small ask. The duplicate notification bug sits between our team and the messaging team, and right now nobody owns it. I've talked to their engineers, and they're willing, but they need their lead to prioritize it. Would you be open to introducing me to her? A short call should be enough to agree on an owner.", "ref_zh": "结束之前，我有个小请求。重复通知这个 bug 卡在我们团队和消息团队之间，现在没人负责。我跟他们的工程师聊过，他们愿意做，但需要他们的 lead 把它排进优先级。您方便帮我引荐一下她吗？简单开个短会，应该就能把负责人定下来。", "id": "ref1"}], "words": [{"w": "skip-level", "ipa": "/ˈskɪp ˌlevəl/", "zh": "隔级上级", "ex": "I have a skip-level one-on-one with the director on Friday.", "tts_w": "skip level", "id": "w0"}, {"w": "filter (v.)", "ipa": "/ˈfɪltər/", "zh": "过滤", "ex": "Bad news often gets filtered out before it reaches leadership.", "tts_w": "filter", "id": "w1"}, {"w": "handoff", "ipa": "/ˈhændɔːf/", "zh": "交接", "ex": "Most bugs appear at the handoff between design and engineering.", "id": "w2"}, {"w": "awkward", "ipa": "/ˈɔːkwərd/", "zh": "尴尬的、为难的", "ex": "It was awkward to correct the VP's numbers in front of everyone.", "tts": "It was awkward to correct the vice president's numbers in front of everyone.", "id": "w3"}, {"w": "observation", "ipa": "/ˌɑːbzərˈveɪʃən/", "zh": "观察、看到的情况", "ex": "One observation from on-call: most pages come from the same service.", "id": "w4"}, {"w": "prioritize", "ipa": "/praɪˈɔːrətaɪz/", "zh": "确定优先级", "ex": "We need to prioritize the login bug over new features.", "id": "w5"}, {"w": "sponsorship", "ipa": "/ˈspɑːnsərʃɪp/", "zh": "（高层）支持、背书", "ex": "Without executive sponsorship, the cross-team cleanup will stall.", "id": "w6"}, {"w": "on the spot", "ipa": "/ɑːn ðə ˈspɑːt/", "zh": "当场", "ex": "She approved the extra budget on the spot.", "id": "w7"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. What Your Skip-Level Cannot See", "zh": "1. 隔级老板看不到的东西", "start": 0.0, "end": 2.688, "words": [[0.105, 0.355], [0.711, 0.855], [0.868, 1.0], [1.013, 1.579], [1.592, 1.947], [1.961, 2.303]]}, {"kind": "s", "id": "s0_0_0", "md": "Your manager's manager runs a group of eighty people.", "zh": "你老板的老板管着一个八十人的大组。", "sp": null, "gap": false, "start": 2.688, "end": 6.216, "words": [[2.793, 2.885], [2.899, 3.385], [3.399, 3.899], [3.912, 4.135], [4.149, 4.214], [4.227, 4.622], [4.833, 5.004], [5.162, 5.372], [5.385, 5.82]]}, {"kind": "s", "id": "s0_0_1", "md": "Most of what reaches them has been ==filtered== through two layers of managers and cleaned up for slides.", "zh": "传到他那儿的大部分信息，都已经被两层经理过滤过，还为了做 slides 修饰过。", "sp": null, "gap": false, "start": 6.216, "end": 12.24, "words": [[6.321, 6.571], [6.584, 6.65], [6.663, 6.848], [6.861, 7.269], [7.282, 7.479], [7.492, 7.637], [7.65, 7.808], [7.821, 8.361], [8.374, 8.598], [8.611, 8.94], [8.953, 9.334], [9.348, 9.427], [9.44, 10.137], [10.4, 10.519], [10.532, 10.887], [10.9, 11.032], [11.045, 11.19], [11.203, 11.861]]}, {"kind": "s", "id": "s0_0_2", "md": "That is why five minutes with someone close to the work can be worth more to them than another dashboard.", "zh": "所以，跟一个离一线很近的人聊五分钟，对他来说可能比再看一个大盘更有价值。", "sp": null, "gap": false, "start": 12.24, "end": 17.976, "words": [[12.358, 12.477], [12.49, 12.595], [12.608, 12.858], [12.872, 13.227], [13.24, 13.582], [13.595, 13.74], [13.753, 14.122], [14.135, 14.464], [14.477, 14.556], [14.569, 14.661], [14.674, 15.029], [15.161, 15.306], [15.319, 15.451], [15.464, 15.74], [15.753, 16.003], [16.016, 16.122], [16.135, 16.372], [16.503, 16.622], [16.635, 16.937], [16.951, 17.582]]}, {"kind": "s", "id": "s0_1_0", "md": "**Your skip-level does not need a status update; they need a view they cannot get from a report.**", "zh": "隔级老板不需要你汇报进度；他需要的是从报告里看不到的视角。", "sp": null, "gap": true, "start": 17.976, "end": 23.784, "words": [[18.094, 18.213], [18.226, 18.805], [18.818, 19.015], [19.029, 19.371], [19.384, 19.581], [19.594, 19.634], [19.647, 20.108], [20.121, 20.555], [20.963, 21.068], [21.081, 21.279], [21.292, 21.331], [21.344, 21.7], [21.713, 21.844], [21.858, 22.358], [22.371, 22.581], [22.594, 22.765], [22.779, 22.831], [22.844, 23.384]]}, {"kind": "s", "id": "s0_1_1", "md": "Tell them what you see on the ground: where teams __get stuck__, which ==handoff== keeps failing, what users complain about most.", "zh": "告诉他你在一线看到了什么：团队在哪儿卡住、哪个交接环节老出问题、用户抱怨最多的是什么。", "sp": null, "gap": false, "start": 23.784, "end": 31.272, "words": [[23.902, 24.047], [24.06, 24.218], [24.231, 24.363], [24.376, 24.468], [24.481, 24.758], [24.771, 24.876], [24.889, 24.955], [24.968, 25.402], [25.81, 25.942], [25.955, 26.271], [26.284, 26.442], [26.455, 26.902], [27.166, 27.35], [27.363, 27.863], [27.876, 28.179], [28.192, 28.666], [29.06, 29.218], [29.231, 29.613], [29.626, 30.06], [30.073, 30.337], [30.35, 30.876]]}, {"kind": "s", "id": "s0_1_2", "md": "Small, specific details are exactly what gets lost on the way up.", "zh": "这些细小、具体的细节，恰恰是往上传的过程中最容易丢的。", "sp": null, "gap": false, "start": 31.272, "end": 35.544, "words": [[31.377, 31.746], [31.996, 32.509], [32.522, 33.009], [33.022, 33.14], [33.154, 33.772], [33.785, 33.93], [33.943, 34.14], [34.154, 34.535], [34.548, 34.614], [34.627, 34.706], [34.719, 34.93], [34.943, 35.154]]}, {"kind": "s", "id": "s0_2_0", "md": "Avoid using the time to complain about your manager.", "zh": "别把这个时间拿来抱怨你的直属经理。", "sp": null, "gap": true, "start": 35.544, "end": 38.664, "words": [[35.636, 36.031], [36.044, 36.347], [36.36, 36.452], [36.465, 36.807], [36.82, 36.926], [36.939, 37.36], [37.373, 37.597], [37.61, 37.715], [37.728, 38.268]]}, {"kind": "s", "id": "s0_2_1", "md": "It puts your skip-level in an ==awkward== position and rarely changes anything.", "zh": "这会让隔级老板很尴尬，而且基本改变不了什么。", "sp": null, "gap": false, "start": 38.664, "end": 43.488, "words": [[38.769, 38.861], [38.875, 39.098], [39.111, 39.256], [39.269, 39.94], [39.953, 40.085], [40.098, 40.217], [40.335, 40.769], [40.782, 41.388], [41.559, 41.782], [41.796, 42.177], [42.19, 42.638], [42.651, 43.098]]}, {"kind": "s", "id": "s0_2_2", "md": "If there is a real problem, __raise it with__ your manager first.", "zh": "如果真有问题，先跟你的经理提。", "sp": null, "gap": false, "start": 43.488, "end": 47.136, "words": [[43.593, 43.699], [43.712, 43.856], [43.87, 43.962], [43.975, 44.041], [44.054, 44.396], [44.409, 44.883], [45.264, 45.475], [45.488, 45.567], [45.58, 45.712], [45.725, 45.817], [45.83, 46.225], [46.238, 46.751]]}, {"kind": "h", "id": "h1", "md": "2. A Five-Minute Script", "zh": "2. 五分钟谈话的准备", "start": 47.136, "end": 49.44, "words": [[47.241, 47.57], [47.86, 47.939], [47.952, 48.57], [48.583, 49.057]]}, {"kind": "s", "id": "s1_0_0", "md": "Prepare three things before the meeting.", "zh": "开会前准备好三样东西。", "sp": null, "gap": false, "start": 49.44, "end": 51.792, "words": [[49.558, 49.887], [49.901, 50.19], [50.203, 50.637], [50.651, 50.966], [50.979, 51.045], [51.058, 51.414]]}, {"kind": "s", "id": "s1_0_1", "md": "First, one ==observation== backed by a concrete example.", "zh": "第一，一个有具体例子支撑的观察。", "sp": null, "gap": false, "start": 51.792, "end": 55.728, "words": [[51.963, 52.358], [52.608, 52.805], [52.818, 53.542], [53.555, 54.003], [54.016, 54.16], [54.174, 54.239], [54.253, 54.753], [54.766, 55.345]]}, {"kind": "s", "id": "s1_0_2", "md": "\"Two of our launches slipped last month because the data team only takes requests through a form nobody checks.\"", "zh": "「上个月我们有两个项目延期了，因为数据团队只通过一个没人看的表单接需求。」", "sp": null, "gap": false, "start": 55.728, "end": 62.496, "words": [[55.912, 55.952], [56.031, 56.136], [56.149, 56.241], [56.254, 56.754], [56.767, 57.11], [57.123, 57.439], [57.452, 57.807], [57.886, 58.175], [58.189, 58.307], [58.32, 58.596], [58.61, 58.965], [59.083, 59.399], [59.412, 59.741], [59.754, 60.386], [60.399, 60.596], [60.61, 60.662], [60.675, 61.083], [61.096, 61.504], [61.517, 62.083]]}, {"kind": "s", "id": "s1_1_0", "md": "Second, one question that shows you think beyond your own team.", "zh": "第二，一个能体现你在思考本团队以外事情的问题。", "sp": null, "gap": true, "start": 62.496, "end": 66.72, "words": [[62.614, 63.035], [63.457, 63.641], [63.654, 64.154], [64.299, 64.43], [64.443, 64.772], [64.785, 64.891], [64.904, 65.22], [65.233, 65.667], [65.68, 65.812], [65.825, 65.983], [65.996, 66.338]]}, {"kind": "s", "id": "s1_1_1", "md": "\"What is the biggest risk you see for our group next year?\"", "zh": "「您觉得我们组明年最大的风险是什么？」", "sp": null, "gap": false, "start": 66.72, "end": 70.032, "words": [[66.904, 66.97], [66.97, 67.075], [67.088, 67.233], [67.246, 67.681], [67.694, 68.009], [68.023, 68.128], [68.141, 68.43], [68.444, 68.628], [68.641, 68.759], [68.773, 69.036], [69.049, 69.352], [69.365, 69.628]]}, {"kind": "s", "id": "s1_1_2", "md": "Their answer tells you what they __lose sleep over__, which helps you ==prioritize== your own work.", "zh": "他的回答会告诉你他最睡不着觉的是什么，这能帮你给自己的工作排优先级。", "sp": null, "gap": false, "start": 70.032, "end": 74.928, "words": [[70.15, 70.321], [70.335, 70.637], [70.65, 70.927], [70.94, 71.019], [71.032, 71.164], [71.177, 71.295], [71.308, 71.677], [71.69, 71.979], [71.993, 72.282], [72.664, 72.782], [72.795, 73.032], [73.045, 73.137], [73.15, 73.861], [73.874, 74.006], [74.019, 74.177], [74.19, 74.545]]}, {"kind": "s", "id": "s1_2_0", "md": "Third, one small ask, if you have one.", "zh": "第三，如果有的话，提一个小请求。", "sp": null, "gap": true, "start": 74.928, "end": 78.072, "words": [[75.086, 75.507], [75.889, 76.073], [76.086, 76.415], [76.428, 76.81], [76.994, 77.073], [77.086, 77.178], [77.191, 77.428], [77.441, 77.691]]}, {"kind": "s", "id": "s1_2_1", "md": "It might be an introduction to another team, or ==sponsorship== for a fix that crosses team lines.", "zh": "可能是请他帮你引荐另一个团队，或者为一个跨团队的修复站台。", "sp": null, "gap": false, "start": 78.072, "end": 83.928, "words": [[78.177, 78.256], [78.269, 78.48], [78.493, 78.625], [78.638, 78.717], [78.73, 79.401], [79.414, 79.546], [79.559, 79.914], [79.927, 80.309], [80.73, 80.809], [80.822, 81.467], [81.48, 81.651], [81.664, 81.704], [81.717, 82.098], [82.111, 82.243], [82.256, 82.73], [82.743, 82.993], [83.006, 83.533]]}, {"kind": "s", "id": "s1_2_2", "md": "**Keep the ask small enough that they can say yes on the spot.**", "zh": "请求要小到他当场就能答应。", "sp": null, "gap": false, "start": 83.928, "end": 87.504, "words": [[84.033, 84.244], [84.257, 84.375], [84.389, 84.717], [84.731, 85.099], [85.112, 85.402], [85.415, 85.546], [85.56, 85.678], [85.691, 85.823], [85.836, 86.099], [86.112, 86.441], [86.454, 86.533], [86.546, 86.612], [86.625, 87.099]]}, {"kind": "s", "id": "s1_3_0", "md": "Afterwards, tell your manager what you discussed.", "zh": "事后，把聊了什么告诉你的经理。", "sp": null, "gap": true, "start": 87.504, "end": 90.576, "words": [[87.609, 88.267], [88.53, 88.701], [88.715, 88.846], [88.859, 89.28], [89.293, 89.425], [89.438, 89.517], [89.53, 90.175]]}, {"kind": "s", "id": "s1_3_1", "md": "When your manager is never surprised, both relationships stay healthy, and the next meeting is easier to get.", "zh": "经理永远不会被蒙在鼓里，两边的关系才能都保持健康，下次也更容易约到时间。", "sp": null, "gap": false, "start": 90.576, "end": 97.464, "words": [[90.694, 90.787], [90.8, 90.892], [90.905, 91.405], [91.418, 91.589], [91.602, 91.905], [91.918, 92.615], [92.879, 93.129], [93.142, 93.879], [93.892, 94.155], [94.168, 94.681], [94.997, 95.089], [95.102, 95.181], [95.194, 95.484], [95.497, 95.852], [96.063, 96.194], [96.273, 96.642], [96.655, 96.721], [96.734, 97.076]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

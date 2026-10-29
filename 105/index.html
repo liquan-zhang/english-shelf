@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Renting a Car for the Weekend · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "105", "type": "dialogue", "title": "Renting a Car for the Weekend", "meta": "B2 · 约 320 词 · 场景：租车保险、押金与还车验车", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Rental Agent", "name_zh": "租车柜台", "voice": "en-US-AvaNeural"}}, "gist": [{"q": "基础保险和全险有什么区别？「你」选了哪个？", "a": "基础保险车损要自付两千块；全险每天三十块，自付额降到零。「你」选了全险。"}, {"q": "还车时发现刮痕，最后怎么解决的？", "a": "那道刮痕取车时就有，「你」周五拍过照，取车记录里也有，所以不用赔。"}, {"q": "油没加满会怎样？「你」怎么做的？", "a": "按满油取满油还，要收约四十块加油费；「你」决定自己去附近加油站加满，二十分钟内回来就免收。"}], "dictation": [{"id": "s0_3_0", "text": "Here you go. What exactly does the basic insurance cover?"}, {"id": "s0_11_0", "text": "Before I drive off, could we walk around the car and note any existing scratches?"}, {"id": "s1_1_0", "text": "That scratch was already there. We took a photo of it on Friday."}, {"id": "s1_5_0", "text": "Forty dollars? Is there a petrol station nearby? I'd rather fill it up myself."}], "shadow": {"speaker": "A", "text": "Before I drive off, could we walk around the car and note any existing scratches?", "marked": "Before I <b>drive off</b>, //<br>could we <b>walk around</b> the car / and note any <b>existing</b> scratches? //"}, "prompts": [{"q": "取车时发现车里有很重的烟味，而你带着孩子。礼貌地要求换一辆车，或者问清楚如果不换会不会算你的责任。", "ref": "Sorry, before I take this one, I noticed the car smells quite strongly of smoke. I'm driving with my three-year-old, so I'd really prefer a different car. Do you have another compact SUV available? If not, could you note it on the form, so I'm not charged a cleaning fee when I bring it back?", "ref_zh": "不好意思，开走之前想说一下，这车里烟味很重。我要带三岁的孩子，所以很希望能换一辆。还有别的紧凑型 SUV 吗？如果没有，能不能在单子上备注一下，免得还车时收我清洁费？", "id": "ref0"}, {"q": "周日路上堵车，你会晚两个小时还车。给租车公司打电话，说明情况，问会怎么收费。", "ref": "Hi, this is Lee. I rented a compact SUV from you on Friday, and I'm supposed to return it at six tonight. We're stuck in heavy traffic, so I'll probably be about two hours late. Is that going to be a problem? I'd like to know how you charge for late returns, and whether it's cheaper to extend by a full day.", "ref_zh": "你好，我是 Lee。我周五在你们这儿租了一辆紧凑型 SUV，本来今晚六点还车。我们堵在路上了，估计要晚两个小时左右。会有问题吗？想了解一下晚还车怎么收费，以及直接续租一整天是不是更划算。", "id": "ref1"}], "words": [{"w": "compact", "ipa": "/ˈkɑːmpækt/", "zh": "紧凑型的", "ex": "We rented a compact car to save on petrol.", "id": "w0"}, {"w": "third-party", "ipa": "/ˌθɜːrd ˈpɑːrti/", "zh": "第三方的", "ex": "Basic insurance only covers third-party damage.", "id": "w1"}, {"w": "excess", "ipa": "/ˈekses/", "zh": "（保险）自付额", "ex": "The excess on this policy is one thousand dollars.", "id": "w2"}, {"w": "deposit", "ipa": "/dɪˈpɑːzɪt/", "zh": "押金", "ex": "They held a deposit on my credit card.", "id": "w3"}, {"w": "inspection", "ipa": "/ɪnˈspekʃən/", "zh": "检查", "ex": "The car passed the inspection with no problems.", "id": "w4"}, {"w": "refueling", "ipa": "/ˌriːˈfjuːəlɪŋ/", "zh": "加油", "ex": "The refueling charge is much higher than the pump price.", "id": "w5"}, {"w": "fill up", "ipa": "/fɪl ʌp/", "zh": "加满", "ex": "Let's fill up before we get on the highway.", "id": "w6"}, {"w": "waive", "ipa": "/weɪv/", "zh": "免除（费用）", "ex": "The bank agreed to waive the late fee.", "id": "w7"}, {"w": "invoice", "ipa": "/ˈɪnvɔɪs/", "zh": "账单；发票", "ex": "Could you send the invoice to my work email?", "id": "w8"}], "sections": [{"heading": "1. Picking Up the Car", "heading_zh": "1. 取车", "rows": [[{"id": "s0_0_0", "md": "Hi there, welcome to Drive Easy. Do you have a booking with us?", "text": "Hi there, welcome to Drive Easy. Do you have a booking with us?", "zh": "你好，欢迎来到 Drive Easy。您有预订吗？", "sp": "B"}], [{"id": "s0_1_0", "md": "Yes, I booked a ==compact== SUV for the weekend, under Lee. I'm returning it Sunday evening.", "text": "Yes, I booked a compact SUV for the weekend, under Lee. I'm returning it Sunday evening.", "zh": "有，我订了一辆紧凑型 SUV，周末用，名字是 Lee。周日晚上还车。", "sp": "A"}], [{"id": "s0_2_0", "md": "Got it. Can I see your driver's license and the card you booked with?", "text": "Got it. Can I see your driver's license and the card you booked with?", "zh": "好的。能看一下您的驾照和预订用的那张卡吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "**Here you go. What exactly does the basic insurance cover?**", "text": "Here you go. What exactly does the basic insurance cover?", "zh": "给你。基础保险具体保什么？", "sp": "A"}], [{"id": "s0_4_0", "md": "It covers ==third-party== damage, but you'd still pay an ==excess== of two thousand dollars if our car gets damaged.", "text": "It covers third-party damage, but you'd still pay an excess of two thousand dollars if our car gets damaged.", "zh": "保第三方损失，但如果我们的车被撞了，您还是要自付两千块。", "sp": "B"}], [{"id": "s0_5_0", "md": "Two thousand is quite a lot. How much would it cost to __reduce the excess__?", "text": "Two thousand is quite a lot. How much would it cost to reduce the excess?", "zh": "两千挺多的。要降低自付额得花多少钱？", "sp": "A"}], [{"id": "s0_6_0", "md": "Our full cover is thirty dollars a day, and it brings the excess down to zero.", "text": "Our full cover is thirty dollars a day, and it brings the excess down to zero.", "zh": "我们的全险是一天三十块，自付额降到零。", "sp": "B"}], [{"id": "s0_7_0", "md": "Okay, __I'll go with__ the full cover. We'll also need a child seat for a three-year-old.", "text": "Okay, I'll go with the full cover. We'll also need a child seat for a three-year-old.", "zh": "好，那我选全险。我们还需要一个三岁孩子用的儿童座椅。", "sp": "A"}], [{"id": "s0_8_0", "md": "Sure, that's ten dollars a day. We'll also hold a ==deposit== of five hundred on your card.", "text": "Sure, that's ten dollars a day. We'll also hold a deposit of five hundred on your card.", "zh": "好的，一天十块。另外我们会在您卡上冻结五百块押金。", "sp": "B"}], [{"id": "s0_9_0", "md": "When will the deposit be released?", "text": "When will the deposit be released?", "zh": "押金什么时候解冻？", "sp": "A"}], [{"id": "s0_10_0", "md": "Usually within seven working days after you return the car.", "text": "Usually within seven working days after you return the car.", "zh": "一般还车后七个工作日内。", "sp": "B"}], [{"id": "s0_11_0", "md": "**Before I drive off, could we walk around the car and note any existing scratches?**", "text": "Before I drive off, could we walk around the car and note any existing scratches?", "zh": "开走之前，我们能绕车看一圈，把现有的刮痕记下来吗？", "sp": "A"}], [{"id": "s0_12_0", "md": "Absolutely. Let's take photos together so it's all on record.", "text": "Absolutely. Let's take photos together so it's all on record.", "zh": "当然。我们一起拍照，都记录在案。", "sp": "B"}]]}, {"heading": "2. Returning the Car", "heading_zh": "2. 还车", "rows": [[{"id": "s1_0_0", "md": "Welcome back. Let me do a quick ==inspection==. Hmm, there's a scratch on the rear bumper.", "text": "Welcome back. Let me do a quick inspection. Hmm, there's a scratch on the rear bumper.", "zh": "欢迎回来。我快速检查一下。嗯，后保险杠上有一道刮痕。", "sp": "B"}], [{"id": "s1_1_0", "md": "**That scratch was already there. We took a photo of it on Friday.**", "text": "That scratch was already there. We took a photo of it on Friday.", "zh": "那道刮痕本来就有。我们周五拍过照。", "sp": "A"}], [{"id": "s1_2_0", "md": "Let me see. Oh yes, you're right, it's in our pickup notes too. Sorry about that.", "text": "Let me see. Oh yes, you're right, it's in our pickup notes too. Sorry about that.", "zh": "我看看。哦对，您说得对，取车记录里也有。不好意思。", "sp": "B"}], [{"id": "s1_3_0", "md": "No problem. Also, the tank is about three quarters full. Is that okay?", "text": "No problem. Also, the tank is about three quarters full. Is that okay?", "zh": "没事。另外油箱大概是四分之三满，可以吗？", "sp": "A"}], [{"id": "s1_4_0", "md": "Our policy is full to full, so there'll be a ==refueling== charge of about forty dollars.", "text": "Our policy is full to full, so there'll be a refueling charge of about forty dollars.", "zh": "我们的规定是满油取满油还，所以要收大概四十块的加油费。", "sp": "B"}], [{"id": "s1_5_0", "md": "Forty dollars? Is there a petrol station nearby? I'd rather __fill it up__ myself.", "text": "Forty dollars? Is there a petrol station nearby? I'd rather fill it up myself.", "zh": "四十块？附近有加油站吗？我宁愿自己去加满。", "sp": "A"}], [{"id": "s1_6_0", "md": "There's one just around the corner. If you're back within twenty minutes, I'll ==waive== the charge.", "text": "There's one just around the corner. If you're back within twenty minutes, I'll waive the charge.", "zh": "拐角就有一个。二十分钟内回来的话，我就免了这笔费用。", "sp": "B"}], [{"id": "s1_7_0", "md": "Great, I'll go now. And could you email me the final ==invoice== once it's __all settled__?", "text": "Great, I'll go now. And could you email me the final invoice once it's all settled?", "zh": "好，我现在就去。都结清以后，能把最终账单发到我邮箱吗？", "sp": "A"}], [{"id": "s1_8_0", "md": "Will do. You'll get it today, along with the deposit release confirmation.", "text": "Will do. You'll get it today, along with the deposit release confirmation.", "zh": "没问题。今天就会发给您，连同押金解冻的确认。", "sp": "B"}], [{"id": "s1_9_0", "md": "**Thanks for being so flexible about it.**", "text": "Thanks for being so flexible about it.", "zh": "谢谢你这么通融。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Picking Up the Car", "zh": "1. 取车", "start": 0.0, "end": 1.968, "words": [[0.105, 0.368], [0.671, 0.987], [1.0, 1.105], [1.118, 1.197], [1.211, 1.579]]}, {"kind": "s", "id": "s0_0_0", "md": "Hi there, welcome to Drive Easy. Do you have a booking with us?", "zh": "你好，欢迎来到 Drive Easy。您有预订吗？", "sp": "B", "gap": false, "start": 1.968, "end": 5.952, "words": [[2.068, 2.371], [2.384, 2.7], [2.765, 3.186], [3.2, 3.292], [3.305, 3.607], [3.621, 4.002], [4.386, 4.518], [4.531, 4.571], [4.584, 4.676], [4.689, 4.768], [4.781, 5.071], [5.084, 5.215], [5.229, 5.557]]}, {"kind": "s", "id": "s0_1_0", "md": "Yes, I booked a ==compact== SUV for the weekend, under Lee. I'm returning it Sunday evening.", "zh": "有，我订了一辆紧凑型 SUV，周末用，名字是 Lee。周日晚上还车。", "sp": "A", "gap": false, "start": 5.952, "end": 11.808, "words": [[6.057, 6.505], [6.741, 6.794], [6.807, 7.07], [7.084, 7.136], [7.149, 7.742], [7.755, 8.228], [8.241, 8.36], [8.373, 8.452], [8.465, 8.926], [9.123, 9.307], [9.32, 9.531], [9.965, 10.07], [10.084, 10.531], [10.544, 10.623], [10.636, 11.005], [11.018, 11.426]]}, {"kind": "s", "id": "s0_2_0", "md": "Got it. Can I see your driver's license and the card you booked with?", "zh": "好的。能看一下您的驾照和预订用的那张卡吗？", "sp": "B", "gap": false, "start": 11.808, "end": 16.056, "words": [[11.908, 12.197], [12.211, 12.447], [12.832, 13.029], [13.042, 13.134], [13.147, 13.305], [13.319, 13.424], [13.437, 13.871], [13.884, 14.384], [14.397, 14.555], [14.569, 14.661], [14.674, 14.963], [14.976, 15.069], [15.082, 15.318], [15.332, 15.661]]}, {"kind": "s", "id": "s0_3_0", "md": "**Here you go. What exactly does the basic insurance cover?**", "zh": "给你。基础保险具体保什么？", "sp": "A", "gap": false, "start": 16.056, "end": 19.752, "words": [[16.174, 16.267], [16.28, 16.372], [16.385, 16.648], [17.082, 17.201], [17.214, 17.78], [17.793, 17.964], [17.977, 18.082], [18.095, 18.503], [18.517, 18.951], [18.964, 19.359]]}, {"kind": "s", "id": "s0_4_0", "md": "It covers ==third-party== damage, but you'd still pay an ==excess== of two thousand dollars if our car gets damaged.", "zh": "保第三方损失，但如果我们的车被撞了，您还是要自付两千块。", "sp": "B", "gap": false, "start": 19.752, "end": 26.856, "words": [[19.852, 20.063], [20.076, 20.589], [20.602, 21.181], [21.194, 21.72], [22.049, 22.234], [22.247, 22.405], [22.418, 22.734], [22.747, 22.931], [22.944, 23.049], [23.063, 23.549], [23.563, 23.76], [23.773, 24.01], [24.023, 24.405], [24.418, 24.839], [24.852, 24.984], [24.997, 25.155], [25.168, 25.51], [25.523, 25.76], [25.773, 26.457]]}, {"kind": "s", "id": "s0_5_0", "md": "Two thousand is quite a lot. How much would it cost to __reduce the excess__?", "zh": "两千挺多的。要降低自付额得花多少钱？", "sp": "A", "gap": false, "start": 26.856, "end": 31.488, "words": [[26.974, 27.119], [27.132, 27.514], [27.527, 27.619], [27.632, 27.843], [27.856, 27.895], [27.909, 28.277], [28.724, 28.843], [28.856, 29.053], [29.067, 29.172], [29.185, 29.264], [29.277, 29.711], [29.724, 29.83], [29.843, 30.29], [30.303, 30.409], [30.422, 31.106]]}, {"kind": "s", "id": "s0_6_0", "md": "Our full cover is thirty dollars a day, and it brings the excess down to zero.", "zh": "我们的全险是一天三十块，自付额降到零。", "sp": "B", "gap": false, "start": 31.488, "end": 36.72, "words": [[31.588, 31.825], [31.838, 32.114], [32.127, 32.483], [32.496, 32.68], [32.693, 33.022], [33.035, 33.391], [33.404, 33.47], [33.483, 33.851], [34.18, 34.351], [34.364, 34.47], [34.483, 34.759], [34.772, 34.851], [34.864, 35.377], [35.391, 35.641], [35.654, 35.746], [35.759, 36.325]]}, {"kind": "s", "id": "s0_7_0", "md": "Okay, __I'll go with__ the full cover. We'll also need a child seat for a three-year-old.", "zh": "好，那我选全险。我们还需要一个三岁孩子用的儿童座椅。", "sp": "A", "gap": false, "start": 36.72, "end": 42.072, "words": [[36.825, 37.128], [37.509, 37.641], [37.654, 37.786], [37.799, 37.917], [37.931, 38.023], [38.036, 38.286], [38.299, 38.746], [39.194, 39.299], [39.312, 39.588], [39.602, 39.786], [39.799, 39.838], [39.852, 40.259], [40.273, 40.575], [40.654, 40.852], [40.865, 40.904], [40.917, 41.681]]}, {"kind": "s", "id": "s0_8_0", "md": "Sure, that's ten dollars a day. We'll also hold a ==deposit== of five hundred on your card.", "zh": "好的，一天十块。另外我们会在您卡上冻结五百块押金。", "sp": "B", "gap": false, "start": 42.072, "end": 47.952, "words": [[42.172, 42.725], [42.883, 43.146], [43.159, 43.382], [43.396, 43.738], [43.751, 43.817], [43.83, 44.211], [44.596, 44.911], [44.938, 45.24], [45.254, 45.464], [45.477, 45.53], [45.543, 46.017], [46.03, 46.135], [46.148, 46.49], [46.504, 46.859], [46.872, 46.99], [47.004, 47.109], [47.122, 47.556]]}, {"kind": "s", "id": "s0_9_0", "md": "When will the deposit be released?", "zh": "押金什么时候解冻？", "sp": "A", "gap": false, "start": 47.952, "end": 50.016, "words": [[48.07, 48.163], [48.176, 48.268], [48.281, 48.373], [48.386, 48.899], [48.913, 49.031], [49.044, 49.623]]}, {"kind": "s", "id": "s0_10_0", "md": "Usually within seven working days after you return the car.", "zh": "一般还车后七个工作日内。", "sp": "B", "gap": false, "start": 50.016, "end": 53.928, "words": [[50.116, 50.642], [50.655, 51.063], [51.077, 51.471], [51.484, 51.813], [51.827, 52.195], [52.221, 52.498], [52.511, 52.629], [52.642, 52.998], [53.011, 53.09], [53.103, 53.524]]}, {"kind": "s", "id": "s0_11_0", "md": "**Before I drive off, could we walk around the car and note any existing scratches?**", "zh": "开走之前，我们能绕车看一圈，把现有的刮痕记下来吗？", "sp": "A", "gap": false, "start": 53.928, "end": 58.896, "words": [[54.046, 54.31], [54.323, 54.375], [54.389, 54.678], [54.691, 55.046], [55.323, 55.454], [55.467, 55.56], [55.573, 55.81], [55.823, 56.06], [56.073, 56.139], [56.152, 56.56], [56.757, 56.862], [56.875, 57.099], [57.231, 57.415], [57.428, 57.862], [57.875, 58.507]]}, {"kind": "s", "id": "s0_12_0", "md": "Absolutely. Let's take photos together so it's all on record.", "zh": "当然。我们一起拍照，都记录在案。", "sp": "B", "gap": false, "start": 58.896, "end": 63.48, "words": [[58.996, 59.943], [60.328, 60.617], [60.63, 60.854], [60.867, 61.314], [61.328, 61.801], [61.814, 62.025], [62.038, 62.183], [62.222, 62.407], [62.42, 62.591], [62.604, 63.091]]}, {"kind": "h", "id": "h1", "md": "2. Returning the Car", "zh": "2. 还车", "start": 63.48, "end": 65.448, "words": [[63.585, 63.822], [64.151, 64.559], [64.572, 64.651], [64.664, 65.059]]}, {"kind": "s", "id": "s1_0_0", "md": "Welcome back. Let me do a quick ==inspection==. Hmm, there's a scratch on the rear bumper.", "zh": "欢迎回来。我快速检查一下。嗯，后保险杠上有一道刮痕。", "sp": "B", "gap": false, "start": 65.448, "end": 71.664, "words": [[65.548, 66.035], [66.048, 66.482], [66.866, 67.077], [67.09, 67.182], [67.195, 67.314], [67.327, 67.393], [67.406, 67.616], [67.63, 68.393], [68.774, 69.248], [69.59, 69.774], [69.787, 69.853], [69.866, 70.301], [70.314, 70.419], [70.432, 70.524], [70.537, 70.801], [70.814, 71.261]]}, {"kind": "s", "id": "s1_1_0", "md": "**That scratch was already there. We took a photo of it on Friday.**", "zh": "那道刮痕本来就有。我们周五拍过照。", "sp": "A", "gap": false, "start": 71.664, "end": 75.432, "words": [[71.782, 71.888], [71.901, 72.309], [72.322, 72.48], [72.493, 72.835], [72.848, 73.151], [73.598, 73.664], [73.677, 73.809], [73.822, 73.874], [73.888, 74.23], [74.243, 74.335], [74.348, 74.414], [74.427, 74.532], [74.546, 75.032]]}, {"kind": "s", "id": "s1_2_0", "md": "Let me see. Oh yes, you're right, it's in our pickup notes too. Sorry about that.", "zh": "我看看。哦对，您说得对，取车记录里也有。不好意思。", "sp": "B", "gap": false, "start": 75.432, "end": 81.528, "words": [[75.532, 75.756], [75.769, 75.874], [75.887, 76.308], [76.693, 76.982], [77.021, 77.482], [77.508, 77.693], [77.706, 78.021], [78.193, 78.337], [78.35, 78.469], [78.482, 78.587], [78.6, 78.969], [78.982, 79.364], [79.377, 79.745], [80.127, 80.522], [80.535, 80.798], [80.811, 81.14]]}, {"kind": "s", "id": "s1_3_0", "md": "No problem. Also, the tank is about three quarters full. Is that okay?", "zh": "没事。另外油箱大概是四分之三满，可以吗？", "sp": "A", "gap": false, "start": 81.528, "end": 86.664, "words": [[81.633, 81.765], [81.778, 82.212], [82.646, 83.054], [83.252, 83.344], [83.357, 83.66], [83.673, 83.778], [83.791, 84.067], [84.081, 84.396], [84.41, 84.817], [84.831, 85.186], [85.62, 85.712], [85.725, 85.883], [85.896, 86.278]]}, {"kind": "s", "id": "s1_4_0", "md": "Our policy is full to full, so there'll be a ==refueling== charge of about forty dollars.", "zh": "我们的规定是满油取满油还，所以要收大概四十块的加油费。", "sp": "B", "gap": false, "start": 86.664, "end": 92.448, "words": [[86.764, 87.001], [87.014, 87.593], [87.606, 87.79], [87.803, 88.053], [88.067, 88.159], [88.172, 88.58], [88.882, 89.027], [89.053, 89.317], [89.33, 89.448], [89.461, 89.54], [89.553, 90.159], [90.172, 90.606], [90.632, 90.738], [90.751, 91.053], [91.067, 91.409], [91.422, 92.04]]}, {"kind": "s", "id": "s1_5_0", "md": "Forty dollars? Is there a petrol station nearby? I'd rather __fill it up__ myself.", "zh": "四十块？附近有加油站吗？我宁愿自己去加满。", "sp": "A", "gap": false, "start": 92.448, "end": 97.512, "words": [[92.606, 92.803], [92.816, 93.356], [93.79, 93.882], [93.895, 94.014], [94.027, 94.08], [94.093, 94.435], [94.448, 94.816], [94.83, 95.29], [95.737, 95.843], [95.856, 96.106], [96.119, 96.33], [96.343, 96.422], [96.435, 96.54], [96.553, 97.132]]}, {"kind": "s", "id": "s1_6_0", "md": "There's one just around the corner. If you're back within twenty minutes, I'll ==waive== the charge.", "zh": "拐角就有一个。二十分钟内回来的话，我就免了这笔费用。", "sp": "B", "gap": false, "start": 97.512, "end": 103.632, "words": [[97.612, 97.941], [97.954, 98.309], [98.323, 98.573], [98.586, 98.888], [98.901, 98.967], [98.98, 99.52], [99.904, 100.115], [100.128, 100.259], [100.273, 100.536], [100.549, 100.865], [100.878, 101.207], [101.22, 101.667], [102.062, 102.259], [102.273, 102.509], [102.523, 102.615], [102.628, 103.246]]}, {"kind": "s", "id": "s1_7_0", "md": "Great, I'll go now. And could you email me the final ==invoice== once it's __all settled__?", "zh": "好，我现在就去。都结清以后，能把最终账单发到我邮箱吗？", "sp": "A", "gap": false, "start": 103.632, "end": 108.312, "words": [[103.737, 104.014], [104.211, 104.303], [104.316, 104.461], [104.474, 104.764], [105.198, 105.277], [105.29, 105.461], [105.474, 105.593], [105.606, 105.935], [105.948, 106.053], [106.066, 106.158], [106.171, 106.54], [106.553, 107.04], [107.053, 107.237], [107.25, 107.356], [107.369, 107.514], [107.527, 107.922]]}, {"kind": "s", "id": "s1_8_0", "md": "Will do. You'll get it today, along with the deposit release confirmation.", "zh": "没问题。今天就会发给您，连同押金解冻的确认。", "sp": "B", "gap": false, "start": 108.312, "end": 113.256, "words": [[108.412, 108.662], [108.675, 109.083], [109.467, 109.717], [109.73, 109.875], [109.888, 109.98], [109.994, 110.401], [110.507, 110.783], [110.796, 110.901], [110.915, 110.994], [111.007, 111.573], [111.586, 111.954], [111.967, 112.862]]}, {"kind": "s", "id": "s1_9_0", "md": "**Thanks for being so flexible about it.**", "zh": "谢谢你这么通融。", "sp": "A", "gap": false, "start": 113.256, "end": 115.608, "words": [[113.374, 113.545], [113.559, 113.677], [113.69, 113.927], [113.94, 114.177], [114.19, 114.743], [114.756, 115.059], [115.072, 115.23]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

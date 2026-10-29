@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Writing Code Review Comments That Help · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "022", "title": "Writing Code Review Comments That Help", "meta": "B2 · 约 270 词 · 场景：代码评审", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. A Comment Without Context", "heading_zh": "1. 没有上下文的评论", "rows": [[{"id": "s0_0_0", "md": "Imagine you open a pull request and find one comment: \"Why is this here?\"", "text": "Imagine you open a pull request and find one comment: \"Why is this here?\"", "zh": "想象一下，你打开一个 PR，只看到一条评论：「这个为什么在这儿？」", "sp": null}, {"id": "s0_0_1", "md": "It could be a real question, a polite complaint, or a sign that the reviewer wants the whole thing rewritten.", "text": "It could be a real question, a polite complaint, or a sign that the reviewer wants the whole thing rewritten.", "zh": "它可能是个真诚的问题，可能是委婉的抱怨，也可能说明评审人想让你整个重写。", "sp": null}, {"id": "s0_0_2", "md": "Most authors assume the worst.", "text": "Most authors assume the worst.", "zh": "大多数作者都会往最坏的方向想。", "sp": null}], [{"id": "s0_1_0", "md": "Written comments __lose the tone of voice__ that softens a question in person.", "text": "Written comments lose the tone of voice that softens a question in person.", "zh": "书面评论少了当面说话时那种能让提问显得柔和的语气。", "sp": null}, {"id": "s0_1_1", "md": "That is why short review comments so often feel ==hostile==, even when the reviewer meant nothing bad.", "text": "That is why short review comments so often feel hostile, even when the reviewer meant nothing bad.", "zh": "所以简短的 review 评论常常让人觉得带着敌意，哪怕评审人根本没那个意思。", "sp": null}, {"id": "s0_1_2", "md": "**The fix is not to be nicer; it is to be clearer.**", "text": "The fix is not to be nicer; it is to be clearer.", "zh": "解决办法不是更客气，而是更清楚。", "sp": null}], [{"id": "s0_2_0", "md": "Clear comments also save time.", "text": "Clear comments also save time.", "zh": "清楚的评论还能省时间。", "sp": null}, {"id": "s0_2_1", "md": "When the author has to guess your ==intent==, they either miss something important or spend an afternoon on a ==trivial== change.", "text": "When the author has to guess your intent, they either miss something important or spend an afternoon on a trivial change.", "zh": "作者要是得猜你的意图，要么漏掉重要的东西，要么在一个鸡毛蒜皮的改动上耗掉一下午。", "sp": null}, {"id": "s0_2_2", "md": "Then the two of you __go back and forth__ for days, and the release waits.", "text": "Then the two of you go back and forth for days, and the release waits.", "zh": "然后你们俩来来回回拉扯好几天，发布就只能干等着。", "sp": null}]]}, {"heading": "2. Label, Reason, Option", "heading_zh": "2. 标签、理由、方案", "rows": [[{"id": "s1_0_0", "md": "**Start every comment with a label: blocking, suggestion, or question.**", "text": "Start every comment with a label: blocking, suggestion, or question.", "zh": "每条评论开头都加个标签：blocking、建议，或者提问。", "sp": null}, {"id": "s1_0_1", "md": "\"Blocking\" means the code should not ==merge== until it is fixed.", "text": "\"Blocking\" means the code should not merge until it is fixed.", "zh": "「Blocking」意思是这个问题不修，代码就不该合入。", "sp": null}, {"id": "s1_0_2", "md": "\"Suggestion\" means you would do it differently, but the author decides.", "text": "\"Suggestion\" means you would do it differently, but the author decides.", "zh": "「建议」意思是你会换种做法，但由作者来定。", "sp": null}, {"id": "s1_0_3", "md": "\"Question\" means you genuinely want to understand.", "text": "\"Question\" means you genuinely want to understand.", "zh": "「提问」意思是你确实想搞明白。", "sp": null}], [{"id": "s1_1_0", "md": "Then give the reason.", "text": "Then give the reason.", "zh": "然后给出理由。", "sp": null}, {"id": "s1_1_1", "md": "\"This loop calls the database once per user, which will hurt ==latency== on large accounts\" is far more useful than \"this is slow.\"", "text": "\"This loop calls the database once per user, which will hurt latency on large accounts\" is far more useful than \"this is slow.\"", "zh": "「这个循环每个用户查一次数据库，大账号的延迟会很难看」，比一句「这里很慢」有用得多。", "sp": null}, {"id": "s1_1_2", "md": "A reason also lets the author __push back__ if you are wrong.", "text": "A reason also lets the author push back if you are wrong.", "zh": "有了理由，你要是说错了，作者也能反驳你。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, offer an option when you can.", "text": "Finally, offer an option when you can.", "zh": "最后，能给方案就给个方案。", "sp": null}, {"id": "s1_2_1", "md": "A short ==snippet== or a link to an example __saves a round trip__.", "text": "A short snippet or a link to an example saves a round trip.", "zh": "一小段代码或者一个示例链接，就能省掉一轮来回。", "sp": null}, {"id": "s1_2_2", "md": "Keep ==nitpicks== about spacing and naming to a minimum, or __leave them to__ the linter.", "text": "Keep nitpicks about spacing and naming to a minimum, or leave them to the linter.", "zh": "空格、命名这类细枝末节的挑刺尽量少提，或者干脆交给 linter。", "sp": null}], [{"id": "s1_3_0", "md": "Good reviewers also say what they like.", "text": "Good reviewers also say what they like.", "zh": "好的评审人也会说自己喜欢哪里。", "sp": null}, {"id": "s1_3_1", "md": "One line such as \"nice test coverage here\" tells the author which habits to keep.", "text": "One line such as \"nice test coverage here\" tells the author which habits to keep.", "zh": "一句「这里测试覆盖做得不错」，就能让作者知道哪些习惯该保持。", "sp": null}, {"id": "s1_3_2", "md": "Praise is cheap to write, and it makes the hard comments easier to accept.", "text": "Praise is cheap to write, and it makes the hard comments easier to accept.", "zh": "夸人写起来不费事，还能让那些难听的评论更容易被接受。", "sp": null}]]}], "gist": [{"q": "为什么简短的 review 评论常常让人觉得有敌意？", "a": "文字丢掉了当面说话时的语气，作者猜不到评论者的意图，往往最坏处想。"}, {"q": "作者建议每条评论开头加什么？分别是什么意思？", "a": "加标签：blocking（不改不能合入）、suggestion（建议，作者决定）、question（真心想弄懂）。"}, {"q": "除了标签，一条好评论还应包含什么？", "a": "说明理由（让作者能反驳），尽量给出可选方案（代码片段或示例链接）；格式类小问题交给 linter；也要说出做得好的地方。"}], "dictation": [{"id": "s0_1_2", "text": "The fix is not to be nicer; it is to be clearer."}, {"id": "s1_0_0", "text": "Start every comment with a label: blocking, suggestion, or question."}, {"id": "s0_1_0", "text": "Written comments lose the tone of voice that softens a question in person."}, {"id": "s1_1_2", "text": "A reason also lets the author push back if you are wrong."}], "shadow": {"text": "Start every comment with a label: blocking, suggestion, or question. \"Blocking\" means the code should not merge until it is fixed. \"Suggestion\" means you would do it differently, but the author decides.", "marked": "Start <b>every</b> comment with a <b>label</b>: / <b>blocking</b>, / <b>suggestion</b>, / or <b>question</b>. //<br>\"Blocking\" means the code should <b>not merge</b> / until it is <b>fixed</b>. //<br>\"Suggestion\" means you would do it <b>differently</b>, / but the <b>author</b> decides. //"}, "prompts": [{"q": "你在 review 一个同事的 PR，发现一个循环里每次都查数据库。口头跟他说这个问题：先说明是 blocking 还是 suggestion，再给理由和替代方案。", "ref": "Hey, one thing on your pull request, and I'd call this one blocking. The loop in the sync job queries the database once per user. For small accounts it's fine, but our biggest customers have thousands of users, so latency will spike badly. Could you batch the lookups into a single query? I left a short snippet in the comment that shows one way to do it.", "ref_zh": "嘿，你的 PR 有个问题，我觉得这个算 blocking。同步任务里那个循环每个用户查一次数据库。小账号没问题，但我们最大的客户有好几千个用户，延迟会飙得很厉害。能不能把这些查询合成一次批量查询？我在评论里贴了一小段代码，演示了一种写法。", "id": "ref0"}, {"q": "新人抱怨你的 review 评论太冷、太多小问题。用 30 秒向他解释你接下来会怎么改评论方式。", "ref": "Thanks for telling me, that's fair feedback. From now on I'll label every comment, so you'll know right away whether it's blocking, just a suggestion, or a real question. I'll also explain why I'm asking for a change. And I'll stop commenting on spacing, since the linter can catch that. If something still feels unclear, just ping me and we can talk it through.", "ref_zh": "谢谢你跟我说，这个反馈很中肯。以后我每条评论都会加标签，你一眼就能看出是 blocking、只是建议，还是真的在提问。我也会说明为什么要改。空格这类问题我就不评了，linter 能查出来。如果还有哪里不清楚，直接 ping 我，我们当面聊。", "id": "ref1"}], "words": [{"w": "hostile", "ipa": "/ˈhɑːstl/", "zh": "有敌意的", "ex": "His review comments read as hostile, though he meant them as questions.", "id": "w0"}, {"w": "intent", "ipa": "/ɪnˈtent/", "zh": "意图", "ex": "Add a line explaining the intent, not just the change.", "id": "w1"}, {"w": "trivial", "ipa": "/ˈtrɪviəl/", "zh": "琐碎的、微不足道的", "ex": "It's a trivial rename, so I approved it right away.", "id": "w2"}, {"w": "merge (v.)", "ipa": "/mɜːrdʒ/", "zh": "合入（代码）", "ex": "Please don't merge until the integration tests pass.", "tts_w": "merge", "id": "w3"}, {"w": "latency", "ipa": "/ˈleɪtənsi/", "zh": "延迟", "ex": "This extra call adds about forty milliseconds of latency.", "id": "w4"}, {"w": "snippet", "ipa": "/ˈsnɪpɪt/", "zh": "代码片段", "ex": "I pasted a snippet that shows how to batch the queries.", "id": "w5"}, {"w": "nitpick", "ipa": "/ˈnɪtpɪk/", "zh": "吹毛求疵的小意见", "ex": "Just a nitpick, feel free to ignore: this variable name is a bit long.", "id": "w6"}, {"w": "genuinely", "ipa": "/ˈdʒenjuɪnli/", "zh": "真诚地、确实", "ex": "I'm genuinely curious why we chose polling here.", "id": "w7"}, {"w": "coverage", "ipa": "/ˈkʌvərɪdʒ/", "zh": "（测试）覆盖率", "ex": "Test coverage on the payment module is still too low.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. A Comment Without Context", "zh": "1. 没有上下文的评论", "start": 0.0, "end": 2.736, "words": [[0.105, 0.368], [0.789, 0.842], [0.855, 1.25], [1.263, 1.632], [1.645, 2.342]]}, {"kind": "s", "id": "s0_0_0", "md": "Imagine you open a pull request and find one comment: \"Why is this here?\"", "zh": "想象一下，你打开一个 PR，只看到一条评论：「这个为什么在这儿？」", "sp": null, "gap": false, "start": 2.736, "end": 7.776, "words": [[2.841, 3.236], [3.249, 3.394], [3.407, 3.657], [3.67, 3.723], [3.736, 4.025], [4.039, 4.644], [4.947, 5.025], [5.039, 5.368], [5.381, 5.565], [5.578, 6.012], [6.486, 6.697], [6.71, 6.841], [6.854, 7.052], [7.065, 7.368]]}, {"kind": "s", "id": "s0_0_1", "md": "It could be a real question, a polite complaint, or a sign that the reviewer wants the whole thing rewritten.", "zh": "它可能是个真诚的问题，可能是委婉的抱怨，也可能说明评审人想让你整个重写。", "sp": null, "gap": false, "start": 7.776, "end": 14.28, "words": [[7.881, 7.973], [7.987, 8.131], [8.144, 8.276], [8.289, 8.381], [8.394, 8.776], [8.789, 9.329], [9.723, 9.763], [9.776, 10.158], [10.171, 10.697], [11.131, 11.223], [11.237, 11.289], [11.302, 11.697], [11.71, 11.829], [11.842, 11.921], [11.934, 12.5], [12.513, 12.763], [12.776, 12.868], [12.881, 13.118], [13.131, 13.394], [13.408, 13.894]]}, {"kind": "s", "id": "s0_0_2", "md": "Most authors assume the worst.", "zh": "大多数作者都会往最坏的方向想。", "sp": null, "gap": false, "start": 14.28, "end": 16.464, "words": [[14.385, 14.635], [14.648, 15.004], [15.017, 15.451], [15.464, 15.556], [15.569, 16.083]]}, {"kind": "s", "id": "s0_1_0", "md": "Written comments __lose the tone of voice__ that softens a question in person.", "zh": "书面评论少了当面说话时那种能让提问显得柔和的语气。", "sp": null, "gap": true, "start": 16.464, "end": 20.928, "words": [[16.556, 16.819], [16.832, 17.346], [17.359, 17.767], [17.78, 17.885], [17.898, 18.214], [18.227, 18.319], [18.332, 18.753], [18.767, 18.911], [18.925, 19.464], [19.477, 19.53], [19.543, 19.964], [19.977, 20.069], [20.082, 20.543]]}, {"kind": "s", "id": "s0_1_1", "md": "That is why short review comments so often feel ==hostile==, even when the reviewer meant nothing bad.", "zh": "所以简短的 review 评论常常让人觉得带着敌意，哪怕评审人根本没那个意思。", "sp": null, "gap": false, "start": 20.928, "end": 27.576, "words": [[21.046, 21.152], [21.165, 21.27], [21.283, 21.481], [21.494, 21.862], [21.875, 22.244], [22.257, 22.796], [22.889, 23.27], [23.389, 23.757], [23.77, 24.086], [24.099, 24.599], [25.073, 25.27], [25.283, 25.415], [25.428, 25.507], [25.52, 26.073], [26.165, 26.428], [26.441, 26.757], [26.77, 27.178]]}, {"kind": "s", "id": "s0_1_2", "md": "**The fix is not to be nicer; it is to be clearer.**", "zh": "解决办法不是更客气，而是更清楚。", "sp": null, "gap": false, "start": 27.576, "end": 31.008, "words": [[27.694, 27.747], [27.76, 28.076], [28.089, 28.221], [28.234, 28.51], [28.523, 28.602], [28.615, 28.721], [28.734, 29.221], [29.681, 29.747], [29.76, 29.879], [29.892, 29.971], [29.984, 30.115], [30.129, 30.629]]}, {"kind": "s", "id": "s0_2_0", "md": "Clear comments also save time.", "zh": "清楚的评论还能省时间。", "sp": null, "gap": true, "start": 31.008, "end": 33.216, "words": [[31.113, 31.311], [31.324, 31.758], [31.771, 32.113], [32.126, 32.429], [32.442, 32.811]]}, {"kind": "s", "id": "s0_2_1", "md": "When the author has to guess your ==intent==, they either miss something important or spend an afternoon on a ==trivial== change.", "zh": "作者要是得猜你的意图，要么漏掉重要的东西，要么在一个鸡毛蒜皮的改动上耗掉一下午。", "sp": null, "gap": false, "start": 33.216, "end": 40.392, "words": [[33.321, 33.427], [33.44, 33.532], [33.545, 33.913], [33.927, 34.163], [34.177, 34.282], [34.295, 34.545], [34.558, 34.703], [34.716, 35.242], [35.571, 35.703], [35.716, 36.045], [36.058, 36.282], [36.295, 36.663], [36.677, 37.242], [37.545, 37.624], [37.637, 37.913], [37.927, 38.005], [38.019, 38.69], [38.769, 38.887], [38.9, 38.953], [38.966, 39.453], [39.466, 39.992]]}, {"kind": "s", "id": "s0_2_2", "md": "Then the two of you __go back and forth__ for days, and the release waits.", "zh": "然后你们俩来来回回拉扯好几天，发布就只能干等着。", "sp": null, "gap": false, "start": 40.392, "end": 44.664, "words": [[40.497, 40.603], [40.616, 40.695], [40.708, 40.958], [40.971, 41.05], [41.063, 41.181], [41.195, 41.392], [41.405, 41.747], [41.76, 41.853], [41.866, 42.195], [42.208, 42.366], [42.379, 42.866], [43.116, 43.221], [43.234, 43.313], [43.326, 43.708], [43.721, 44.274]]}, {"kind": "h", "id": "h1", "md": "2. Label, Reason, Option", "zh": "2. 标签、理由、方案", "start": 44.664, "end": 47.664, "words": [[44.782, 45.019], [45.519, 45.927], [46.203, 46.651], [46.835, 47.282]]}, {"kind": "s", "id": "s1_0_0", "md": "**Start every comment with a label: blocking, suggestion, or question.**", "zh": "每条评论开头都加个标签：blocking、建议，或者提问。", "sp": null, "gap": false, "start": 47.664, "end": 52.656, "words": [[47.782, 48.098], [48.243, 48.506], [48.519, 48.927], [48.94, 49.072], [49.085, 49.124], [49.138, 49.598], [49.901, 50.467], [50.69, 51.427], [51.677, 51.756], [51.769, 52.269]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Blocking\" means the code should not ==merge== until it is fixed.", "zh": "「Blocking」意思是这个问题不修，代码就不该合入。", "sp": null, "gap": false, "start": 52.656, "end": 56.784, "words": [[52.853, 53.156], [53.63, 53.84], [53.853, 53.972], [53.985, 54.327], [54.34, 54.564], [54.577, 54.945], [54.959, 55.367], [55.38, 55.669], [55.682, 55.748], [55.761, 55.867], [55.88, 56.406]]}, {"kind": "s", "id": "s1_0_2", "md": "\"Suggestion\" means you would do it differently, but the author decides.", "zh": "「建议」意思是你会换种做法，但由作者来定。", "sp": null, "gap": false, "start": 56.784, "end": 61.248, "words": [[56.968, 57.508], [57.995, 58.192], [58.205, 58.284], [58.297, 58.429], [58.442, 58.6], [58.613, 58.718], [58.731, 59.297], [59.56, 59.692], [59.705, 59.81], [59.823, 60.152], [60.166, 60.863]]}, {"kind": "s", "id": "s1_0_3", "md": "\"Question\" means you genuinely want to understand.", "zh": "「提问」意思是你确实想搞明白。", "sp": null, "gap": false, "start": 61.248, "end": 64.416, "words": [[61.445, 61.774], [62.248, 62.445], [62.459, 62.551], [62.564, 63.103], [63.116, 63.274], [63.287, 63.327], [63.34, 64.037]]}, {"kind": "s", "id": "s1_1_0", "md": "Then give the reason.", "zh": "然后给出理由。", "sp": null, "gap": true, "start": 64.416, "end": 65.736, "words": [[64.534, 64.679], [64.692, 64.863], [64.877, 64.942], [64.955, 65.35]]}, {"kind": "s", "id": "s1_1_1", "md": "\"This loop calls the database once per user, which will hurt ==latency== on large accounts\" is far more useful than \"this is slow.\"", "zh": "「这个循环每个用户查一次数据库，大账号的延迟会很难看」，比一句「这里很慢」有用得多。", "sp": null, "gap": false, "start": 65.736, "end": 74.184, "words": [[65.92, 65.999], [66.078, 66.341], [66.354, 66.71], [66.723, 66.854], [66.868, 67.499], [67.512, 67.841], [67.854, 68.065], [68.078, 68.539], [68.841, 68.973], [68.986, 69.118], [69.131, 69.42], [69.433, 69.96], [69.973, 70.131], [70.144, 70.42], [70.433, 70.973], [71.21, 71.328], [71.341, 71.604], [71.618, 71.841], [71.854, 72.394], [72.525, 72.67], [72.854, 73.131], [73.144, 73.262], [73.275, 73.775]]}, {"kind": "s", "id": "s1_1_2", "md": "A reason also lets the author __push back__ if you are wrong.", "zh": "有了理由，你要是说错了，作者也能反驳你。", "sp": null, "gap": false, "start": 74.184, "end": 77.592, "words": [[74.289, 74.329], [74.342, 74.737], [74.75, 75.066], [75.079, 75.342], [75.355, 75.473], [75.566, 75.921], [75.934, 76.21], [76.223, 76.526], [76.539, 76.644], [76.658, 76.75], [76.763, 76.881], [76.895, 77.197]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, offer an option when you can.", "zh": "最后，能给方案就给个方案。", "sp": null, "gap": true, "start": 77.592, "end": 80.304, "words": [[77.75, 78.197], [78.513, 78.816], [78.829, 78.908], [78.921, 79.303], [79.316, 79.434], [79.447, 79.539], [79.553, 79.921]]}, {"kind": "s", "id": "s1_2_1", "md": "A short ==snippet== or a link to an example __saves a round trip__.", "zh": "一小段代码或者一个示例链接，就能省掉一轮来回。", "sp": null, "gap": false, "start": 80.304, "end": 84.024, "words": [[80.409, 80.449], [80.462, 80.764], [80.778, 81.199], [81.278, 81.422], [81.436, 81.488], [81.501, 81.778], [81.791, 81.909], [81.922, 82.015], [82.028, 82.58], [82.593, 82.909], [82.922, 82.962], [82.975, 83.278], [83.291, 83.633]]}, {"kind": "s", "id": "s1_2_2", "md": "Keep ==nitpicks== about spacing and naming to a minimum, or __leave them to__ the linter.", "zh": "空格、命名这类细枝末节的挑刺尽量少提，或者干脆交给 linter。", "sp": null, "gap": false, "start": 84.024, "end": 89.256, "words": [[84.142, 84.353], [84.366, 84.84], [84.853, 85.116], [85.129, 85.879], [85.892, 86.024], [86.037, 86.419], [86.432, 86.603], [86.616, 86.669], [86.682, 87.208], [87.629, 87.734], [87.748, 88.024], [88.037, 88.208], [88.221, 88.314], [88.327, 88.432], [88.445, 88.866]]}, {"kind": "s", "id": "s1_3_0", "md": "Good reviewers also say what they like.", "zh": "好的评审人也会说自己喜欢哪里。", "sp": null, "gap": true, "start": 89.256, "end": 91.824, "words": [[89.361, 89.506], [89.519, 90.138], [90.151, 90.48], [90.493, 90.73], [90.743, 90.888], [90.901, 91.019], [91.032, 91.44]]}, {"kind": "s", "id": "s1_3_1", "md": "One line such as \"nice test coverage here\" tells the author which habits to keep.", "zh": "一句「这里测试覆盖做得不错」，就能让作者知道哪些习惯该保持。", "sp": null, "gap": false, "start": 91.824, "end": 97.176, "words": [[91.942, 92.153], [92.166, 92.482], [92.495, 92.732], [92.745, 92.942], [93.074, 93.508], [93.521, 93.824], [93.837, 94.258], [94.271, 94.535], [94.929, 95.192], [95.206, 95.324], [95.39, 95.771], [95.785, 95.929], [95.942, 96.311], [96.324, 96.416], [96.429, 96.771]]}, {"kind": "s", "id": "s1_3_2", "md": "Praise is cheap to write, and it makes the hard comments easier to accept.", "zh": "夸人写起来不费事，还能让那些难听的评论更容易被接受。", "sp": null, "gap": false, "start": 97.176, "end": 101.736, "words": [[97.294, 97.584], [97.597, 97.729], [97.742, 98.031], [98.044, 98.163], [98.176, 98.518], [98.926, 98.979], [98.992, 99.058], [99.071, 99.321], [99.334, 99.426], [99.439, 99.781], [99.794, 100.229], [100.308, 100.663], [100.676, 100.808], [100.821, 101.347]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

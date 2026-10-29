@@ -1,0 +1,186 @@
+{
+  "id": "037",
+  "title": "Understanding What Your Boss Is Measured On",
+  "meta": "B2 · 约 280 词 · 场景：理解上级目标",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Every Manager Has a Scorecard",
+      "paragraphs": [
+        [
+          "Have you ever wondered why your manager gets excited about some projects and ignores others?",
+          "It is rarely personal.",
+          "Most of the time, it __comes down to__ what their own boss is asking them for."
+        ],
+        [
+          "Every manager has a ==scorecard==, written or not.",
+          "One might be judged on ==reliability== and the number of incidents, another on revenue, hiring, or launch dates.",
+          "**Once you know the scorecard, your manager's behavior stops looking random.**",
+          "The project they keep asking about is probably on it, and the one they keep postponing probably is not."
+        ],
+        [
+          "You don't have to guess.",
+          "Ask in a one-on-one: \"What are the two or three things you'll be ==evaluated== on this half?\"",
+          "Most managers are glad someone asked, because it shows you want to help them succeed."
+        ]
+      ],
+      "heading_zh": "1. 每个经理都有一张考核表",
+      "paragraphs_zh": [
+        [
+          "你有没有想过，为什么你的经理对有些项目特别上心，对另一些却不闻不问？",
+          "这很少是因为个人好恶。",
+          "大多数时候，归根结底在于他自己的老板在要求他什么。"
+        ],
+        [
+          "每个经理都有一张考核表，不管有没有写下来。",
+          "有的考核稳定性和事故数，有的考核营收、招聘或者上线日期。",
+          "一旦你知道了这张考核表，经理的行为就不再显得随机了。",
+          "他老是追问的那个项目大概就在表上，他一直往后推的那个大概就不在。"
+        ],
+        [
+          "你不用去猜。",
+          "在 1:1 里直接问：「这半年您主要会被考核哪两三件事？」",
+          "大多数经理都很高兴有人这么问，因为这说明你想帮他把事情做成。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Speaking Their Language",
+      "paragraphs": [
+        [
+          "Then ==translate== your work into those terms.",
+          "If your manager is measured on reliability, don't pitch a refactor as cleaner code.",
+          "Pitch it as fewer pages for on-call and faster recovery when something breaks.",
+          "Your manager can repeat that sentence to their own boss, which is exactly what you want."
+        ],
+        [
+          "This is not ==manipulation==.",
+          "It is the same work, explained in the language of the person who decides.",
+          "A finance partner hears cost, a product manager hears users, and an on-call engineer hears sleep.",
+          "**The best ideas still lose when they are pitched in the wrong currency.**"
+        ],
+        [
+          "Knowing the scorecard also helps you __pick your battles__.",
+          "When two tasks compete for your week, choose the one that __moves the needle__ on what your manager is measured on.",
+          "And when something you care about does not ==align== with it, you will know you need a stronger case or a different sponsor."
+        ]
+      ],
+      "heading_zh": "2. 用对方的语言说话",
+      "paragraphs_zh": [
+        [
+          "然后，把你的工作翻译成这些指标的语言。",
+          "如果你的经理考核的是稳定性，就别把一次重构包装成让代码更整洁。",
+          "要说它能让 on-call 少被呼几次，出了问题也能更快恢复。",
+          "你的经理可以把这句话原样转述给他的老板，这正是你想要的。"
+        ],
+        [
+          "这不是操纵。",
+          "这是同样的工作，只是用决策者的语言讲出来而已。",
+          "财务伙伴听的是成本，产品经理听的是用户，on-call 工程师听的是能不能睡个好觉。",
+          "再好的想法，用错了「货币」去推销，照样会输。"
+        ],
+        [
+          "了解考核表也能帮你挑选值得打的仗。",
+          "当两件事都在抢你这周的时间时，选那件能在经理考核指标上真正带来改变的。",
+          "而当你在意的某件事跟这些指标对不上时，你就知道自己需要更有力的理由，或者换一个支持者。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么经理对某些项目热情、对另一些冷淡？",
+      "a": "很少是个人原因，主要取决于他自己的上级考核他什么，也就是他的「记分卡」。"
+    },
+    {
+      "q": "怎么知道经理被考核什么？",
+      "a": "不用猜，在一对一里直接问「这半年你主要被考核哪两三件事」，大多数经理乐意回答。"
+    },
+    {
+      "q": "知道记分卡之后怎么用？这算不算操纵？",
+      "a": "把自己的工作翻译成那套指标来讲（比如重构讲成减少告警、加快恢复）；帮助取舍任务。不算操纵，是同样的工作换成决策者的语言。"
+    }
+  ],
+  "dictation": [
+    "Once you know the scorecard, your manager's behavior stops looking random.",
+    "The best ideas still lose when they are pitched in the wrong currency.",
+    "It is the same work, explained in the language of the person who decides.",
+    "Most of the time, it comes down to what their own boss is asking them for."
+  ],
+  "shadow": {
+    "text": "Then translate your work into those terms. If your manager is measured on reliability, don't pitch a refactor as cleaner code. Pitch it as fewer pages for on-call and faster recovery when something breaks.",
+    "marked": "Then <b>translate</b> your work / into <b>those</b> terms. //<br>If your manager is measured on <b>reliability</b>, / <b>don't</b> pitch a refactor / as <b>cleaner code</b>. //<br>Pitch it as <b>fewer pages</b> for on-call / and <b>faster recovery</b> / when something breaks. //"
+  },
+  "prompts": [
+    {
+      "q": "你想做一次数据库重构，经理这半年主要考核的是系统稳定性。用 30 秒按他的考核指标来介绍这个提案。",
+      "ref": "I'd like to propose something that should help our reliability numbers this half. Most of our pages last quarter came from the same database, especially during peak hours. If we split the reporting queries onto a replica, I expect those pages to drop by more than half, and recovery gets faster because the main database stays healthy. It's about three weeks of work for two engineers.",
+      "ref_zh": "我想提一个应该能改善我们这半年稳定性指标的方案。上个季度大部分告警都来自同一个数据库，尤其是在高峰时段。如果我们把报表查询拆到一个只读副本上，我预计这些告警能降一半以上，而且因为主库保持健康，故障恢复也会更快。大概是两个工程师三周的工作量。"
+    },
+    {
+      "q": "在一对一里，你想了解经理这半年被考核什么。用 30 秒自然地问出来，并说明你为什么想知道。",
+      "ref": "Can I ask you something a bit different today? What are the two or three things you'll be evaluated on this half? I'm asking because I want to make sure my team's work lines up with what matters most to you and to your boss. If something we're doing doesn't really connect to those goals, I'd rather know now so we can adjust.",
+      "ref_zh": "今天我能问你一个不太一样的问题吗？这半年你主要会被考核哪两三件事？我问这个，是想确保我们团队的工作跟你和你老板最看重的东西对得上。如果我们在做的某件事其实跟这些目标关系不大，我宁愿现在就知道，好及时调整。"
+    }
+  ],
+  "words": [
+    {
+      "w": "scorecard",
+      "ipa": "/ˈskɔːrkɑːrd/",
+      "zh": "考核记分卡",
+      "ex": "Hiring targets are on every manager's scorecard this year."
+    },
+    {
+      "w": "reliability",
+      "ipa": "/rɪˌlaɪəˈbɪləti/",
+      "zh": "可靠性、稳定性",
+      "ex": "Our reliability goal is fewer than two major incidents per quarter."
+    },
+    {
+      "w": "evaluate",
+      "ipa": "/ɪˈvæljueɪt/",
+      "zh": "评估、考核",
+      "ex": "Leads are evaluated on delivery and team health."
+    },
+    {
+      "w": "translate",
+      "ipa": "/trænsˈleɪt/",
+      "zh": "转化、换成……的说法",
+      "ex": "Translate the latency gain into how many more orders we can handle."
+    },
+    {
+      "w": "manipulation",
+      "ipa": "/məˌnɪpjəˈleɪʃən/",
+      "zh": "操纵",
+      "ex": "Framing the cost honestly isn't manipulation; hiding it would be."
+    },
+    {
+      "w": "align (v.)",
+      "ipa": "/əˈlaɪn/",
+      "zh": "与……一致、对齐",
+      "ex": "Does this project align with the team's goals for the half?",
+      "tts_w": "align"
+    },
+    {
+      "w": "pitch (v.)",
+      "ipa": "/pɪtʃ/",
+      "zh": "推销、提出（方案）",
+      "ex": "I'll pitch the refactor at the planning meeting.",
+      "tts_w": "pitch"
+    },
+    {
+      "w": "refactor (n.)",
+      "ipa": "/riːˈfæktər/",
+      "zh": "重构",
+      "ex": "The refactor cut our build time by a third.",
+      "tts_w": "refactor"
+    },
+    {
+      "w": "currency",
+      "ipa": "/ˈkɜːrənsi/",
+      "zh": "通用语言、筹码（喻）",
+      "ex": "With this director, data is the only currency that works."
+    }
+  ]
+}

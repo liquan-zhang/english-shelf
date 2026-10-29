@@ -1,0 +1,232 @@
+{
+  "id": "107",
+  "type": "dialogue",
+  "title": "Ordering at a Restaurant",
+  "meta": "B2 · 约 310 词 · 场景：海鲜餐厅点餐与改单",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Server",
+      "name_zh": "服务员",
+      "voice": "en-SG-LunaNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. Asking for Recommendations",
+      "heading_zh": "1. 问推荐",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Hi, are you ready to order, or do you need a few more minutes?",
+          "zh": "您好，可以点菜了吗？还是再看几分钟？"
+        },
+        {
+          "sp": "A",
+          "en": "**I think we're ready. It's our first time here. What would you recommend?**",
+          "zh": "应该可以了。我们第一次来，你推荐什么？"
+        },
+        {
+          "sp": "B",
+          "en": "Our ==signature== dish is the chilli crab, and the cereal prawns are very popular too.",
+          "zh": "我们的招牌菜是辣椒蟹，麦片虾也很受欢迎。"
+        },
+        {
+          "sp": "A",
+          "en": "Chilli crab sounds great. How ==spicy== is it, though? My wife can't take much heat.",
+          "zh": "辣椒蟹听起来不错。不过有多辣？我太太不太能吃辣。"
+        },
+        {
+          "sp": "B",
+          "en": "It's more sweet than spicy, but we can make it ==mild== if you like.",
+          "zh": "其实偏甜不算辣，您要的话我们可以做微辣。"
+        },
+        {
+          "sp": "A",
+          "en": "Mild would be perfect. And how big is a medium crab? __Is it enough for__ two adults and a child?",
+          "zh": "微辣正好。中份的蟹有多大？够两个大人一个小孩吃吗？"
+        },
+        {
+          "sp": "B",
+          "en": "A medium one is about one kilo, so it's good for two or three. Most people __order some fried buns__ for the sauce.",
+          "zh": "中份大概一公斤，两三个人吃刚好。大部分人会点些炸馒头蘸酱。"
+        },
+        {
+          "sp": "A",
+          "en": "**Okay, one medium crab and four fried buns. Could we also get a vegetable dish that isn't too oily?**",
+          "zh": "好，一只中份蟹，四个炸馒头。再来个不太油的蔬菜？"
+        },
+        {
+          "sp": "B",
+          "en": "I'd suggest the kailan with garlic. It's light and fresh.",
+          "zh": "推荐蒜蓉芥兰，清淡爽口。"
+        },
+        {
+          "sp": "A",
+          "en": "Sounds good. And for our son, do you have something plain? Nothing spicy.",
+          "zh": "好的。给我儿子有没有清淡点的？不要辣。"
+        },
+        {
+          "sp": "B",
+          "en": "Our egg fried rice isn't spicy at all, and we can do a ==half portion== for him.",
+          "zh": "我们的蛋炒饭一点都不辣，可以给他做半份。"
+        }
+      ]
+    },
+    {
+      "heading": "2. Changing the Order",
+      "heading_zh": "2. 改单",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "Excuse me, sorry. I just noticed the crab is ==market price==. How much would a medium one be?",
+          "zh": "不好意思，打扰一下。我刚看到螃蟹是时价，中份的大概多少钱？"
+        },
+        {
+          "sp": "B",
+          "en": "Today it's ninety-eight dollars a kilo, so roughly one hundred dollars.",
+          "zh": "今天是一公斤九十八块，所以大概一百块左右。"
+        },
+        {
+          "sp": "A",
+          "en": "**Hmm, that's more than I expected. Is it too late to change to a smaller one?**",
+          "zh": "嗯，比我想的贵。现在换成小一点的还来得及吗？"
+        },
+        {
+          "sp": "B",
+          "en": "The kitchen hasn't started yet, so no problem. A small one is around seventy.",
+          "zh": "厨房还没开始做，没问题。小的大概七十块。"
+        },
+        {
+          "sp": "A",
+          "en": "Let's go with the small one, then, and __add two more__ fried buns.",
+          "zh": "那就要小的吧，再加两个炸馒头。"
+        },
+        {
+          "sp": "B",
+          "en": "Sure. Anything to drink?",
+          "zh": "好的。要喝点什么吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Two lime juices, ==less sweet==, and a warm water for our son. Could we also have some ==wet wipes==? Crab gets ==messy==.",
+          "zh": "两杯青柠汁，少甜，给我儿子一杯温水。能再给些湿纸巾吗？吃螃蟹会弄得很脏。"
+        },
+        {
+          "sp": "B",
+          "en": "Of course. Just so you know, the wet wipes are fifty cents each.",
+          "zh": "当然。提醒一下，湿纸巾是五毛钱一包。"
+        },
+        {
+          "sp": "A",
+          "en": "**That's fine. Could you bring the rice out first? He gets hungry quickly.**",
+          "zh": "没问题。炒饭能先上吗？他饿得快。"
+        },
+        {
+          "sp": "B",
+          "en": "Sure, I'll ask the kitchen to send it out first.",
+          "zh": "好的，我让厨房先出炒饭。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "服务员推荐了什么？「你」对辣度和分量问了什么？",
+      "a": "推荐招牌辣椒蟹和麦片虾；「你」问有多辣，要了微辣，又问中份够不够两大一小吃。"
+    },
+    {
+      "q": "「你」为什么改单？改成了什么？",
+      "a": "螃蟹是时价，中份大概一百块，比预期贵；厨房还没开做，就改成了七十块左右的小份，并多加两个炸馒头。"
+    },
+    {
+      "q": "关于孩子，「你」提了哪些要求？",
+      "a": "要不辣的半份蛋炒饭、一杯温水，并请厨房先上炒饭。"
+    }
+  ],
+  "dictation": [
+    "I think we're ready. It's our first time here. What would you recommend?",
+    "Okay, one medium crab and four fried buns. Could we also get a vegetable dish that isn't too oily?",
+    "Hmm, that's more than I expected. Is it too late to change to a smaller one?",
+    "That's fine. Could you bring the rice out first? He gets hungry quickly."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Excuse me, sorry. I just noticed the crab is market price. How much would a medium one be?",
+    "marked": "Excuse me, / <b>sorry</b>. //<br>I just <b>noticed</b> / the crab is <b>market price</b>. //<br>How much / would a <b>medium</b> one be? //"
+  },
+  "prompts": [
+    {
+      "q": "你对虾过敏，朋友带你去一家东南亚餐厅。点菜前跟服务员说明情况，问哪些菜可以吃、能不能单独做。",
+      "ref": "Before we order, I should mention that I'm allergic to prawns, and it's quite serious. Could you tell me which dishes are safe for me? I know a lot of sauces here use dried shrimp or shrimp paste. If the curry has it, could the kitchen make a separate portion without it? Thanks, I really appreciate it.",
+      "ref_zh": "点菜之前我得说一下，我对虾过敏，而且挺严重的。能告诉我哪些菜我可以吃吗？我知道这里很多酱料会用虾米或虾酱。如果咖喱里有，厨房能单独给我做一份不放的吗？谢谢，非常感谢。"
+    },
+    {
+      "q": "菜上齐了，你发现分量太多吃不完，想问能不能打包，顺便再加一份甜品给孩子。",
+      "ref": "Excuse me, everything was delicious, but we ordered way too much. Could we take the rest of the crab and the rice away? Separate boxes would be great. And could we get one mango pudding for our son? Just one spoon is fine, and could you bring it out after you clear the table?",
+      "ref_zh": "不好意思，菜都很好吃，但我们点太多了。剩下的螃蟹和炒饭能打包吗？分开装最好。再给我儿子来一份芒果布丁？一个勺子就行，收完桌子再上吧。"
+    }
+  ],
+  "words": [
+    {
+      "w": "signature dish",
+      "ipa": "/ˈsɪɡnətʃər dɪʃ/",
+      "zh": "招牌菜",
+      "ex": "The roast duck is their signature dish."
+    },
+    {
+      "w": "spicy",
+      "ipa": "/ˈspaɪsi/",
+      "zh": "辣的",
+      "ex": "Is the laksa very spicy?"
+    },
+    {
+      "w": "mild",
+      "ipa": "/maɪld/",
+      "zh": "微辣的；温和的",
+      "ex": "Could I have the curry mild, please?"
+    },
+    {
+      "w": "half portion",
+      "ipa": "/hæf ˈpɔːrʃən/",
+      "zh": "半份",
+      "ex": "Can I order a half portion for my daughter?"
+    },
+    {
+      "w": "oily",
+      "ipa": "/ˈɔɪli/",
+      "zh": "油腻的",
+      "ex": "The noodles were a bit too oily for me."
+    },
+    {
+      "w": "market price",
+      "ipa": "/ˈmɑːrkɪt praɪs/",
+      "zh": "时价",
+      "ex": "The lobster is sold at market price."
+    },
+    {
+      "w": "less sweet",
+      "ipa": "/les swiːt/",
+      "zh": "少甜",
+      "ex": "One iced tea, less sweet, please."
+    },
+    {
+      "w": "wet wipes",
+      "ipa": "/wet waɪps/",
+      "zh": "湿纸巾",
+      "ex": "Always keep some wet wipes in the diaper bag."
+    },
+    {
+      "w": "messy",
+      "ipa": "/ˈmesi/",
+      "zh": "弄得脏乱的",
+      "ex": "Eating crab with your hands is fun but messy."
+    }
+  ]
+}

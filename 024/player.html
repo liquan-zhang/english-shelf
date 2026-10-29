@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Running a Blameless Postmortem · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "024", "title": "Running a Blameless Postmortem", "meta": "B2 · 约 260 词 · 场景：事故复盘会", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Blame Feels Good and Fixes Nothing", "heading_zh": "1. 甩锅很爽，但什么也解决不了", "rows": [[{"id": "s0_0_0", "md": "At two in the morning, an engineer ran a cleanup script against the wrong database.", "text": "At two in the morning, an engineer ran a cleanup script against the wrong database.", "zh": "凌晨两点，一位工程师对着错误的数据库跑了一个清理脚本。", "sp": null}, {"id": "s0_0_1", "md": "Checkout was down for forty minutes.", "text": "Checkout was down for forty minutes.", "zh": "结账功能挂了四十分钟。", "sp": null}, {"id": "s0_0_2", "md": "In the postmortem, the easiest thing is to __point at__ that engineer and move on.", "text": "In the postmortem, the easiest thing is to point at that engineer and move on.", "zh": "复盘的时候，最省事的做法就是把矛头指向那位工程师，然后翻篇。", "sp": null}], [{"id": "s0_1_0", "md": "But the next person will make the same mistake, because nothing about the system has changed.", "text": "But the next person will make the same mistake, because nothing about the system has changed.", "zh": "但下一个人还会犯同样的错，因为系统本身什么都没变。", "sp": null}, {"id": "s0_1_1", "md": "Worse, people learn to hide their errors, and you lose the honest ==timeline== you need.", "text": "Worse, people learn to hide their errors, and you lose the honest timeline you need.", "zh": "更糟的是，大家会学着藏起自己的错误，你就拿不到需要的那条真实时间线了。", "sp": null}, {"id": "s0_1_2", "md": "**If people are punished for telling the truth, your postmortems will be full of fiction.**", "text": "If people are punished for telling the truth, your postmortems will be full of fiction.", "zh": "如果说真话会受罚，你的复盘报告里就全是编出来的故事。", "sp": null}], [{"id": "s0_2_0", "md": "Blameless does not mean that nobody is ==accountable==.", "text": "Blameless does not mean that nobody is accountable.", "zh": "Blameless 不代表没人需要负责。", "sp": null}, {"id": "s0_2_1", "md": "It means the team is accountable for fixing the conditions that made the mistake easy.", "text": "It means the team is accountable for fixing the conditions that made the mistake easy.", "zh": "它的意思是，团队要负责把那些让人容易犯错的条件修掉。", "sp": null}, {"id": "s0_2_2", "md": "Why did the script run without asking for ==confirmation==?", "text": "Why did the script run without asking for confirmation?", "zh": "为什么这个脚本运行前不要求二次确认？", "sp": null}, {"id": "s0_2_3", "md": "Why did production and staging look exactly the same in the terminal?", "text": "Why did production and staging look exactly the same in the terminal?", "zh": "为什么在终端里，生产环境和测试环境看起来一模一样？", "sp": null}]]}, {"heading": "2. Questions That Keep People Talking", "heading_zh": "2. 让大家愿意开口的提问方式", "rows": [[{"id": "s1_0_0", "md": "As the ==facilitator==, __set the ground rules__ in the first minute.", "text": "As the facilitator, set the ground rules in the first minute.", "zh": "作为主持人，要在第一分钟就把规则定好。", "sp": null}, {"id": "s1_0_1", "md": "Say clearly that the goal is to learn how the system failed, not who failed.", "text": "Say clearly that the goal is to learn how the system failed, not who failed.", "zh": "明确说出来：目的是弄清系统是怎么出问题的，而不是谁出了问题。", "sp": null}, {"id": "s1_0_2", "md": "Then walk through the timeline in order, step by step.", "text": "Then walk through the timeline in order, step by step.", "zh": "然后按顺序，一步一步过时间线。", "sp": null}], [{"id": "s1_1_0", "md": "**Replace \"Why did you do that?\" with \"What made that look like the right call at the time?\"**", "text": "Replace \"Why did you do that?\" with \"What made that look like the right call at the time?\"", "zh": "把「你为什么那么做？」换成「当时是什么让那个操作看起来是对的？」", "sp": null}, {"id": "s1_1_1", "md": "The second question __invites people to explain__ their ==reasoning== instead of defending themselves.", "text": "The second question invites people to explain their reasoning instead of defending themselves.", "zh": "第二种问法会让人去讲自己的思路，而不是忙着为自己辩护。", "sp": null}, {"id": "s1_1_2", "md": "Usually the answer reveals missing alerts, ==misleading== dashboards, or a runbook that was out of date.", "text": "Usually the answer reveals missing alerts, misleading dashboards, or a runbook that was out of date.", "zh": "答案通常会暴露出缺失的告警、误导人的大盘，或者一份过时的 runbook。", "sp": null}], [{"id": "s1_2_0", "md": "Watch out for ==hindsight==.", "text": "Watch out for hindsight.", "zh": "小心事后诸葛亮。", "sp": null}, {"id": "s1_2_1", "md": "Saying \"it was obvious\" is easy once you know the ending.", "text": "Saying \"it was obvious\" is easy once you know the ending.", "zh": "知道了结局，说一句「这不是很明显吗」当然容易。", "sp": null}, {"id": "s1_2_2", "md": "In the moment, the engineer had half the information you have now.", "text": "In the moment, the engineer had half the information you have now.", "zh": "可在当时，那位工程师掌握的信息只有你现在的一半。", "sp": null}], [{"id": "s1_3_0", "md": "End with a short list of action items, each with one owner and a date.", "text": "End with a short list of action items, each with one owner and a date.", "zh": "最后列一份简短的待办清单，每一项都要有一个负责人和一个截止日期。", "sp": null}, {"id": "s1_3_1", "md": "A postmortem without __follow-up__ is just a well-written story.", "text": "A postmortem without follow-up is just a well-written story.", "zh": "没有后续跟进的复盘，只是一篇写得不错的故事。", "sp": null}]]}], "gist": [{"q": "为什么复盘时指责个人没有用？", "a": "系统没变，下一个人还会犯同样的错；而且大家会学会隐瞒错误，复盘失去真实的时间线。"}, {"q": "「无责」是不是意味着没人负责？", "a": "不是。团队要为「让错误容易发生的条件」负责，比如脚本没有二次确认、生产和测试环境看起来一样。"}, {"q": "主持人可以用什么提问方式让大家愿意说？", "a": "把「你为什么这么做」换成「当时是什么让这个做法看起来是对的」；警惕事后诸葛亮；最后列出有负责人和日期的行动项。"}], "dictation": [{"id": "s0_1_2", "text": "If people are punished for telling the truth, your postmortems will be full of fiction."}, {"id": "s0_2_1", "text": "It means the team is accountable for fixing the conditions that made the mistake easy."}, {"id": "s1_0_1", "text": "Say clearly that the goal is to learn how the system failed, not who failed."}, {"id": "s1_3_1", "text": "A postmortem without follow-up is just a well-written story."}], "shadow": {"text": "Replace \"Why did you do that?\" with \"What made that look like the right call at the time?\" The second question invites people to explain their reasoning instead of defending themselves.", "marked": "<b>Replace</b> \"Why did <b>you</b> do that?\" / with \"What <b>made</b> that look like the <b>right call</b> / at the <b>time</b>?\" //<br>The second question / invites people to <b>explain</b> their reasoning / instead of <b>defending</b> themselves. //"}, "prompts": [{"q": "你主持一次线上事故复盘，开场 30 秒：说明无责原则和今天的流程。", "ref": "Thanks for joining, everyone. Before we start, one ground rule: this is a blameless review. We're here to understand how the system let this happen, not to find someone to blame. Anyone in the same seat could have made the same call. We'll walk through the timeline step by step, then agree on a few action items, each with one owner and a date.", "ref_zh": "谢谢大家参加。开始之前先定一条规则：这是一次 blameless 复盘。我们是来搞清楚系统怎么会让这件事发生的，不是来找人背锅的。换谁坐在那个位置上，都可能做出同样的判断。我们会一步一步过时间线，然后定几个待办，每项都有一个负责人和截止日期。", "id": "ref0"}, {"q": "复盘中有人说：「这明显是值班同学操作失误。」你作为主持人，用 30 秒把讨论拉回系统层面。", "ref": "I hear you, but let's be careful with the word obvious, because we all know the ending now. At two in the morning, with the alert he had, what made that command look like the right step? I suspect the dashboard showed both clusters with the same name. If that's true, the fix is in the tooling, and that protects the next person on call too.", "ref_zh": "我理解你的意思，但「明显」这个词我们得慎用，因为现在大家都知道结局了。凌晨两点，就凭他手上那条告警，是什么让那条命令看起来是对的一步？我猜大盘上两个集群显示的名字是一样的。如果真是这样，那该修的是工具，这样下一个 on-call 的人也能被保护到。", "id": "ref1"}], "words": [{"w": "blameless", "ipa": "/ˈbleɪmləs/", "zh": "无责的", "ex": "We run every incident review in a blameless format.", "id": "w0"}, {"w": "timeline", "ipa": "/ˈtaɪmlaɪn/", "zh": "时间线", "ex": "Can you add the alert times to the incident timeline?", "id": "w1"}, {"w": "accountable", "ipa": "/əˈkaʊntəbl/", "zh": "负有责任的", "ex": "Each action item needs one person who is accountable for it.", "id": "w2"}, {"w": "confirmation", "ipa": "/ˌkɑːnfərˈmeɪʃən/", "zh": "确认", "ex": "The delete command should ask for confirmation in production.", "id": "w3"}, {"w": "facilitator", "ipa": "/fəˈsɪlɪteɪtər/", "zh": "主持人、引导者", "ex": "As facilitator, I'll keep us on time and on the timeline.", "id": "w4"}, {"w": "reasoning", "ipa": "/ˈriːzənɪŋ/", "zh": "推理、思路", "ex": "Walk us through your reasoning when the alert fired.", "id": "w5"}, {"w": "misleading", "ipa": "/ˌmɪsˈliːdɪŋ/", "zh": "误导性的", "ex": "The dashboard was misleading because it averaged all regions.", "id": "w6"}, {"w": "hindsight", "ipa": "/ˈhaɪndsaɪt/", "zh": "事后之明", "ex": "In hindsight, we should have paged the database team earlier.", "id": "w7"}, {"w": "runbook", "ipa": "/ˈrʌnbʊk/", "zh": "运维手册", "ex": "The runbook still points to the old failover script.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Blame Feels Good and Fixes Nothing", "zh": "1. 甩锅很爽，但什么也解决不了", "start": 0.0, "end": 3.264, "words": [[0.105, 0.355], [0.75, 1.092], [1.105, 1.434], [1.447, 1.79], [1.921, 2.013], [2.026, 2.474], [2.487, 2.868]]}, {"kind": "s", "id": "s0_0_0", "md": "At two in the morning, an engineer ran a cleanup script against the wrong database.", "zh": "凌晨两点，一位工程师对着错误的数据库跑了一个清理脚本。", "sp": null, "gap": false, "start": 3.264, "end": 8.52, "words": [[3.369, 3.501], [3.514, 3.725], [3.738, 3.803], [3.817, 3.882], [3.896, 4.33], [4.619, 4.724], [4.738, 5.317], [5.33, 5.527], [5.54, 5.606], [5.619, 6.106], [6.119, 6.553], [6.619, 6.935], [6.948, 7.04], [7.053, 7.369], [7.382, 8.132]]}, {"kind": "s", "id": "s0_0_1", "md": "Checkout was down for forty minutes.", "zh": "结账功能挂了四十分钟。", "sp": null, "gap": false, "start": 8.52, "end": 10.968, "words": [[8.625, 8.994], [9.007, 9.165], [9.178, 9.507], [9.52, 9.678], [9.691, 10.059], [10.073, 10.573]]}, {"kind": "s", "id": "s0_0_2", "md": "In the postmortem, the easiest thing is to __point at__ that engineer and move on.", "zh": "复盘的时候，最省事的做法就是把矛头指向那位工程师，然后翻篇。", "sp": null, "gap": false, "start": 10.968, "end": 15.984, "words": [[11.073, 11.139], [11.152, 11.231], [11.244, 11.942], [12.231, 12.31], [12.323, 12.863], [12.876, 13.152], [13.165, 13.284], [13.297, 13.376], [13.389, 13.81], [13.823, 13.915], [13.929, 14.113], [14.126, 14.718], [14.902, 14.994], [15.007, 15.257], [15.271, 15.586]]}, {"kind": "s", "id": "s0_1_0", "md": "But the next person will make the same mistake, because nothing about the system has changed.", "zh": "但下一个人还会犯同样的错，因为系统本身什么都没变。", "sp": null, "gap": true, "start": 15.984, "end": 21.072, "words": [[16.102, 16.181], [16.195, 16.26], [16.273, 16.537], [16.55, 16.931], [16.945, 17.063], [17.076, 17.273], [17.287, 17.366], [17.379, 17.668], [17.681, 18.234], [18.497, 18.813], [18.826, 19.181], [19.195, 19.431], [19.445, 19.523], [19.537, 19.931], [19.945, 20.076], [20.089, 20.681]]}, {"kind": "s", "id": "s0_1_1", "md": "Worse, people learn to hide their errors, and you lose the honest ==timeline== you need.", "zh": "更糟的是，大家会学着藏起自己的错误，你就拿不到需要的那条真实时间线了。", "sp": null, "gap": false, "start": 21.072, "end": 26.16, "words": [[21.177, 21.638], [21.861, 22.19], [22.204, 22.414], [22.427, 22.493], [22.506, 22.783], [22.796, 22.967], [22.98, 23.48], [23.717, 23.848], [23.861, 23.98], [23.993, 24.256], [24.269, 24.401], [24.493, 24.848], [24.861, 25.361], [25.375, 25.454], [25.467, 25.783]]}, {"kind": "s", "id": "s0_1_2", "md": "**If people are punished for telling the truth, your postmortems will be full of fiction.**", "zh": "如果说真话会受罚，你的复盘报告里就全是编出来的故事。", "sp": null, "gap": false, "start": 26.16, "end": 31.224, "words": [[26.265, 26.397], [26.41, 26.739], [26.752, 26.871], [26.884, 27.318], [27.331, 27.476], [27.489, 27.805], [27.818, 27.884], [27.897, 28.384], [28.699, 28.818], [28.831, 29.62], [29.726, 29.831], [29.844, 29.963], [29.976, 30.252], [30.265, 30.344], [30.357, 30.844]]}, {"kind": "s", "id": "s0_2_0", "md": "Blameless does not mean that nobody is ==accountable==.", "zh": "Blameless 不代表没人需要负责。", "sp": null, "gap": true, "start": 31.224, "end": 34.512, "words": [[31.342, 31.737], [31.75, 31.908], [31.921, 32.198], [32.211, 32.513], [32.527, 32.737], [32.75, 33.342], [33.356, 33.474], [33.487, 34.132]]}, {"kind": "s", "id": "s0_2_1", "md": "It means the team is accountable for fixing the conditions that made the mistake easy.", "zh": "它的意思是，团队要负责把那些让人容易犯错的条件修掉。", "sp": null, "gap": false, "start": 34.512, "end": 39.552, "words": [[34.617, 34.696], [34.709, 34.973], [34.986, 35.104], [35.117, 35.525], [35.538, 35.644], [35.657, 36.262], [36.275, 36.433], [36.446, 36.933], [36.946, 37.025], [37.038, 37.709], [37.723, 37.88], [37.894, 38.144], [38.157, 38.223], [38.236, 38.696], [38.775, 39.157]]}, {"kind": "s", "id": "s0_2_2", "md": "Why did the script run without asking for ==confirmation==?", "zh": "为什么这个脚本运行前不要求二次确认？", "sp": null, "gap": false, "start": 39.552, "end": 43.008, "words": [[39.67, 39.763], [39.776, 39.894], [39.907, 39.986], [39.999, 40.368], [40.381, 40.776], [40.907, 41.302], [41.315, 41.723], [41.736, 41.868], [41.881, 42.631]]}, {"kind": "s", "id": "s0_2_3", "md": "Why did production and staging look exactly the same in the terminal?", "zh": "为什么在终端里，生产环境和测试环境看起来一模一样？", "sp": null, "gap": false, "start": 43.008, "end": 47.136, "words": [[43.126, 43.245], [43.258, 43.403], [43.416, 44.021], [44.126, 44.232], [44.245, 44.758], [44.771, 44.929], [44.942, 45.574], [45.587, 45.679], [45.692, 46.074], [46.087, 46.153], [46.166, 46.232], [46.245, 46.758]]}, {"kind": "h", "id": "h1", "md": "2. Questions That Keep People Talking", "zh": "2. 让大家愿意开口的提问方式", "start": 47.136, "end": 49.752, "words": [[47.254, 47.465], [47.833, 48.268], [48.281, 48.412], [48.425, 48.636], [48.649, 48.925], [48.939, 49.36]]}, {"kind": "s", "id": "s1_0_0", "md": "As the ==facilitator==, __set the ground rules__ in the first minute.", "zh": "作为主持人，要在第一分钟就把规则定好。", "sp": null, "gap": false, "start": 49.752, "end": 53.496, "words": [[49.857, 49.963], [49.976, 50.055], [50.068, 50.818], [51.081, 51.278], [51.291, 51.37], [51.384, 51.778], [51.791, 52.147], [52.16, 52.252], [52.265, 52.344], [52.357, 52.726], [52.739, 53.107]]}, {"kind": "s", "id": "s1_0_1", "md": "Say clearly that the goal is to learn how the system failed, not who failed.", "zh": "明确说出来：目的是弄清系统是怎么出问题的，而不是谁出了问题。", "sp": null, "gap": false, "start": 53.496, "end": 58.2, "words": [[53.601, 53.799], [53.812, 54.193], [54.207, 54.351], [54.364, 54.457], [54.47, 54.825], [54.838, 54.957], [54.97, 55.075], [55.088, 55.457], [55.47, 55.628], [55.641, 55.733], [55.746, 56.167], [56.18, 56.641], [57.049, 57.207], [57.22, 57.351], [57.364, 57.799]]}, {"kind": "s", "id": "s1_0_2", "md": "Then walk through the timeline in order, step by step.", "zh": "然后按顺序，一步一步过时间线。", "sp": null, "gap": false, "start": 58.2, "end": 61.608, "words": [[58.305, 58.489], [58.503, 58.779], [58.792, 58.924], [58.937, 59.029], [59.042, 59.568], [59.582, 59.687], [59.7, 60.055], [60.318, 60.621], [60.634, 60.766], [60.779, 61.226]]}, {"kind": "s", "id": "s1_1_0", "md": "**Replace \"Why did you do that?\" with \"What made that look like the right call at the time?\"**", "zh": "把「你为什么那么做？」换成「当时是什么让那个操作看起来是对的？」", "sp": null, "gap": true, "start": 61.608, "end": 66.672, "words": [[61.713, 62.213], [62.292, 62.516], [62.529, 62.674], [62.687, 62.779], [62.792, 62.99], [63.003, 63.319], [63.74, 63.924], [63.95, 64.121], [64.134, 64.345], [64.358, 64.529], [64.542, 64.7], [64.713, 64.884], [64.897, 64.976], [64.99, 65.226], [65.24, 65.463], [65.476, 65.555], [65.569, 65.647], [65.661, 66.069]]}, {"kind": "s", "id": "s1_1_1", "md": "The second question __invites people to explain__ their ==reasoning== instead of defending themselves.", "zh": "第二种问法会让人去讲自己的思路，而不是忙着为自己辩护。", "sp": null, "gap": false, "start": 66.672, "end": 72.312, "words": [[66.79, 66.843], [66.856, 67.264], [67.277, 67.777], [67.79, 68.264], [68.277, 68.632], [68.646, 68.764], [68.777, 69.264], [69.277, 69.488], [69.501, 69.988], [70.119, 70.514], [70.527, 70.619], [70.633, 71.185], [71.198, 71.922]]}, {"kind": "s", "id": "s1_1_2", "md": "Usually the answer reveals missing alerts, ==misleading== dashboards, or a runbook that was out of date.", "zh": "答案通常会暴露出缺失的告警、误导人的大盘，或者一份过时的 runbook。", "sp": null, "gap": false, "start": 72.312, "end": 78.72, "words": [[72.417, 72.825], [72.838, 72.97], [72.983, 73.391], [73.404, 73.852], [73.865, 74.272], [74.286, 74.904], [75.088, 75.575], [75.588, 76.312], [76.694, 76.812], [76.825, 76.891], [76.904, 77.391], [77.404, 77.523], [77.536, 77.68], [77.694, 77.838], [77.851, 77.957], [77.97, 78.325]]}, {"kind": "s", "id": "s1_2_0", "md": "Watch out for ==hindsight==.", "zh": "小心事后诸葛亮。", "sp": null, "gap": true, "start": 78.72, "end": 80.592, "words": [[78.825, 79.036], [79.049, 79.181], [79.194, 79.299], [79.312, 79.931]]}, {"kind": "s", "id": "s1_2_1", "md": "Saying \"it was obvious\" is easy once you know the ending.", "zh": "知道了结局，说一句「这不是很明显吗」当然容易。", "sp": null, "gap": false, "start": 80.592, "end": 84.456, "words": [[80.71, 81.145], [81.171, 81.263], [81.276, 81.447], [81.474, 82.171], [82.381, 82.566], [82.697, 82.987], [83.0, 83.263], [83.276, 83.368], [83.381, 83.552], [83.566, 83.671], [83.684, 84.066]]}, {"kind": "s", "id": "s1_2_2", "md": "In the moment, the engineer had half the information you have now.", "zh": "可在当时，那位工程师掌握的信息只有你现在的一半。", "sp": null, "gap": false, "start": 84.456, "end": 88.536, "words": [[84.561, 84.64], [84.653, 84.719], [84.732, 85.193], [85.495, 85.588], [85.601, 86.153], [86.167, 86.324], [86.338, 86.706], [86.719, 86.798], [86.811, 87.456], [87.469, 87.561], [87.574, 87.798], [87.811, 88.153]]}, {"kind": "s", "id": "s1_3_0", "md": "End with a short list of action items, each with one owner and a date.", "zh": "最后列一份简短的待办清单，每一项都要有一个负责人和一个截止日期。", "sp": null, "gap": true, "start": 88.536, "end": 93.264, "words": [[88.641, 88.76], [88.773, 88.891], [88.904, 88.931], [88.944, 89.365], [89.378, 89.654], [89.668, 89.747], [89.76, 90.141], [90.154, 90.602], [90.983, 91.194], [91.207, 91.391], [91.404, 91.668], [91.681, 92.062], [92.286, 92.352], [92.365, 92.431], [92.444, 92.865]]}, {"kind": "s", "id": "s1_3_1", "md": "A postmortem without __follow-up__ is just a well-written story.", "zh": "没有后续跟进的复盘，只是一篇写得不错的故事。", "sp": null, "gap": false, "start": 93.264, "end": 97.2, "words": [[93.369, 93.435], [93.448, 94.093], [94.172, 94.54], [94.553, 95.146], [95.251, 95.382], [95.396, 95.698], [95.711, 95.777], [95.79, 96.303], [96.317, 96.803]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

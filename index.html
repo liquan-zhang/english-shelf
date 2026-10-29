@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>英语听说书架</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e7e5e4; --bg:#fafaf7; --accent:#dc2626; --ok:#16a34a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { margin: 0; font-size: 26px; }
+  .sub { color: var(--mute); margin: 4px 0 18px; }
+  .stats { display:flex; gap: 18px; font-size: 14px; color: var(--mute); margin-bottom: 8px; }
+  .stats b { color: var(--ink); font-size: 20px; margin-right: 4px; }
+  .filters { display:flex; gap:8px; flex-wrap:wrap; margin: 14px 0 6px; }
+  .filters button { font: inherit; font-size: 13px; border:1px solid var(--line); background:#fff; border-radius:999px; padding:4px 12px; cursor:pointer; }
+  .filters button.on { background: var(--ink); color:#fff; border-color: var(--ink); }
+  .filters button .n { color: var(--mute); font-size: 11px; margin-left: 4px; }
+  .filters button.on .n { color: rgba(255,255,255,.7); }
+  .filters button.toggle { margin-left: auto; }
+  .filters button.toggle.on { background: var(--ok); border-color: var(--ok); }
+  .filters.l2 { margin-top: 0; padding: 10px 12px; background: #f5f5f4; border-radius: 10px; }
+  .filters.l2 button { font-size: 12px; }
+  .filters.l2 button.on { background: #fff; color: var(--ink); border-color: var(--ink); }
+  .filters.l2 button.on .n { color: var(--mute); }
+  .filters[hidden] { display: none; }
+  .offline { display:flex; align-items:center; gap: 12px; margin: 6px 0 4px; font-size: 13px; color: var(--mute); }
+  .offline[hidden] { display: none; }
+  .offline button { font: inherit; font-size: 13px; border: 1px solid var(--ink); background: var(--ink); color: #fff; border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+  .offline button:disabled { opacity: .5; cursor: default; }
+  .dlbar { flex: 0 0 160px; height: 4px; background: #e7e5e4; border-radius: 2px; overflow: hidden; }
+  .dlbar i { display:block; height: 100%; width: 0; background: var(--ok); }
+  .empty { color: var(--mute); padding: 40px 0; text-align: center; }
+  h2 { font-size: 16px; margin: 26px 0 10px; }
+  h2 span { color: var(--mute); font-weight: normal; font-size: 13px; margin-left: 6px; }
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius: 12px; padding: 12px 14px; display:flex; flex-direction:column; gap: 6px; }
+  .card.off { opacity: .45; }
+  .card[data-href] { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+  .card[data-href]:hover { border-color: #d6d3d1; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+  .card .top { display:flex; gap:8px; align-items:baseline; }
+  .card .id { color: var(--mute); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .card .t { font-weight: 600; line-height: 1.35; }
+  .card .angle { color: var(--mute); font-size: 13px; }
+  .card .foot { display:flex; align-items:center; gap: 8px; margin-top: auto; padding-top: 4px; font-size: 13px; }
+  .card a { color: var(--ink); text-decoration:none; border:1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+  .card a:hover { border-color: var(--accent); }
+  .accent { font-size: 11px; border-radius: 4px; padding: 1px 6px; background:#f5f5f4; color: var(--mute); }
+  .bar { flex:1; height: 4px; background: #f0efed; border-radius: 2px; overflow:hidden; }
+  .bar i { display:block; height:100%; background: var(--ok); }
+  .card.done { border-color: #bbf7d0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>英语听说书架</h1>
+  <div class="sub">工作 · 生活 · B2 · 每篇约 20 分钟：盲听 → 听写 → 精听 → 跟读 → 输出 → 单词</div>
+  <div class="stats" id="stats"></div>
+  <div class="offline" id="offline" hidden>
+    <button id="dl">⬇ 全部下载到本机</button>
+    <span id="dlinfo"></span>
+    <span class="dlbar"><i id="dlbar"></i></span>
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="filters l2" id="filters2"></div>
+  <div id="list"></div>
+</div>
+<script>
+const T = [{"id": "000", "cat": "A", "cat_name": "会议发言与控场", "title": "How to Disagree Without Making Enemies", "angle": "开会时如何提反对意见（样板篇）", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "001", "cat": "A", "cat_name": "会议发言与控场", "title": "How to Speak Up in the First Five Minutes", "angle": "开会前五分钟先开口，抢定义权", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "002", "cat": "A", "cat_name": "会议发言与控场", "title": "Turning a Messy Discussion into a Decision", "angle": "讨论发散时如何收敛到决定", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "003", "cat": "A", "cat_name": "会议发言与控场", "title": "How to Interrupt Politely", "angle": "礼貌地打断跑题或冗长发言", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "004", "cat": "A", "cat_name": "会议发言与控场", "title": "Summarizing a Meeting in Thirty Seconds", "angle": "会议结尾的三十秒总结", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "005", "cat": "A", "cat_name": "会议发言与控场", "title": "When You Are Put on the Spot", "angle": "被突然点名提问时如何争取时间、稳住", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "006", "cat": "A", "cat_name": "会议发言与控场", "title": "Asking the Question Everyone Is Afraid to Ask", "angle": "问出大家都不敢问的问题", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "007", "cat": "A", "cat_name": "会议发言与控场", "title": "Running a Meeting That Ends on Time", "angle": "主持会议：议程、计时、收尾", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "008", "cat": "A", "cat_name": "会议发言与控场", "title": "Disagreeing with a Senior Leader in Public", "angle": "公开场合不同意高层", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "009", "cat": "A", "cat_name": "会议发言与控场", "title": "Saying I Don't Know Without Losing Credibility", "angle": "说不知道而不丢可信度", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "010", "cat": "A", "cat_name": "会议发言与控场", "title": "Handling the Person Who Talks Too Much", "angle": "应对一直说的人，让安静的人发言", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "011", "cat": "B", "cat_name": "技术演示与汇报", "title": "Opening a Tech Demo with the Problem, Not the Feature", "angle": "演示先讲问题再讲功能", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "012", "cat": "B", "cat_name": "技术演示与汇报", "title": "When the Demo Breaks in Front of Everyone", "angle": "演示翻车时的应对", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "013", "cat": "B", "cat_name": "技术演示与汇报", "title": "Explaining a System to Non-Engineers", "angle": "向非技术同事讲清系统", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "014", "cat": "B", "cat_name": "技术演示与汇报", "title": "Presenting Numbers That People Remember", "angle": "让数字被记住：对比与类比", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "015", "cat": "B", "cat_name": "技术演示与汇报", "title": "Answering Tough Questions After a Presentation", "angle": "演示后的刁钻提问", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "016", "cat": "B", "cat_name": "技术演示与汇报", "title": "The One-Slide Summary", "angle": "一页纸讲清一个项目", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "017", "cat": "B", "cat_name": "技术演示与汇报", "title": "Telling the Story Behind a Metric", "angle": "指标背后的故事：为什么涨为什么跌", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "018", "cat": "B", "cat_name": "技术演示与汇报", "title": "Presenting Bad News Upward", "angle": "向上汇报坏消息", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "019", "cat": "B", "cat_name": "技术演示与汇报", "title": "Demoing Work That Is Not Finished", "angle": "演示半成品并管理预期", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "020", "cat": "B", "cat_name": "技术演示与汇报", "title": "Keeping a Remote Audience Awake", "angle": "线上汇报保持听众注意力", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "021", "cat": "C", "cat_name": "评审与复盘", "title": "What Makes a Good Design Review", "angle": "设计评审要评什么", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "022", "cat": "C", "cat_name": "评审与复盘", "title": "Writing Code Review Comments That Help", "angle": "写有帮助的 code review 评论", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "023", "cat": "C", "cat_name": "评审与复盘", "title": "Receiving Harsh Feedback on Your Design", "angle": "设计被严厉批评时怎么接", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "024", "cat": "C", "cat_name": "评审与复盘", "title": "Running a Blameless Postmortem", "angle": "无责复盘怎么开", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "025", "cat": "C", "cat_name": "评审与复盘", "title": "Asking Why Five Times", "angle": "五个为什么找根因", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "026", "cat": "C", "cat_name": "评审与复盘", "title": "Trade-offs, Not Right Answers", "angle": "架构讨论里讲取舍而非对错", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "027", "cat": "C", "cat_name": "评审与复盘", "title": "Defending a Technical Decision", "angle": "为技术决策辩护而不防御", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "028", "cat": "C", "cat_name": "评审与复盘", "title": "Reviewing a Proposal You Disagree With", "angle": "评审你不认同的方案", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "029", "cat": "C", "cat_name": "评审与复盘", "title": "Turning Lessons Learned into Real Changes", "angle": "把复盘结论变成真正的改进", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "030", "cat": "C", "cat_name": "评审与复盘", "title": "When to Approve with Comments", "angle": "什么时候带意见通过", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "031", "cat": "D", "cat_name": "向上管理与跨级沟通", "title": "Getting Five Minutes with Your Skip-Level", "angle": "和隔级老板的五分钟", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "032", "cat": "D", "cat_name": "向上管理与跨级沟通", "title": "Making Your Work Visible Without Bragging", "angle": "让工作被看见而不显得自夸", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "033", "cat": "D", "cat_name": "向上管理与跨级沟通", "title": "Asking Your Manager for What You Need", "angle": "向经理要资源、要支持", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "034", "cat": "D", "cat_name": "向上管理与跨级沟通", "title": "Pushing Back on an Unrealistic Deadline", "angle": "顶回不现实的截止日期", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "035", "cat": "D", "cat_name": "向上管理与跨级沟通", "title": "The Weekly Update Your Boss Actually Reads", "angle": "老板真的会读的周报", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "036", "cat": "D", "cat_name": "向上管理与跨级沟通", "title": "Disagreeing with Your Manager in a One-on-One", "angle": "一对一里不同意经理", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "037", "cat": "D", "cat_name": "向上管理与跨级沟通", "title": "Understanding What Your Boss Is Measured On", "angle": "理解老板被考核什么", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "038", "cat": "D", "cat_name": "向上管理与跨级沟通", "title": "Escalating Without Burning Bridges", "angle": "升级问题而不伤关系", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "039", "cat": "D", "cat_name": "向上管理与跨级沟通", "title": "Talking About Your Career Growth", "angle": "和经理谈职业发展", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "040", "cat": "D", "cat_name": "向上管理与跨级沟通", "title": "Bringing Solutions, Not Just Problems", "angle": "带着方案去找老板", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "041", "cat": "E", "cat_name": "跨团队协作与谈判", "title": "Getting Help from a Team That Owes You Nothing", "angle": "让不欠你的团队帮你", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "042", "cat": "E", "cat_name": "跨团队协作与谈判", "title": "Translating Your Request into Their Interests", "angle": "把你的需求翻译成对方的利益", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "043", "cat": "E", "cat_name": "跨团队协作与谈判", "title": "Negotiating Scope with Product Managers", "angle": "和产品经理谈范围", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "044", "cat": "E", "cat_name": "跨团队协作与谈判", "title": "Saying No Without Closing the Door", "angle": "拒绝但不关上门", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "045", "cat": "E", "cat_name": "跨团队协作与谈判", "title": "Aligning Two Teams on One Goal", "angle": "让两个团队对齐同一个目标", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "046", "cat": "E", "cat_name": "跨团队协作与谈判", "title": "When Another Team Misses Their Deadline", "angle": "依赖方延期时怎么办", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "047", "cat": "E", "cat_name": "跨团队协作与谈判", "title": "Writing a Request That Gets a Reply", "angle": "写一封会被回复的求助", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "048", "cat": "E", "cat_name": "跨团队协作与谈判", "title": "Finding Who Really Makes the Decision", "angle": "找到真正的决策人", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "049", "cat": "E", "cat_name": "跨团队协作与谈判", "title": "Building Trust Before You Need It", "angle": "需要之前先建立信任", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "050", "cat": "E", "cat_name": "跨团队协作与谈判", "title": "Handling a Turf War", "angle": "处理团队之间的地盘之争", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "051", "cat": "F", "cat_name": "反馈、一对一与带人", "title": "Giving Feedback That People Can Use", "angle": "给能用的反馈：具体、及时", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "052", "cat": "F", "cat_name": "反馈、一对一与带人", "title": "The First One-on-One with a New Report", "angle": "和新下属的第一次一对一", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "053", "cat": "F", "cat_name": "反馈、一对一与带人", "title": "Praising Specific Work, Not People", "angle": "表扬具体的事而不是人", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "054", "cat": "F", "cat_name": "反馈、一对一与带人", "title": "Talking to Someone Who Is Underperforming", "angle": "和表现不佳的人谈话", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "055", "cat": "F", "cat_name": "反馈、一对一与带人", "title": "Delegating Without Disappearing", "angle": "授权但不消失", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "056", "cat": "F", "cat_name": "反馈、一对一与带人", "title": "Coaching with Questions", "angle": "用提问来辅导", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "057", "cat": "F", "cat_name": "反馈、一对一与带人", "title": "Helping a Strong Engineer Grow into a Lead", "angle": "帮强工程师成长为负责人", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "058", "cat": "F", "cat_name": "反馈、一对一与带人", "title": "When Your Report Wants to Quit", "angle": "下属想离职时", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "059", "cat": "F", "cat_name": "反馈、一对一与带人", "title": "Setting Expectations Early", "angle": "尽早讲清期望", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "060", "cat": "F", "cat_name": "反馈、一对一与带人", "title": "Asking for Feedback on Yourself", "angle": "向别人要关于自己的反馈", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "061", "cat": "G", "cat_name": "故障、风险与不确定下决策", "title": "The First Ten Minutes of an Incident", "angle": "故障前十分钟：谁指挥、怎么沟通", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "062", "cat": "G", "cat_name": "故障、风险与不确定下决策", "title": "Writing a Status Update During an Outage", "angle": "故障中的状态通报", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "063", "cat": "G", "cat_name": "故障、风险与不确定下决策", "title": "Rolling Back Is Not Failure", "angle": "回滚不是失败", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "064", "cat": "G", "cat_name": "故障、风险与不确定下决策", "title": "Making a Call with Incomplete Data", "angle": "数据不全时做决定", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "065", "cat": "G", "cat_name": "故障、风险与不确定下决策", "title": "Explaining Risk Without Scaring People", "angle": "讲风险而不吓人", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "066", "cat": "G", "cat_name": "故障、风险与不确定下决策", "title": "Reversible and Irreversible Decisions", "angle": "可逆与不可逆决策", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "067", "cat": "G", "cat_name": "故障、风险与不确定下决策", "title": "When the Launch Date Meets a Critical Bug", "angle": "上线日撞上严重 bug", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "068", "cat": "G", "cat_name": "故障、风险与不确定下决策", "title": "Calm Is Contagious", "angle": "冷静会传染：危机中的语气", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "069", "cat": "G", "cat_name": "故障、风险与不确定下决策", "title": "Telling Customers What Went Wrong", "angle": "向客户说明出了什么问题", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "070", "cat": "G", "cat_name": "故障、风险与不确定下决策", "title": "Planning for the Thing That Will Go Wrong", "angle": "为一定会出错的事做预案", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "071", "cat": "H", "cat_name": "规划、优先级与目标", "title": "Saying What You Will Not Do This Quarter", "angle": "说清本季度不做什么", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "072", "cat": "H", "cat_name": "规划、优先级与目标", "title": "Writing Goals That Can Be Measured", "angle": "写可衡量的目标", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "073", "cat": "H", "cat_name": "规划、优先级与目标", "title": "Estimating When You Really Don't Know", "angle": "真的不知道时怎么估时", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "074", "cat": "H", "cat_name": "规划、优先级与目标", "title": "Cutting Scope to Hit a Date", "angle": "砍范围保日期", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "075", "cat": "H", "cat_name": "规划、优先级与目标", "title": "Prioritizing When Everything Is Urgent", "angle": "什么都急时如何排优先级", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "076", "cat": "H", "cat_name": "规划、优先级与目标", "title": "Making the Case for Technical Debt", "angle": "为技术债争取时间", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "077", "cat": "H", "cat_name": "规划、优先级与目标", "title": "Planning Meetings That Produce Plans", "angle": "能产出计划的规划会", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "078", "cat": "H", "cat_name": "规划、优先级与目标", "title": "Changing Plans Mid-Quarter", "angle": "季度中途改计划", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "079", "cat": "H", "cat_name": "规划、优先级与目标", "title": "Connecting Daily Work to the Big Goal", "angle": "把日常工作连到大目标", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "080", "cat": "H", "cat_name": "规划、优先级与目标", "title": "The Pre-Read That Wins the Meeting", "angle": "会前材料先赢下会议", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "081", "cat": "I", "cat_name": "闲聊与关系建立", "title": "Small Talk Before the Meeting Starts", "angle": "会议开始前的闲聊", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "082", "cat": "I", "cat_name": "闲聊与关系建立", "title": "Remembering Things About People", "angle": "记住关于别人的小事", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "083", "cat": "I", "cat_name": "闲聊与关系建立", "title": "Talking About Your Weekend in Two Sentences", "angle": "两句话聊周末", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "084", "cat": "I", "cat_name": "闲聊与关系建立", "title": "Joining a Conversation at a Team Dinner", "angle": "团队聚餐时加入对话", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "085", "cat": "I", "cat_name": "闲聊与关系建立", "title": "Coffee Chats with People Outside Your Team", "angle": "和组外的人喝咖啡聊天", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "086", "cat": "I", "cat_name": "闲聊与关系建立", "title": "Keeping a Conversation Going with Follow-up Questions", "angle": "用追问把对话聊下去", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "087", "cat": "I", "cat_name": "闲聊与关系建立", "title": "Talking About Food, Travel, and Home", "angle": "聊食物、旅行和家乡", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "088", "cat": "I", "cat_name": "闲聊与关系建立", "title": "Welcoming a New Teammate", "angle": "欢迎新同事", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "089", "cat": "I", "cat_name": "闲聊与关系建立", "title": "Ending a Conversation Gracefully", "angle": "得体地结束对话", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "090", "cat": "I", "cat_name": "闲聊与关系建立", "title": "Being Funny Without Trying Too Hard", "angle": "自然的幽默", "voice": "en-US-AndrewNeural", "ready": true}, {"id": "091", "cat": "J", "cat_name": "全球团队与口音", "title": "Working with Teammates in Five Time Zones", "angle": "五个时区的协作", "voice": "en-IN-PrabhatNeural", "ready": true}, {"id": "092", "cat": "J", "cat_name": "全球团队与口音", "title": "Asking Someone to Repeat Without Embarrassment", "angle": "不尴尬地请人重复", "voice": "en-SG-WayneNeural", "ready": true}, {"id": "093", "cat": "J", "cat_name": "全球团队与口音", "title": "Writing for Readers Whose First Language Isn't English", "angle": "为非母语读者写作", "voice": "en-GB-RyanNeural", "ready": true}, {"id": "094", "cat": "J", "cat_name": "全球团队与口音", "title": "Async First: When Not to Have a Meeting", "angle": "异步优先：什么时候不开会", "voice": "en-IN-NeerjaNeural", "ready": true}, {"id": "095", "cat": "J", "cat_name": "全球团队与口音", "title": "Understanding Indirect Feedback Across Cultures", "angle": "听懂不同文化里的委婉反馈", "voice": "en-SG-LunaNeural", "ready": true}, {"id": "096", "cat": "J", "cat_name": "全球团队与口音", "title": "Leading a Video Call with Bad Connections", "angle": "网络不好时主持视频会", "voice": "en-GB-SoniaNeural", "ready": true}, {"id": "097", "cat": "J", "cat_name": "全球团队与口音", "title": "Checking Understanding Without Sounding Rude", "angle": "确认理解而不显得无礼", "voice": "en-AU-WilliamMultilingualNeural", "ready": true}, {"id": "098", "cat": "J", "cat_name": "全球团队与口音", "title": "Building a Team Culture Across Offices", "angle": "跨办公室建立团队文化", "voice": "en-IN-PrabhatNeural", "ready": true}, {"id": "099", "cat": "J", "cat_name": "全球团队与口音", "title": "When Silence Means Different Things", "angle": "沉默在不同文化里的含义", "voice": "en-AU-NatashaNeural", "ready": true}, {"id": "100", "cat": "J", "cat_name": "全球团队与口音", "title": "Your Accent Is Not the Problem", "angle": "口音不是问题，清晰才是", "voice": "en-SG-WayneNeural", "ready": true}, {"id": "101", "cat": "K", "cat_name": "生活对话", "title": "Checking In at a Hotel", "angle": "酒店入住、要高楼层、押金、延迟退房、空调坏了换房（样板）", "voice": "en-SG-LunaNeural", "sub": "住宿出行", "ready": true}, {"id": "102", "cat": "K", "cat_name": "生活对话", "sub": "住宿出行", "title": "Booking an Airbnb and Meeting the Host", "angle": "联系房东、问入住方式、钥匙和规则", "voice": "en-SG-WayneNeural", "ready": true}, {"id": "103", "cat": "K", "cat_name": "生活对话", "sub": "住宿出行", "title": "Checking In at the Airport", "angle": "值机：行李超重、选座位、转机", "voice": "en-GB-SoniaNeural", "ready": true}, {"id": "104", "cat": "K", "cat_name": "生活对话", "sub": "住宿出行", "title": "Taking a Taxi and Giving Directions", "angle": "打车：说地址、指路、绕路、付款", "voice": "en-IN-PrabhatNeural", "ready": true}, {"id": "105", "cat": "K", "cat_name": "生活对话", "sub": "住宿出行", "title": "Renting a Car for the Weekend", "angle": "租车：保险、押金、还车、刮痕", "voice": "en-US-AvaNeural", "ready": true}, {"id": "106", "cat": "K", "cat_name": "生活对话", "sub": "餐厅", "title": "Booking a Table for a Family Dinner", "angle": "电话订位：人数、儿童椅、包间、迟到", "voice": "en-AU-NatashaNeural", "ready": true}, {"id": "107", "cat": "K", "cat_name": "生活对话", "sub": "餐厅", "title": "Ordering at a Restaurant", "angle": "点餐：问推荐、忌口、辣度、分量", "voice": "en-SG-LunaNeural", "ready": true}, {"id": "108", "cat": "K", "cat_name": "生活对话", "sub": "餐厅", "title": "When the Food Is Wrong", "angle": "上错菜、菜凉了、等太久，礼貌投诉", "voice": "en-GB-RyanNeural", "ready": true}, {"id": "109", "cat": "K", "cat_name": "生活对话", "sub": "餐厅", "title": "Paying and Splitting the Bill", "angle": "结账：AA、服务费、刷卡、开发票", "voice": "en-IN-NeerjaNeural", "ready": true}, {"id": "110", "cat": "K", "cat_name": "生活对话", "sub": "餐厅", "title": "Ordering at a Hawker Centre", "angle": "熟食中心点餐：小份、打包、少辣", "voice": "en-AU-WilliamMultilingualNeural", "ready": true}, {"id": "111", "cat": "K", "cat_name": "生活对话", "sub": "酒吧与咖啡", "title": "Ordering Drinks at a Bar", "angle": "点酒：问推荐、happy hour、开 tab", "voice": "en-US-EmmaNeural", "ready": true}, {"id": "112", "cat": "K", "cat_name": "生活对话", "sub": "酒吧与咖啡", "title": "Ordering Coffee Your Way", "angle": "咖啡店：定制口味、燕麦奶、做错了", "voice": "en-SG-WayneNeural", "ready": true}, {"id": "113", "cat": "K", "cat_name": "生活对话", "sub": "酒吧与咖啡", "title": "Talking to a Stranger at the Bar", "angle": "酒吧和陌生人自然搭话", "voice": "en-GB-SoniaNeural", "ready": true}, {"id": "114", "cat": "K", "cat_name": "生活对话", "sub": "酒吧与咖啡", "title": "Hosting Friends for After-Work Drinks", "angle": "下班请朋友喝酒：订位、点单、买单", "voice": "en-IN-PrabhatNeural", "ready": true}, {"id": "115", "cat": "K", "cat_name": "生活对话", "sub": "酒吧与咖啡", "title": "Asking the Bartender for Something Non-Alcoholic", "angle": "不喝酒时怎么点、怎么婉拒", "voice": "en-US-AvaNeural", "ready": true}, {"id": "116", "cat": "K", "cat_name": "生活对话", "sub": "银行与钱", "title": "Opening a Bank Account", "angle": "开户：材料、账户类型、最低余额、网银", "voice": "en-AU-NatashaNeural", "ready": true}, {"id": "117", "cat": "K", "cat_name": "生活对话", "sub": "银行与钱", "title": "Reporting a Lost Card", "angle": "挂失信用卡：冻结、可疑交易、补卡", "voice": "en-SG-LunaNeural", "ready": true}, {"id": "118", "cat": "K", "cat_name": "生活对话", "sub": "银行与钱", "title": "Sending Money Overseas", "angle": "跨境汇款：汇率、手续费、到账时间", "voice": "en-GB-RyanNeural", "ready": true}, {"id": "119", "cat": "K", "cat_name": "生活对话", "sub": "银行与钱", "title": "Asking About a Strange Charge", "angle": "账单上有不认识的扣款，打电话问", "voice": "en-IN-NeerjaNeural", "ready": true}, {"id": "120", "cat": "K", "cat_name": "生活对话", "sub": "银行与钱", "title": "Talking to an Insurance Agent", "angle": "咨询保险：保什么、免赔额、怎么理赔", "voice": "en-AU-WilliamMultilingualNeural", "ready": true}, {"id": "121", "cat": "K", "cat_name": "生活对话", "sub": "看病", "title": "Seeing a Doctor at a Clinic", "angle": "全科诊所：描述症状、病假条、复诊", "voice": "en-US-EmmaNeural", "ready": true}, {"id": "122", "cat": "K", "cat_name": "生活对话", "sub": "看病", "title": "At the Pharmacy", "angle": "药房：买非处方药、问用法和副作用", "voice": "en-SG-WayneNeural", "ready": true}, {"id": "123", "cat": "K", "cat_name": "生活对话", "sub": "看病", "title": "Booking and Visiting the Dentist", "angle": "牙医：预约、牙疼描述、费用和保险", "voice": "en-GB-SoniaNeural", "ready": true}, {"id": "124", "cat": "K", "cat_name": "生活对话", "sub": "看病", "title": "Taking Your Child to the Doctor", "angle": "带孩子看病：发烧、过敏、用药剂量", "voice": "en-IN-PrabhatNeural", "ready": true}, {"id": "125", "cat": "K", "cat_name": "生活对话", "sub": "看病", "title": "Calling for an Urgent Appointment", "angle": "打电话约急诊、说明紧急程度", "voice": "en-US-AvaNeural", "ready": true}, {"id": "126", "cat": "K", "cat_name": "生活对话", "sub": "租房与家", "title": "Viewing an Apartment", "angle": "看房：租金、合同期、家具、谈价", "voice": "en-AU-NatashaNeural", "ready": true}, {"id": "127", "cat": "K", "cat_name": "生活对话", "sub": "租房与家", "title": "Asking the Landlord to Fix Something", "angle": "找房东修东西：漏水、热水器、时间", "voice": "en-SG-LunaNeural", "ready": true}, {"id": "128", "cat": "K", "cat_name": "生活对话", "sub": "租房与家", "title": "Setting Up Internet and Utilities", "angle": "开通网络水电：套餐、安装预约", "voice": "en-GB-RyanNeural", "ready": true}, {"id": "129", "cat": "K", "cat_name": "生活对话", "sub": "租房与家", "title": "Booking Movers", "angle": "搬家公司：报价、打包、易碎品、保险", "voice": "en-IN-NeerjaNeural", "ready": true}, {"id": "130", "cat": "K", "cat_name": "生活对话", "sub": "租房与家", "title": "Getting the Deposit Back", "angle": "退租验房，要回押金", "voice": "en-AU-WilliamMultilingualNeural", "ready": true}, {"id": "131", "cat": "K", "cat_name": "生活对话", "sub": "购物与售后", "title": "Returning Something You Bought", "angle": "退换货：小票、质量问题、退款方式", "voice": "en-US-EmmaNeural", "ready": true}, {"id": "132", "cat": "K", "cat_name": "生活对话", "sub": "购物与售后", "title": "Choosing a Phone Plan", "angle": "电信店选套餐：流量、合约、携号转网", "voice": "en-SG-WayneNeural", "ready": true}, {"id": "133", "cat": "K", "cat_name": "生活对话", "sub": "购物与售后", "title": "Getting Your Phone Repaired", "angle": "修手机：报价、保修、取件时间", "voice": "en-GB-SoniaNeural", "ready": true}, {"id": "134", "cat": "K", "cat_name": "生活对话", "sub": "购物与售后", "title": "Getting a Haircut", "angle": "理发：说清发型、长度、别剪太短", "voice": "en-IN-PrabhatNeural", "ready": true}, {"id": "135", "cat": "K", "cat_name": "生活对话", "sub": "购物与售后", "title": "Shopping for a Gift with Help from Staff", "angle": "请店员帮忙挑礼物、包装、预算", "voice": "en-US-AvaNeural", "ready": true}, {"id": "136", "cat": "K", "cat_name": "生活对话", "sub": "孩子与家庭", "title": "Visiting a Preschool", "angle": "参观幼儿园：作息、师生比、学费、语言", "voice": "en-AU-NatashaNeural", "ready": true}, {"id": "137", "cat": "K", "cat_name": "生活对话", "sub": "孩子与家庭", "title": "Talking to Your Child's Teacher", "angle": "家长会：孩子的表现、交朋友、作业", "voice": "en-SG-LunaNeural", "ready": true}, {"id": "138", "cat": "K", "cat_name": "生活对话", "sub": "孩子与家庭", "title": "Chatting with Other Parents at the Playground", "angle": "游乐场和其他家长聊天、约玩", "voice": "en-GB-RyanNeural", "ready": true}, {"id": "139", "cat": "K", "cat_name": "生活对话", "sub": "孩子与家庭", "title": "Hiring a Babysitter", "angle": "找保姆：经验、时间、费用、注意事项", "voice": "en-IN-NeerjaNeural", "ready": true}, {"id": "140", "cat": "K", "cat_name": "生活对话", "sub": "孩子与家庭", "title": "Signing Up for Kids' Swimming Lessons", "angle": "报名游泳课：级别、时间、试课", "voice": "en-AU-WilliamMultilingualNeural", "ready": true}, {"id": "141", "cat": "K", "cat_name": "生活对话", "sub": "邻居与社交", "title": "Meeting Your New Neighbor", "angle": "新邻居打招呼、互相介绍", "voice": "en-US-EmmaNeural", "ready": true}, {"id": "142", "cat": "K", "cat_name": "生活对话", "sub": "邻居与社交", "title": "Dealing with a Noisy Neighbor", "angle": "邻居太吵，友好地沟通", "voice": "en-SG-WayneNeural", "ready": true}, {"id": "143", "cat": "K", "cat_name": "生活对话", "sub": "邻居与社交", "title": "Joining a Gym", "angle": "办健身卡：会员类型、私教、冻卡", "voice": "en-GB-SoniaNeural", "ready": true}, {"id": "144", "cat": "K", "cat_name": "生活对话", "sub": "邻居与社交", "title": "Small Talk at a Friend's Party", "angle": "朋友派对上和不认识的人聊天", "voice": "en-IN-PrabhatNeural", "ready": true}, {"id": "145", "cat": "K", "cat_name": "生活对话", "sub": "邻居与社交", "title": "Inviting Friends Over for Dinner", "angle": "邀请朋友来家里吃饭：时间、忌口", "voice": "en-US-AvaNeural", "ready": true}, {"id": "146", "cat": "K", "cat_name": "生活对话", "sub": "办事与求助", "title": "Calling Customer Service", "angle": "打客服电话：转人工、说清问题、要工单号", "voice": "en-AU-NatashaNeural", "ready": true}, {"id": "147", "cat": "K", "cat_name": "生活对话", "sub": "办事与求助", "title": "Sending a Parcel at the Post Office", "angle": "邮局寄包裹：时效、申报、保价", "voice": "en-SG-LunaNeural", "ready": true}, {"id": "148", "cat": "K", "cat_name": "生活对话", "sub": "办事与求助", "title": "Reporting a Lost Item", "angle": "报失：丢了钱包，描述物品、留联系方式", "voice": "en-GB-RyanNeural", "ready": true}, {"id": "149", "cat": "K", "cat_name": "生活对话", "sub": "办事与求助", "title": "Booking a Repair Technician", "angle": "预约空调维修：时间、上门费、报价", "voice": "en-IN-NeerjaNeural", "ready": true}, {"id": "150", "cat": "K", "cat_name": "生活对话", "sub": "办事与求助", "title": "Asking for Directions", "angle": "问路：怎么走、坐什么车、多远", "voice": "en-AU-WilliamMultilingualNeural", "ready": true}];
+const ACC = { US: '美音', GB: '英音', IN: '印度', SG: '新加坡', AU: '澳洲' };
+const prog = id => { const p = JSON.parse(localStorage.getItem('wb:' + id) || '{}'); return Object.values(p).filter(Boolean).length; };
+// two-level navigation: domain (工作/生活/学术) → direction inside it
+const DOMAINS = [['work', '工作'], ['life', '生活'], ['academic', '学术']];
+const domainOf = t => t.domain || (t.cat === 'K' ? 'life' : 'work');
+const dirOf = t => domainOf(t) === 'life' ? t.sub : t.cat_name;
+const saved = JSON.parse(localStorage.getItem('wb:shelf') || '{}');
+let dom = saved.dom || 'all', dir = saved.dir || 'all', todo = !!saved.todo;
+const save = () => localStorage.setItem('wb:shelf', JSON.stringify({ dom, dir, todo }));
+const btn = (label, on, onclick, extra = '') => {
+  const b = document.createElement('button');
+  b.innerHTML = label + extra; b.className = on ? 'on' : ''; b.onclick = onclick;
+  return b;
+};
+const cnt = n => `<span class="n">${n}</span>`;
+
+function render() {
+  const done = T.filter(t => prog(t.id) >= 6).length, started = T.filter(t => prog(t.id) > 0).length;
+  document.getElementById('stats').innerHTML =
+    `<span><b>${T.filter(t => t.ready).length}</b>篇可练</span><span><b>${started}</b>篇已开始</span><span><b>${done}</b>篇已完成</span>`;
+
+  const l1 = document.getElementById('filters');
+  l1.replaceChildren(
+    btn('全部', dom === 'all', () => { dom = 'all'; dir = 'all'; save(); render(); }, cnt(T.length)),
+    ...DOMAINS.map(([k, n]) => btn(n, dom === k, () => { dom = k; dir = 'all'; save(); render(); },
+      cnt(T.filter(t => domainOf(t) === k).length))),
+    btn('只看未完成', todo, () => { todo = !todo; save(); render(); }));
+  l1.lastChild.classList.add('toggle');
+
+  const inDom = T.filter(t => dom === 'all' || domainOf(t) === dom);
+  const dirs = [...new Set(inDom.map(dirOf))];
+  const l2 = document.getElementById('filters2');
+  l2.hidden = dom === 'all' || !dirs.length;
+  l2.replaceChildren(
+    btn('全部', dir === 'all', () => { dir = 'all'; save(); render(); }),
+    ...dirs.map(d => btn(d, dir === d, () => { dir = d; save(); render(); }, cnt(inDom.filter(t => dirOf(t) === d).length))));
+
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  if (dom === 'academic' && !inDom.length) {
+    list.innerHTML = '<p class="empty">学术方向还没有内容。</p>';
+    return;
+  }
+  for (const [dk, dn] of DOMAINS) {
+    if (dom !== 'all' && dom !== dk) continue;
+    for (const d of [...new Set(T.filter(t => domainOf(t) === dk).map(dirOf))]) {
+      if (dir !== 'all' && dir !== d) continue;
+      const items = T.filter(t => domainOf(t) === dk && dirOf(t) === d && (!todo || prog(t.id) < 6));
+      if (!items.length) continue;
+      list.insertAdjacentHTML('beforeend', `<h2>${dn} · ${d}<span>${items.length} 篇</span></h2>`);
+      const g = document.createElement('div'); g.className = 'grid';
+      for (const t of items) {
+        const p = prog(t.id), acc = ACC[t.voice.split('-')[1]];
+        g.insertAdjacentHTML('beforeend', `<div class="card ${t.ready ? '' : 'off'} ${p >= 6 ? 'done' : ''}" ${t.ready ? `data-href="${t.id}/player.html"` : ''}>
+          <div class="top"><span class="id">${t.id}</span><span class="t">${t.title}</span></div>
+          <div class="angle">${t.angle}</div>
+          <div class="foot">${t.ready ? `<a href="${t.id}/player.html">🎧 播放</a><a href="${t.id}/index.html">📝 练习</a>` : '<span class="accent">生成中</span>'}
+            <span class="accent">${acc}</span><span class="bar"><i style="width:${p / 6 * 100}%"></i></span></div></div>`);
+      }
+      list.append(g);
+    }
+  }
+}
+// whole card opens the article; the small buttons inside keep their own links
+document.getElementById('list').addEventListener('click', e => {
+  if (e.target.closest('a')) return;
+  const card = e.target.closest('.card[data-href]');
+  if (card) location.href = card.dataset.href;
+});
+render();
+
+// offline: download every file listed in assets.json into the same cache the service worker uses
+(async () => {
+  if (!('caches' in window) || (location.protocol !== 'https:' && location.hostname !== 'localhost')) return;
+  const box = document.getElementById('offline'), btn = document.getElementById('dl');
+  const info = document.getElementById('dlinfo'), bar = document.getElementById('dlbar');
+  box.hidden = false;
+  const base = new URL('./', location.href);
+  let files;
+  try { files = await (await fetch('assets.json', { cache: 'no-cache' })).json(); } catch { box.hidden = true; return; }
+  const cache = await caches.open('shelf-v1');
+  const urls = files.map(f => new URL(f, base).href);
+  const status = async () => {
+    let have = 0;
+    for (const u of urls) if (await cache.match(u)) have++;
+    return have;
+  };
+  const show = (have, msg = '') => {
+    bar.style.width = (have / urls.length * 100) + '%';
+    info.textContent = msg || (have === urls.length ? '✓ 已全部离线可用' : `已离线 ${have}/${urls.length} 个文件`);
+    btn.textContent = have === urls.length ? '⟳ 检查更新' : '⬇ 全部下载到本机';
+  };
+  show(await status());
+  btn.onclick = async () => {
+    btn.disabled = true;
+    if (navigator.storage?.persist) navigator.storage.persist();
+    const todo = [];
+    for (const u of urls) if (!(await cache.match(u))) todo.push(u);
+    let done = urls.length - todo.length, failed = 0;
+    const worker = async () => {
+      while (todo.length) {
+        const u = todo.shift();
+        try { const r = await fetch(u); if (r.ok) await cache.put(u, r); else failed++; } catch { failed++; }
+        show(++done, `下载中 ${done}/${urls.length}…`);
+      }
+    };
+    await Promise.all(Array.from({ length: 6 }, worker));
+    const have = await status();
+    show(have, failed ? `有 ${failed} 个文件失败，再点一次补齐` : '');
+    btn.disabled = false;
+  };
+})();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('./sw.js', { scope: './' });</script>
+</body>
+</html>

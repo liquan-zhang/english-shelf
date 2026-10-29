@@ -1,0 +1,190 @@
+{
+  "id": "010",
+  "title": "Handling the Person Who Talks Too Much",
+  "meta": "B2 · 约 270 词 · 场景：平衡发言",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. It Is a Format Problem",
+      "paragraphs": [
+        [
+          "Every team has one.",
+          "A smart, ==enthusiastic== person who answers every question first, and then answers it again in more detail.",
+          "Meanwhile, the quiet engineer who actually wrote the code says nothing for the whole hour."
+        ],
+        [
+          "It is tempting to see this as a ==personality== problem.",
+          "But in most cases, the talker is not trying to ==dominate==.",
+          "They are simply quick to speak, and an open discussion rewards whoever speaks fastest.",
+          "**When the format rewards speed, you will always hear from the same people.**"
+        ],
+        [
+          "That is good news for you as a manager.",
+          "You do not need to change anyone's character.",
+          "You only need to __change the rules of the room__."
+        ]
+      ],
+      "heading_zh": "1. 这是形式问题",
+      "paragraphs_zh": [
+        [
+          "每个团队都有这么一位。",
+          "一个聪明、热情的人，每个问题都抢先回答，然后再展开细节回答一遍。",
+          "与此同时，真正写代码的那个安静的工程师，整整一个小时一句话都没说。"
+        ],
+        [
+          "人很容易把这看成性格问题。",
+          "但大多数情况下，话多的人并不是想压人一头。",
+          "他们只是嘴快，而开放式讨论天然奖励说得最快的人。",
+          "只要形式奖励速度，你听到的永远是那几个人的声音。"
+        ],
+        [
+          "对管理者来说，这其实是个好消息。",
+          "你不需要改变任何人的性格。",
+          "你只需要改一改会上的规则。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Small Changes to the Rules",
+      "paragraphs": [
+        [
+          "Try giving everyone two minutes to write their ideas down before anyone speaks.",
+          "Then go around the table, or the video grid, in a fixed order.",
+          "The fast thinker still contributes, but everyone else gets a fair ==turn==."
+        ],
+        [
+          "You can also invite specific people by name, with a question they can answer.",
+          "\"Kenji, you built the retry logic, what worries you about this design?\"",
+          "A direct, concrete question is much easier to answer than \"Does anyone else have thoughts?\""
+        ],
+        [
+          "When the talker starts a third long comment, ==redirect== gently.",
+          "\"Thanks, Mark, let's __hear from a few others__ before we come back to you.\""
+        ],
+        [
+          "Finally, have a private chat, framed as asking for help.",
+          "\"You always __get the ball rolling__, and I'd love your help drawing the quieter people in.\"",
+          "**Most talkers are happy to step back once they see it as a new role, not as ==criticism== of their style.**",
+          "Some even become your best ally for running ==inclusive== meetings."
+        ]
+      ],
+      "heading_zh": "2. 对规则做些小调整",
+      "paragraphs_zh": [
+        [
+          "试试在任何人发言之前，给每个人两分钟把想法写下来。",
+          "然后按固定顺序，绕桌子一圈，或者按视频画面的顺序轮流说。",
+          "反应快的人照样能贡献想法，但其他人也都有了公平的机会。"
+        ],
+        [
+          "你也可以点名邀请某个人，抛给他一个他答得上来的问题。",
+          "「Kenji，重试逻辑是你写的，这个设计里你最担心什么？」",
+          "一个直接、具体的问题，比「其他人还有想法吗？」好回答得多。"
+        ],
+        [
+          "当话多的人开始第三段长篇发言时，温和地把话头转开。",
+          "「谢谢 Mark，我们先听听其他几位的，再回到你这儿。」"
+        ],
+        [
+          "最后，找他私下聊一聊，以请他帮忙的方式来说。",
+          "「每次都是你把讨论带起来的，我很希望你能帮我把那些比较安静的同学也拉进来。」",
+          "大多数话多的人一旦把这看作一个新角色，而不是对自己风格的批评，都很乐意往后退一步。",
+          "有些人甚至会成为你组织包容性会议的最佳盟友。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为“有人一直说”本质上是什么问题？",
+      "a": "不是性格问题，而是会议形式问题：开放讨论奖励说得最快的人。"
+    },
+    {
+      "q": "作者建议怎样调整会议规则？",
+      "a": "先让大家写两分钟再发言并按顺序轮流；点名并给具体问题；对方第三次长篇发言时温和转向他人。"
+    },
+    {
+      "q": "私下和话多的人沟通时，作者建议怎么说？",
+      "a": "以请他帮忙的方式，请他带动安静的人发言，让他把这看作新角色而不是批评。"
+    }
+  ],
+  "dictation": [
+    "When the format rewards speed, you will always hear from the same people.",
+    "Most talkers are happy to step back once they see it as a new role, not as criticism of their style.",
+    "You do not need to change anyone's character.",
+    "Then go around the table, or the video grid, in a fixed order."
+  ],
+  "shadow": {
+    "text": "When the talker starts a third long comment, redirect gently. \"Thanks, Mark, let's hear from a few others before we come back to you.\"",
+    "marked": "When the talker starts a <b>third</b> long comment, / redirect <b>gently</b>. //<br>\"<b>Thanks</b>, Mark, / let's hear from a few <b>others</b> / before we come <b>back</b> to you.\" //"
+  },
+  "prompts": [
+    {
+      "q": "设计评审会上，一位资深同事已经发言很多次，而负责实现的新人一直没说话。用 30 秒温和地转向，邀请新人具体回答一个问题。",
+      "ref": "Thanks, Raj, that's really helpful. Let me pause there for a second, because I want to make sure we hear from everyone. Lin, you wrote most of the sync logic, so you know it better than anyone. If we switch to this new design, which part of your code would be the hardest to change? Take your time.",
+      "ref_zh": "谢谢 Raj，这个很有帮助。我先在这儿停一下，因为我想确保每个人都能发言。Lin，同步逻辑大部分是你写的，你比谁都清楚。如果我们换成这个新设计，你代码里哪部分最难改？不着急，慢慢想。"
+    },
+    {
+      "q": "会后你私下和那位总是抢先发言的同事聊，用 30 秒把“少说一点”包装成请他帮忙。",
+      "ref": "Hey, do you have a minute? First, I really appreciate how you always get the discussion going, it saves us a lot of awkward silence. I'd like your help with something. Some of the newer folks hardly speak in reviews, and I think they have good ideas. Next time, could you try asking one of them for their view before sharing yours? You'd be great at drawing them in.",
+      "ref_zh": "嘿，你有一分钟吗？首先，真的很感谢你每次都能把讨论带起来，帮我们省掉了不少尴尬的冷场。我想请你帮个忙。有些新来的同学在评审会上几乎不说话，但我觉得他们是有好想法的。下次你能不能先问问他们中的某个人怎么看，再说你自己的？你很擅长把人带进来。"
+    }
+  ],
+  "words": [
+    {
+      "w": "enthusiastic",
+      "ipa": "/ɪnˌθuːziˈæstɪk/",
+      "zh": "热情的、积极的",
+      "ex": "The team is enthusiastic about moving to the new framework."
+    },
+    {
+      "w": "personality",
+      "ipa": "/ˌpɜːrsəˈnæləti/",
+      "zh": "性格、个性",
+      "ex": "This isn't about personality; the process is just unclear."
+    },
+    {
+      "w": "dominate",
+      "ipa": "/ˈdɑːmɪˌneɪt/",
+      "zh": "主导、支配",
+      "ex": "One noisy customer shouldn't dominate the roadmap."
+    },
+    {
+      "w": "turn (n.)",
+      "ipa": "/tɜːrn/",
+      "zh": "轮次、机会",
+      "ex": "Everyone gets a turn to demo at the end of the sprint.",
+      "tts_w": "turn"
+    },
+    {
+      "w": "redirect",
+      "ipa": "/ˌriːdəˈrekt/",
+      "zh": "转向、引导到别处",
+      "ex": "Let's redirect this question to the platform team."
+    },
+    {
+      "w": "criticism",
+      "ipa": "/ˈkrɪtɪˌsɪzəm/",
+      "zh": "批评",
+      "ex": "Take the review comments as feedback, not personal criticism."
+    },
+    {
+      "w": "inclusive",
+      "ipa": "/ɪnˈkluːsɪv/",
+      "zh": "包容的、让所有人参与的",
+      "ex": "We rotate meeting times to keep things inclusive across time zones."
+    },
+    {
+      "w": "ally",
+      "ipa": "/ˈælaɪ/",
+      "zh": "盟友",
+      "ex": "The PM became our strongest ally for paying down tech debt."
+    },
+    {
+      "w": "get the ball rolling",
+      "ipa": "/ɡet ðə bɔːl ˈroʊlɪŋ/",
+      "zh": "开个头、启动",
+      "ex": "I'll get the ball rolling with a draft of the design doc."
+    }
+  ]
+}

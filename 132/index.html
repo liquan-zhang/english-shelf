@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Choosing a Phone Plan · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "132", "type": "dialogue", "title": "Choosing a Phone Plan", "meta": "B2 · 约 330 词 · 场景：电信店选套餐与携号转网", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Sales Staff", "name_zh": "店员", "voice": "en-SG-WayneNeural"}}, "gist": [{"q": "「你」最后选了什么套餐？为什么？", "a": "纯 SIM 卡、无合约的套餐，一百 G 流量，含马来西亚漫游；因为流量用得多、不想被合约绑住、常去新山。"}, {"q": "第二天新卡为什么用不了？", "a": "原运营商那边转网还没完成，可能因为还有一笔未付的最后账单，号码被锁住了。"}, {"q": "店员给出了哪些解决办法？", "a": "让「你」先结清原运营商的欠款，他再手动推进转网，一小时内可用；同时免费给一张带临时号码的预付卡。"}], "dictation": [{"id": "s0_3_0", "text": "Yes, I'd like to keep my number. How long does the transfer usually take?"}, {"id": "s0_7_0", "text": "Is that on a contract, or can I cancel anytime?"}, {"id": "s1_4_0", "text": "Possibly the final bill. Could you tell me exactly what I need to do to get this sorted today?"}, {"id": "s1_6_0", "text": "OK. In the meantime, could you give me a temporary number so I'm reachable?"}], "shadow": {"speaker": "A", "text": "Hi, I signed up here yesterday, but my new SIM still isn't working. I have no signal at all.", "marked": "Hi, / I signed up here <b>yesterday</b>, / but my new <b>SIM</b> / <b>still</b> isn't working. //<br>I have <b>no signal</b> / at <b>all</b>. //"}, "prompts": [{"q": "月底账单里多了一笔你没想到的漫游费。打给客服，说明情况，请对方解释并争取减免。", "ref": "Hi, I'm calling about my latest bill. There's a roaming charge of about forty dollars, but I thought my plan included roaming in Malaysia. I was only in Johor Bahru for the weekend. Could you check what the charge is for? If it's a mistake, I'd like it removed. And if I went over the limit, could you waive it this one time?", "ref_zh": "你好，我打来是想问一下最近这期账单。里面有一笔大概四十块的漫游费，但我以为我的套餐包含马来西亚漫游。我只是周末去了一趟新山。能帮我查一下这笔费用是什么吗？如果是弄错了，希望能撤掉。如果是我超出了额度，这次能不能帮我免掉？", "id": "ref0"}, {"q": "你签了十二个月合约，但现在想提前解约换套餐。去门店问清楚违约金和最划算的做法。", "ref": "Hi, I'm on a twelve-month contract, and I still have about five months left. I'd like to switch to a cheaper plan, because I'm using much less data now. Is there an early termination fee? If so, how much is it? Or is there a way to downgrade within the same contract without paying a penalty?", "ref_zh": "你好，我签的是十二个月的合约，现在还剩五个月左右。我想换一个便宜点的套餐，因为我现在流量用得少多了。提前解约有违约金吗？有的话是多少？或者有没有办法在同一个合约里降档，不用付违约金？", "id": "ref1"}], "words": [{"w": "switch (v.)", "ipa": "/swɪtʃ/", "zh": "换成；转换", "ex": "We switched to a cheaper electricity provider last month.", "tts_w": "switch", "id": "w0"}, {"w": "port (v.)", "ipa": "/pɔːrt/", "zh": "携号转网", "ex": "Can I port my number from my old provider?", "tts_w": "port", "id": "w1"}, {"w": "contract", "ipa": "/ˈkɑːntrækt/", "zh": "合约", "ex": "I don't want to be locked into a two-year contract.", "id": "w2"}, {"w": "roaming", "ipa": "/ˈroʊmɪŋ/", "zh": "漫游", "ex": "Turn off data roaming before you land in Bangkok.", "id": "w3"}, {"w": "pending", "ipa": "/ˈpendɪŋ/", "zh": "待处理的", "ex": "My refund is still pending after a week.", "id": "w4"}, {"w": "hold (n.)", "ipa": "/hoʊld/", "zh": "冻结；锁定", "ex": "The bank put a hold on my card after a strange payment.", "tts_w": "hold", "id": "w5"}, {"w": "temporary", "ipa": "/ˈtempəreri/", "zh": "临时的", "ex": "We're staying in a temporary apartment until our flat is ready.", "id": "w6"}, {"w": "hotspot", "ipa": "/ˈhɑːtspɑːt/", "zh": "热点（手机共享网络）", "ex": "Can you turn on your hotspot so I can check my email?", "id": "w7"}, {"w": "push through", "ipa": "/pʊʃ θruː/", "zh": "推进办成", "ex": "The agent pushed my application through in two days.", "id": "w8"}, {"w": "sort out", "ipa": "/sɔːrt aʊt/", "zh": "解决；处理好", "ex": "Let me sort out the parking before the guests arrive.", "id": "w9"}], "sections": [{"heading": "1. At the Telco Shop", "heading_zh": "1. 在电信门店", "rows": [[{"id": "s0_0_0", "md": "Hi there, how can I help you today?", "text": "Hi there, how can I help you today?", "zh": "您好，今天有什么可以帮您？", "sp": "B"}], [{"id": "s0_1_0", "md": "Hi, I'm __looking for__ a new mobile plan. I'd like to ==switch== from my current provider.", "text": "Hi, I'm looking for a new mobile plan. I'd like to switch from my current provider.", "zh": "你好，我想办个新的手机套餐，打算从现在的运营商转过来。", "sp": "A"}], [{"id": "s0_2_0", "md": "Sure. Do you want to __keep your number__? We can ==port== it over for free.", "text": "Sure. Do you want to keep your number? We can port it over for free.", "zh": "好的。您想保留原号码吗？我们可以免费帮您携号转网。", "sp": "B"}], [{"id": "s0_3_0", "md": "**Yes, I'd like to keep my number. How long does the transfer usually take?**", "text": "Yes, I'd like to keep my number. How long does the transfer usually take?", "zh": "对，我想保留号码。转网一般要多久？", "sp": "A"}], [{"id": "s0_4_0", "md": "Usually within one working day. How much data do you use in a month?", "text": "Usually within one working day. How much data do you use in a month?", "zh": "一般一个工作日内。您每个月大概用多少流量？", "sp": "B"}], [{"id": "s0_5_0", "md": "Quite a lot. I often use my phone as a hotspot, so maybe sixty to eighty gigabytes.", "text": "Quite a lot. I often use my phone as a hotspot, so maybe sixty to eighty gigabytes.", "zh": "挺多的。我经常拿手机开热点，大概六十到八十个 G。", "sp": "A"}], [{"id": "s0_6_0", "md": "Then I'd suggest our SIM-only plan. It's thirty dollars a month for one hundred gigabytes.", "text": "Then I'd suggest our SIM-only plan. It's thirty dollars a month for one hundred gigabytes.", "zh": "那我推荐我们的纯 SIM 卡套餐，每月三十块，一百个 G。", "sp": "B"}], [{"id": "s0_7_0", "md": "Is that on a ==contract==, or can I cancel anytime?", "text": "Is that on a contract, or can I cancel anytime?", "zh": "这个要签合约吗？还是随时可以取消？", "sp": "A"}], [{"id": "s0_8_0", "md": "There's a twelve-month contract, or a no-contract version for five dollars more.", "text": "There's a twelve-month contract, or a no-contract version for five dollars more.", "zh": "有十二个月合约的，也有无合约的，每月贵五块。", "sp": "B"}], [{"id": "s0_9_0", "md": "I'd rather go with no contract. Does it include ==roaming== in Malaysia? I drive up to Johor Bahru sometimes.", "text": "I'd rather go with no contract. Does it include roaming in Malaysia? I drive up to Johor Bahru sometimes.", "zh": "我宁愿选无合约的。包含马来西亚漫游吗？我有时候开车去新山。", "sp": "A"}], [{"id": "s0_10_0", "md": "Yes, you get five gigabytes of roaming data in Malaysia and Indonesia every month.", "text": "Yes, you get five gigabytes of roaming data in Malaysia and Indonesia every month.", "zh": "包含，每个月在马来西亚和印尼有五个 G 的漫游流量。", "sp": "B"}], [{"id": "s0_11_0", "md": "Great, let's go with that one. What do you need from me?", "text": "Great, let's go with that one. What do you need from me?", "zh": "太好了，就办这个吧。需要我提供什么？", "sp": "A"}], [{"id": "s0_12_0", "md": "Just your passport or employment pass, and I'll __sign you up__ right now.", "text": "Just your passport or employment pass, and I'll sign you up right now.", "zh": "护照或者工作准证就行，我现在就帮您办。", "sp": "B"}]]}, {"heading": "2. Back at the Shop", "heading_zh": "2. 回到门店", "rows": [[{"id": "s1_0_0", "md": "Hi, I signed up here yesterday, but my new SIM __still isn't working__. I have no signal at all.", "text": "Hi, I signed up here yesterday, but my new SIM still isn't working. I have no signal at all.", "zh": "你好，我昨天在这里办的卡，但新 SIM 卡还是用不了，一点信号都没有。", "sp": "A"}], [{"id": "s1_1_0", "md": "Sorry about that. Let me check. Ah, the transfer from your old provider is still ==pending==.", "text": "Sorry about that. Let me check. Ah, the transfer from your old provider is still pending.", "zh": "不好意思，我查一下。啊，您原运营商那边的转网还在处理中。", "sp": "B"}], [{"id": "s1_2_0", "md": "Is there anything I can do? I'm waiting for an important call from my son's school.", "text": "Is there anything I can do? I'm waiting for an important call from my son's school.", "zh": "我能做点什么吗？我在等儿子学校打来的一个重要电话。", "sp": "A"}], [{"id": "s1_3_0", "md": "Your old provider may have a ==hold== on the number. Do you have any unpaid bills with them?", "text": "Your old provider may have a hold on the number. Do you have any unpaid bills with them?", "zh": "可能是原运营商把号码锁住了。您在他们那边还有没交的账单吗？", "sp": "B"}], [{"id": "s1_4_0", "md": "**Possibly the final bill. Could you tell me exactly what I need to do to get this sorted today?**", "text": "Possibly the final bill. Could you tell me exactly what I need to do to get this sorted today?", "zh": "可能还有最后一期账单。你能告诉我具体要怎么做，今天就把这事搞定吗？", "sp": "A"}], [{"id": "s1_5_0", "md": "Call them to clear the balance, then let me know. I'll __push it through__ manually, and it should work within an hour.", "text": "Call them to clear the balance, then let me know. I'll push it through manually, and it should work within an hour.", "zh": "给他们打电话把欠款结清，然后告诉我。我手动帮您推进，一小时内应该就能用了。", "sp": "B"}], [{"id": "s1_6_0", "md": "OK. In the meantime, could you give me a ==temporary== number so I'm reachable?", "text": "OK. In the meantime, could you give me a temporary number so I'm reachable?", "zh": "好的。在这之前，能不能先给我一个临时号码，让别人能联系上我？", "sp": "A"}], [{"id": "s1_7_0", "md": "Sure. I'll give you a prepaid SIM with a temporary number, free of charge.", "text": "Sure. I'll give you a prepaid SIM with a temporary number, free of charge.", "zh": "可以。我给您一张预付卡，带一个临时号码，不收费。", "sp": "B"}], [{"id": "s1_8_0", "md": "That's a big help. Thanks for __sorting this out__.", "text": "That's a big help. Thanks for sorting this out.", "zh": "帮大忙了。谢谢你帮我处理。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. At the Telco Shop", "zh": "1. 在电信门店", "start": 0.0, "end": 2.04, "words": [[0.105, 0.342], [0.671, 0.763], [0.776, 0.855], [0.868, 1.211], [1.224, 1.645]]}, {"kind": "s", "id": "s0_0_0", "md": "Hi there, how can I help you today?", "zh": "您好，今天有什么可以帮您？", "sp": "B", "gap": false, "start": 2.04, "end": 5.664, "words": [[2.143, 2.379], [2.393, 2.853], [3.156, 3.393], [3.406, 3.59], [3.603, 3.669], [3.682, 3.932], [3.945, 4.077], [4.09, 4.735]]}, {"kind": "s", "id": "s0_1_0", "md": "Hi, I'm __looking for__ a new mobile plan. I'd like to ==switch== from my current provider.", "zh": "你好，我想办个新的手机套餐，打算从现在的运营商转过来。", "sp": "A", "gap": false, "start": 5.664, "end": 10.512, "words": [[5.782, 5.98], [6.401, 6.532], [6.546, 6.769], [6.782, 6.94], [6.953, 6.993], [7.006, 7.204], [7.217, 7.506], [7.519, 7.901], [8.335, 8.44], [8.453, 8.598], [8.611, 8.69], [8.703, 8.98], [8.993, 9.138], [9.151, 9.269], [9.282, 9.559], [9.572, 10.124]]}, {"kind": "s", "id": "s0_2_0", "md": "Sure. Do you want to __keep your number__? We can ==port== it over for free.", "zh": "好的。您想保留原号码吗？我们可以免费帮您携号转网。", "sp": "B", "gap": false, "start": 10.512, "end": 17.88, "words": [[10.615, 11.338], [12.236, 12.354], [12.367, 12.538], [12.551, 12.775], [12.788, 12.92], [12.933, 13.222], [13.236, 13.367], [13.38, 14.038], [14.959, 15.144], [15.157, 15.394], [15.407, 15.683], [15.696, 15.867], [15.88, 16.183], [16.196, 16.38], [16.394, 16.946]]}, {"kind": "s", "id": "s0_3_0", "md": "**Yes, I'd like to keep my number. How long does the transfer usually take?**", "zh": "对，我想保留号码。转网一般要多久？", "sp": "A", "gap": false, "start": 17.88, "end": 22.584, "words": [[17.985, 18.419], [18.696, 18.801], [18.814, 18.959], [18.972, 19.038], [19.051, 19.222], [19.235, 19.327], [19.341, 19.748], [20.183, 20.314], [20.327, 20.604], [20.617, 20.762], [20.775, 20.854], [20.867, 21.367], [21.38, 21.775], [21.788, 22.183]]}, {"kind": "s", "id": "s0_4_0", "md": "Usually within one working day. How much data do you use in a month?", "zh": "一般一个工作日内。您每个月大概用多少流量？", "sp": "B", "gap": false, "start": 22.584, "end": 28.92, "words": [[22.687, 23.213], [23.226, 23.66], [23.673, 23.91], [23.923, 24.344], [24.358, 24.818], [25.742, 25.939], [25.952, 26.202], [26.216, 26.61], [26.623, 26.755], [26.768, 26.887], [26.9, 27.229], [27.242, 27.387], [27.4, 27.452], [27.466, 27.979]]}, {"kind": "s", "id": "s0_5_0", "md": "Quite a lot. I often use my phone as a hotspot, so maybe sixty to eighty gigabytes.", "zh": "挺多的。我经常拿手机开热点，大概六十到八十个 G。", "sp": "A", "gap": false, "start": 28.92, "end": 34.752, "words": [[29.038, 29.17], [29.183, 29.223], [29.236, 29.604], [30.052, 30.17], [30.183, 30.499], [30.512, 30.683], [30.696, 30.841], [30.854, 31.183], [31.196, 31.288], [31.302, 31.341], [31.354, 32.025], [32.341, 32.459], [32.473, 32.749], [32.762, 33.223], [33.236, 33.381], [33.394, 33.63], [33.644, 34.367]]}, {"kind": "s", "id": "s0_6_0", "md": "Then I'd suggest our SIM-only plan. It's thirty dollars a month for one hundred gigabytes.", "zh": "那我推荐我们的纯 SIM 卡套餐，每月三十块，一百个 G。", "sp": "B", "gap": false, "start": 34.752, "end": 42.672, "words": [[34.855, 35.17], [35.184, 35.355], [35.368, 35.947], [35.96, 36.157], [36.17, 36.789], [36.802, 37.434], [38.357, 38.62], [38.634, 38.989], [39.002, 39.436], [39.449, 39.515], [39.528, 39.87], [39.884, 40.041], [40.055, 40.305], [40.318, 40.805], [40.818, 41.752]]}, {"kind": "s", "id": "s0_7_0", "md": "Is that on a ==contract==, or can I cancel anytime?", "zh": "这个要签合约吗？还是随时可以取消？", "sp": "A", "gap": false, "start": 42.672, "end": 45.912, "words": [[42.777, 42.869], [42.883, 43.014], [43.027, 43.119], [43.133, 43.185], [43.198, 43.922], [44.225, 44.304], [44.317, 44.435], [44.448, 44.527], [44.54, 44.961], [44.975, 45.527]]}, {"kind": "s", "id": "s0_8_0", "md": "There's a twelve-month contract, or a no-contract version for five dollars more.", "zh": "有十二个月合约的，也有无合约的，每月贵五块。", "sp": "B", "gap": false, "start": 45.912, "end": 51.72, "words": [[46.015, 46.317], [46.33, 46.409], [46.423, 47.015], [47.028, 47.659], [47.883, 48.067], [48.08, 48.107], [48.12, 48.83], [48.844, 49.238], [49.251, 49.422], [49.436, 49.778], [49.791, 50.238], [50.251, 50.778]]}, {"kind": "s", "id": "s0_9_0", "md": "I'd rather go with no contract. Does it include ==roaming== in Malaysia? I drive up to Johor Bahru sometimes.", "zh": "我宁愿选无合约的。包含马来西亚漫游吗？我有时候开车去新山。", "sp": "A", "gap": false, "start": 51.72, "end": 58.344, "words": [[51.838, 51.957], [51.97, 52.233], [52.246, 52.431], [52.444, 52.588], [52.602, 52.759], [52.773, 53.457], [53.891, 54.009], [54.023, 54.088], [54.102, 54.483], [54.496, 54.838], [54.852, 54.917], [54.931, 55.431], [55.865, 55.931], [55.944, 56.22], [56.233, 56.352], [56.365, 56.457], [56.47, 56.904], [56.917, 57.181], [57.194, 57.944]]}, {"kind": "s", "id": "s0_10_0", "md": "Yes, you get five gigabytes of roaming data in Malaysia and Indonesia every month.", "zh": "包含，每个月在马来西亚和印尼有五个 G 的漫游流量。", "sp": "B", "gap": false, "start": 58.344, "end": 64.824, "words": [[58.447, 59.026], [59.262, 59.433], [59.447, 59.683], [59.697, 60.039], [60.052, 60.631], [60.644, 60.841], [60.855, 61.183], [61.197, 61.565], [61.578, 61.71], [61.723, 62.328], [62.341, 62.512], [62.526, 63.105], [63.118, 63.407], [63.42, 63.894]]}, {"kind": "s", "id": "s0_11_0", "md": "Great, let's go with that one. What do you need from me?", "zh": "太好了，就办这个吧。需要我提供什么？", "sp": "A", "gap": false, "start": 64.824, "end": 68.04, "words": [[64.942, 65.232], [65.521, 65.692], [65.706, 65.811], [65.824, 65.942], [65.956, 66.153], [66.166, 66.403], [66.837, 66.916], [66.929, 66.969], [66.982, 67.061], [67.074, 67.271], [67.285, 67.456], [67.469, 67.64]]}, {"kind": "s", "id": "s0_12_0", "md": "Just your passport or employment pass, and I'll __sign you up__ right now.", "zh": "护照或者工作准证就行，我现在就帮您办。", "sp": "B", "gap": false, "start": 68.04, "end": 73.104, "words": [[68.143, 68.393], [68.406, 68.524], [68.537, 69.024], [69.037, 69.169], [69.182, 69.722], [69.735, 70.248], [70.511, 70.708], [70.722, 70.866], [70.879, 71.208], [71.222, 71.353], [71.366, 71.577], [71.59, 71.801], [71.814, 72.182]]}, {"kind": "h", "id": "h1", "md": "2. Back at the Shop", "zh": "2. 回到门店", "start": 73.104, "end": 74.976, "words": [[73.209, 73.446], [73.722, 73.946], [73.959, 74.012], [74.025, 74.091], [74.104, 74.499]]}, {"kind": "s", "id": "s1_0_0", "md": "Hi, I signed up here yesterday, but my new SIM __still isn't working__. I have no signal at all.", "zh": "你好，我昨天在这里办的卡，但新 SIM 卡还是用不了，一点信号都没有。", "sp": "A", "gap": false, "start": 74.976, "end": 81.024, "words": [[75.094, 75.331], [75.726, 75.831], [75.844, 76.134], [76.147, 76.239], [76.252, 76.397], [76.41, 76.989], [77.2, 77.358], [77.371, 77.489], [77.502, 77.752], [77.765, 78.081], [78.094, 78.397], [78.41, 78.621], [78.634, 79.029], [79.476, 79.555], [79.568, 79.726], [79.739, 79.871], [79.884, 80.292], [80.305, 80.384], [80.397, 80.634]]}, {"kind": "s", "id": "s1_1_0", "md": "Sorry about that. Let me check. Ah, the transfer from your old provider is still ==pending==.", "zh": "不好意思，我查一下。啊，您原运营商那边的转网还在处理中。", "sp": "B", "gap": false, "start": 81.024, "end": 89.976, "words": [[81.127, 81.574], [81.587, 81.903], [81.916, 82.442], [83.366, 83.629], [83.642, 83.827], [83.84, 84.471], [85.392, 85.616], [85.853, 86.024], [86.037, 86.577], [86.59, 86.84], [86.853, 87.037], [87.05, 87.34], [87.353, 87.906], [87.919, 88.037], [88.05, 88.366], [88.379, 89.05]]}, {"kind": "s", "id": "s1_2_0", "md": "Is there anything I can do? I'm waiting for an important call from my son's school.", "zh": "我能做点什么吗？我在等儿子学校打来的一个重要电话。", "sp": "A", "gap": false, "start": 89.976, "end": 94.56, "words": [[90.081, 90.173], [90.187, 90.305], [90.318, 90.66], [90.673, 90.752], [90.765, 90.91], [90.923, 91.2], [91.634, 91.765], [91.779, 92.094], [92.108, 92.265], [92.279, 92.344], [92.358, 92.844], [92.858, 93.121], [93.134, 93.292], [93.305, 93.423], [93.437, 93.739], [93.752, 94.16]]}, {"kind": "s", "id": "s1_3_0", "md": "Your old provider may have a ==hold== on the number. Do you have any unpaid bills with them?", "zh": "可能是原运营商把号码锁住了。您在他们那边还有没交的账单吗？", "sp": "B", "gap": false, "start": 94.56, "end": 101.664, "words": [[94.663, 94.899], [94.913, 95.189], [95.202, 95.689], [95.702, 95.873], [95.886, 96.123], [96.136, 96.189], [96.202, 96.531], [96.544, 96.689], [96.702, 96.768], [96.781, 97.426], [98.349, 98.481], [98.494, 98.665], [98.678, 98.928], [98.942, 99.231], [99.244, 99.692], [99.705, 99.994], [100.007, 100.192], [100.205, 100.731]]}, {"kind": "s", "id": "s1_4_0", "md": "**Possibly the final bill. Could you tell me exactly what I need to do to get this sorted today?**", "zh": "可能还有最后一期账单。你能告诉我具体要怎么做，今天就把这事搞定吗？", "sp": "A", "gap": false, "start": 101.664, "end": 106.8, "words": [[101.782, 102.177], [102.19, 102.282], [102.296, 102.638], [102.651, 102.98], [103.414, 103.519], [103.532, 103.625], [103.638, 103.835], [103.848, 103.98], [103.993, 104.532], [104.546, 104.69], [104.703, 104.743], [104.756, 104.98], [104.993, 105.046], [105.059, 105.256], [105.269, 105.361], [105.375, 105.572], [105.585, 105.756], [105.769, 106.059], [106.072, 106.401]]}, {"kind": "s", "id": "s1_5_0", "md": "Call them to clear the balance, then let me know. I'll __push it through__ manually, and it should work within an hour.", "zh": "给他们打电话把欠款结清，然后告诉我。我手动帮您推进，一小时内应该就能用了。", "sp": "B", "gap": false, "start": 106.8, "end": 115.776, "words": [[106.903, 107.166], [107.179, 107.376], [107.389, 107.521], [107.534, 107.824], [107.837, 107.955], [107.968, 108.692], [108.876, 109.139], [109.153, 109.363], [109.376, 109.508], [109.521, 110.008], [110.918, 111.142], [111.155, 111.458], [111.471, 111.629], [111.642, 111.879], [111.892, 112.59], [112.8, 113.011], [113.024, 113.142], [113.155, 113.432], [113.445, 113.695], [113.708, 114.103], [114.116, 114.3], [114.313, 114.839]]}, {"kind": "s", "id": "s1_6_0", "md": "OK. In the meantime, could you give me a ==temporary== number so I'm reachable?", "zh": "好的。在这之前，能不能先给我一个临时号码，让别人能联系上我？", "sp": "A", "gap": false, "start": 115.776, "end": 120.6, "words": [[115.881, 116.236], [116.671, 116.737], [116.75, 116.815], [116.829, 117.381], [117.763, 117.921], [117.934, 118.026], [118.039, 118.171], [118.184, 118.289], [118.302, 118.355], [118.368, 118.868], [118.881, 119.223], [119.447, 119.631], [119.644, 119.763], [119.776, 120.197]]}, {"kind": "s", "id": "s1_7_0", "md": "Sure. I'll give you a prepaid SIM with a temporary number, free of charge.", "zh": "可以。我给您一张预付卡，带一个临时号码，不收费。", "sp": "B", "gap": false, "start": 120.6, "end": 127.632, "words": [[120.703, 121.426], [122.324, 122.56], [122.574, 122.784], [122.797, 122.929], [122.942, 123.047], [123.061, 123.482], [123.495, 123.824], [123.837, 124.034], [124.047, 124.153], [124.166, 124.732], [124.745, 125.363], [125.6, 125.903], [125.916, 126.074], [126.087, 126.705]]}, {"kind": "s", "id": "s1_8_0", "md": "That's a big help. Thanks for __sorting this out__.", "zh": "帮大忙了。谢谢你帮我处理。", "sp": "A", "gap": false, "start": 127.632, "end": 130.512, "words": [[127.75, 127.882], [127.895, 127.948], [127.961, 128.158], [128.171, 128.487], [128.935, 129.106], [129.119, 129.237], [129.25, 129.619], [129.632, 129.843], [129.856, 130.119]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+{
+  "id": "148",
+  "type": "dialogue",
+  "title": "Reporting a Lost Item",
+  "meta": "B2 · 约 280 词 · 场景：地铁站报失钱包",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {
+      "name": "You",
+      "name_zh": "你",
+      "voice": "en-US-AndrewNeural"
+    },
+    "B": {
+      "name": "Station Staff",
+      "name_zh": "车站工作人员",
+      "voice": "en-GB-RyanNeural"
+    }
+  },
+  "scenes": [
+    {
+      "heading": "1. At the Station Counter",
+      "heading_zh": "1. 在车站服务台",
+      "lines": [
+        {
+          "sp": "A",
+          "en": "**Excuse me. I think I left my wallet on the train about twenty minutes ago.**",
+          "zh": "不好意思。我好像二十分钟前把钱包落在地铁上了。"
+        },
+        {
+          "sp": "B",
+          "en": "Oh dear. Which line were you on, and which direction?",
+          "zh": "哎呀。您坐的是哪条线，往哪个方向？"
+        },
+        {
+          "sp": "A",
+          "en": "The Circle Line, heading towards HarbourFront. I got off here at Buona Vista.",
+          "zh": "环线，往港湾方向。我在这里波那维斯达站下的车。"
+        },
+        {
+          "sp": "B",
+          "en": "Right. Can you ==describe== the wallet for me?",
+          "zh": "好的。能描述一下钱包的样子吗？"
+        },
+        {
+          "sp": "A",
+          "en": "It's a black leather ==bifold==, quite worn at the corners.",
+          "zh": "是个黑色真皮对折钱包，四个角磨得挺旧的。"
+        },
+        {
+          "sp": "B",
+          "en": "And what was inside?",
+          "zh": "里面有什么？"
+        },
+        {
+          "sp": "A",
+          "en": "My employment pass, two bank cards, and about eighty dollars in cash.",
+          "zh": "我的工作准证、两张银行卡，还有大概八十块现金。"
+        },
+        {
+          "sp": "B",
+          "en": "Have you ==cancelled== your bank cards yet?",
+          "zh": "银行卡您挂失了吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Not yet. __I'll do that__ right after this.",
+          "zh": "还没有。这边弄完我马上就去办。"
+        },
+        {
+          "sp": "B",
+          "en": "Good idea. I'll file a report and alert the other stations. Can I have your name and ==contact== number?",
+          "zh": "好的。我来登记报失，并通知沿线其他车站。能留一下您的姓名和联系电话吗？"
+        },
+        {
+          "sp": "A",
+          "en": "Lee Wei, and my number is nine eight seven six, five four three two. __Feel free to__ call anytime.",
+          "zh": "李伟，电话是九八七六，五四三二。随时可以打给我。"
+        },
+        {
+          "sp": "B",
+          "en": "Thanks. Here's your ==reference== number. If it turns up, we'll give you a call.",
+          "zh": "谢谢。这是您的报失编号。如果找到了，我们会给您打电话。"
+        }
+      ]
+    },
+    {
+      "heading": "2. A Call Back",
+      "heading_zh": "2. 车站回电",
+      "lines": [
+        {
+          "sp": "B",
+          "en": "Hello, is this Mr Lee? It's Ryan from Buona Vista station. Someone handed in a black wallet at HarbourFront.",
+          "zh": "你好，是李先生吗？我是波那维斯达站的 Ryan。有人在港湾站交了一个黑色钱包。"
+        },
+        {
+          "sp": "A",
+          "en": "**Oh, that's great news! Is everything still inside?**",
+          "zh": "哦，太好了！东西都还在吗？"
+        },
+        {
+          "sp": "B",
+          "en": "The cards and the pass are there, but I'm afraid there's no cash.",
+          "zh": "卡和准证都在，不过现金恐怕没有了。"
+        },
+        {
+          "sp": "A",
+          "en": "Ah well, I'm just relieved about the pass. Replacing it would have been a ==nightmare==.",
+          "zh": "唉，算了，准证还在我就放心了。要补办的话可就麻烦死了。"
+        },
+        {
+          "sp": "B",
+          "en": "I understand. You can ==collect== it at the HarbourFront ==control station== until nine tonight.",
+          "zh": "理解。今晚九点前您可以去港湾站的车站服务中心领取。"
+        },
+        {
+          "sp": "A",
+          "en": "**Do I need to bring anything? My ID was actually in the wallet.**",
+          "zh": "需要带什么吗？我的证件其实就在钱包里。"
+        },
+        {
+          "sp": "B",
+          "en": "Your passport will do, plus the reference number I gave you.",
+          "zh": "带护照就可以，还有我给您的那个报失编号。"
+        },
+        {
+          "sp": "A",
+          "en": "Perfect. __Is it okay if__ my wife picks it up instead? I'm stuck at work.",
+          "zh": "好的。我太太代我去领可以吗？我在公司走不开。"
+        },
+        {
+          "sp": "B",
+          "en": "She'd need a signed ==authorisation== letter from you, plus a copy of your passport.",
+          "zh": "她需要带一封您签字的授权书，再加一份您的护照复印件。"
+        },
+        {
+          "sp": "A",
+          "en": "Got it. Then I'll just go myself after work. Thanks so much for calling.",
+          "zh": "明白了。那我下班后自己去吧。非常感谢你打电话来。"
+        },
+        {
+          "sp": "B",
+          "en": "You're welcome. Glad it turned up.",
+          "zh": "不客气。找到了就好。"
+        }
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "「你」把钱包落在哪里了？钱包长什么样，里面有什么？",
+      "a": "落在环线往港湾方向的地铁上；黑色真皮对折钱包，四角磨旧，里面有工作准证、两张银行卡和大约八十块现金。"
+    },
+    {
+      "q": "工作人员找回钱包时说了什么情况？",
+      "a": "有人在港湾站交了钱包，卡和准证都在，但现金没了。"
+    },
+    {
+      "q": "去领钱包要带什么？太太能不能代领？",
+      "a": "带护照和报失编号；太太代领需要「你」签字的授权书和护照复印件，所以「你」决定下班自己去。"
+    }
+  ],
+  "dictation": [
+    "Excuse me. I think I left my wallet on the train about twenty minutes ago.",
+    "My employment pass, two bank cards, and about eighty dollars in cash.",
+    "Do I need to bring anything? My ID was actually in the wallet.",
+    "Perfect. Is it okay if my wife picks it up instead? I'm stuck at work."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "The Circle Line, heading towards HarbourFront. I got off here at Buona Vista.",
+    "marked": "The <b>Circle</b> Line, / heading towards <b>HarbourFront</b>. //<br>I got off <b>here</b> / at Buona <b>Vista</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你在出租车上落下了孩子的水壶和外套，打电话给出租车公司。说清乘车时间、路线和物品特征，并留下联系方式。",
+      "ref": "Hi, I took one of your taxis this afternoon, around three, from Holland Village to Novena. I think I left a bag in the back seat. It's a small blue backpack with a kid's water bottle and a grey jacket inside. I paid by card, if that helps you find the driver. My number is nine one two three, four five six seven.",
+      "ref_zh": "你好，我今天下午三点左右坐了你们的出租车，从荷兰村到诺维娜。我好像把一个包落在后座了。是个蓝色小背包，里面有一个儿童水壶和一件灰色外套。我是刷卡付的，也许能帮你们找到司机。我的电话是九一二三，四五六七。"
+    },
+    {
+      "q": "你在商场丢了手机，去客服台求助。说清最后在哪里用过、手机的样子，问他们会怎么处理。",
+      "ref": "Hi, I think I lost my phone somewhere in the mall. The last time I used it was at the coffee shop on the second floor, maybe half an hour ago. It's a black phone in a clear case with a sticker of a cartoon dog on the back. Has anyone handed one in? If not, could you take my details and call me if it turns up?",
+      "ref_zh": "你好，我好像在商场里把手机弄丢了。最后一次用是在二楼的咖啡店，大概半小时前。是一部黑色手机，透明壳，背面贴了一只卡通小狗贴纸。有人交过来吗？如果没有，能留下我的联系方式，找到了打给我吗？"
+    }
+  ],
+  "words": [
+    {
+      "w": "describe",
+      "ipa": "/dɪˈskraɪb/",
+      "zh": "描述",
+      "ex": "Can you describe the man who took your bag?"
+    },
+    {
+      "w": "bifold",
+      "ipa": "/ˈbaɪfoʊld/",
+      "zh": "对折式钱包",
+      "ex": "I prefer a slim bifold to a big wallet."
+    },
+    {
+      "w": "cancel",
+      "ipa": "/ˈkænsəl/",
+      "zh": "注销，挂失（卡）",
+      "ex": "I called the bank to cancel my credit card."
+    },
+    {
+      "w": "contact number",
+      "ipa": "/ˈkɑːntækt ˈnʌmbər/",
+      "zh": "联系电话",
+      "ex": "Please leave a contact number at the front desk."
+    },
+    {
+      "w": "reference number",
+      "ipa": "/ˈrefrəns ˈnʌmbər/",
+      "zh": "编号，参考号",
+      "ex": "Quote your reference number when you call back."
+    },
+    {
+      "w": "nightmare",
+      "ipa": "/ˈnaɪtmer/",
+      "zh": "噩梦；极其麻烦的事",
+      "ex": "Getting a new passport abroad is a nightmare."
+    },
+    {
+      "w": "collect",
+      "ipa": "/kəˈlekt/",
+      "zh": "领取",
+      "ex": "You can collect your parcel from the locker downstairs."
+    },
+    {
+      "w": "control station",
+      "ipa": "/kənˈtroʊl ˈsteɪʃən/",
+      "zh": "（新加坡地铁站）服务中心",
+      "ex": "Ask at the control station if you need help with your card."
+    },
+    {
+      "w": "authorisation",
+      "ipa": "/ˌɔːθərəˈzeɪʃən/",
+      "zh": "授权（书）",
+      "ex": "You need written authorisation to collect someone else's mail."
+    }
+  ]
+}

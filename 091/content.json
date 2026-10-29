@@ -1,0 +1,185 @@
+{
+  "id": "091",
+  "title": "Working with Teammates in Five Time Zones",
+  "meta": "B2 · 约 280 词 · 场景：跨时区协作",
+  "voice": "en-IN-PrabhatNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Hidden Cost of the Overlap Hour",
+      "paragraphs": [
+        [
+          "Our team has people in Bangalore, Singapore, Sydney, London and San Francisco.",
+          "On a map, that looks impressive.",
+          "In a calendar, it looks like a ==puzzle== with no clean solution."
+        ],
+        [
+          "The usual answer is to find one overlap hour and put every meeting there.",
+          "But someone always pays for that hour, and it is usually the same people: the ones joining at seven in the morning or ten at night.",
+          "Over time, they stop speaking up, and the team starts losing their ideas without noticing."
+        ],
+        [
+          "**Time zones are not just a scheduling problem; they are a fairness problem.**",
+          "If one office always __bears the cost__, ==resentment== builds quietly, even on a friendly team.",
+          "People rarely complain about it directly, but you will see it in shorter answers and cameras that stay off.",
+          "That is why the ==arrangement== matters as much as the agenda."
+        ]
+      ],
+      "heading_zh": "1. 重叠时段的隐性成本",
+      "paragraphs_zh": [
+        [
+          "我们团队的人分布在班加罗尔、新加坡、悉尼、伦敦和旧金山。",
+          "放在地图上，看着挺唬人。",
+          "放进日历里，就是一道怎么拼都拼不齐的拼图。"
+        ],
+        [
+          "通常的做法是找一个大家都在线的重叠时段，把所有会都塞进去。",
+          "但总有人要为这个时段买单，而且通常是同一批人：早上七点或者晚上十点进会的那些。",
+          "时间一长，他们就不怎么发言了，团队也在不知不觉中丢掉了他们的想法。"
+        ],
+        [
+          "时区不只是排会的问题；它是公平的问题。",
+          "如果总是同一个办公室承担代价，哪怕团队氛围再好，不满也会悄悄积累。",
+          "大家很少会直接抱怨，但你会从越来越短的回答、一直不开的摄像头里看出来。",
+          "所以会怎么安排，和议程本身一样重要。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Rotate, Record, Hand Off",
+      "paragraphs": [
+        [
+          "First, ==rotate== the inconvenient slot.",
+          "If the weekly sync is painful for London this month, move it so that Sydney __takes a turn__ next month.",
+          "People accept a bad time much more easily when they can see it is shared."
+        ],
+        [
+          "Second, record every meeting and write a short summary of the decisions.",
+          "Someone who could not attend should be able to __catch up__ in five minutes and still give input ==asynchronously== before anything is final."
+        ],
+        [
+          "Third, end each day with a ==handoff== note.",
+          "Three lines are enough: what I finished, what is blocked, and what the next person can __pick up__.",
+          "**A good handoff note means the work keeps moving while you sleep.**"
+        ],
+        [
+          "Done well, five time zones stop feeling like a ==burden==.",
+          "The project becomes a relay race, with progress happening __around the clock__ instead of waiting for one shared hour."
+        ]
+      ],
+      "heading_zh": "2. 轮换、录屏、交接",
+      "paragraphs_zh": [
+        [
+          "第一，把难受的时段轮换起来。",
+          "如果这个月的周会对伦敦很痛苦，下个月就挪一挪，让悉尼轮一次。",
+          "大家一旦看到苦是轮着吃的，接受一个糟糕的时间就容易多了。"
+        ],
+        [
+          "第二，每个会都录屏，并写一份简短的决策纪要。",
+          "没能参会的人应该能在五分钟内跟上进度，并且在事情拍板之前，还能异步给出意见。"
+        ],
+        [
+          "第三，每天下班前写一份交接说明。",
+          "三行就够了：我做完了什么，卡在哪里，下一个人可以接着做什么。",
+          "交接写得好，你睡觉的时候活儿也在往前推。"
+        ],
+        [
+          "做好了，五个时区就不再是负担。",
+          "项目会变成一场接力赛，进度二十四小时不停，而不是干等那一个共同的小时。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者说“只找一个重叠时段开会”有什么隐性代价？",
+      "a": "总是同一批人在清晨或深夜付出代价，久而久之他们不再发言，团队悄悄失去他们的想法。"
+    },
+    {
+      "q": "作者把时区问题重新定义成什么问题？",
+      "a": "不只是排期问题，而是公平问题；某个办公室一直承担成本，怨气会悄悄积累。"
+    },
+    {
+      "q": "文中的三个做法是什么？",
+      "a": "轮换不方便的时段；会议录像并写决策摘要，让缺席者能异步参与；每天结束时写三行交接（完成了什么、卡在哪、下一个人能接什么）。"
+    }
+  ],
+  "dictation": [
+    "Time zones are not just a scheduling problem; they are a fairness problem.",
+    "People accept a bad time much more easily when they can see it is shared.",
+    "Third, end each day with a handoff note.",
+    "A good handoff note means the work keeps moving while you sleep."
+  ],
+  "shadow": {
+    "text": "Third, end each day with a handoff note. Three lines are enough: what I finished, what is blocked, and what the next person can pick up. A good handoff note means the work keeps moving while you sleep.",
+    "marked": "Third, end each day / with a <b>handoff</b> note. //<br><b>Three</b> lines are enough: / what I <b>finished</b>, / what is <b>blocked</b>, / and what the <b>next</b> person can pick up. //<br>A good handoff note means / the work keeps <b>moving</b> / while you <b>sleep</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你们组的周会一直定在新加坡下午四点，对旧金山同事来说是深夜。你在会上提出轮换时间，30 秒。",
+      "ref": "One process point before we close. Our weekly sync has been at four in the afternoon Singapore time for almost a year, which means Mike has been joining after midnight. That's not fair to him. I'd like to rotate the slot every month, so each office takes a turn with the bad time. I'll send a proposed schedule today.",
+      "ref_zh": "散会前说一个流程上的事。我们的周会快一年都定在新加坡时间下午四点，这意味着 Mike 一直是过了午夜才进会。这对他不公平。我想每个月轮换一次时间，让每个办公室都轮着承担难受的时段。我今天把排期方案发出来。"
+    },
+    {
+      "q": "下班前给伦敦同事发一条语音交接，30 秒说清：完成了什么、卡在哪、他可以接什么。",
+      "ref": "Hi Emma, quick handoff before I log off. I finished the retry logic and all the tests are green. I'm blocked on the config change, because I still don't have access to the production settings. If you have a moment today, could you pick up the code review from Arun? Everything else can wait until I'm back tomorrow morning.",
+      "ref_zh": "Hi Emma，下线前快速交接一下。重试逻辑我写完了，测试全绿。配置变更那块卡住了，因为我还是没有生产环境配置的权限。你今天有空的话，能不能把 Arun 的 code review 接过去？其他的都可以等我明天早上回来再说。"
+    }
+  ],
+  "words": [
+    {
+      "w": "puzzle",
+      "ipa": "/ˈpʌzəl/",
+      "zh": "难题、谜题",
+      "ex": "Planning the on-call rotation across four offices is a real puzzle."
+    },
+    {
+      "w": "resentment",
+      "ipa": "/rɪˈzentmənt/",
+      "zh": "怨恨、不满",
+      "ex": "Always scheduling demos at night for one team will create resentment."
+    },
+    {
+      "w": "arrangement",
+      "ipa": "/əˈreɪndʒmənt/",
+      "zh": "安排",
+      "ex": "The current arrangement works for Singapore but not for London."
+    },
+    {
+      "w": "rotate",
+      "ipa": "/ˈroʊteɪt/",
+      "zh": "轮换、轮流",
+      "ex": "We rotate the meeting time every month so no office always loses."
+    },
+    {
+      "w": "asynchronously",
+      "ipa": "/eɪˈsɪŋkrənəsli/",
+      "zh": "异步地",
+      "ex": "Please review the design asynchronously and leave comments by Friday."
+    },
+    {
+      "w": "handoff",
+      "ipa": "/ˈhændˌɔːf/",
+      "zh": "交接",
+      "ex": "A clear handoff saved us a full day on the incident."
+    },
+    {
+      "w": "burden",
+      "ipa": "/ˈbɜːrdən/",
+      "zh": "负担",
+      "ex": "Late-night calls shouldn't be a burden on the same people every week."
+    },
+    {
+      "w": "bear the cost",
+      "ipa": "/ber ðə kɔːst/",
+      "zh": "承担代价",
+      "ex": "Why should the Sydney team bear the cost of our planning mistakes?"
+    },
+    {
+      "w": "around the clock",
+      "ipa": "/əˈraʊnd ðə klɑːk/",
+      "zh": "日夜不停、全天候",
+      "ex": "With three regions, we can support customers around the clock."
+    }
+  ]
+}

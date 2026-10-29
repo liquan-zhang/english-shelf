@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Visiting a Preschool · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "136", "type": "dialogue", "title": "Visiting a Preschool", "meta": "B2 · 约 290 词 · 场景：参观幼儿园与候补名单", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Centre Principal", "name_zh": "园长", "voice": "en-AU-NatashaNeural"}}, "gist": [{"q": "这家幼儿园一天大致怎么安排？师生比是多少？", "a": "八点半前到、自由玩耍、围圈活动、户外、午饭、一点到两点半午睡，五点开始接；一个老师带八个孩子，上午加一名助教。"}, {"q": "关于语言和过敏，园长怎么说？", "a": "双语教学，以英语为主，每天有中文老师；全园禁坚果，必要时单独做饭。"}, {"q": "报名遇到了什么问题？最后怎么安排？", "a": "一月那批已满，且外国人不能拿政府补贴；「你」把女儿排进候补名单，一般等一两个月，有空位先过一周适应期。"}], "dictation": [{"id": "s0_3_0", "text": "What does a typical day look like after that?"}, {"id": "s0_5_0", "text": "What's the ratio of teachers to children in her age group?"}, {"id": "s1_4_0", "text": "Oh, that's a shame. Could you put her on the waiting list? How long is it usually?"}, {"id": "s1_8_0", "text": "Great. I'll fill in the form today. Please let me know as soon as a spot opens up."}], "shadow": {"speaker": "A", "text": "And what languages do you use? We speak Mandarin at home, so I'd like her English to improve.", "marked": "And what <b>languages</b> / do you use? //<br>We speak <b>Mandarin</b> at home, / so I'd like her <b>English</b> / to <b>improve</b>. //"}, "prompts": [{"q": "女儿入园第一周每天早上都哭着不肯进门。跟老师沟通，问问园里通常怎么帮孩子过渡。", "ref": "Hi, I wanted to have a quick word about Mia. She's been crying every morning at the gate this week, and it's been hard for both of us. How is she after I leave? Does she settle down quickly? Is there anything you'd suggest we do at drop-off, like a shorter goodbye or bringing a toy from home?", "ref_zh": "你好，想跟你简单聊聊 Mia。她这周每天早上都在门口哭，我们俩都挺难受的。我走了以后她怎么样？能很快平静下来吗？送她的时候你建议我们怎么做，比如道别短一点，或者从家里带个玩具？", "id": "ref0"}, {"q": "你在两家幼儿园之间犹豫。打电话给其中一家，问清全年额外费用和假期安排。", "ref": "Hi, we visited your centre last week, and we're deciding between you and one other school. Could I check a few things? Apart from the monthly fee, are there any extra costs, like uniforms, meals or excursions? And how many weeks are you closed during the year? We both work full time, so holiday care is important for us.", "ref_zh": "你好，我们上周参观过你们园，现在在你们和另一家之间做决定。能问几个问题吗？除了月费，还有其他额外费用吗，比如校服、餐费或者外出活动？一年里放假关门几周？我们俩都是全职工作，所以假期能不能托管对我们很重要。", "id": "ref1"}], "words": [{"w": "nap", "ipa": "/næp/", "zh": "小睡；午睡", "ex": "He gets cranky if he misses his afternoon nap.", "id": "w0"}, {"w": "ratio", "ipa": "/ˈreɪʃioʊ/", "zh": "比例（师生比）", "ex": "The ratio is one teacher to five toddlers.", "id": "w1"}, {"w": "bilingual", "ipa": "/baɪˈlɪŋɡwəl/", "zh": "双语的", "ex": "Many kids in Singapore grow up bilingual.", "id": "w2"}, {"w": "allergy", "ipa": "/ˈælərdʒi/", "zh": "过敏", "ex": "Please tell the restaurant about your son's egg allergy.", "id": "w3"}, {"w": "registration", "ipa": "/ˌredʒɪˈstreɪʃən/", "zh": "报名；注册", "ex": "Registration for the holiday camp closes on Friday.", "id": "w4"}, {"w": "subsidy", "ipa": "/ˈsʌbsədi/", "zh": "补贴", "ex": "Citizens get a subsidy for childcare fees.", "id": "w5"}, {"w": "intake", "ipa": "/ˈɪnteɪk/", "zh": "（一批）招生名额", "ex": "The school has two intakes a year, in January and July.", "id": "w6"}, {"w": "waiting list", "ipa": "/ˈweɪtɪŋ lɪst/", "zh": "候补名单", "ex": "We've been on the waiting list for three months.", "id": "w7"}, {"w": "settling-in", "ipa": "/ˈsetlɪŋ ɪn/", "zh": "适应期的", "ex": "The settling-in period usually takes about two weeks.", "id": "w8"}, {"w": "walk through", "ipa": "/wɔːk θruː/", "zh": "一步步讲解", "ex": "Could you walk me through how the app works?", "id": "w9"}], "sections": [{"heading": "1. Touring the Centre", "heading_zh": "1. 参观幼儿园", "rows": [[{"id": "s0_0_0", "md": "Welcome! You must be Mr. Zhang. Shall I show you around first?", "text": "Welcome! You must be Mr. Zhang. Shall I show you around first?", "zh": "欢迎！您一定是张先生吧。我先带您转转？", "sp": "B"}], [{"id": "s0_1_0", "md": "Yes, please. My daughter is three, and we're looking for a place starting in January.", "text": "Yes, please. My daughter is three, and we're looking for a place starting in January.", "zh": "好的。我女儿三岁，我们在找明年一月入园的地方。", "sp": "A"}], [{"id": "s0_2_0", "md": "Lovely. This is the nursery classroom. The children arrive by eight thirty and start with free play.", "text": "Lovely. This is the nursery classroom. The children arrive by eight thirty and start with free play.", "zh": "好呀。这是小班教室。孩子们八点半前到，先自由玩耍。", "sp": "B"}], [{"id": "s0_3_0", "md": "**What does a typical day look like after that?**", "text": "What does a typical day look like after that?", "zh": "那之后一天一般是怎么安排的？", "sp": "A"}], [{"id": "s0_4_0", "md": "Circle time, outdoor play, then lunch. They have a ==nap== from one to half past two, and pick-up starts at five.", "text": "Circle time, outdoor play, then lunch. They have a nap from one to half past two, and pick-up starts at five.", "zh": "围圈活动、户外活动，然后吃午饭。一点到两点半午睡，五点开始可以接。", "sp": "B"}], [{"id": "s0_5_0", "md": "What's the ==ratio== of teachers to children in her age group?", "text": "What's the ratio of teachers to children in her age group?", "zh": "她这个年龄段的师生比是多少？", "sp": "A"}], [{"id": "s0_6_0", "md": "One teacher to eight children, plus an assistant in the mornings.", "text": "One teacher to eight children, plus an assistant in the mornings.", "zh": "一个老师带八个孩子，上午还有一名助教。", "sp": "B"}], [{"id": "s0_7_0", "md": "And what languages do you use? We speak Mandarin at home, so __I'd like her English to improve__.", "text": "And what languages do you use? We speak Mandarin at home, so I'd like her English to improve.", "zh": "你们用什么语言教学？我们在家说普通话，所以希望她的英语能提高。", "sp": "A"}], [{"id": "s0_8_0", "md": "We're ==bilingual==. Classes are mainly in English, with a Mandarin teacher every day.", "text": "We're bilingual. Classes are mainly in English, with a Mandarin teacher every day.", "zh": "我们是双语的。主要用英语上课，每天也有中文老师。", "sp": "B"}], [{"id": "s0_9_0", "md": "That sounds ideal. How do you handle food ==allergies==? She can't eat peanuts.", "text": "That sounds ideal. How do you handle food allergies? She can't eat peanuts.", "zh": "听起来很理想。你们怎么处理食物过敏？她不能吃花生。", "sp": "A"}], [{"id": "s0_10_0", "md": "We're a nut-free centre, and our cook prepares separate meals when needed.", "text": "We're a nut-free centre, and our cook prepares separate meals when needed.", "zh": "我们园里不允许有坚果，需要的话厨师会单独做饭。", "sp": "B"}]]}, {"heading": "2. Fees and the Waiting List", "heading_zh": "2. 学费与候补名单", "rows": [[{"id": "s1_0_0", "md": "Could you __walk me through__ the fees?", "text": "Could you walk me through the fees?", "zh": "能跟我详细说说费用吗？", "sp": "A"}], [{"id": "s1_1_0", "md": "Full day is one thousand four hundred dollars a month, plus a ==registration== fee and one month's deposit.", "text": "Full day is one thousand four hundred dollars a month, plus a registration fee and one month's deposit.", "zh": "全天班每月一千四百块，另外还有报名费和一个月的押金。", "sp": "B"}], [{"id": "s1_2_0", "md": "Are we eligible for any ==subsidies==? We're here on an employment pass.", "text": "Are we eligible for any subsidies? We're here on an employment pass.", "zh": "我们能申请补贴吗？我们是持工作准证在这里的。", "sp": "A"}], [{"id": "s1_3_0", "md": "I'm afraid government subsidies are only for citizens. And there's one more thing. Our January intake is actually full.", "text": "I'm afraid government subsidies are only for citizens. And there's one more thing. Our January intake is actually full.", "zh": "恐怕政府补贴只给公民。还有一件事，我们一月那批其实已经满了。", "sp": "B"}], [{"id": "s1_4_0", "md": "**Oh, that's a shame. Could you put her on the waiting list? How long is it usually?**", "text": "Oh, that's a shame. Could you put her on the waiting list? How long is it usually?", "zh": "啊，太可惜了。能把她排进候补名单吗？一般要等多久？", "sp": "A"}], [{"id": "s1_5_0", "md": "Of course. Usually one or two months. Families often move or change plans.", "text": "Of course. Usually one or two months. Families often move or change plans.", "zh": "当然可以。通常一两个月，经常有家庭搬走或者改变计划。", "sp": "B"}], [{"id": "s1_6_0", "md": "If a place opens up in February, could she do a ==settling-in== week with me there?", "text": "If a place opens up in February, could she do a settling-in week with me there?", "zh": "如果二月有空位，能让她先过一周适应期、我在旁边陪着吗？", "sp": "A"}], [{"id": "s1_7_0", "md": "Yes. The first week has shorter days, and parents can stay for the first two mornings.", "text": "Yes. The first week has shorter days, and parents can stay for the first two mornings.", "zh": "可以。第一周时间会短一些，前两个上午家长可以留下来陪。", "sp": "B"}], [{"id": "s1_8_0", "md": "**Great. I'll fill in the form today. Please let me know as soon as a spot opens up.**", "text": "Great. I'll fill in the form today. Please let me know as soon as a spot opens up.", "zh": "太好了。我今天就填表。一有空位请马上通知我。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Touring the Centre", "zh": "1. 参观幼儿园", "start": 0.0, "end": 2.016, "words": [[0.105, 0.342], [0.776, 1.053], [1.066, 1.132], [1.145, 1.632]]}, {"kind": "s", "id": "s0_0_0", "md": "Welcome! You must be Mr. Zhang. Shall I show you around first?", "zh": "欢迎！您一定是张先生吧。我先带您转转？", "sp": "B", "gap": false, "start": 2.016, "end": 8.928, "words": [[2.119, 2.592], [3.713, 3.858], [3.858, 4.095], [4.161, 4.266], [4.319, 4.634], [4.634, 4.937], [6.069, 6.319], [6.384, 6.437], [6.555, 6.779], [6.858, 6.963], [7.016, 7.345], [7.371, 7.845]]}, {"kind": "s", "id": "s0_1_0", "md": "Yes, please. My daughter is three, and we're looking for a place starting in January.", "zh": "好的。我女儿三岁，我们在找明年一月入园的地方。", "sp": "A", "gap": false, "start": 8.928, "end": 14.4, "words": [[9.033, 9.323], [9.375, 9.862], [10.296, 10.428], [10.441, 10.81], [10.823, 10.981], [10.994, 11.428], [11.757, 11.862], [11.875, 11.994], [12.007, 12.296], [12.31, 12.467], [12.481, 12.533], [12.546, 12.889], [12.902, 13.244], [13.257, 13.349], [13.362, 14.007]]}, {"kind": "s", "id": "s0_2_0", "md": "Lovely. This is the nursery classroom. The children arrive by eight thirty and start with free play.", "zh": "好呀。这是小班教室。孩子们八点半前到，先自由玩耍。", "sp": "B", "gap": false, "start": 14.4, "end": 23.592, "words": [[14.503, 14.924], [16.084, 16.295], [16.295, 16.453], [16.479, 16.611], [16.611, 17.097], [17.15, 17.755], [18.847, 18.939], [18.939, 19.387], [19.413, 19.861], [19.939, 20.11], [20.216, 20.453], [20.505, 20.874], [20.979, 21.058], [21.137, 21.545], [21.611, 21.768], [21.795, 22.045], [22.124, 22.453]]}, {"kind": "s", "id": "s0_3_0", "md": "**What does a typical day look like after that?**", "zh": "那之后一天一般是怎么安排的？", "sp": "A", "gap": false, "start": 23.592, "end": 26.04, "words": [[23.71, 23.789], [23.803, 23.921], [23.934, 24.0], [24.013, 24.408], [24.421, 24.618], [24.631, 24.842], [24.855, 25.039], [25.053, 25.329], [25.342, 25.645]]}, {"kind": "s", "id": "s0_4_0", "md": "Circle time, outdoor play, then lunch. They have a ==nap== from one to half past two, and pick-up starts at five.", "zh": "围圈活动、户外活动，然后吃午饭。一点到两点半午睡，五点开始可以接。", "sp": "B", "gap": false, "start": 26.04, "end": 35.4, "words": [[26.143, 26.577], [26.59, 26.972], [27.222, 27.629], [27.669, 28.011], [28.301, 28.537], [28.59, 28.945], [30.093, 30.211], [30.277, 30.422], [30.448, 30.5], [30.501, 30.751], [30.816, 30.974], [31.014, 31.224], [31.251, 31.369], [31.369, 31.658], [31.737, 32.079], [32.093, 32.343], [32.698, 32.856], [32.895, 33.251], [33.29, 33.724], [33.764, 33.869], [33.908, 34.356]]}, {"kind": "s", "id": "s0_5_0", "md": "What's the ==ratio== of teachers to children in her age group?", "zh": "她这个年龄段的师生比是多少？", "sp": "A", "gap": false, "start": 35.4, "end": 38.808, "words": [[35.505, 35.676], [35.689, 35.782], [35.795, 36.268], [36.282, 36.387], [36.4, 36.887], [36.9, 37.005], [37.018, 37.532], [37.545, 37.637], [37.65, 37.847], [37.861, 38.058], [38.071, 38.413]]}, {"kind": "s", "id": "s0_6_0", "md": "One teacher to eight children, plus an assistant in the mornings.", "zh": "一个老师带八个孩子，上午还有一名助教。", "sp": "B", "gap": false, "start": 38.808, "end": 43.728, "words": [[38.911, 39.147], [39.213, 39.595], [39.621, 39.753], [39.779, 40.042], [40.042, 40.516], [40.779, 41.161], [41.174, 41.279], [41.305, 41.792], [41.805, 41.924], [41.924, 42.016], [42.016, 42.569]]}, {"kind": "s", "id": "s0_7_0", "md": "And what languages do you use? We speak Mandarin at home, so __I'd like her English to improve__.", "zh": "你们用什么语言教学？我们在家说普通话，所以希望她的英语能提高。", "sp": "A", "gap": false, "start": 43.728, "end": 49.392, "words": [[43.833, 43.912], [43.925, 44.083], [44.096, 44.583], [44.596, 44.689], [44.702, 44.82], [44.833, 45.267], [45.715, 45.807], [45.82, 46.123], [46.136, 46.544], [46.557, 46.649], [46.662, 46.965], [47.346, 47.517], [47.531, 47.623], [47.636, 47.807], [47.82, 47.965], [47.978, 48.333], [48.346, 48.478], [48.491, 48.991]]}, {"kind": "s", "id": "s0_8_0", "md": "We're ==bilingual==. Classes are mainly in English, with a Mandarin teacher every day.", "zh": "我们是双语的。主要用英语上课，每天也有中文老师。", "sp": "B", "gap": false, "start": 49.392, "end": 56.52, "words": [[49.495, 49.758], [49.771, 50.481], [51.537, 51.945], [51.958, 52.063], [52.103, 52.51], [52.576, 52.616], [52.642, 53.089], [53.405, 53.734], [53.747, 53.826], [53.826, 54.3], [54.366, 54.734], [54.774, 55.116], [55.155, 55.418]]}, {"kind": "s", "id": "s0_9_0", "md": "That sounds ideal. How do you handle food ==allergies==? She can't eat peanuts.", "zh": "听起来很理想。你们怎么处理食物过敏？她不能吃花生。", "sp": "A", "gap": false, "start": 56.52, "end": 61.464, "words": [[56.638, 56.744], [56.757, 57.046], [57.059, 57.494], [57.941, 58.02], [58.033, 58.099], [58.112, 58.231], [58.244, 58.559], [58.573, 58.823], [58.836, 59.494], [59.941, 60.073], [60.086, 60.309], [60.323, 60.52], [60.533, 61.073]]}, {"kind": "s", "id": "s0_10_0", "md": "We're a nut-free centre, and our cook prepares separate meals when needed.", "zh": "我们园里不允许有坚果，需要的话厨师会单独做饭。", "sp": "B", "gap": false, "start": 61.464, "end": 66.936, "words": [[61.567, 61.83], [61.856, 61.896], [61.922, 62.382], [62.448, 62.83], [63.053, 63.435], [63.488, 63.724], [63.751, 64.001], [64.001, 64.488], [64.527, 64.909], [64.922, 65.29], [65.33, 65.501], [65.514, 65.909]]}, {"kind": "h", "id": "h1", "md": "2. Fees and the Waiting List", "zh": "2. 学费与候补名单", "start": 66.936, "end": 69.792, "words": [[67.054, 67.265], [67.752, 68.318], [68.475, 68.554], [68.568, 68.647], [68.66, 68.962], [68.975, 69.396]]}, {"kind": "s", "id": "s1_0_0", "md": "Could you __walk me through__ the fees?", "zh": "能跟我详细说说费用吗？", "sp": "A", "gap": false, "start": 69.792, "end": 71.712, "words": [[69.897, 70.016], [70.029, 70.121], [70.134, 70.41], [70.424, 70.555], [70.568, 70.713], [70.726, 70.805], [70.818, 71.331]]}, {"kind": "s", "id": "s1_1_0", "md": "Full day is one thousand four hundred dollars a month, plus a ==registration== fee and one month's deposit.", "zh": "全天班每月一千四百块，另外还有报名费和一个月的押金。", "sp": "B", "gap": false, "start": 71.712, "end": 79.416, "words": [[71.815, 72.078], [72.091, 72.341], [72.446, 72.551], [72.578, 72.828], [72.88, 73.341], [73.367, 73.578], [73.604, 73.933], [73.933, 74.236], [74.249, 74.354], [74.367, 74.749], [75.051, 75.472], [75.486, 75.591], [75.604, 76.341], [76.407, 76.644], [76.867, 77.157], [77.209, 77.459], [77.499, 77.775], [77.828, 78.341]]}, {"kind": "s", "id": "s1_2_0", "md": "Are we eligible for any ==subsidies==? We're here on an employment pass.", "zh": "我们能申请补贴吗？我们是持工作准证在这里的。", "sp": "A", "gap": false, "start": 79.416, "end": 83.76, "words": [[79.521, 79.613], [79.627, 79.771], [79.784, 80.258], [80.271, 80.455], [80.469, 80.613], [80.627, 81.337], [81.771, 81.903], [81.916, 82.153], [82.166, 82.258], [82.271, 82.337], [82.35, 82.863], [82.877, 83.363]]}, {"kind": "s", "id": "s1_3_0", "md": "I'm afraid government subsidies are only for citizens. And there's one more thing. Our January intake is actually full.", "zh": "恐怕政府补贴只给公民。还有一件事，我们一月那批其实已经满了。", "sp": "B", "gap": false, "start": 83.76, "end": 93.984, "words": [[83.863, 84.007], [84.047, 84.442], [84.481, 84.942], [84.955, 85.56], [85.613, 85.757], [85.849, 86.192], [86.257, 86.363], [86.363, 86.955], [88.063, 88.168], [88.207, 88.457], [88.497, 88.76], [88.813, 89.049], [89.063, 89.326], [90.471, 90.681], [90.707, 91.326], [91.418, 91.852], [91.892, 92.01], [92.023, 92.549], [92.615, 92.918]]}, {"kind": "s", "id": "s1_4_0", "md": "**Oh, that's a shame. Could you put her on the waiting list? How long is it usually?**", "zh": "啊，太可惜了。能把她排进候补名单吗？一般要等多久？", "sp": "A", "gap": false, "start": 93.984, "end": 98.952, "words": [[94.102, 94.234], [94.26, 94.458], [94.471, 94.51], [94.523, 94.944], [95.379, 95.51], [95.523, 95.602], [95.616, 95.76], [95.773, 95.905], [95.918, 96.01], [96.023, 96.102], [96.116, 96.445], [96.458, 96.892], [97.326, 97.458], [97.471, 97.76], [97.773, 97.866], [97.879, 97.971], [97.984, 98.563]]}, {"kind": "s", "id": "s1_5_0", "md": "Of course. Usually one or two months. Families often move or change plans.", "zh": "当然可以。通常一两个月，经常有家庭搬走或者改变计划。", "sp": "B", "gap": false, "start": 98.952, "end": 107.496, "words": [[99.055, 99.16], [99.252, 99.581], [100.755, 101.202], [101.255, 101.544], [101.663, 101.82], [101.886, 102.123], [102.189, 102.557], [103.781, 104.281], [104.294, 104.702], [104.728, 105.07], [105.149, 105.307], [105.36, 105.781], [105.86, 106.334]]}, {"kind": "s", "id": "s1_6_0", "md": "If a place opens up in February, could she do a ==settling-in== week with me there?", "zh": "如果二月有空位，能让她先过一周适应期、我在旁边陪着吗？", "sp": "A", "gap": false, "start": 107.496, "end": 111.888, "words": [[107.601, 107.693], [107.707, 107.759], [107.772, 108.088], [108.101, 108.417], [108.43, 108.562], [108.575, 108.667], [108.68, 109.351], [109.654, 109.785], [109.799, 109.93], [109.943, 110.088], [110.101, 110.167], [110.18, 110.772], [110.785, 110.983], [110.996, 111.141], [111.154, 111.285], [111.299, 111.509]]}, {"kind": "s", "id": "s1_7_0", "md": "Yes. The first week has shorter days, and parents can stay for the first two mornings.", "zh": "可以。第一周时间会短一些，前两个上午家长可以留下来陪。", "sp": "B", "gap": false, "start": 111.888, "end": 119.232, "words": [[111.991, 112.28], [113.427, 113.533], [113.546, 113.849], [113.914, 114.191], [114.217, 114.362], [114.401, 114.743], [114.743, 115.125], [115.349, 115.572], [115.625, 116.072], [116.138, 116.27], [116.335, 116.612], [116.73, 116.822], [116.822, 116.927], [116.941, 117.335], [117.349, 117.533], [117.585, 118.085]]}, {"kind": "s", "id": "s1_8_0", "md": "**Great. I'll fill in the form today. Please let me know as soon as a spot opens up.**", "zh": "太好了。我今天就填表。一有空位请马上通知我。", "sp": "A", "gap": false, "start": 119.232, "end": 124.344, "words": [[119.337, 119.679], [120.114, 120.258], [120.271, 120.508], [120.521, 120.587], [120.6, 120.679], [120.693, 120.982], [120.995, 121.35], [121.798, 122.008], [122.021, 122.14], [122.153, 122.232], [122.245, 122.456], [122.469, 122.561], [122.574, 122.85], [122.864, 122.969], [122.982, 123.021], [123.035, 123.35], [123.364, 123.693], [123.706, 123.942]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

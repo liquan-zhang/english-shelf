@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Translating Your Request into Their Interests · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "042", "title": "Translating Your Request into Their Interests", "meta": "B2 · 约 280 词 · 场景：跨团队推动", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. Your Reasons Are Not Their Reasons", "heading_zh": "1. 你的理由不是他们的理由", "rows": [[{"id": "s0_0_0", "md": "Imagine you want the operations team to adopt a new logging format.", "text": "Imagine you want the operations team to adopt a new logging format.", "zh": "假设你想让运维团队采用一种新的日志格式。", "sp": null}, {"id": "s0_0_1", "md": "You explain that it will make your dashboards cleaner and your debugging faster.", "text": "You explain that it will make your dashboards cleaner and your debugging faster.", "zh": "你解释说，这能让你们的 dashboard 更清爽，排查问题更快。", "sp": null}, {"id": "s0_0_2", "md": "They nod politely, and nothing happens for two months.", "text": "They nod politely, and nothing happens for two months.", "zh": "他们客气地点点头，然后两个月过去了，什么都没发生。", "sp": null}], [{"id": "s0_1_0", "md": "The problem is not your logic.", "text": "The problem is not your logic.", "zh": "问题不在你的逻辑。", "sp": null}, {"id": "s0_1_1", "md": "The problem is that every reason you gave was about your team.", "text": "The problem is that every reason you gave was about your team.", "zh": "问题在于你给的每一条理由都是关于你自己团队的。", "sp": null}, {"id": "s0_1_2", "md": "From their side, the request means extra work, a new tool to learn, and a ==marginal== benefit for someone else.", "text": "From their side, the request means extra work, a new tool to learn, and a marginal benefit for someone else.", "zh": "站在他们那边，这个请求意味着额外的工作量、一个要学的新工具，以及给别人带来的一点点好处。", "sp": null}, {"id": "s0_1_3", "md": "**Nobody changes their priorities because your argument is correct.**", "text": "Nobody changes their priorities because your argument is correct.", "zh": "没有人会因为你的论证正确就调整自己的优先级。", "sp": null}], [{"id": "s0_2_0", "md": "People move when they can see something they already want.", "text": "People move when they can see something they already want.", "zh": "人们只有在看到自己本来就想要的东西时才会动。", "sp": null}, {"id": "s0_2_1", "md": "That is why the most useful skill in cross-team work is ==translation==.", "text": "That is why the most useful skill in cross-team work is translation.", "zh": "所以跨团队协作里最有用的能力是翻译。", "sp": null}, {"id": "s0_2_2", "md": "You keep the same request, but you __restate it in terms of__ their goals, their ==metrics==, and their pain.", "text": "You keep the same request, but you restate it in terms of their goals, their metrics, and their pain.", "zh": "请求还是那个请求，但你要用他们的目标、他们的指标、他们的痛点重新讲一遍。", "sp": null}]]}, {"heading": "2. The Translation Test", "heading_zh": "2. 翻译测试", "rows": [[{"id": "s1_0_0", "md": "Before any meeting, finish this sentence: \"This helps you because...\"", "text": "Before any meeting, finish this sentence: \"This helps you because...\"", "zh": "开任何会之前，先把这句话补完：「这对你们有帮助，因为……」", "sp": null}, {"id": "s1_0_1", "md": "If you can only finish it with \"it helps us,\" you are not ready yet.", "text": "If you can only finish it with \"it helps us,\" you are not ready yet.", "zh": "如果你只能补成「这对我们有帮助」，说明你还没准备好。", "sp": null}, {"id": "s1_0_2", "md": "Go and find out what keeps them up at night.", "text": "Go and find out what keeps them up at night.", "zh": "去搞清楚是什么让他们夜里睡不着。", "sp": null}], [{"id": "s1_1_0", "md": "Usually, the answer is hiding in plain sight.", "text": "Usually, the answer is hiding in plain sight.", "zh": "通常答案就摆在眼前。", "sp": null}, {"id": "s1_1_1", "md": "The operations team gets paged at three in the morning, and half of those pages come from logs nobody can read.", "text": "The operations team gets paged at three in the morning, and half of those pages come from logs nobody can read.", "zh": "运维团队凌晨三点被 page，其中一半的告警来自没人看得懂的日志。", "sp": null}, {"id": "s1_1_2", "md": "Now your pitch becomes \"This format could __cut your night pages__ by a third.\"", "text": "Now your pitch becomes \"This format could cut your night pages by a third.\"", "zh": "这时候你的说法就变成了「这个格式能把你们的夜间告警砍掉三分之一」。", "sp": null}, {"id": "s1_1_3", "md": "It is the same change, but it lands ==differently==.", "text": "It is the same change, but it lands differently.", "zh": "改动还是同一个，但听起来完全不一样。", "sp": null}], [{"id": "s1_2_0", "md": "Be careful not to ==exaggerate==.", "text": "Be careful not to exaggerate.", "zh": "注意别夸大。", "sp": null}, {"id": "s1_2_1", "md": "If you promise a benefit you cannot deliver, you __burn the trust__ you will need next quarter.", "text": "If you promise a benefit you cannot deliver, you burn the trust you will need next quarter.", "zh": "如果你承诺了做不到的好处，就会把下个季度还用得上的信任烧掉。", "sp": null}, {"id": "s1_2_2", "md": "**Offer the benefit you can prove, and offer to measure it together.**", "text": "Offer the benefit you can prove, and offer to measure it together.", "zh": "只说你能证明的好处，并且主动提出一起来度量。", "sp": null}], [{"id": "s1_3_0", "md": "Finally, let them shape the plan.", "text": "Finally, let them shape the plan.", "zh": "最后，让他们参与制定方案。", "sp": null}, {"id": "s1_3_1", "md": "When they choose the rollout order or the first service to migrate, the project starts to feel like theirs.", "text": "When they choose the rollout order or the first service to migrate, the project starts to feel like theirs.", "zh": "当他们来决定上线顺序、或者先迁哪个服务时，这个项目就开始像是他们自己的了。", "sp": null}, {"id": "s1_3_2", "md": "That sense of ==ownership== does more for your request than any slide you could write.", "text": "That sense of ownership does more for your request than any slide you could write.", "zh": "这种主人翁感对你的请求的帮助，比你能写的任何一页 PPT 都大。", "sp": null}]]}], "gist": [{"q": "为什么运维团队礼貌点头却两个月没动静？", "a": "因为给出的理由全是对我方团队的好处，对他们来说只是额外工作和别人的收益。"}, {"q": "作者提出的「翻译测试」是什么？", "a": "会前补完一句话：This helps you because...；如果只能说「对我们有好处」，就还没准备好。"}, {"q": "翻译需求时要注意什么？", "a": "不要夸大收益，只承诺能证明的好处并提出一起度量；让对方参与定方案，产生主人翁感。"}], "dictation": [{"id": "s0_1_3", "text": "Nobody changes their priorities because your argument is correct."}, {"id": "s0_2_0", "text": "People move when they can see something they already want."}, {"id": "s1_2_2", "text": "Offer the benefit you can prove, and offer to measure it together."}, {"id": "s1_3_1", "text": "When they choose the rollout order or the first service to migrate, the project starts to feel like theirs."}], "shadow": {"text": "Usually, the answer is hiding in plain sight. The operations team gets paged at three in the morning, and half of those pages come from logs nobody can read.", "marked": "Usually, / the answer is <b>hiding</b> in <b>plain</b> sight. //<br>The operations team gets <b>paged</b> / at <b>three</b> in the morning, / and <b>half</b> of those pages / come from logs <b>nobody</b> can read. //"}, "prompts": [{"q": "你想让数据平台团队给你们的表加分区，这样你们查询更快。用 30 秒向他们提出，但要用他们的利益来讲（比如他们的集群成本或告警）。", "ref": "I know partitioning sounds like our problem, so let me put it in terms of your cluster. Our daily reports currently scan the full table, and they show up as the top cost item on your monthly bill. If we partition by date, those jobs should read a tiny fraction of the data. That means lower spend for you and fewer slow queries blocking other teams. Could we try it on one table first and compare the numbers?", "ref_zh": "我知道分区听起来像是我们的问题，那我从你们集群的角度说一下。我们的日报现在每次都扫全表，在你们的月度账单上是排第一的成本项。如果按日期分区，这些任务应该只需要读很小一部分数据。这意味着你们的花费会降下来，挡住其他团队的慢查询也会变少。我们能不能先拿一张表试试，对比一下数据？", "id": "ref0"}, {"q": "你希望客服团队改用你们新做的工单分类工具。他们觉得是给自己添麻烦。用 30 秒回应，把好处翻译成他们关心的指标。", "ref": "I hear you, nobody wants another tool. Here's why I think it's worth a look for your team specifically. Right now your agents spend a lot of time sorting tickets by hand before they even start helping customers. The new tool does that sorting automatically, so your response time should go down. Let's run it with two agents for a week and see if their numbers actually improve.", "ref_zh": "我理解，谁都不想再多一个工具。我说说为什么我觉得这个值得你们团队看一看。现在你们的客服在开始帮客户之前，要花很多时间手动给工单分类。新工具会自动完成分类，所以你们的响应时间应该能降下来。我们先让两个客服用一周，看看他们的数据是不是真的有改善。", "id": "ref1"}], "words": [{"w": "marginal", "ipa": "/ˈmɑːrdʒɪnl/", "zh": "边际的、微小的", "ex": "The gain is marginal, maybe a few milliseconds at most.", "id": "w0"}, {"w": "translation", "ipa": "/trænzˈleɪʃən/", "zh": "转译、翻译", "ex": "Your proposal needs some translation before the finance team will care.", "id": "w1"}, {"w": "metric", "ipa": "/ˈmetrɪk/", "zh": "指标", "ex": "Their key metric this quarter is the number of night pages.", "id": "w2"}, {"w": "differently", "ipa": "/ˈdɪfrəntli/", "zh": "不同地", "ex": "The same data lands differently when you start with their problem.", "id": "w3"}, {"w": "exaggerate", "ipa": "/ɪɡˈzædʒəreɪt/", "zh": "夸大", "ex": "Let's not exaggerate the savings until we've run the benchmark.", "id": "w4"}, {"w": "ownership", "ipa": "/ˈoʊnərʃɪp/", "zh": "主人翁意识、归属", "ex": "Giving them the rollout plan created real ownership.", "id": "w5"}, {"w": "pitch", "ipa": "/pɪtʃ/", "zh": "推介、说服性陈述", "ex": "Let's rehearse the pitch before we meet the platform team.", "id": "w6"}, {"w": "restate", "ipa": "/ˌriːˈsteɪt/", "zh": "换种说法重述", "ex": "Let me restate the goal in terms of user impact.", "id": "w7"}, {"w": "priority", "ipa": "/praɪˈɔːrəti/", "zh": "优先事项", "ex": "Stability is our top priority until the holiday freeze.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Your Reasons Are Not Their Reasons", "zh": "1. 你的理由不是他们的理由", "start": 0.0, "end": 2.76, "words": [[0.105, 0.316], [0.737, 0.842], [0.855, 1.237], [1.25, 1.329], [1.342, 1.592], [1.605, 1.776], [1.789, 2.368]]}, {"kind": "s", "id": "s0_0_0", "md": "Imagine you want the operations team to adopt a new logging format.", "zh": "假设你想让运维团队采用一种新的日志格式。", "sp": null, "gap": false, "start": 2.76, "end": 7.104, "words": [[2.852, 3.247], [3.26, 3.352], [3.365, 3.549], [3.563, 3.642], [3.655, 4.313], [4.326, 4.655], [4.668, 4.826], [4.839, 5.273], [5.352, 5.392], [5.405, 5.734], [5.747, 6.128], [6.142, 6.707]]}, {"kind": "s", "id": "s0_0_1", "md": "You explain that it will make your dashboards cleaner and your debugging faster.", "zh": "你解释说，这能让你们的 dashboard 更清爽，排查问题更快。", "sp": null, "gap": false, "start": 7.104, "end": 11.76, "words": [[7.209, 7.314], [7.328, 7.762], [7.775, 7.907], [7.92, 7.986], [7.999, 8.117], [8.13, 8.341], [8.354, 8.486], [8.499, 9.17], [9.183, 9.696], [9.933, 9.999], [10.012, 10.143], [10.157, 10.788], [10.801, 11.367]]}, {"kind": "s", "id": "s0_0_2", "md": "They nod politely, and nothing happens for two months.", "zh": "他们客气地点点头，然后两个月过去了，什么都没发生。", "sp": null, "gap": false, "start": 11.76, "end": 15.336, "words": [[11.878, 11.971], [11.984, 12.26], [12.273, 12.865], [13.194, 13.313], [13.326, 13.615], [13.628, 14.036], [14.049, 14.181], [14.194, 14.392], [14.405, 14.944]]}, {"kind": "s", "id": "s0_1_0", "md": "The problem is not your logic.", "zh": "问题不在你的逻辑。", "sp": null, "gap": true, "start": 15.336, "end": 17.28, "words": [[15.454, 15.507], [15.52, 15.902], [15.915, 16.02], [16.033, 16.244], [16.257, 16.375], [16.389, 16.889]]}, {"kind": "s", "id": "s0_1_1", "md": "The problem is that every reason you gave was about your team.", "zh": "问题在于你给的每一条理由都是关于你自己团队的。", "sp": null, "gap": false, "start": 17.28, "end": 20.808, "words": [[17.398, 17.464], [17.477, 17.938], [18.043, 18.148], [18.162, 18.346], [18.477, 18.793], [18.806, 19.122], [19.135, 19.254], [19.267, 19.569], [19.583, 19.714], [19.727, 19.964], [19.977, 20.083], [20.096, 20.412]]}, {"kind": "s", "id": "s0_1_2", "md": "From their side, the request means extra work, a new tool to learn, and a ==marginal== benefit for someone else.", "zh": "站在他们那边，这个请求意味着额外的工作量、一个要学的新工具，以及给别人带来的一点点好处。", "sp": null, "gap": false, "start": 20.808, "end": 28.248, "words": [[20.953, 21.071], [21.084, 21.255], [21.269, 21.703], [22.084, 22.163], [22.176, 22.69], [22.703, 23.111], [23.124, 23.519], [23.532, 23.913], [24.176, 24.216], [24.229, 24.518], [24.532, 24.874], [24.887, 25.005], [25.019, 25.479], [25.808, 25.861], [25.874, 25.9], [25.913, 26.426], [26.44, 26.913], [26.926, 27.071], [27.084, 27.387], [27.4, 27.861]]}, {"kind": "s", "id": "s0_1_3", "md": "**Nobody changes their priorities because your argument is correct.**", "zh": "没有人会因为你的论证正确就调整自己的优先级。", "sp": null, "gap": false, "start": 28.248, "end": 32.28, "words": [[28.353, 28.722], [28.735, 29.208], [29.222, 29.366], [29.38, 30.103], [30.116, 30.432], [30.445, 30.603], [30.616, 31.13], [31.222, 31.327], [31.34, 31.88]]}, {"kind": "s", "id": "s0_2_0", "md": "People move when they can see something they already want.", "zh": "人们只有在看到自己本来就想要的东西时才会动。", "sp": null, "gap": true, "start": 32.28, "end": 35.544, "words": [[32.398, 32.675], [32.688, 33.083], [33.096, 33.201], [33.214, 33.333], [33.346, 33.504], [33.517, 33.793], [33.806, 34.175], [34.188, 34.319], [34.333, 34.714], [34.727, 35.162]]}, {"kind": "s", "id": "s0_2_1", "md": "That is why the most useful skill in cross-team work is ==translation==.", "zh": "所以跨团队协作里最有用的能力是翻译。", "sp": null, "gap": false, "start": 35.544, "end": 39.696, "words": [[35.649, 35.755], [35.768, 35.86], [35.873, 36.057], [36.07, 36.162], [36.176, 36.491], [36.505, 36.939], [36.952, 37.307], [37.32, 37.412], [37.426, 38.005], [38.018, 38.32], [38.452, 38.544], [38.557, 39.307]]}, {"kind": "s", "id": "s0_2_2", "md": "You keep the same request, but you __restate it in terms of__ their goals, their ==metrics==, and their pain.", "zh": "请求还是那个请求，但你要用他们的目标、他们的指标、他们的痛点重新讲一遍。", "sp": null, "gap": false, "start": 39.696, "end": 45.936, "words": [[39.814, 39.907], [39.92, 40.17], [40.183, 40.275], [40.288, 40.578], [40.591, 41.262], [41.472, 41.63], [41.643, 41.762], [41.775, 42.275], [42.288, 42.38], [42.393, 42.499], [42.512, 42.841], [42.854, 42.933], [42.946, 43.117], [43.13, 43.696], [43.907, 44.051], [44.064, 44.735], [44.933, 45.038], [45.051, 45.196], [45.209, 45.551]]}, {"kind": "h", "id": "h1", "md": "2. The Translation Test", "zh": "2. 翻译测试", "start": 45.936, "end": 48.192, "words": [[46.054, 46.304], [46.62, 46.699], [46.712, 47.331], [47.344, 47.804]]}, {"kind": "s", "id": "s1_0_0", "md": "Before any meeting, finish this sentence: \"This helps you because...\"", "zh": "开任何会之前，先把这句话补完：「这对你们有帮助，因为……」", "sp": null, "gap": false, "start": 48.192, "end": 52.92, "words": [[48.31, 48.731], [48.745, 48.929], [48.942, 49.376], [49.679, 50.047], [50.06, 50.231], [50.245, 50.771], [51.074, 51.258], [51.271, 51.547], [51.56, 51.745], [51.758, 52.429]]}, {"kind": "s", "id": "s1_0_1", "md": "If you can only finish it with \"it helps us,\" you are not ready yet.", "zh": "如果你只能补成「这对我们有帮助」，说明你还没准备好。", "sp": null, "gap": false, "start": 52.92, "end": 56.976, "words": [[53.025, 53.131], [53.144, 53.236], [53.249, 53.381], [53.394, 53.63], [53.644, 53.999], [54.012, 54.104], [54.117, 54.328], [54.367, 54.473], [54.486, 54.828], [54.841, 55.183], [55.486, 55.604], [55.617, 55.709], [55.723, 56.025], [56.038, 56.249], [56.262, 56.591]]}, {"kind": "s", "id": "s1_0_2", "md": "Go and find out what keeps them up at night.", "zh": "去搞清楚是什么让他们夜里睡不着。", "sp": null, "gap": false, "start": 56.976, "end": 59.424, "words": [[57.081, 57.239], [57.252, 57.331], [57.344, 57.66], [57.673, 57.779], [57.792, 57.937], [57.95, 58.226], [58.239, 58.384], [58.397, 58.568], [58.581, 58.687], [58.7, 59.042]]}, {"kind": "s", "id": "s1_1_0", "md": "Usually, the answer is hiding in plain sight.", "zh": "通常答案就摆在眼前。", "sp": null, "gap": true, "start": 59.424, "end": 62.544, "words": [[59.529, 60.042], [60.332, 60.424], [60.437, 60.792], [60.806, 60.898], [60.911, 61.306], [61.319, 61.411], [61.424, 61.727], [61.74, 62.148]]}, {"kind": "s", "id": "s1_1_1", "md": "The operations team gets paged at three in the morning, and half of those pages come from logs nobody can read.", "zh": "运维团队凌晨三点被 page，其中一半的告警来自没人看得懂的日志。", "sp": null, "gap": false, "start": 62.544, "end": 68.928, "words": [[62.649, 62.728], [62.741, 63.426], [63.439, 63.741], [63.755, 63.978], [63.991, 64.412], [64.426, 64.518], [64.531, 64.794], [64.807, 64.886], [64.899, 64.965], [64.978, 65.426], [65.741, 65.807], [65.82, 66.123], [66.136, 66.215], [66.228, 66.426], [66.439, 66.834], [66.847, 67.057], [67.07, 67.255], [67.268, 67.557], [67.57, 67.991], [68.005, 68.202], [68.215, 68.544]]}, {"kind": "s", "id": "s1_1_2", "md": "Now your pitch becomes \"This format could __cut your night pages__ by a third.\"", "zh": "这时候你的说法就变成了「这个格式能把你们的夜间告警砍掉三分之一」。", "sp": null, "gap": false, "start": 68.928, "end": 73.728, "words": [[69.033, 69.217], [69.231, 69.402], [69.415, 69.757], [69.77, 70.349], [70.454, 70.691], [70.704, 71.204], [71.217, 71.388], [71.402, 71.638], [71.652, 71.757], [71.77, 72.033], [72.046, 72.507], [72.52, 72.731], [72.744, 72.796], [72.81, 73.323]]}, {"kind": "s", "id": "s1_1_3", "md": "It is the same change, but it lands ==differently==.", "zh": "改动还是同一个，但听起来完全不一样。", "sp": null, "gap": false, "start": 73.728, "end": 76.944, "words": [[73.833, 73.912], [73.925, 74.031], [74.044, 74.149], [74.162, 74.491], [74.504, 75.149], [75.373, 75.504], [75.517, 75.623], [75.636, 75.965], [75.978, 76.544]]}, {"kind": "s", "id": "s1_2_0", "md": "Be careful not to ==exaggerate==.", "zh": "注意别夸大。", "sp": null, "gap": true, "start": 76.944, "end": 79.08, "words": [[77.062, 77.155], [77.168, 77.549], [77.562, 77.786], [77.799, 77.931], [77.944, 78.681]]}, {"kind": "s", "id": "s1_2_1", "md": "If you promise a benefit you cannot deliver, you __burn the trust__ you will need next quarter.", "zh": "如果你承诺了做不到的好处，就会把下个季度还用得上的信任烧掉。", "sp": null, "gap": false, "start": 79.08, "end": 84.552, "words": [[79.185, 79.304], [79.317, 79.435], [79.448, 79.896], [79.909, 79.975], [79.988, 80.475], [80.488, 80.606], [80.619, 81.014], [81.027, 81.462], [81.883, 81.975], [81.988, 82.277], [82.291, 82.383], [82.396, 82.817], [82.83, 82.922], [82.935, 83.08], [83.093, 83.383], [83.396, 83.712], [83.725, 84.172]]}, {"kind": "s", "id": "s1_2_2", "md": "**Offer the benefit you can prove, and offer to measure it together.**", "zh": "只说你能证明的好处，并且主动提出一起来度量。", "sp": null, "gap": false, "start": 84.552, "end": 88.704, "words": [[84.657, 84.894], [84.907, 85.026], [85.039, 85.512], [85.526, 85.67], [85.684, 85.841], [85.855, 86.434], [86.736, 86.828], [86.841, 87.184], [87.197, 87.276], [87.289, 87.684], [87.697, 87.776], [87.789, 88.315]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, let them shape the plan.", "zh": "最后，让他们参与制定方案。", "sp": null, "gap": true, "start": 88.704, "end": 91.08, "words": [[88.862, 89.257], [89.572, 89.717], [89.73, 89.849], [89.862, 90.164], [90.178, 90.27], [90.283, 90.678]]}, {"kind": "s", "id": "s1_3_1", "md": "When they choose the rollout order or the first service to migrate, the project starts to feel like theirs.", "zh": "当他们来决定上线顺序、或者先迁哪个服务时，这个项目就开始像是他们自己的了。", "sp": null, "gap": false, "start": 91.08, "end": 97.344, "words": [[91.185, 91.277], [91.291, 91.409], [91.422, 91.804], [91.817, 91.909], [91.922, 92.383], [92.396, 92.83], [92.896, 93.014], [93.027, 93.12], [93.133, 93.514], [93.527, 93.962], [93.975, 94.067], [94.08, 94.659], [94.948, 95.041], [95.054, 95.527], [95.541, 95.869], [95.883, 95.962], [95.975, 96.238], [96.251, 96.462], [96.475, 96.948]]}, {"kind": "s", "id": "s1_3_2", "md": "That sense of ==ownership== does more for your request than any slide you could write.", "zh": "这种主人翁感对你的请求的帮助，比你能写的任何一页 PPT 都大。", "sp": null, "gap": false, "start": 97.344, "end": 102.216, "words": [[97.462, 97.581], [97.594, 97.883], [97.897, 98.002], [98.015, 98.594], [98.686, 98.936], [98.949, 99.265], [99.278, 99.397], [99.41, 99.581], [99.594, 100.199], [100.265, 100.449], [100.581, 100.804], [100.818, 101.212], [101.226, 101.318], [101.331, 101.476], [101.489, 101.818]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

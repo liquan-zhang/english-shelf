@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Getting a Haircut · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "134", "type": "dialogue", "title": "Getting a Haircut", "meta": "B2 · 约 240 词 · 场景：理发时说清发型与修正", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Barber", "name_zh": "理发师", "voice": "en-IN-PrabhatNeural"}}, "gist": [{"q": "「你」对发型提了哪些具体要求？", "a": "只修一下；用剪刀不推渐变；顶上剪掉约两厘米，两边保持自然，后面收短，稍微打薄，左分，不上发蜡。"}, {"q": "剪完后出了什么问题？怎么解决的？", "a": "左边比右边短一点；理发师只修两边把它们弄齐，没再动顶上。"}, {"q": "最后「你」怎么付款、怎么预约的？", "a": "用 PayNow 付了二十五块；约了四周后同一天三点，并让理发师前一天发提醒。"}], "dictation": [{"id": "s0_1_0", "text": "Just a trim, please. It's getting a bit long, but I don't want it too short."}, {"id": "s0_3_0", "text": "Scissors, please. Take about two centimetres off the top, and keep the sides fairly natural."}, {"id": "s1_1_0", "text": "It looks good overall, but the left side seems a bit shorter than the right."}, {"id": "s1_3_0", "text": "Thanks. Just be careful not to go any shorter on top, please."}], "shadow": {"speaker": "A", "text": "Tapered, I think. And could you thin it out a little? My hair gets quite thick.", "marked": "<b>Tapered</b>, / I think. //<br>And could you <b>thin</b> it out / a <b>little</b>? //<br>My hair gets / quite <b>thick</b>. //"}, "prompts": [{"q": "带三岁的孩子去剪头发，孩子坐不住。跟理发师说清楚要的样子，并请对方尽量快一点。", "ref": "Hi, it's for my son. He's three, and he doesn't sit still for long, so the quicker the better. Could you just tidy it up? Keep the fringe above his eyebrows and make the sides a bit shorter. No clippers near his ears, please, they scare him. I'll hold him on my lap if that helps.", "ref_zh": "你好，是给我儿子剪。他三岁，坐不住太久，越快越好。能简单修一下吗？刘海剪到眉毛上面，两边稍微短一点。耳朵附近请别用电推子，他会害怕。如果方便的话，我可以抱着他坐。", "id": "ref0"}, {"q": "上次在这家店剪得太短了。这次一坐下就先把话说在前头，礼貌但明确。", "ref": "Before we start, last time I was here it came out much shorter than I wanted, so I'd like to be careful today. Please take off only about one centimetre all over. If you're not sure, leave it longer, and I'll tell you if I want more off. And please check with me before you use the clippers.", "ref_zh": "开始之前说一下，上次在这儿剪得比我想要的短很多，所以今天想小心一点。整体只剪掉大概一厘米。如果拿不准，就留长一点，要再短我会跟你说。还有，用电推子之前请先问我一下。", "id": "ref1"}], "words": [{"w": "trim (n.)", "ipa": "/trɪm/", "zh": "修剪", "ex": "I don't need a new style, just a trim.", "tts_w": "trim", "id": "w0"}, {"w": "fade", "ipa": "/feɪd/", "zh": "渐变推剪（两侧由短到长）", "ex": "He asked for a low fade on the sides.", "id": "w1"}, {"w": "tapered", "ipa": "/ˈteɪpərd/", "zh": "逐渐收短的", "ex": "A tapered neckline looks neater as it grows out.", "id": "w2"}, {"w": "thin out", "ipa": "/θɪn aʊt/", "zh": "打薄", "ex": "Could you thin out the back? It feels heavy.", "id": "w3"}, {"w": "product", "ipa": "/ˈprɑːdʌkt/", "zh": "（发蜡等）造型产品", "ex": "I don't use much product, just a bit of wax.", "id": "w4"}, {"w": "even (adj.)", "ipa": "/ˈiːvən/", "zh": "齐的；一样长的", "ex": "Make sure both sides of the curtain are even.", "tts_w": "even", "id": "w5"}, {"w": "owe", "ipa": "/oʊ/", "zh": "欠（钱）", "ex": "How much do I owe you for the taxi?", "id": "w6"}, {"w": "slot", "ipa": "/slɑːt/", "zh": "时段；名额", "ex": "The only slot left this week is Thursday at four.", "id": "w7"}, {"w": "reminder", "ipa": "/rɪˈmaɪndər/", "zh": "提醒", "ex": "The clinic sends a reminder the day before your appointment.", "id": "w8"}], "sections": [{"heading": "1. In the Chair", "heading_zh": "1. 坐上理发椅", "rows": [[{"id": "s0_0_0", "md": "Good afternoon, sir. What are we doing today?", "text": "Good afternoon, sir. What are we doing today?", "zh": "下午好，先生。今天想怎么剪？", "sp": "B"}], [{"id": "s0_1_0", "md": "Just a ==trim==, please. It's getting a bit long, but I don't want it too short.", "text": "Just a trim, please. It's getting a bit long, but I don't want it too short.", "zh": "稍微修一下就行。头发有点长了，但别剪太短。", "sp": "A"}], [{"id": "s0_2_0", "md": "Sure. What about the sides? Do you want a ==fade==, or just scissors?", "text": "Sure. What about the sides? Do you want a fade, or just scissors?", "zh": "好的。两边呢？要推渐变，还是只用剪刀？", "sp": "B"}], [{"id": "s0_3_0", "md": "**Scissors, please. Take about two centimetres off the top, and keep the sides fairly natural.**", "text": "Scissors, please. Take about two centimetres off the top, and keep the sides fairly natural.", "zh": "用剪刀吧。顶上剪掉大概两厘米，两边保持自然一点。", "sp": "A"}], [{"id": "s0_4_0", "md": "Got it. And the back? Square, or ==tapered==?", "text": "Got it. And the back? Square, or tapered?", "zh": "明白。后面呢？剪平，还是逐渐收短？", "sp": "B"}], [{"id": "s0_5_0", "md": "Tapered, I think. And could you __thin it out__ a little? My hair gets quite thick.", "text": "Tapered, I think. And could you thin it out a little? My hair gets quite thick.", "zh": "收短吧。另外能稍微打薄一点吗？我头发挺厚的。", "sp": "A"}], [{"id": "s0_6_0", "md": "No problem. Do you usually __part it__ on the left?", "text": "No problem. Do you usually part it on the left?", "zh": "没问题。您平时是左分吗？", "sp": "B"}], [{"id": "s0_7_0", "md": "Yes, on the left. Basically __the same as__ now, just tidier.", "text": "Yes, on the left. Basically the same as now, just tidier.", "zh": "对，左分。基本跟现在一样，就是清爽一点。", "sp": "A"}], [{"id": "s0_8_0", "md": "Understood. Would you like some wax or gel at the end?", "text": "Understood. Would you like some wax or gel at the end?", "zh": "明白。最后要上点发蜡或者啫喱吗？", "sp": "B"}], [{"id": "s0_9_0", "md": "No ==product==, thanks. I prefer it natural.", "text": "No product, thanks. I prefer it natural.", "zh": "什么都不用上，谢谢。我喜欢自然一点。", "sp": "A"}]]}, {"heading": "2. Not Quite Right", "heading_zh": "2. 不太对劲", "rows": [[{"id": "s1_0_0", "md": "All done. Here's a mirror so you can see the back. What do you think?", "text": "All done. Here's a mirror so you can see the back. What do you think?", "zh": "剪好了。给您镜子看看后面。觉得怎么样？", "sp": "B"}], [{"id": "s1_1_0", "md": "It looks good overall, but the left side seems a bit shorter than the right.", "text": "It looks good overall, but the left side seems a bit shorter than the right.", "zh": "整体挺好，不过左边好像比右边短一点。", "sp": "A"}], [{"id": "s1_2_0", "md": "Let me see. Ah, you're right, they're not quite ==even==. I'll __even it out__ for you.", "text": "Let me see. Ah, you're right, they're not quite even. I'll even it out for you.", "zh": "我看看。啊，您说得对，两边不太齐。我帮您修平。", "sp": "B"}], [{"id": "s1_3_0", "md": "**Thanks. Just be careful not to go any shorter on top, please.**", "text": "Thanks. Just be careful not to go any shorter on top, please.", "zh": "谢谢。顶上千万别再剪短了。", "sp": "A"}], [{"id": "s1_4_0", "md": "Of course, I'll only touch the sides. How's that now?", "text": "Of course, I'll only touch the sides. How's that now?", "zh": "当然，我只动两边。现在怎么样？", "sp": "B"}], [{"id": "s1_5_0", "md": "Much better, thank you. How much do I ==owe== you?", "text": "Much better, thank you. How much do I owe you?", "zh": "好多了，谢谢。我该付多少钱？", "sp": "A"}], [{"id": "s1_6_0", "md": "Twenty-five dollars for the cut. We take cash, card or PayNow.", "text": "Twenty-five dollars for the cut. We take cash, card or PayNow.", "zh": "剪发二十五块。可以付现金、刷卡或者用 PayNow。", "sp": "B"}], [{"id": "s1_7_0", "md": "PayNow is fine. Could I book the same ==slot== next month? Saturdays __get busy__.", "text": "PayNow is fine. Could I book the same slot next month? Saturdays get busy.", "zh": "PayNow 就行。下个月能约同一个时段吗？周六人多。", "sp": "A"}], [{"id": "s1_8_0", "md": "Sure. Four weeks from today at three. Shall I send you a ==reminder== the day before?", "text": "Sure. Four weeks from today at three. Shall I send you a reminder the day before?", "zh": "可以，四周后的今天三点。要不要前一天发个提醒给您？", "sp": "B"}], [{"id": "s1_9_0", "md": "**Yes, please. See you next month.**", "text": "Yes, please. See you next month.", "zh": "好的，麻烦了。下个月见。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. In the Chair", "zh": "1. 坐上理发椅", "start": 0.0, "end": 1.656, "words": [[0.105, 0.368], [0.645, 0.75], [0.763, 0.829], [0.842, 1.263]]}, {"kind": "s", "id": "s0_0_0", "md": "Good afternoon, sir. What are we doing today?", "zh": "下午好，先生。今天想怎么剪？", "sp": "B", "gap": false, "start": 1.656, "end": 6.84, "words": [[1.759, 2.022], [2.114, 2.917], [3.074, 3.469], [4.393, 4.669], [4.748, 4.959], [4.959, 5.143], [5.156, 5.485], [5.485, 5.867]]}, {"kind": "s", "id": "s0_1_0", "md": "Just a ==trim==, please. It's getting a bit long, but I don't want it too short.", "zh": "稍微修一下就行。头发有点长了，但别剪太短。", "sp": "A", "gap": false, "start": 6.84, "end": 11.688, "words": [[6.945, 7.103], [7.116, 7.156], [7.169, 7.564], [7.774, 8.274], [8.708, 8.827], [8.84, 9.064], [9.077, 9.129], [9.143, 9.327], [9.34, 9.787], [10.077, 10.195], [10.208, 10.248], [10.261, 10.445], [10.458, 10.59], [10.603, 10.682], [10.695, 10.84], [10.853, 11.301]]}, {"kind": "s", "id": "s0_2_0", "md": "Sure. What about the sides? Do you want a ==fade==, or just scissors?", "zh": "好的。两边呢？要推渐变，还是只用剪刀？", "sp": "B", "gap": false, "start": 11.688, "end": 19.032, "words": [[11.791, 12.225], [13.214, 13.477], [13.556, 13.885], [13.885, 14.056], [14.056, 14.609], [15.543, 15.701], [15.701, 15.82], [15.859, 16.227], [16.227, 16.28], [16.28, 16.688], [16.859, 17.07], [17.07, 17.451], [17.464, 18.083]]}, {"kind": "s", "id": "s0_3_0", "md": "**Scissors, please. Take about two centimetres off the top, and keep the sides fairly natural.**", "zh": "用剪刀吧。顶上剪掉大概两厘米，两边保持自然一点。", "sp": "A", "gap": false, "start": 19.032, "end": 24.984, "words": [[19.15, 19.571], [19.611, 20.098], [20.545, 20.69], [20.703, 20.979], [20.993, 21.177], [21.19, 21.769], [21.782, 21.953], [21.966, 22.045], [22.058, 22.453], [22.769, 22.861], [22.874, 23.111], [23.124, 23.216], [23.229, 23.677], [23.69, 24.045], [24.058, 24.598]]}, {"kind": "s", "id": "s0_4_0", "md": "Got it. And the back? Square, or ==tapered==?", "zh": "明白。后面呢？剪平，还是逐渐收短？", "sp": "B", "gap": false, "start": 24.984, "end": 30.648, "words": [[25.087, 25.376], [25.376, 25.6], [26.537, 26.721], [26.721, 26.892], [26.892, 27.3], [28.26, 28.773], [28.931, 29.142], [29.142, 29.708]]}, {"kind": "s", "id": "s0_5_0", "md": "Tapered, I think. And could you __thin it out__ a little? My hair gets quite thick.", "zh": "收短吧。另外能稍微打薄一点吗？我头发挺厚的。", "sp": "A", "gap": false, "start": 30.648, "end": 35.232, "words": [[30.753, 31.095], [31.201, 31.266], [31.28, 31.714], [32.148, 32.227], [32.24, 32.398], [32.411, 32.503], [32.516, 32.701], [32.714, 32.78], [32.793, 32.911], [32.924, 32.951], [32.964, 33.28], [33.714, 33.819], [33.832, 33.99], [34.003, 34.161], [34.174, 34.411], [34.424, 34.832]]}, {"kind": "s", "id": "s0_6_0", "md": "No problem. Do you usually __part it__ on the left?", "zh": "没问题。您平时是左分吗？", "sp": "B", "gap": false, "start": 35.232, "end": 39.912, "words": [[35.335, 35.506], [35.545, 36.085], [36.982, 37.127], [37.127, 37.271], [37.271, 37.745], [37.771, 38.074], [38.087, 38.232], [38.298, 38.429], [38.429, 38.561], [38.561, 38.969]]}, {"kind": "s", "id": "s0_7_0", "md": "Yes, on the left. Basically __the same as__ now, just tidier.", "zh": "对，左分。基本跟现在一样，就是清爽一点。", "sp": "A", "gap": false, "start": 39.912, "end": 44.256, "words": [[40.017, 40.333], [40.373, 40.478], [40.491, 40.57], [40.583, 41.004], [41.451, 41.859], [41.873, 41.965], [41.978, 42.307], [42.32, 42.438], [42.451, 42.82], [43.123, 43.333], [43.346, 43.873]]}, {"kind": "s", "id": "s0_8_0", "md": "Understood. Would you like some wax or gel at the end?", "zh": "明白。最后要上点发蜡或者啫喱吗？", "sp": "B", "gap": false, "start": 44.256, "end": 49.8, "words": [[44.359, 45.017], [45.967, 46.203], [46.203, 46.335], [46.335, 46.624], [46.624, 46.953], [46.953, 47.361], [47.427, 47.651], [47.651, 48.019], [48.085, 48.309], [48.309, 48.532], [48.532, 48.848]]}, {"kind": "s", "id": "s0_9_0", "md": "No ==product==, thanks. I prefer it natural.", "zh": "什么都不用上，谢谢。我喜欢自然一点。", "sp": "A", "gap": false, "start": 49.8, "end": 53.04, "words": [[49.905, 50.011], [50.024, 50.484], [50.708, 51.182], [51.616, 51.695], [51.708, 52.063], [52.076, 52.142], [52.155, 52.655]]}, {"kind": "h", "id": "h1", "md": "2. Not Quite Right", "zh": "2. 不太对劲", "start": 53.04, "end": 54.792, "words": [[53.158, 53.382], [53.711, 53.869], [53.882, 54.119], [54.132, 54.408]]}, {"kind": "s", "id": "s1_0_0", "md": "All done. Here's a mirror so you can see the back. What do you think?", "zh": "剪好了。给您镜子看看后面。觉得怎么样？", "sp": "B", "gap": false, "start": 54.792, "end": 61.992, "words": [[54.895, 55.158], [55.158, 55.5], [56.437, 56.858], [56.937, 57.042], [57.042, 57.45], [57.45, 57.753], [57.753, 57.937], [57.976, 58.253], [58.253, 58.489], [58.489, 58.634], [58.634, 59.042], [59.989, 60.292], [60.318, 60.476], [60.476, 60.608], [60.621, 61.055]]}, {"kind": "s", "id": "s1_1_0", "md": "It looks good overall, but the left side seems a bit shorter than the right.", "zh": "整体挺好，不过左边好像比右边短一点。", "sp": "A", "gap": false, "start": 61.992, "end": 66.336, "words": [[62.097, 62.203], [62.216, 62.413], [62.426, 62.597], [62.61, 63.189], [63.426, 63.531], [63.545, 63.637], [63.65, 63.887], [63.9, 64.242], [64.255, 64.571], [64.584, 64.676], [64.689, 64.9], [64.913, 65.347], [65.36, 65.492], [65.505, 65.571], [65.584, 65.953]]}, {"kind": "s", "id": "s1_2_0", "md": "Let me see. Ah, you're right, they're not quite ==even==. I'll __even it out__ for you.", "zh": "我看看。啊，您说得对，两边不太齐。我帮您修平。", "sp": "B", "gap": false, "start": 66.336, "end": 74.856, "words": [[66.439, 66.715], [66.728, 66.991], [66.991, 67.346], [68.283, 68.547], [68.731, 69.086], [69.086, 69.507], [69.757, 70.099], [70.099, 70.441], [70.454, 70.81], [70.875, 71.257], [72.178, 72.402], [72.494, 72.81], [72.875, 73.033], [73.06, 73.336], [73.336, 73.612], [73.612, 73.862]]}, {"kind": "s", "id": "s1_3_0", "md": "**Thanks. Just be careful not to go any shorter on top, please.**", "zh": "谢谢。顶上千万别再剪短了。", "sp": "A", "gap": false, "start": 74.856, "end": 79.32, "words": [[74.988, 75.395], [75.83, 75.961], [75.974, 76.106], [76.119, 76.501], [76.514, 76.711], [76.724, 76.803], [76.817, 77.04], [77.053, 77.185], [77.198, 77.553], [77.567, 77.698], [77.711, 78.132], [78.369, 78.922]]}, {"kind": "s", "id": "s1_4_0", "md": "Of course, I'll only touch the sides. How's that now?", "zh": "当然，我只动两边。现在怎么样？", "sp": "B", "gap": false, "start": 79.32, "end": 85.056, "words": [[79.423, 79.62], [79.633, 80.146], [80.396, 80.686], [80.778, 81.133], [81.159, 81.515], [81.515, 81.659], [81.659, 82.225], [83.149, 83.452], [83.452, 83.741], [83.741, 84.149]]}, {"kind": "s", "id": "s1_5_0", "md": "Much better, thank you. How much do I ==owe== you?", "zh": "好多了，谢谢。我该付多少钱？", "sp": "A", "gap": false, "start": 85.056, "end": 88.296, "words": [[85.161, 85.332], [85.345, 85.661], [86.043, 86.266], [86.28, 86.477], [86.911, 87.003], [87.017, 87.188], [87.201, 87.346], [87.359, 87.516], [87.53, 87.635], [87.648, 87.898]]}, {"kind": "s", "id": "s1_6_0", "md": "Twenty-five dollars for the cut. We take cash, card or PayNow.", "zh": "剪发二十五块。可以付现金、刷卡或者用 PayNow。", "sp": "B", "gap": false, "start": 88.296, "end": 94.632, "words": [[88.399, 89.083], [89.083, 89.635], [89.649, 89.885], [89.885, 90.004], [90.004, 90.385], [91.322, 91.48], [91.559, 91.849], [91.849, 92.309], [92.546, 92.901], [92.993, 93.204], [93.217, 93.73]]}, {"kind": "s", "id": "s1_7_0", "md": "PayNow is fine. Could I book the same ==slot== next month? Saturdays __get busy__.", "zh": "PayNow 就行。下个月能约同一个时段吗？周六人多。", "sp": "A", "gap": false, "start": 94.632, "end": 99.648, "words": [[94.75, 95.04], [95.053, 95.158], [95.171, 95.54], [95.974, 96.066], [96.079, 96.158], [96.171, 96.382], [96.395, 96.487], [96.5, 96.79], [96.803, 97.106], [97.119, 97.369], [97.382, 97.737], [98.185, 98.658], [98.671, 98.856], [98.869, 99.237]]}, {"kind": "s", "id": "s1_8_0", "md": "Sure. Four weeks from today at three. Shall I send you a ==reminder== the day before?", "zh": "可以，四周后的今天三点。要不要前一天发个提醒给您？", "sp": "B", "gap": false, "start": 99.648, "end": 107.904, "words": [[99.751, 100.185], [101.174, 101.53], [101.53, 102.003], [102.016, 102.345], [102.345, 102.688], [102.753, 103.03], [103.03, 103.477], [104.398, 104.727], [104.74, 104.937], [104.937, 105.306], [105.306, 105.451], [105.477, 105.543], [105.543, 106.095], [106.095, 106.24], [106.24, 106.477], [106.477, 106.924]]}, {"kind": "s", "id": "s1_9_0", "md": "**Yes, please. See you next month.**", "zh": "好的，麻烦了。下个月见。", "sp": "A", "gap": false, "start": 107.904, "end": 110.496, "words": [[108.009, 108.299], [108.351, 108.838], [109.272, 109.391], [109.404, 109.483], [109.496, 109.733], [109.746, 110.101]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

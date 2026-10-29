@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Turning Lessons Learned into Real Changes · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "029", "title": "Turning Lessons Learned into Real Changes", "meta": "B2 · 约 270 词 · 场景：复盘行动项跟进", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Graveyard of Action Items", "heading_zh": "1. 待办事项的坟场", "rows": [[{"id": "s0_0_0", "md": "Open any team's postmortem folder and count the action items that were never done.", "text": "Open any team's postmortem folder and count the action items that were never done.", "zh": "随便打开哪个团队的复盘文件夹，数数有多少待办事项从来没做完。", "sp": null}, {"id": "s0_0_1", "md": "Most teams find a ==graveyard==.", "text": "Most teams find a graveyard.", "zh": "大多数团队会发现那是一片坟场。", "sp": null}, {"id": "s0_0_2", "md": "The same lessons appear again and again: \"improve monitoring,\" \"communicate better,\" \"be more careful.\"", "text": "The same lessons appear again and again: \"improve monitoring,\" \"communicate better,\" \"be more careful.\"", "zh": "同样的教训一遍又一遍地出现：「完善监控」「加强沟通」「更加小心」。", "sp": null}], [{"id": "s0_1_0", "md": "These items fail because they describe a wish, not a change.", "text": "These items fail because they describe a wish, not a change.", "zh": "这些事项之所以落空，是因为它们描述的是一个愿望，而不是一个改动。", "sp": null}, {"id": "s0_1_1", "md": "Nobody can tell when \"be more careful\" is finished, so it never is.", "text": "Nobody can tell when \"be more careful\" is finished, so it never is.", "zh": "没人说得清「更加小心」什么时候算完成，所以它永远完成不了。", "sp": null}, {"id": "s0_1_2", "md": "Three months later, a new incident __brings the same lesson back__, and everyone nods again.", "text": "Three months later, a new incident brings the same lesson back, and everyone nods again.", "zh": "三个月后，一个新事故又把同样的教训翻出来，大家又一起点头。", "sp": null}, {"id": "s0_1_3", "md": "**Good intentions do not survive a busy quarter; mechanisms do.**", "text": "Good intentions do not survive a busy quarter; mechanisms do.", "zh": "良好的意愿熬不过一个忙碌的季度；机制才能。", "sp": null}], [{"id": "s0_2_0", "md": "A ==mechanism== is something that works even when people are tired, busy, or new.", "text": "A mechanism is something that works even when people are tired, busy, or new.", "zh": "机制就是那种在人累了、忙了或者刚来的时候，依然能起作用的东西。", "sp": null}, {"id": "s0_2_1", "md": "It might be an alert, a safer default setting, or a check in the deploy ==pipeline==.", "text": "It might be an alert, a safer default setting, or a check in the deploy pipeline.", "zh": "它可以是一条告警、一个更安全的默认配置，或者发布流水线里的一道检查。", "sp": null}, {"id": "s0_2_2", "md": "It does not depend on anyone remembering the incident.", "text": "It does not depend on anyone remembering the incident.", "zh": "它不依赖任何人还记得那次事故。", "sp": null}]]}, {"heading": "2. Owner, Date, Proof", "heading_zh": "2. 负责人、截止日期、验证", "rows": [[{"id": "s1_0_0", "md": "Take each lesson and ask, \"What would have stopped this automatically?\"", "text": "Take each lesson and ask, \"What would have stopped this automatically?\"", "zh": "拿着每一条教训问自己：「什么东西能自动拦住这件事？」", "sp": null}, {"id": "s1_0_1", "md": "\"Be careful with ==migrations==\" becomes \"the pipeline blocks any migration that has not passed a ==dry run==.\"", "text": "\"Be careful with migrations\" becomes \"the pipeline blocks any migration that has not passed a dry run.\"", "zh": "「做迁移要小心」就变成了「流水线会拦下任何没跑过 dry run 的迁移」。", "sp": null}, {"id": "s1_0_2", "md": "Now the lesson lives in the system, not in someone's memory.", "text": "Now the lesson lives in the system, not in someone's memory.", "zh": "这样，教训就沉淀进了系统里，而不是靠某个人的记忆。", "sp": null}, {"id": "s1_0_3", "md": "It keeps working even after the people who wrote the postmortem have moved to other teams.", "text": "It keeps working even after the people who wrote the postmortem have moved to other teams.", "zh": "哪怕写复盘的那批人都转去了别的团队，它也照样起作用。", "sp": null}], [{"id": "s1_1_0", "md": "Every item needs one owner and a realistic date.", "text": "Every item needs one owner and a realistic date.", "zh": "每一项都需要一个负责人和一个靠谱的截止日期。", "sp": null}, {"id": "s1_1_1", "md": "Name one person, not a team, because shared ownership usually means no ownership.", "text": "Name one person, not a team, because shared ownership usually means no ownership.", "zh": "要点名到一个人，而不是一个团队，因为大家一起负责，通常就等于没人负责。", "sp": null}, {"id": "s1_1_2", "md": "Then __cut the list down__ to the two or three changes that matter most.", "text": "Then cut the list down to the two or three changes that matter most.", "zh": "然后把清单砍到最重要的两三项改动。", "sp": null}, {"id": "s1_1_3", "md": "**Three finished fixes beat ten open tickets.**", "text": "Three finished fixes beat ten open tickets.", "zh": "做完三个修复，胜过挂着十个没关的工单。", "sp": null}], [{"id": "s1_2_0", "md": "Finally, decide how you will ==verify== that the change works.", "text": "Finally, decide how you will verify that the change works.", "zh": "最后，想清楚你要怎么验证这个改动真的有效。", "sp": null}, {"id": "s1_2_1", "md": "Run a ==drill== in staging, break the thing on purpose, and confirm the new check catches it.", "text": "Run a drill in staging, break the thing on purpose, and confirm the new check catches it.", "zh": "在测试环境搞一次演练，故意把东西弄坏，确认新加的检查能拦住它。", "sp": null}, {"id": "s1_2_2", "md": "A fix that has never been tested is only a hope.", "text": "A fix that has never been tested is only a hope.", "zh": "一个从来没测过的修复，只是一个愿望。", "sp": null}, {"id": "s1_2_3", "md": "Then __close the loop__ in the next team meeting, so people see that postmortems actually lead somewhere.", "text": "Then close the loop in the next team meeting, so people see that postmortems actually lead somewhere.", "zh": "然后在下一次团队会议上把这件事闭环，让大家看到复盘是真的能带来结果的。", "sp": null}]]}], "gist": [{"q": "为什么很多复盘行动项从来没被完成？", "a": "它们描述的是愿望而不是改变，比如「更小心」，没人能判断什么时候算完成。"}, {"q": "作者说什么能扛过忙碌的季度？举例说明。", "a": "机制：告警、更安全的默认配置、发布流水线里的检查，不依赖任何人记得这次事故。"}, {"q": "把教训变成改进需要哪几步？", "a": "问「什么能自动拦住它」；每项一个负责人和现实的日期，精简到两三项；在预发环境演练验证，并在团队会上闭环。"}], "dictation": [{"id": "s0_1_3", "text": "Good intentions do not survive a busy quarter; mechanisms do."}, {"id": "s1_1_3", "text": "Three finished fixes beat ten open tickets."}, {"id": "s1_0_2", "text": "Now the lesson lives in the system, not in someone's memory."}, {"id": "s1_1_1", "text": "Name one person, not a team, because shared ownership usually means no ownership."}], "shadow": {"text": "These items fail because they describe a wish, not a change. Nobody can tell when \"be more careful\" is finished, so it never is.", "marked": "These items <b>fail</b> / because they describe a <b>wish</b>, / <b>not</b> a change. //<br><b>Nobody</b> can tell / when \"be more <b>careful</b>\" is <b>finished</b>, / so it <b>never</b> is. //"}, "prompts": [{"q": "复盘会上有人写下行动项「以后上线前要更仔细检查配置」。用 30 秒把它改写成一个可以落地的机制，并指定负责人和日期。", "ref": "I agree with the spirit, but checking more carefully is hard to measure. What would have caught this automatically? A config diff check in the pipeline would have flagged the wrong region name before deploy. Could we make that the action item instead? Priya, would you be able to own it, with a target of the end of next sprint? Then we'll test it in staging with a broken config.", "ref_zh": "出发点我同意，但「检查得更仔细」很难衡量。什么东西能自动发现这个问题？流水线里加一个配置 diff 检查，就能在发布前把错误的地区名标出来。我们能不能把这个作为待办？Priya，你能负责吗？目标是下个 sprint 结束前。然后我们在测试环境用一份错误的配置来验证它。", "id": "ref0"}, {"q": "上次复盘列了十几个行动项，大部分没做。用 30 秒向团队提议精简清单并约定怎么验证。", "ref": "Looking back at our last postmortem, we wrote fourteen action items and finished three. I don't think the problem is effort; the list was just too long. This time, let's pick the two changes that would have prevented the outage, give each one a single owner, and agree how we'll prove they work. I'll add a check-in to our team meeting in two weeks.", "ref_zh": "回头看上次复盘，我们写了十四个待办，只完成了三个。我觉得问题不在不够努力，而是清单太长了。这次我们就挑两个能避免这次故障的改动，每个只定一个负责人，再约定好怎么证明它们有效。我会在两周后的团队会议上加一个进度检查。", "id": "ref1"}], "words": [{"w": "graveyard", "ipa": "/ˈɡreɪvjɑːrd/", "zh": "墓地（喻：被遗忘的地方）", "ex": "Our backlog has become a graveyard of old tickets.", "id": "w0"}, {"w": "intention", "ipa": "/ɪnˈtenʃən/", "zh": "意图、打算", "ex": "Good intentions won't stop the next outage; an alert will.", "id": "w1"}, {"w": "mechanism", "ipa": "/ˈmekənɪzəm/", "zh": "机制", "ex": "We need a mechanism, not a reminder in the wiki.", "id": "w2"}, {"w": "pipeline", "ipa": "/ˈpaɪplaɪn/", "zh": "（构建发布）流水线", "ex": "The pipeline now fails if test coverage drops.", "id": "w3"}, {"w": "migration", "ipa": "/maɪˈɡreɪʃən/", "zh": "（数据库）迁移", "ex": "The schema migration locked the table for ten minutes.", "id": "w4"}, {"w": "dry run", "ipa": "/ˈdraɪ rʌn/", "zh": "演练、试运行", "ex": "Do a dry run first so we can see which rows would change.", "id": "w5"}, {"w": "verify", "ipa": "/ˈverɪfaɪ/", "zh": "核实、验证", "ex": "Please verify the fix in staging before closing the ticket.", "id": "w6"}, {"w": "drill", "ipa": "/drɪl/", "zh": "演练", "ex": "We run a failover drill every quarter.", "id": "w7"}, {"w": "ownership", "ipa": "/ˈoʊnərʃɪp/", "zh": "归属、负责", "ex": "Ownership of the alert rules is unclear after the reorg.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Graveyard of Action Items", "zh": "1. 待办事项的坟场", "start": 0.0, "end": 2.76, "words": [[0.105, 0.408], [0.724, 0.829], [0.842, 1.382], [1.395, 1.474], [1.487, 1.868], [1.882, 2.368]]}, {"kind": "s", "id": "s0_0_0", "md": "Open any team's postmortem folder and count the action items that were never done.", "zh": "随便打开哪个团队的复盘文件夹，数数有多少待办事项从来没做完。", "sp": null, "gap": false, "start": 2.76, "end": 7.824, "words": [[2.865, 3.168], [3.313, 3.523], [3.536, 3.944], [3.957, 4.602], [4.615, 5.155], [5.273, 5.365], [5.378, 5.681], [5.694, 5.786], [5.852, 6.273], [6.286, 6.602], [6.615, 6.747], [6.76, 6.865], [6.878, 7.115], [7.128, 7.444]]}, {"kind": "s", "id": "s0_0_1", "md": "Most teams find a ==graveyard==.", "zh": "大多数团队会发现那是一片坟场。", "sp": null, "gap": false, "start": 7.824, "end": 9.912, "words": [[7.929, 8.206], [8.219, 8.587], [8.6, 8.837], [8.85, 8.877], [8.89, 9.535]]}, {"kind": "s", "id": "s0_0_2", "md": "The same lessons appear again and again: \"improve monitoring,\" \"communicate better,\" \"be more careful.\"", "zh": "同样的教训一遍又一遍地出现：「完善监控」「加强沟通」「更加小心」。", "sp": null, "gap": false, "start": 9.912, "end": 17.304, "words": [[10.03, 10.096], [10.109, 10.478], [10.491, 10.912], [10.925, 11.333], [11.346, 11.807], [11.925, 12.044], [12.057, 12.517], [12.978, 13.491], [13.504, 14.136], [14.478, 15.136], [15.149, 15.53], [15.899, 16.044], [16.057, 16.333], [16.346, 16.912]]}, {"kind": "s", "id": "s0_1_0", "md": "These items fail because they describe a wish, not a change.", "zh": "这些事项之所以落空，是因为它们描述的是一个愿望，而不是一个改动。", "sp": null, "gap": true, "start": 17.304, "end": 21.384, "words": [[17.409, 17.672], [17.686, 18.067], [18.08, 18.475], [18.488, 18.778], [18.791, 18.896], [18.909, 19.37], [19.383, 19.475], [19.488, 20.001], [20.225, 20.383], [20.396, 20.422], [20.436, 21.001]]}, {"kind": "s", "id": "s0_1_1", "md": "Nobody can tell when \"be more careful\" is finished, so it never is.", "zh": "没人说得清「更加小心」什么时候算完成，所以它永远完成不了。", "sp": null, "gap": false, "start": 21.384, "end": 26.184, "words": [[21.489, 21.858], [21.871, 22.029], [22.042, 22.423], [22.437, 22.621], [22.647, 22.766], [22.779, 23.016], [23.029, 23.634], [23.805, 23.937], [23.95, 24.516], [24.818, 25.016], [25.029, 25.121], [25.134, 25.463], [25.476, 25.792]]}, {"kind": "s", "id": "s0_1_2", "md": "Three months later, a new incident __brings the same lesson back__, and everyone nods again.", "zh": "三个月后，一个新事故又把同样的教训翻出来，大家又一起点头。", "sp": null, "gap": false, "start": 26.184, "end": 31.992, "words": [[26.355, 26.526], [26.539, 26.816], [26.829, 27.184], [27.579, 27.592], [27.605, 27.855], [27.868, 28.355], [28.368, 28.645], [28.658, 28.763], [28.776, 29.171], [29.184, 29.513], [29.526, 29.934], [30.223, 30.368], [30.447, 30.895], [30.908, 31.223], [31.237, 31.592]]}, {"kind": "s", "id": "s0_1_3", "md": "**Good intentions do not survive a busy quarter; mechanisms do.**", "zh": "良好的意愿熬不过一个忙碌的季度；机制才能。", "sp": null, "gap": false, "start": 31.992, "end": 36.552, "words": [[32.097, 32.229], [32.242, 32.874], [32.887, 33.058], [33.071, 33.4], [33.413, 33.874], [33.887, 33.979], [33.992, 34.36], [34.374, 34.795], [35.242, 35.834], [35.847, 36.163]]}, {"kind": "s", "id": "s0_2_0", "md": "A ==mechanism== is something that works even when people are tired, busy, or new.", "zh": "机制就是那种在人累了、忙了或者刚来的时候，依然能起作用的东西。", "sp": null, "gap": true, "start": 36.552, "end": 41.64, "words": [[36.657, 36.697], [36.71, 37.289], [37.302, 37.407], [37.42, 37.776], [37.789, 37.934], [37.947, 38.249], [38.381, 38.644], [38.657, 38.802], [38.815, 39.17], [39.184, 39.276], [39.289, 39.855], [40.17, 40.605], [40.815, 40.934], [40.947, 41.249]]}, {"kind": "s", "id": "s0_2_1", "md": "It might be an alert, a safer default setting, or a check in the deploy ==pipeline==.", "zh": "它可以是一条告警、一个更安全的默认配置，或者发布流水线里的一道检查。", "sp": null, "gap": false, "start": 41.64, "end": 46.752, "words": [[41.745, 41.824], [41.837, 42.061], [42.074, 42.232], [42.245, 42.311], [42.324, 42.758], [43.008, 43.048], [43.061, 43.482], [43.495, 43.877], [43.89, 44.311], [44.64, 44.758], [44.772, 44.811], [44.824, 45.179], [45.193, 45.258], [45.272, 45.364], [45.377, 45.745], [45.758, 46.351]]}, {"kind": "s", "id": "s0_2_2", "md": "It does not depend on anyone remembering the incident.", "zh": "它不依赖任何人还记得那次事故。", "sp": null, "gap": false, "start": 46.752, "end": 49.968, "words": [[46.857, 46.923], [46.936, 47.055], [47.068, 47.252], [47.265, 47.607], [47.62, 47.805], [47.949, 48.344], [48.357, 48.897], [48.91, 48.989], [49.002, 49.581]]}, {"kind": "h", "id": "h1", "md": "2. Owner, Date, Proof", "zh": "2. 负责人、截止日期、验证", "start": 49.968, "end": 52.896, "words": [[50.086, 50.336], [50.771, 51.1], [51.402, 51.771], [51.994, 52.494]]}, {"kind": "s", "id": "s1_0_0", "md": "Take each lesson and ask, \"What would have stopped this automatically?\"", "zh": "拿着每一条教训问自己：「什么东西能自动拦住这件事？」", "sp": null, "gap": false, "start": 52.896, "end": 57.0, "words": [[53.001, 53.238], [53.251, 53.449], [53.462, 53.83], [53.843, 53.975], [53.988, 54.462], [54.725, 54.843], [54.857, 54.962], [54.975, 55.08], [55.093, 55.554], [55.567, 55.751], [55.764, 56.58]]}, {"kind": "s", "id": "s1_0_1", "md": "\"Be careful with ==migrations==\" becomes \"the pipeline blocks any migration that has not passed a ==dry run==.\"", "zh": "「做迁移要小心」就变成了「流水线会拦下任何没跑过 dry run 的迁移」。", "sp": null, "gap": false, "start": 57.0, "end": 64.08, "words": [[57.197, 57.237], [57.316, 57.724], [57.737, 57.882], [57.895, 58.763], [58.895, 59.513], [59.618, 59.737], [59.75, 60.303], [60.316, 60.776], [60.921, 61.092], [61.105, 61.816], [61.895, 62.0], [62.013, 62.158], [62.171, 62.487], [62.5, 62.882], [62.895, 62.934], [62.947, 63.29], [63.303, 63.671]]}, {"kind": "s", "id": "s1_0_2", "md": "Now the lesson lives in the system, not in someone's memory.", "zh": "这样，教训就沉淀进了系统里，而不是靠某个人的记忆。", "sp": null, "gap": false, "start": 64.08, "end": 67.968, "words": [[64.185, 64.343], [64.356, 64.475], [64.488, 64.909], [64.922, 65.317], [65.33, 65.409], [65.422, 65.514], [65.527, 66.001], [66.396, 66.58], [66.593, 66.685], [66.698, 67.08], [67.093, 67.58]]}, {"kind": "s", "id": "s1_0_3", "md": "It keeps working even after the people who wrote the postmortem have moved to other teams.", "zh": "哪怕写复盘的那批人都转去了别的团队，它也照样起作用。", "sp": null, "gap": false, "start": 67.968, "end": 73.368, "words": [[68.073, 68.192], [68.205, 68.507], [68.521, 68.955], [69.021, 69.31], [69.323, 69.613], [69.626, 69.705], [69.718, 70.073], [70.086, 70.244], [70.257, 70.507], [70.521, 70.613], [70.626, 71.35], [71.56, 71.705], [71.718, 72.1], [72.113, 72.192], [72.205, 72.428], [72.442, 72.981]]}, {"kind": "s", "id": "s1_1_0", "md": "Every item needs one owner and a realistic date.", "zh": "每一项都需要一个负责人和一个靠谱的截止日期。", "sp": null, "gap": true, "start": 73.368, "end": 76.92, "words": [[73.473, 73.763], [73.776, 74.144], [74.315, 74.579], [74.592, 74.815], [74.829, 75.21], [75.407, 75.473], [75.486, 75.552], [75.565, 76.197], [76.21, 76.539]]}, {"kind": "s", "id": "s1_1_1", "md": "Name one person, not a team, because shared ownership usually means no ownership.", "zh": "要点名到一个人，而不是一个团队，因为大家一起负责，通常就等于没人负责。", "sp": null, "gap": false, "start": 76.92, "end": 82.776, "words": [[77.025, 77.328], [77.341, 77.578], [77.591, 78.065], [78.459, 78.604], [78.617, 78.67], [78.683, 79.117], [79.433, 79.749], [79.762, 80.078], [80.144, 80.604], [80.617, 81.131], [81.209, 81.473], [81.486, 81.736], [81.749, 82.394]]}, {"kind": "s", "id": "s1_1_2", "md": "Then __cut the list down__ to the two or three changes that matter most.", "zh": "然后把清单砍到最重要的两三项改动。", "sp": null, "gap": false, "start": 82.776, "end": 87.096, "words": [[82.894, 83.052], [83.065, 83.263], [83.276, 83.368], [83.381, 83.658], [83.671, 83.947], [83.96, 84.052], [84.065, 84.171], [84.184, 84.605], [84.737, 84.868], [84.881, 85.197], [85.21, 85.737], [85.75, 85.908], [85.921, 86.197], [86.21, 86.697]]}, {"kind": "s", "id": "s1_1_3", "md": "**Three finished fixes beat ten open tickets.**", "zh": "做完三个修复，胜过挂着十个没关的工单。", "sp": null, "gap": false, "start": 87.096, "end": 90.216, "words": [[87.254, 87.438], [87.451, 87.78], [87.793, 88.28], [88.293, 88.662], [88.728, 88.964], [88.978, 89.228], [89.241, 89.82]]}, {"kind": "s", "id": "s1_2_0", "md": "Finally, decide how you will ==verify== that the change works.", "zh": "最后，想清楚你要怎么验证这个改动真的有效。", "sp": null, "gap": true, "start": 90.216, "end": 93.984, "words": [[90.387, 90.795], [91.163, 91.532], [91.545, 91.69], [91.703, 91.808], [91.821, 91.94], [91.953, 92.479], [92.492, 92.624], [92.637, 92.716], [92.729, 93.045], [93.058, 93.584]]}, {"kind": "s", "id": "s1_2_1", "md": "Run a ==drill== in staging, break the thing on purpose, and confirm the new check catches it.", "zh": "在测试环境搞一次演练，故意把东西弄坏，确认新加的检查能拦住它。", "sp": null, "gap": false, "start": 93.984, "end": 99.792, "words": [[94.089, 94.273], [94.287, 94.339], [94.352, 94.721], [94.734, 94.852], [94.866, 95.405], [95.787, 96.037], [96.05, 96.142], [96.155, 96.379], [96.392, 96.55], [96.563, 97.142], [97.392, 97.497], [97.51, 97.997], [98.01, 98.102], [98.116, 98.392], [98.405, 98.694], [98.708, 99.181], [99.195, 99.392]]}, {"kind": "s", "id": "s1_2_2", "md": "A fix that has never been tested is only a hope.", "zh": "一个从来没测过的修复，只是一个愿望。", "sp": null, "gap": false, "start": 99.792, "end": 103.248, "words": [[99.897, 99.963], [99.976, 100.292], [100.305, 100.437], [100.45, 100.595], [100.608, 100.95], [100.963, 101.121], [101.134, 101.608], [101.884, 102.082], [102.095, 102.371], [102.384, 102.437], [102.45, 102.858]]}, {"kind": "s", "id": "s1_2_3", "md": "Then __close the loop__ in the next team meeting, so people see that postmortems actually lead somewhere.", "zh": "然后在下一次团队会议上把这件事闭环，让大家看到复盘是真的能带来结果的。", "sp": null, "gap": false, "start": 103.248, "end": 109.416, "words": [[103.353, 103.972], null, [103.985, 104.103], [104.116, 104.419], [104.432, 104.498], [104.511, 104.59], [104.603, 104.906], [104.919, 105.169], [105.182, 105.524], [105.853, 105.985], [105.998, 106.353], [106.366, 106.616], [106.63, 106.827], [106.84, 107.801], [107.866, 108.209], [108.222, 108.485], [108.498, 109.037]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

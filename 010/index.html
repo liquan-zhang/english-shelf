@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Handling the Person Who Talks Too Much · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "010", "title": "Handling the Person Who Talks Too Much", "meta": "B2 · 约 270 词 · 场景：平衡发言", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. It Is a Format Problem", "heading_zh": "1. 这是形式问题", "rows": [[{"id": "s0_0_0", "md": "Every team has one.", "text": "Every team has one.", "zh": "每个团队都有这么一位。", "sp": null}, {"id": "s0_0_1", "md": "A smart, ==enthusiastic== person who answers every question first, and then answers it again in more detail.", "text": "A smart, enthusiastic person who answers every question first, and then answers it again in more detail.", "zh": "一个聪明、热情的人，每个问题都抢先回答，然后再展开细节回答一遍。", "sp": null}, {"id": "s0_0_2", "md": "Meanwhile, the quiet engineer who actually wrote the code says nothing for the whole hour.", "text": "Meanwhile, the quiet engineer who actually wrote the code says nothing for the whole hour.", "zh": "与此同时，真正写代码的那个安静的工程师，整整一个小时一句话都没说。", "sp": null}], [{"id": "s0_1_0", "md": "It is tempting to see this as a ==personality== problem.", "text": "It is tempting to see this as a personality problem.", "zh": "人很容易把这看成性格问题。", "sp": null}, {"id": "s0_1_1", "md": "But in most cases, the talker is not trying to ==dominate==.", "text": "But in most cases, the talker is not trying to dominate.", "zh": "但大多数情况下，话多的人并不是想压人一头。", "sp": null}, {"id": "s0_1_2", "md": "They are simply quick to speak, and an open discussion rewards whoever speaks fastest.", "text": "They are simply quick to speak, and an open discussion rewards whoever speaks fastest.", "zh": "他们只是嘴快，而开放式讨论天然奖励说得最快的人。", "sp": null}, {"id": "s0_1_3", "md": "**When the format rewards speed, you will always hear from the same people.**", "text": "When the format rewards speed, you will always hear from the same people.", "zh": "只要形式奖励速度，你听到的永远是那几个人的声音。", "sp": null}], [{"id": "s0_2_0", "md": "That is good news for you as a manager.", "text": "That is good news for you as a manager.", "zh": "对管理者来说，这其实是个好消息。", "sp": null}, {"id": "s0_2_1", "md": "You do not need to change anyone's character.", "text": "You do not need to change anyone's character.", "zh": "你不需要改变任何人的性格。", "sp": null}, {"id": "s0_2_2", "md": "You only need to __change the rules of the room__.", "text": "You only need to change the rules of the room.", "zh": "你只需要改一改会上的规则。", "sp": null}]]}, {"heading": "2. Small Changes to the Rules", "heading_zh": "2. 对规则做些小调整", "rows": [[{"id": "s1_0_0", "md": "Try giving everyone two minutes to write their ideas down before anyone speaks.", "text": "Try giving everyone two minutes to write their ideas down before anyone speaks.", "zh": "试试在任何人发言之前，给每个人两分钟把想法写下来。", "sp": null}, {"id": "s1_0_1", "md": "Then go around the table, or the video grid, in a fixed order.", "text": "Then go around the table, or the video grid, in a fixed order.", "zh": "然后按固定顺序，绕桌子一圈，或者按视频画面的顺序轮流说。", "sp": null}, {"id": "s1_0_2", "md": "The fast thinker still contributes, but everyone else gets a fair ==turn==.", "text": "The fast thinker still contributes, but everyone else gets a fair turn.", "zh": "反应快的人照样能贡献想法，但其他人也都有了公平的机会。", "sp": null}], [{"id": "s1_1_0", "md": "You can also invite specific people by name, with a question they can answer.", "text": "You can also invite specific people by name, with a question they can answer.", "zh": "你也可以点名邀请某个人，抛给他一个他答得上来的问题。", "sp": null}, {"id": "s1_1_1", "md": "\"Kenji, you built the retry logic, what worries you about this design?\"", "text": "\"Kenji, you built the retry logic, what worries you about this design?\"", "zh": "「Kenji，重试逻辑是你写的，这个设计里你最担心什么？」", "sp": null}, {"id": "s1_1_2", "md": "A direct, concrete question is much easier to answer than \"Does anyone else have thoughts?\"", "text": "A direct, concrete question is much easier to answer than \"Does anyone else have thoughts?\"", "zh": "一个直接、具体的问题，比「其他人还有想法吗？」好回答得多。", "sp": null}], [{"id": "s1_2_0", "md": "When the talker starts a third long comment, ==redirect== gently.", "text": "When the talker starts a third long comment, redirect gently.", "zh": "当话多的人开始第三段长篇发言时，温和地把话头转开。", "sp": null}, {"id": "s1_2_1", "md": "\"Thanks, Mark, let's __hear from a few others__ before we come back to you.\"", "text": "\"Thanks, Mark, let's hear from a few others before we come back to you.\"", "zh": "「谢谢 Mark，我们先听听其他几位的，再回到你这儿。」", "sp": null}], [{"id": "s1_3_0", "md": "Finally, have a private chat, framed as asking for help.", "text": "Finally, have a private chat, framed as asking for help.", "zh": "最后，找他私下聊一聊，以请他帮忙的方式来说。", "sp": null}, {"id": "s1_3_1", "md": "\"You always __get the ball rolling__, and I'd love your help drawing the quieter people in.\"", "text": "\"You always get the ball rolling, and I'd love your help drawing the quieter people in.\"", "zh": "「每次都是你把讨论带起来的，我很希望你能帮我把那些比较安静的同学也拉进来。」", "sp": null}, {"id": "s1_3_2", "md": "**Most talkers are happy to step back once they see it as a new role, not as ==criticism== of their style.**", "text": "Most talkers are happy to step back once they see it as a new role, not as criticism of their style.", "zh": "大多数话多的人一旦把这看作一个新角色，而不是对自己风格的批评，都很乐意往后退一步。", "sp": null}, {"id": "s1_3_3", "md": "Some even become your best ally for running ==inclusive== meetings.", "text": "Some even become your best ally for running inclusive meetings.", "zh": "有些人甚至会成为你组织包容性会议的最佳盟友。", "sp": null}]]}], "gist": [{"q": "作者认为“有人一直说”本质上是什么问题？", "a": "不是性格问题，而是会议形式问题：开放讨论奖励说得最快的人。"}, {"q": "作者建议怎样调整会议规则？", "a": "先让大家写两分钟再发言并按顺序轮流；点名并给具体问题；对方第三次长篇发言时温和转向他人。"}, {"q": "私下和话多的人沟通时，作者建议怎么说？", "a": "以请他帮忙的方式，请他带动安静的人发言，让他把这看作新角色而不是批评。"}], "dictation": [{"id": "s0_1_3", "text": "When the format rewards speed, you will always hear from the same people."}, {"id": "s1_3_2", "text": "Most talkers are happy to step back once they see it as a new role, not as criticism of their style."}, {"id": "s0_2_1", "text": "You do not need to change anyone's character."}, {"id": "s1_0_1", "text": "Then go around the table, or the video grid, in a fixed order."}], "shadow": {"text": "When the talker starts a third long comment, redirect gently. \"Thanks, Mark, let's hear from a few others before we come back to you.\"", "marked": "When the talker starts a <b>third</b> long comment, / redirect <b>gently</b>. //<br>\"<b>Thanks</b>, Mark, / let's hear from a few <b>others</b> / before we come <b>back</b> to you.\" //"}, "prompts": [{"q": "设计评审会上，一位资深同事已经发言很多次，而负责实现的新人一直没说话。用 30 秒温和地转向，邀请新人具体回答一个问题。", "ref": "Thanks, Raj, that's really helpful. Let me pause there for a second, because I want to make sure we hear from everyone. Lin, you wrote most of the sync logic, so you know it better than anyone. If we switch to this new design, which part of your code would be the hardest to change? Take your time.", "ref_zh": "谢谢 Raj，这个很有帮助。我先在这儿停一下，因为我想确保每个人都能发言。Lin，同步逻辑大部分是你写的，你比谁都清楚。如果我们换成这个新设计，你代码里哪部分最难改？不着急，慢慢想。", "id": "ref0"}, {"q": "会后你私下和那位总是抢先发言的同事聊，用 30 秒把“少说一点”包装成请他帮忙。", "ref": "Hey, do you have a minute? First, I really appreciate how you always get the discussion going, it saves us a lot of awkward silence. I'd like your help with something. Some of the newer folks hardly speak in reviews, and I think they have good ideas. Next time, could you try asking one of them for their view before sharing yours? You'd be great at drawing them in.", "ref_zh": "嘿，你有一分钟吗？首先，真的很感谢你每次都能把讨论带起来，帮我们省掉了不少尴尬的冷场。我想请你帮个忙。有些新来的同学在评审会上几乎不说话，但我觉得他们是有好想法的。下次你能不能先问问他们中的某个人怎么看，再说你自己的？你很擅长把人带进来。", "id": "ref1"}], "words": [{"w": "enthusiastic", "ipa": "/ɪnˌθuːziˈæstɪk/", "zh": "热情的、积极的", "ex": "The team is enthusiastic about moving to the new framework.", "id": "w0"}, {"w": "personality", "ipa": "/ˌpɜːrsəˈnæləti/", "zh": "性格、个性", "ex": "This isn't about personality; the process is just unclear.", "id": "w1"}, {"w": "dominate", "ipa": "/ˈdɑːmɪˌneɪt/", "zh": "主导、支配", "ex": "One noisy customer shouldn't dominate the roadmap.", "id": "w2"}, {"w": "turn (n.)", "ipa": "/tɜːrn/", "zh": "轮次、机会", "ex": "Everyone gets a turn to demo at the end of the sprint.", "tts_w": "turn", "id": "w3"}, {"w": "redirect", "ipa": "/ˌriːdəˈrekt/", "zh": "转向、引导到别处", "ex": "Let's redirect this question to the platform team.", "id": "w4"}, {"w": "criticism", "ipa": "/ˈkrɪtɪˌsɪzəm/", "zh": "批评", "ex": "Take the review comments as feedback, not personal criticism.", "id": "w5"}, {"w": "inclusive", "ipa": "/ɪnˈkluːsɪv/", "zh": "包容的、让所有人参与的", "ex": "We rotate meeting times to keep things inclusive across time zones.", "id": "w6"}, {"w": "ally", "ipa": "/ˈælaɪ/", "zh": "盟友", "ex": "The PM became our strongest ally for paying down tech debt.", "id": "w7"}, {"w": "get the ball rolling", "ipa": "/ɡet ðə bɔːl ˈroʊlɪŋ/", "zh": "开个头、启动", "ex": "I'll get the ball rolling with a draft of the design doc.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. It Is a Format Problem", "zh": "1. 这是形式问题", "start": 0.0, "end": 2.232, "words": [[0.118, 0.355], [0.684, 0.75], [0.763, 0.855], [0.868, 0.921], [0.934, 1.408], [1.421, 1.842]]}, {"kind": "s", "id": "s0_0_0", "md": "Every team has one.", "zh": "每个团队都有这么一位。", "sp": null, "gap": false, "start": 2.232, "end": 4.104, "words": [[2.337, 2.587], [2.6, 2.864], [2.877, 3.048], [3.061, 3.377]]}, {"kind": "s", "id": "s0_0_1", "md": "A smart, ==enthusiastic== person who answers every question first, and then answers it again in more detail.", "zh": "一个聪明、热情的人，每个问题都抢先回答，然后再展开细节回答一遍。", "sp": null, "gap": false, "start": 4.104, "end": 11.4, "words": [[4.209, 4.262], [4.275, 4.749], [5.012, 5.946], [5.959, 6.38], [6.393, 6.551], [6.565, 7.143], [7.301, 7.604], [7.617, 8.065], [8.078, 8.617], [8.933, 8.986], [8.999, 9.17], [9.183, 9.604], [9.617, 9.683], [9.696, 10.051], [10.143, 10.222], [10.236, 10.433], [10.446, 11.012]]}, {"kind": "s", "id": "s0_0_2", "md": "Meanwhile, the quiet engineer who actually wrote the code says nothing for the whole hour.", "zh": "与此同时，真正写代码的那个安静的工程师，整整一个小时一句话都没说。", "sp": null, "gap": false, "start": 11.4, "end": 16.56, "words": [[11.505, 12.058], [12.282, 12.361], [12.374, 12.742], [12.755, 13.268], [13.282, 13.426], [13.439, 13.913], [13.926, 14.163], [14.176, 14.255], [14.268, 14.637], [14.65, 14.887], [14.9, 15.387], [15.4, 15.505], [15.518, 15.584], [15.597, 15.821], [15.834, 16.176]]}, {"kind": "s", "id": "s0_1_0", "md": "It is tempting to see this as a ==personality== problem.", "zh": "人很容易把这看成性格问题。", "sp": null, "gap": true, "start": 16.56, "end": 19.8, "words": [[16.665, 16.744], [16.757, 16.902], [16.915, 17.297], [17.31, 17.389], [17.402, 17.692], [17.705, 18.007], [18.021, 18.192], [18.205, 18.257], [18.271, 18.928], [18.942, 19.415]]}, {"kind": "s", "id": "s0_1_1", "md": "But in most cases, the talker is not trying to ==dominate==.", "zh": "但大多数情况下，话多的人并不是想压人一头。", "sp": null, "gap": false, "start": 19.8, "end": 23.496, "words": [[19.918, 19.997], [20.011, 20.103], [20.116, 20.405], [20.418, 20.984], [21.195, 21.3], [21.313, 21.734], [21.747, 21.84], [21.853, 22.103], [22.116, 22.392], [22.405, 22.471], [22.484, 23.103]]}, {"kind": "s", "id": "s0_1_2", "md": "They are simply quick to speak, and an open discussion rewards whoever speaks fastest.", "zh": "他们只是嘴快，而开放式讨论天然奖励说得最快的人。", "sp": null, "gap": false, "start": 23.496, "end": 28.992, "words": [[23.601, 23.706], [23.72, 23.838], [23.851, 24.285], [24.299, 24.601], [24.614, 24.693], [24.707, 25.246], [25.575, 25.641], [25.654, 25.772], [25.785, 26.088], [26.101, 26.641], [26.654, 27.167], [27.18, 27.575], [27.588, 27.943], [27.957, 28.601]]}, {"kind": "s", "id": "s0_1_3", "md": "**When the format rewards speed, you will always hear from the same people.**", "zh": "只要形式奖励速度，你听到的永远是那几个人的声音。", "sp": null, "gap": false, "start": 28.992, "end": 33.48, "words": [[29.097, 29.176], [29.189, 29.268], [29.281, 29.781], [29.795, 30.229], [30.242, 30.781], [31.189, 31.255], [31.268, 31.413], [31.492, 31.939], [31.953, 32.176], [32.189, 32.334], [32.347, 32.413], [32.426, 32.689], [32.703, 33.097]]}, {"kind": "s", "id": "s0_2_0", "md": "That is good news for you as a manager.", "zh": "对管理者来说，这其实是个好消息。", "sp": null, "gap": true, "start": 33.48, "end": 35.856, "words": [[33.585, 33.691], [33.704, 33.822], [33.835, 34.046], [34.059, 34.375], [34.388, 34.559], [34.572, 34.756], [34.769, 34.848], [34.862, 34.901], [34.914, 35.454]]}, {"kind": "s", "id": "s0_2_1", "md": "You do not need to change anyone's character.", "zh": "你不需要改变任何人的性格。", "sp": null, "gap": false, "start": 35.856, "end": 38.448, "words": [[35.961, 36.04], [36.053, 36.159], [36.172, 36.369], [36.382, 36.527], [36.54, 36.593], [36.606, 37.014], [37.119, 37.461], [37.474, 38.053]]}, {"kind": "s", "id": "s0_2_2", "md": "You only need to __change the rules of the room__.", "zh": "你只需要改一改会上的规则。", "sp": null, "gap": false, "start": 38.448, "end": 40.848, "words": [[38.553, 38.685], [38.698, 38.909], [38.922, 39.093], [39.106, 39.172], [39.185, 39.566], [39.58, 39.672], [39.685, 39.961], [39.974, 40.04], [40.053, 40.119], [40.132, 40.448]]}, {"kind": "h", "id": "h1", "md": "2. Small Changes to the Rules", "zh": "2. 对规则做些小调整", "start": 40.848, "end": 43.368, "words": [[40.966, 41.19], [41.545, 41.848], [41.861, 42.269], [42.282, 42.374], [42.387, 42.48], [42.493, 42.98]]}, {"kind": "s", "id": "s1_0_0", "md": "Try giving everyone two minutes to write their ideas down before anyone speaks.", "zh": "试试在任何人发言之前，给每个人两分钟把想法写下来。", "sp": null, "gap": false, "start": 43.368, "end": 48.312, "words": [[43.473, 43.657], [43.671, 43.973], [43.986, 44.421], [44.434, 44.618], [44.631, 44.96], [44.973, 45.092], [45.105, 45.342], [45.355, 45.526], [45.539, 45.973], [45.986, 46.315], [46.407, 46.868], [46.986, 47.315], [47.329, 47.934]]}, {"kind": "s", "id": "s1_0_1", "md": "Then go around the table, or the video grid, in a fixed order.", "zh": "然后按固定顺序，绕桌子一圈，或者按视频画面的顺序轮流说。", "sp": null, "gap": false, "start": 48.312, "end": 52.584, "words": [[48.417, 48.588], [48.601, 48.799], [48.812, 49.141], [49.154, 49.233], [49.246, 49.68], [50.101, 50.167], [50.18, 50.259], [50.273, 50.641], [50.654, 50.97], [51.286, 51.391], [51.404, 51.457], [51.47, 51.838], [51.851, 52.194]]}, {"kind": "s", "id": "s1_0_2", "md": "The fast thinker still contributes, but everyone else gets a fair ==turn==.", "zh": "反应快的人照样能贡献想法，但其他人也都有了公平的机会。", "sp": null, "gap": false, "start": 52.584, "end": 56.952, "words": [[52.702, 52.755], [52.768, 53.202], [53.216, 53.505], [53.518, 53.768], [53.781, 54.597], [54.821, 54.992], [55.005, 55.373], [55.387, 55.65], [55.663, 55.847], [55.86, 55.913], [55.926, 56.202], [56.216, 56.558]]}, {"kind": "s", "id": "s1_1_0", "md": "You can also invite specific people by name, with a question they can answer.", "zh": "你也可以点名邀请某个人，抛给他一个他答得上来的问题。", "sp": null, "gap": true, "start": 56.952, "end": 61.608, "words": [[57.057, 57.136], [57.149, 57.268], [57.281, 57.636], [57.649, 58.005], [58.018, 58.61], [58.623, 58.926], [58.939, 59.084], [59.097, 59.505], [59.886, 59.991], [60.005, 60.044], [60.057, 60.478], [60.491, 60.597], [60.61, 60.741], [60.755, 61.215]]}, {"kind": "s", "id": "s1_1_1", "md": "\"Kenji, you built the retry logic, what worries you about this design?\"", "zh": "「Kenji，重试逻辑是你写的，这个设计里你最担心什么？」", "sp": null, "gap": false, "start": 61.608, "end": 66.24, "words": [[61.792, 62.108], [62.463, 62.529], [62.542, 62.779], [62.792, 62.871], [62.884, 63.319], [63.332, 63.858], [64.174, 64.384], [64.397, 64.74], [64.753, 64.871], [64.884, 65.161], [65.174, 65.332], [65.345, 65.818]]}, {"kind": "s", "id": "s1_1_2", "md": "A direct, concrete question is much easier to answer than \"Does anyone else have thoughts?\"", "zh": "一个直接、具体的问题，比「其他人还有想法吗？」好回答得多。", "sp": null, "gap": false, "start": 66.24, "end": 71.928, "words": [[66.345, 66.398], [66.411, 66.911], [67.174, 67.701], [67.714, 68.214], [68.306, 68.464], [68.477, 68.806], [68.924, 69.306], [69.319, 69.398], [69.411, 69.806], [69.819, 69.964], [69.99, 70.214], [70.227, 70.516], [70.529, 70.727], [70.74, 70.858], [70.872, 71.49]]}, {"kind": "s", "id": "s1_2_0", "md": "When the talker starts a third long comment, ==redirect== gently.", "zh": "当话多的人开始第三段长篇发言时，温和地把话头转开。", "sp": null, "gap": true, "start": 71.928, "end": 76.08, "words": [[72.033, 72.112], [72.125, 72.204], [72.217, 72.586], [72.599, 72.941], [72.954, 73.02], [73.033, 73.467], [73.481, 73.757], [73.77, 74.231], [74.56, 75.165], [75.178, 75.678]]}, {"kind": "s", "id": "s1_2_1", "md": "\"Thanks, Mark, let's __hear from a few others__ before we come back to you.\"", "zh": "「谢谢 Mark，我们先听听其他几位的，再回到你这儿。」", "sp": null, "gap": false, "start": 76.08, "end": 80.568, "words": [[76.33, 76.659], [76.975, 77.317], [77.712, 77.883], [77.896, 78.041], [78.054, 78.212], [78.225, 78.277], [78.291, 78.541], [78.554, 78.856], [78.869, 79.238], [79.251, 79.356], [79.369, 79.554], [79.567, 79.83], [79.843, 79.948], [79.962, 80.159]]}, {"kind": "s", "id": "s1_3_0", "md": "Finally, have a private chat, framed as asking for help.", "zh": "最后，找他私下聊一聊，以请他帮忙的方式来说。", "sp": null, "gap": true, "start": 80.568, "end": 84.624, "words": [[80.739, 81.173], [81.463, 81.568], [81.581, 81.647], [81.66, 82.068], [82.081, 82.463], [82.844, 83.186], [83.2, 83.305], [83.318, 83.7], [83.713, 83.871], [83.884, 84.239]]}, {"kind": "s", "id": "s1_3_1", "md": "\"You always __get the ball rolling__, and I'd love your help drawing the quieter people in.\"", "zh": "「每次都是你把讨论带起来的，我很希望你能帮我把那些比较安静的同学也拉进来。」", "sp": null, "gap": false, "start": 84.624, "end": 89.352, "words": [[84.808, 84.821], [84.9, 85.256], [85.269, 85.427], [85.44, 85.519], [85.532, 85.795], [85.808, 86.256], [86.545, 86.611], [86.624, 86.769], [86.782, 86.992], [87.006, 87.124], [87.137, 87.427], [87.44, 87.795], [87.808, 87.887], [87.9, 88.348], [88.361, 88.716], [88.729, 88.94]]}, {"kind": "s", "id": "s1_3_2", "md": "**Most talkers are happy to step back once they see it as a new role, not as ==criticism== of their style.**", "zh": "大多数话多的人一旦把这看作一个新角色，而不是对自己风格的批评，都很乐意往后退一步。", "sp": null, "gap": false, "start": 89.352, "end": 95.496, "words": [[89.457, 89.668], [89.681, 90.115], [90.128, 90.207], [90.22, 90.563], [90.576, 90.655], [90.668, 90.984], [90.997, 91.339], [91.352, 91.576], [91.589, 91.707], [91.72, 92.023], [92.036, 92.194], [92.207, 92.339], [92.352, 92.378], [92.391, 92.668], [92.681, 93.063], [93.484, 93.628], [93.641, 93.734], [93.747, 94.339], [94.352, 94.431], [94.444, 94.589], [94.602, 95.102]]}, {"kind": "s", "id": "s1_3_3", "md": "Some even become your best ally for running ==inclusive== meetings.", "zh": "有些人甚至会成为你组织包容性会议的最佳盟友。", "sp": null, "gap": false, "start": 95.496, "end": 99.936, "words": [[95.601, 95.799], [95.917, 96.154], [96.167, 96.535], [96.549, 96.693], [96.707, 97.088], [97.101, 97.509], [97.522, 97.799], [97.812, 98.246], [98.338, 98.957], [98.97, 99.535]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

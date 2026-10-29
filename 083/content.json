@@ -1,0 +1,186 @@
+{
+  "id": "083",
+  "title": "Talking About Your Weekend in Two Sentences",
+  "meta": "B2 · 约 280 词 · 场景：周一聊周末",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Problem with \"Not Much\"",
+      "paragraphs": [
+        [
+          "Every Monday, someone asks, \"How was your weekend?\"",
+          "And every Monday, many of us answer, \"Good, not much,\" and the conversation dies __on the spot__.",
+          "It is not rude, but it gives the other person nothing to __hold on to__."
+        ],
+        [
+          "Part of the problem is that we think our weekends are too ==ordinary== to share.",
+          "We did not climb a mountain; we did laundry and watched a show.",
+          "But small talk does not need ==drama==.",
+          "**People are not asking for an adventure; they are asking for a way in.**"
+        ],
+        [
+          "A weekend answer is really an ==invitation==.",
+          "If you give one real detail, the other person can __pick up on__ it and ask a follow-up."
+        ]
+      ],
+      "heading_zh": "1. 「没干啥」的问题",
+      "paragraphs_zh": [
+        [
+          "每周一，总有人问：「周末过得怎么样？」",
+          "也是每周一，很多人回一句：「挺好，没干啥。」然后天就当场聊死了。",
+          "这不算没礼貌，但对方完全接不住话。"
+        ],
+        [
+          "问题的一部分在于，我们觉得自己的周末太平淡，不值一提。",
+          "我们没去爬山；就是洗了衣服、追了个剧。",
+          "但闲聊不需要什么戏剧性。",
+          "人家要的不是冒险故事；要的是一个能接上话的口子。"
+        ],
+        [
+          "回答周末怎么过，其实是在发出邀请。",
+          "你只要给一个真实的细节，对方就能顺着接下去，再追问一句。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. One Fact, One Hook",
+      "paragraphs": [
+        [
+          "Here is a simple formula: one sentence about what you did, and one sentence that leaves a ==hook==.",
+          "The hook can be a feeling, a small problem, or a question back.",
+          "Think of it as a handle the other person can grab without any effort."
+        ],
+        [
+          "\"I finally tried that new noodle place near the office. Honestly, I think it's ==overrated==, have you been?\"",
+          "\"We took the kids to the beach on Sunday. I'm still finding sand in the car.\"",
+          "\"Quiet one, I mostly __caught up on__ sleep. I needed it after the release last week.\""
+        ],
+        [
+          "Notice that none of these are ==impressive==.",
+          "They work because they are specific and slightly ==personal==, so the listener has something to work with.",
+          "**Two honest sentences beat a long story, and they beat \"not much\" every time.**"
+        ],
+        [
+          "Prepare your two sentences on Sunday night, the same way you would prepare a status update.",
+          "And when you ask back, __listen for__ their hook and follow it."
+        ]
+      ],
+      "heading_zh": "2. 一个事实，一个钩子",
+      "paragraphs_zh": [
+        [
+          "有个简单的公式：一句说你干了什么，一句留个钩子。",
+          "钩子可以是一种感受、一个小麻烦，或者反问回去。",
+          "把它想成一个把手，对方不费劲就能抓住。"
+        ],
+        [
+          "「我终于去试了公司附近那家新开的面馆。说实话我觉得有点名不副实，你去过吗？」",
+          "「周日我们带孩子去了海边。到现在车里还能翻出沙子。」",
+          "「挺清闲的，基本就是在补觉。上周上线完，确实得缓缓。」"
+        ],
+        [
+          "你会发现，这几句没有一句是厉害的。",
+          "它们之所以管用，是因为具体、又带点个人色彩，听的人有东西可接。",
+          "两句实在话胜过一个长故事，更是每次都胜过「没干啥」。"
+        ],
+        [
+          "周日晚上就把这两句话准备好，就像你准备进度同步一样。",
+          "轮到你反问的时候，留意对方的钩子，顺着接下去。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么回答 \"Good, not much\" 会让对话冷掉？",
+      "a": "它不失礼，但没给对方任何可以接的东西，对话当场就结束了。"
+    },
+    {
+      "q": "作者说别人问周末时其实想要什么？",
+      "a": "不是想听冒险经历，而是想要一个接话的入口；周末回答其实是一个邀请。"
+    },
+    {
+      "q": "文中的公式是什么？好的例子有什么共同点？",
+      "a": "一句说做了什么 + 一句留钩子（感受、小麻烦或反问）；例子都不厉害，但具体、带点个人色彩。"
+    }
+  ],
+  "dictation": [
+    "People are not asking for an adventure; they are asking for a way in.",
+    "A weekend answer is really an invitation.",
+    "If you give one real detail, the other person can pick up on it and ask a follow-up.",
+    "Two honest sentences beat a long story, and they beat \"not much\" every time."
+  ],
+  "shadow": {
+    "text": "Notice that none of these are impressive. They work because they are specific and slightly personal, so the listener has something to work with. Two honest sentences beat a long story, and they beat \"not much\" every time.",
+    "marked": "Notice that <b>none</b> of these / are <b>impressive</b>. //<br>They work because they are <b>specific</b> / and slightly <b>personal</b>, / so the listener has something to <b>work</b> with. //<br>Two <b>honest</b> sentences / beat a <b>long</b> story, / and they beat \"<b>not much</b>\" / every <b>time</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "周一早上澳洲同事问你 How was your weekend? 你其实只是在家陪孩子、去了一趟超市。用“一句事实加一个钩子”回答，再问回去。",
+      "ref": "Pretty low-key, to be honest. We stayed home with the kids, and the big event was a trip to the supermarket, which somehow took three hours. Honestly, it was relaxing in its own way. How about you? I saw the weather was great on Saturday. Did you get out anywhere?",
+      "ref_zh": "说实话挺平淡的。我们在家陪孩子，最大的事是去了趟超市，不知怎么就逛了三个小时。不过说真的，也挺放松的。你呢？我看周六天气特别好，出去玩了吗？"
+    },
+    {
+      "q": "周五下班前同事问 Any plans for the weekend? 你打算去爬山但还没定。两句话回答并留一个钩子。",
+      "ref": "I'm thinking of doing the MacRitchie trail on Saturday morning, if the weather holds. Last time I only made it halfway before it started pouring. I've never done the full loop, so I'm a bit worried about the monkeys. Have you done it? Any tips for a beginner?",
+      "ref_zh": "如果天气不变，我打算周六上午去走 MacRitchie 步道。上次走到一半就下起了大雨。我还没走完过整圈，有点怕那些猴子。你走过吗？给新手支几招？"
+    }
+  ],
+  "words": [
+    {
+      "w": "ordinary",
+      "ipa": "/ˈɔːrdəneri/",
+      "zh": "普通的、平常的",
+      "ex": "It was an ordinary week, just bug fixes and reviews."
+    },
+    {
+      "w": "drama",
+      "ipa": "/ˈdrɑːmə/",
+      "zh": "戏剧性、大事件",
+      "ex": "The launch went out with no drama at all, which is exactly what we wanted."
+    },
+    {
+      "w": "invitation",
+      "ipa": "/ˌɪnvɪˈteɪʃən/",
+      "zh": "邀请",
+      "ex": "Treat every question in a review as an invitation to explain your thinking."
+    },
+    {
+      "w": "hook (n.)",
+      "ipa": "/hʊk/",
+      "zh": "钩子、吸引人接话的点",
+      "ex": "End your update with a hook, like a question for the team.",
+      "tts_w": "hook"
+    },
+    {
+      "w": "overrated",
+      "ipa": "/ˌoʊvərˈreɪtɪd/",
+      "zh": "被高估的",
+      "ex": "Honestly, I think that new framework is a bit overrated."
+    },
+    {
+      "w": "impressive",
+      "ipa": "/ɪmˈpresɪv/",
+      "zh": "令人印象深刻的",
+      "ex": "The demo was impressive, but I want to see real traffic numbers."
+    },
+    {
+      "w": "personal",
+      "ipa": "/ˈpɜːrsənəl/",
+      "zh": "个人的、私人的",
+      "ex": "Adding a personal example made her talk much easier to follow."
+    },
+    {
+      "w": "catch up on",
+      "ipa": "/kætʃ ʌp ɑːn/",
+      "zh": "补上（睡眠、工作等）",
+      "ex": "I spent Saturday catching up on sleep after the release."
+    },
+    {
+      "w": "pick up on",
+      "ipa": "/pɪk ʌp ɑːn/",
+      "zh": "注意到并接住（话头）",
+      "ex": "She picked up on my comment about the deadline and asked for details."
+    }
+  ]
+}

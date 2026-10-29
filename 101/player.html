@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Checking In at a Hotel · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "101", "type": "dialogue", "title": "Checking In at a Hotel", "meta": "B2 · 约 280 词 · 场景：酒店入住与客房问题", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Front Desk", "name_zh": "前台", "voice": "en-SG-LunaNeural"}}, "gist": [{"q": "「你」对房间提了什么要求？前台怎么安排的？", "a": "要高楼层、离电梯远的房间；前台安排在十八楼的城景房。"}, {"q": "押金和延迟退房的规则分别是什么？", "a": "押金每晚一百元，退房时解冻；可以免费延迟退房到下午一点。"}, {"q": "空调坏了，酒店给出的解决方案是什么？", "a": "马上派维修师傅；十五分钟修不好就升级到同层套房，并免费送水果拼盘。"}], "dictation": [{"id": "s0_3_0", "text": "That's right. Is it possible to get a room on a higher floor, away from the elevator?"}, {"id": "s0_10_0", "text": "And could I get a late checkout on Sunday? My flight isn't until the evening."}, {"id": "s1_2_0", "text": "Thanks. If it can't be fixed tonight, would it be possible to move to another room?"}, {"id": "s1_6_0", "text": "That's very kind. Thanks for sorting this out so quickly."}], "shadow": {"speaker": "A", "text": "Hi, this is Mr. Lee in room eighteen twelve. The air conditioning isn't working, and the room is quite warm.", "marked": "Hi, / this is Mr. <b>Lee</b> / in room <b>eighteen twelve</b>. //<br>The <b>air conditioning</b> / <b>isn't</b> working, / and the room is quite <b>warm</b>. //"}, "prompts": [{"q": "入住时发现订的是两张单人床，你想换成一张大床。用 30 秒跟前台沟通，礼貌但明确。", "ref": "Hi, sorry to bother you. I just got to my room, and it has two single beds, but I booked a king room. Is it possible to switch to a king tonight? If none are free, could you move me tomorrow morning? I'm happy to pack my things and wait in the lobby.", "ref_zh": "你好，不好意思打扰一下。我刚进房间，发现是两张单人床，但我订的是大床房。今晚能换成大床吗？如果没有空房了，明天早上帮我换可以吗？我可以先收拾好东西在大堂等。", "id": "ref0"}, {"q": "隔壁房间半夜很吵，你打电话给前台。说清房号、问题，并提出你希望的处理方式。", "ref": "Hi, this is room eighteen twelve. I'm sorry to call so late, but the room next door has been really loud for about an hour, and I have an early flight. Could someone ask them to keep it down? If that doesn't work, I'd like to move to a quieter room.", "ref_zh": "你好，我是一八一二房间。抱歉这么晚打电话，隔壁房间已经吵了快一个小时了，我明天一早还要赶飞机。能不能请人去提醒他们小声一点？如果不管用，我想换一间安静点的房间。", "id": "ref1"}], "words": [{"w": "reservation", "ipa": "/ˌrezərˈveɪʃən/", "zh": "预订", "ex": "I have a reservation for two at seven.", "id": "w0"}, {"w": "incidentals", "ipa": "/ˌɪnsɪˈdentəlz/", "zh": "杂费（酒店预授权用）", "ex": "They put a hold on my card for incidentals.", "id": "w1"}, {"w": "deposit", "ipa": "/dɪˈpɑːzɪt/", "zh": "押金", "ex": "The deposit will be refunded when you return the key.", "id": "w2"}, {"w": "included", "ipa": "/ɪnˈkluːdɪd/", "zh": "包含的", "ex": "Is service charge included in the price?", "id": "w3"}, {"w": "late checkout", "ipa": "/leɪt ˈtʃekaʊt/", "zh": "延迟退房", "ex": "Could I get a late checkout until two?", "id": "w4"}, {"w": "technician", "ipa": "/tekˈnɪʃən/", "zh": "维修技师", "ex": "A technician will come by between nine and twelve.", "id": "w5"}, {"w": "upgrade (v.)", "ipa": "/ˌʌpˈɡreɪd/", "zh": "升级", "ex": "They upgraded us to a sea view room for free.", "tts_w": "upgrade", "id": "w6"}, {"w": "complimentary", "ipa": "/ˌkɑːmpləˈmentəri/", "zh": "免费赠送的", "ex": "The hotel offers complimentary water and coffee in the lobby.", "id": "w7"}, {"w": "make up for", "ipa": "/meɪk ʌp fɔːr/", "zh": "弥补", "ex": "They gave us free drinks to make up for the long wait.", "id": "w8"}], "sections": [{"heading": "1. At the Front Desk", "heading_zh": "1. 在前台", "rows": [[{"id": "s0_0_0", "md": "Good evening, and welcome. Are you checking in?", "text": "Good evening, and welcome. Are you checking in?", "zh": "晚上好，欢迎光临。您是要办入住吗？", "sp": "B"}], [{"id": "s0_1_0", "md": "Yes, I have a __reservation under the name__ Lee.", "text": "Yes, I have a reservation under the name Lee.", "zh": "是的，我用 Lee 这个名字订了房。", "sp": "A"}], [{"id": "s0_2_0", "md": "Let me pull that up. A king room for three nights, checking out on Sunday?", "text": "Let me pull that up. A king room for three nights, checking out on Sunday?", "zh": "我查一下。一间大床房，住三晚，周日退房，对吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "**That's right. Is it possible to get a room on a higher floor, away from the elevator?**", "text": "That's right. Is it possible to get a room on a higher floor, away from the elevator?", "zh": "对。有没有可能给我一间高楼层、离电梯远一点的房间？", "sp": "A"}], [{"id": "s0_4_0", "md": "Let me check. Yes, I can put you on the eighteenth floor with a city view.", "text": "Let me check. Yes, I can put you on the eighteenth floor with a city view.", "zh": "我看看。可以，我给您安排在十八楼，城景房。", "sp": "B"}], [{"id": "s0_5_0", "md": "May I have your passport and a credit card for ==incidentals==?", "text": "May I have your passport and a credit card for incidentals?", "zh": "麻烦出示一下护照，再给一张信用卡用于杂费预授权。", "sp": "B"}], [{"id": "s0_6_0", "md": "Sure. How much is the ==deposit==?", "text": "Sure. How much is the deposit?", "zh": "好的。押金是多少？", "sp": "A"}], [{"id": "s0_7_0", "md": "It's one hundred dollars per night, and it's released when you check out.", "text": "It's one hundred dollars per night, and it's released when you check out.", "zh": "每晚一百元，退房时会解冻。", "sp": "B"}], [{"id": "s0_8_0", "md": "Got it. Is breakfast ==included==, and what time does it start?", "text": "Got it. Is breakfast included, and what time does it start?", "zh": "明白。含早餐吗？几点开始？", "sp": "A"}], [{"id": "s0_9_0", "md": "Yes, it's included. It's served from six thirty to ten thirty on the second floor.", "text": "Yes, it's included. It's served from six thirty to ten thirty on the second floor.", "zh": "含的。早餐在二楼，六点半到十点半。", "sp": "B"}], [{"id": "s0_10_0", "md": "And could I __get a late checkout__ on Sunday? My flight isn't until the evening.", "text": "And could I get a late checkout on Sunday? My flight isn't until the evening.", "zh": "另外周日能晚点退房吗？我的航班是晚上的。", "sp": "A"}], [{"id": "s0_11_0", "md": "I can give you until one o'clock __at no extra charge__.", "text": "I can give you until one o'clock at no extra charge.", "zh": "我可以给您延到一点，不额外收费。", "sp": "B"}], [{"id": "s0_12_0", "md": "One o'clock works. Thanks so much.", "text": "One o'clock works. Thanks so much.", "zh": "一点可以。太感谢了。", "sp": "A"}]]}, {"heading": "2. A Problem with the Room", "heading_zh": "2. 房间出了问题", "rows": [[{"id": "s1_0_0", "md": "Hi, this is Mr. Lee in room eighteen twelve. The air conditioning isn't working, and the room is quite warm.", "text": "Hi, this is Mr. Lee in room eighteen twelve. The air conditioning isn't working, and the room is quite warm.", "zh": "你好，我是一八一二房间的 Lee。空调坏了，房间里挺热的。", "sp": "A"}], [{"id": "s1_1_0", "md": "I'm so sorry about that. I'll __send someone up__ right away to take a look.", "text": "I'm so sorry about that. I'll send someone up right away to take a look.", "zh": "非常抱歉。我马上派人上去看看。", "sp": "B"}], [{"id": "s1_2_0", "md": "**Thanks. If it can't be fixed tonight, would it be possible to move to another room?**", "text": "Thanks. If it can't be fixed tonight, would it be possible to move to another room?", "zh": "谢谢。如果今晚修不好，能不能换个房间？", "sp": "A"}], [{"id": "s1_3_0", "md": "Of course. If the ==technician== can't fix it in fifteen minutes, we'll ==upgrade== you to a suite on the same floor.", "text": "Of course. If the technician can't fix it in fifteen minutes, we'll upgrade you to a suite on the same floor.", "zh": "当然可以。如果维修师傅十五分钟内修不好，我们就给您升级到同一层的套房。", "sp": "B"}], [{"id": "s1_4_0", "md": "That would be great. Could you also send up two extra towels?", "text": "That would be great. Could you also send up two extra towels?", "zh": "那太好了。能再送两条毛巾上来吗？", "sp": "A"}], [{"id": "s1_5_0", "md": "No problem. And to __make up for__ the trouble, we'll send up a ==complimentary== fruit plate.", "text": "No problem. And to make up for the trouble, we'll send up a complimentary fruit plate.", "zh": "没问题。为了弥补给您带来的不便，我们会再送一份免费的水果拼盘。", "sp": "B"}], [{"id": "s1_6_0", "md": "That's very kind. **Thanks for sorting this out so quickly.**", "text": "That's very kind. Thanks for sorting this out so quickly.", "zh": "你们太客气了。谢谢这么快就帮我解决。", "sp": "A"}], [{"id": "s1_7_0", "md": "My pleasure, Mr. Lee. Enjoy the rest of your evening.", "text": "My pleasure, Mr. Lee. Enjoy the rest of your evening.", "zh": "不客气，Lee 先生。祝您晚上愉快。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. At the Front Desk", "zh": "1. 在前台", "start": 0.0, "end": 1.92, "words": [[0.105, 0.316], [0.658, 0.75], [0.763, 0.829], [0.842, 1.079], [1.092, 1.54]]}, {"kind": "s", "id": "s0_0_0", "md": "Good evening, and welcome. Are you checking in?", "zh": "晚上好，欢迎光临。您是要办入住吗？", "sp": "B", "gap": false, "start": 1.92, "end": 7.296, "words": [[2.023, 2.286], [2.299, 2.917], [3.154, 3.404], [3.417, 4.181], [5.104, 5.288], [5.302, 5.42], [5.433, 5.867], [5.881, 6.367]]}, {"kind": "s", "id": "s0_1_0", "md": "Yes, I have a __reservation under the name__ Lee.", "zh": "是的，我用 Lee 这个名字订了房。", "sp": "A", "gap": false, "start": 7.296, "end": 10.32, "words": [[7.401, 7.796], [8.191, 8.257], [8.27, 8.401], [8.414, 8.454], [8.467, 9.138], [9.151, 9.309], [9.322, 9.401], [9.414, 9.691], [9.704, 9.941]]}, {"kind": "s", "id": "s0_2_0", "md": "Let me pull that up. A king room for three nights, checking out on Sunday?", "zh": "我查一下。一间大床房，住三晚，周日退房，对吗？", "sp": "B", "gap": false, "start": 10.32, "end": 17.112, "words": [[10.423, 10.699], [10.712, 10.936], [10.949, 11.199], [11.212, 11.449], [11.462, 11.831], [12.741, 12.886], [12.899, 13.202], [13.215, 13.425], [13.438, 13.609], [13.623, 13.886], [13.899, 14.478], [14.715, 15.123], [15.136, 15.333], [15.346, 15.491], [15.504, 16.175]]}, {"kind": "s", "id": "s0_3_0", "md": "**That's right. Is it possible to get a room on a higher floor, away from the elevator?**", "zh": "对。有没有可能给我一间高楼层、离电梯远一点的房间？", "sp": "A", "gap": false, "start": 17.112, "end": 22.392, "words": [[17.23, 17.375], [17.388, 17.665], [18.099, 18.191], [18.204, 18.283], [18.296, 18.796], [18.809, 18.888], [18.901, 19.046], [19.059, 19.086], [19.099, 19.507], [19.599, 19.691], [19.704, 19.744], [19.757, 20.125], [20.138, 20.573], [20.941, 21.178], [21.191, 21.349], [21.362, 21.428], [21.441, 22.007]]}, {"kind": "s", "id": "s0_4_0", "md": "Let me check. Yes, I can put you on the eighteenth floor with a city view.", "zh": "我看看。可以，我给您安排在十八楼，城景房。", "sp": "B", "gap": false, "start": 22.392, "end": 29.184, "words": [[22.495, 22.758], [22.771, 22.955], [22.968, 23.6], [24.524, 25.155], [25.326, 25.458], [25.471, 25.681], [25.695, 25.892], [25.905, 26.05], [26.063, 26.195], [26.208, 26.313], [26.326, 26.774], [26.787, 27.076], [27.089, 27.26], [27.274, 27.326], [27.339, 27.734], [27.747, 28.247]]}, {"kind": "s", "id": "s0_5_0", "md": "May I have your passport and a credit card for ==incidentals==?", "zh": "麻烦出示一下护照，再给一张信用卡用于杂费预授权。", "sp": "B", "gap": false, "start": 29.184, "end": 33.624, "words": [[29.287, 29.523], [29.537, 29.616], [29.629, 29.839], [29.852, 29.997], [30.01, 30.537], [30.55, 30.681], [30.695, 30.773], [30.787, 31.181], [31.195, 31.458], [31.471, 31.642], [31.655, 32.681]]}, {"kind": "s", "id": "s0_6_0", "md": "Sure. How much is the ==deposit==?", "zh": "好的。押金是多少？", "sp": "A", "gap": false, "start": 33.624, "end": 36.048, "words": [[33.729, 34.098], [34.545, 34.65], [34.663, 34.848], [34.861, 34.94], [34.953, 35.045], [35.058, 35.65]]}, {"kind": "s", "id": "s0_7_0", "md": "It's one hundred dollars per night, and it's released when you check out.", "zh": "每晚一百元，退房时会解冻。", "sp": "B", "gap": false, "start": 36.048, "end": 41.352, "words": [[36.151, 36.414], [36.427, 36.664], [36.677, 37.098], [37.111, 37.532], [37.545, 37.69], [37.703, 38.137], [38.427, 38.637], [38.651, 38.874], [38.887, 39.348], [39.361, 39.559], [39.572, 39.69], [39.703, 40.032], [40.045, 40.427]]}, {"kind": "s", "id": "s0_8_0", "md": "Got it. Is breakfast ==included==, and what time does it start?", "zh": "明白。含早餐吗？几点开始？", "sp": "A", "gap": false, "start": 41.352, "end": 45.24, "words": [[41.457, 41.628], [41.641, 41.76], [42.194, 42.326], [42.339, 42.812], [42.826, 43.312], [43.641, 43.734], [43.747, 43.891], [43.905, 44.141], [44.155, 44.299], [44.313, 44.378], [44.391, 44.852]]}, {"kind": "s", "id": "s0_9_0", "md": "Yes, it's included. It's served from six thirty to ten thirty on the second floor.", "zh": "含的。早餐在二楼，六点半到十点半。", "sp": "B", "gap": false, "start": 45.24, "end": 53.256, "words": [[45.343, 46.066], [46.329, 46.737], [46.751, 47.632], [48.556, 48.793], [48.806, 49.108], [49.122, 49.332], [49.345, 49.714], [49.727, 50.122], [50.135, 50.293], [50.306, 50.582], [50.595, 51.029], [51.043, 51.201], [51.214, 51.293], [51.306, 51.74], [51.753, 52.319]]}, {"kind": "s", "id": "s0_10_0", "md": "And could I __get a late checkout__ on Sunday? My flight isn't until the evening.", "zh": "另外周日能晚点退房吗？我的航班是晚上的。", "sp": "A", "gap": false, "start": 53.256, "end": 57.576, "words": [[53.361, 53.427], [53.44, 53.572], [53.585, 53.664], [53.677, 53.795], [53.809, 53.848], [53.861, 54.098], [54.111, 54.48], [54.493, 54.611], [54.624, 55.059], [55.493, 55.624], [55.638, 55.993], [56.138, 56.374], [56.388, 56.638], [56.651, 56.717], [56.73, 57.177]]}, {"kind": "s", "id": "s0_11_0", "md": "I can give you until one o'clock __at no extra charge__.", "zh": "我可以给您延到一点，不额外收费。", "sp": "B", "gap": false, "start": 57.576, "end": 61.824, "words": [[57.679, 57.81], [57.823, 58.06], [58.073, 58.271], [58.284, 58.402], [58.415, 58.771], [58.784, 59.008], [59.021, 59.429], [59.442, 59.56], [59.573, 59.837], [59.85, 60.271], [60.284, 60.889]]}, {"kind": "s", "id": "s0_12_0", "md": "One o'clock works. Thanks so much.", "zh": "一点可以。太感谢了。", "sp": "A", "gap": false, "start": 61.824, "end": 64.488, "words": [[61.929, 62.048], [62.061, 62.39], [62.403, 62.89], [63.337, 63.508], [63.521, 63.706], [63.719, 64.087]]}, {"kind": "h", "id": "h1", "md": "2. A Problem with the Room", "zh": "2. 房间出了问题", "start": 64.488, "end": 66.48, "words": [[64.606, 64.856], [65.12, 65.172], [65.185, 65.541], [65.554, 65.685], [65.699, 65.764], [65.777, 66.08]]}, {"kind": "s", "id": "s1_0_0", "md": "Hi, this is Mr. Lee in room eighteen twelve. The air conditioning isn't working, and the room is quite warm.", "zh": "你好，我是一八一二房间的 Lee。空调坏了，房间里挺热的。", "sp": "A", "gap": false, "start": 66.48, "end": 73.608, "words": [[66.598, 66.835], [67.256, 67.427], [67.441, 67.546], [67.559, 67.875], [67.888, 68.138], [68.151, 68.269], [68.283, 68.519], [68.677, 69.033], [69.046, 69.519], [69.954, 70.006], [70.019, 70.243], [70.256, 70.862], [70.875, 71.112], [71.125, 71.598], [71.901, 71.967], [71.98, 72.059], [72.072, 72.454], [72.467, 72.559], [72.572, 72.875], [72.888, 73.217]]}, {"kind": "s", "id": "s1_1_0", "md": "I'm so sorry about that. I'll __send someone up__ right away to take a look.", "zh": "非常抱歉。我马上派人上去看看。", "sp": "B", "gap": false, "start": 73.608, "end": 79.8, "words": [[73.711, 73.947], [73.961, 74.211], [74.224, 74.579], [74.592, 74.869], [74.882, 75.368], [76.292, 76.503], [76.516, 76.805], [76.819, 77.24], [77.253, 77.437], [77.45, 77.674], [77.687, 77.937], [77.95, 78.108], [78.121, 78.332], [78.345, 78.384], [78.397, 78.884]]}, {"kind": "s", "id": "s1_2_0", "md": "**Thanks. If it can't be fixed tonight, would it be possible to move to another room?**", "zh": "谢谢。如果今晚修不好，能不能换个房间？", "sp": "A", "gap": false, "start": 79.8, "end": 84.744, "words": [[79.932, 80.339], [80.774, 80.866], [80.879, 80.958], [80.971, 81.195], [81.208, 81.313], [81.326, 81.655], [81.668, 82.063], [82.366, 82.471], [82.484, 82.55], [82.563, 82.668], [82.682, 83.247], [83.261, 83.366], [83.379, 83.642], [83.655, 83.774], [83.787, 84.103], [84.116, 84.353]]}, {"kind": "s", "id": "s1_3_0", "md": "Of course. If the ==technician== can't fix it in fifteen minutes, we'll ==upgrade== you to a suite on the same floor.", "zh": "当然可以。如果维修师傅十五分钟内修不好，我们就给您升级到同一层的套房。", "sp": "B", "gap": false, "start": 84.744, "end": 93.528, "words": [[84.847, 85.097], [85.11, 85.899], [86.81, 87.007], [87.02, 87.139], [87.152, 87.718], [87.731, 88.007], [88.02, 88.349], [88.362, 88.52], [88.533, 88.691], [88.705, 89.152], [89.165, 89.823], [90.047, 90.27], [90.283, 90.678], [90.691, 90.849], [90.862, 91.02], [91.033, 91.086], [91.099, 91.454], [91.468, 91.626], [91.639, 91.705], [91.718, 92.047], [92.06, 92.599]]}, {"kind": "s", "id": "s1_4_0", "md": "That would be great. Could you also send up two extra towels?", "zh": "那太好了。能再送两条毛巾上来吗？", "sp": "A", "gap": false, "start": 93.528, "end": 97.2, "words": [[93.646, 93.725], [93.739, 93.844], [93.857, 93.962], [93.975, 94.383], [94.817, 94.936], [94.949, 95.067], [95.081, 95.383], [95.396, 95.646], [95.66, 95.752], [95.765, 95.962], [95.975, 96.265], [96.278, 96.817]]}, {"kind": "s", "id": "s1_5_0", "md": "No problem. And to __make up for__ the trouble, we'll send up a ==complimentary== fruit plate.", "zh": "没问题。为了弥补给您带来的不便，我们会再送一份免费的水果拼盘。", "sp": "B", "gap": false, "start": 97.2, "end": 104.736, "words": [[97.303, 97.645], [97.658, 98.355], [99.279, 99.476], [99.489, 99.595], [99.608, 99.871], [99.884, 100.042], [100.055, 100.213], [100.226, 100.332], [100.345, 100.963], [101.2, 101.424], [101.437, 101.766], [101.779, 101.963], [101.976, 102.068], [102.082, 102.924], [102.937, 103.253], [103.266, 103.805]]}, {"kind": "s", "id": "s1_6_0", "md": "That's very kind. **Thanks for sorting this out so quickly.**", "zh": "你们太客气了。谢谢这么快就帮我解决。", "sp": "A", "gap": false, "start": 104.736, "end": 108.216, "words": [[104.854, 105.012], [105.025, 105.236], [105.249, 105.683], [106.131, 106.315], [106.328, 106.46], [106.473, 106.841], [106.854, 107.039], [107.052, 107.197], [107.21, 107.368], [107.381, 107.815]]}, {"kind": "s", "id": "s1_7_0", "md": "My pleasure, Mr. Lee. Enjoy the rest of your evening.", "zh": "不客气，Lee 先生。祝您晚上愉快。", "sp": "B", "gap": false, "start": 108.216, "end": 114.264, "words": [[108.319, 108.569], [108.582, 109.319], [109.595, 110.029], [110.042, 110.477], [111.4, 111.821], [111.834, 111.953], [111.966, 112.361], [112.374, 112.532], [112.545, 112.703], [112.716, 113.334]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

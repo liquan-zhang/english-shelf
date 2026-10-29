@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Taking a Taxi and Giving Directions · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "104", "type": "dialogue", "title": "Taking a Taxi and Giving Directions", "meta": "B2 · 约 280 词 · 场景：打车指路与车费争议", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Taxi Driver", "name_zh": "司机", "voice": "en-IN-PrabhatNeural"}}, "gist": [{"q": "「你」为什么不想全程跟导航走？", "a": "因为导航总是绕远，所以让司机跟导航到红绿灯，之后由「你」来指路。"}, {"q": "车费为什么比平时贵？", "a": "有高峰时段附加费和高速上的电子道路收费，另外开头还绕了一段路。"}, {"q": "司机最后怎么处理的？「你」要了什么？", "a": "司机承认错过路口，减了五块钱；「你」刷卡付款，要了打印收据用于报销。"}], "dictation": [{"id": "s0_3_0", "text": "Whichever is faster. I'm in a bit of a rush."}, {"id": "s0_11_0", "text": "No, you can pull over just before it, next to the white gate."}, {"id": "s1_1_0", "text": "Hmm, that's more than usual. It's normally around twenty. Is there a surcharge I'm missing?"}, {"id": "s1_3_0", "text": "I see. But I think we also took a detour near the start. That added a few minutes."}], "shadow": {"speaker": "A", "text": "Follow it until the traffic light, and then I'll guide you from there. The GPS always takes the long way.", "marked": "Follow it / until the <b>traffic light</b>, //<br>and then <b>I'll</b> guide you from there. //<br>The GPS / <b>always</b> takes the <b>long</b> way. //"}, "prompts": [{"q": "上车后发现司机开的方向不对，可能听错了地址。礼貌地打断他，重新说清楚目的地，并说你可以帮他指路。", "ref": "Sorry, uncle, I think we might be going the wrong way. I'm going to Holland Village, not Holland Road. It's the condo on Lorong Liput, near the market. Could you turn around at the next junction? Don't worry, I'll guide you once we get closer.", "ref_zh": "不好意思师傅，我们好像走错方向了。我去的是荷兰村，不是荷兰路。是 Lorong Liput 上的公寓，靠近巴刹。下个路口能掉个头吗？别担心，快到的时候我给你指路。", "id": "ref0"}, {"q": "下车后发现手机落在出租车上了。给出租车公司打电话，说明时间、上下车地点和车牌的线索，请他们联系司机。", "ref": "Hi, I took one of your taxis about twenty minutes ago, from Raffles Place to Holland Village, and I left my phone on the back seat. I paid by card, so you should have a record of the trip. The driver was very friendly and spoke with an Indian accent. Could you contact him and ask him to call this number? I'm happy to pay for his time.", "ref_zh": "你好，我大概二十分钟前坐了你们的出租车，从莱佛士坊到荷兰村，手机落在后座上了。我是刷卡付的，你们应该有行程记录。司机很友善，有印度口音。能帮我联系他、让他打这个号码吗？我愿意付他跑一趟的钱。", "id": "ref1"}], "words": [{"w": "expressway", "ipa": "/ɪkˈspresweɪ/", "zh": "高速公路", "ex": "The expressway is jammed after six.", "id": "w0"}, {"w": "turn down", "ipa": "/tɜːrn daʊn/", "zh": "调小", "ex": "Could you turn down the music a bit?", "id": "w1"}, {"w": "traffic light", "ipa": "/ˈtræfɪk laɪt/", "zh": "红绿灯", "ex": "Turn right at the next traffic light.", "id": "w2"}, {"w": "roundabout", "ipa": "/ˈraʊndəbaʊt/", "zh": "环岛", "ex": "Take the third exit at the roundabout.", "id": "w3"}, {"w": "pull over", "ipa": "/pʊl ˈoʊvər/", "zh": "靠边停车", "ex": "You can pull over next to the bus stop.", "id": "w4"}, {"w": "surcharge", "ipa": "/ˈsɜːrtʃɑːrdʒ/", "zh": "附加费", "ex": "There's a midnight surcharge on taxi fares.", "id": "w5"}, {"w": "detour", "ipa": "/ˈdiːtʊr/", "zh": "绕路", "ex": "The road was closed, so we had to take a detour.", "id": "w6"}, {"w": "receipt", "ipa": "/rɪˈsiːt/", "zh": "收据", "ex": "Can I get a receipt, please?", "id": "w7"}, {"w": "expenses", "ipa": "/ɪkˈspensɪz/", "zh": "（可报销的）费用", "ex": "I'll claim the taxi fare as expenses.", "id": "w8"}], "sections": [{"heading": "1. Getting In and Giving Directions", "heading_zh": "1. 上车与指路", "rows": [[{"id": "s0_0_0", "md": "Good evening, sir. Where to?", "text": "Good evening, sir. Where to?", "zh": "晚上好，先生。去哪儿？", "sp": "B"}], [{"id": "s0_1_0", "md": "Hi. Holland Village, please. It's a condo on Lorong Liput, right behind the market.", "text": "Hi. Holland Village, please. It's a condo on Lorong Liput, right behind the market.", "zh": "你好，去荷兰村。是 Lorong Liput 上的一个公寓，就在巴刹后面。", "sp": "A"}], [{"id": "s0_2_0", "md": "Sure. Do you want me to take the ==expressway==, or go through town? This time of day, the expressway is usually faster.", "text": "Sure. Do you want me to take the expressway, or go through town? This time of day, the expressway is usually faster.", "zh": "好的。要走高速，还是走市区？这个点走高速一般快一些。", "sp": "B"}], [{"id": "s0_3_0", "md": "**Whichever is faster. I'm in a bit of a rush.**", "text": "Whichever is faster. I'm in a bit of a rush.", "zh": "哪条快走哪条。我有点赶时间。", "sp": "A"}], [{"id": "s0_4_0", "md": "Okay, expressway then. Is the air con alright for you?", "text": "Okay, expressway then. Is the air con alright for you?", "zh": "好，那就走高速。空调温度还行吗？", "sp": "B"}], [{"id": "s0_5_0", "md": "It's a bit cold, actually. Could you __turn it down a little__?", "text": "It's a bit cold, actually. Could you turn it down a little?", "zh": "其实有点冷。能稍微调小一点吗？", "sp": "A"}], [{"id": "s0_6_0", "md": "No problem. When we come off the expressway, should I just follow the GPS?", "text": "No problem. When we come off the expressway, should I just follow the GPS?", "zh": "没问题。下了高速以后，我跟着导航走就行？", "sp": "B"}], [{"id": "s0_7_0", "md": "Follow it until the ==traffic light==, and then I'll __guide you__ from there. The GPS always takes the long way.", "text": "Follow it until the traffic light, and then I'll guide you from there. The GPS always takes the long way.", "zh": "跟导航到红绿灯那儿，然后我来给你指路。导航总是绕远。", "sp": "A"}], [{"id": "s0_8_0", "md": "Alright. Here's the traffic light now. Which way?", "text": "Alright. Here's the traffic light now. Which way?", "zh": "好的。到红绿灯了。往哪边走？", "sp": "B"}], [{"id": "s0_9_0", "md": "Turn left here, then take the second right. Then __keep going straight__ until you see a ==roundabout==.", "text": "Turn left here, then take the second right. Then keep going straight until you see a roundabout.", "zh": "这里左转，然后第二个路口右转。再一直往前，看到环岛为止。", "sp": "A"}], [{"id": "s0_10_0", "md": "Got it. Do you want me to go around it?", "text": "Got it. Do you want me to go around it?", "zh": "明白。要绕过环岛吗？", "sp": "B"}], [{"id": "s0_11_0", "md": "**No, you can pull over just before it, next to the white gate.**", "text": "No, you can pull over just before it, next to the white gate.", "zh": "不用，在环岛前面靠边停就行，白色大门旁边。", "sp": "A"}]]}, {"heading": "2. A Question About the Fare", "heading_zh": "2. 车费有疑问", "rows": [[{"id": "s1_0_0", "md": "Here we are. That'll be thirty-two dollars and forty cents.", "text": "Here we are. That'll be thirty-two dollars and forty cents.", "zh": "到了。一共三十二块四。", "sp": "B"}], [{"id": "s1_1_0", "md": "**Hmm, that's more than usual. It's normally around twenty. Is there a surcharge I'm missing?**", "text": "Hmm, that's more than usual. It's normally around twenty. Is there a surcharge I'm missing?", "zh": "嗯，比平时贵。一般二十块左右。是有什么附加费我没注意到吗？", "sp": "A"}], [{"id": "s1_2_0", "md": "Yes, there's a peak hour ==surcharge==, plus the ERP charge on the expressway.", "text": "Yes, there's a peak hour surcharge, plus the ERP charge on the expressway.", "zh": "是的，有高峰时段附加费，再加上高速上的电子道路收费。", "sp": "B"}], [{"id": "s1_3_0", "md": "I see. But I think we also took a ==detour== near the start. __That added__ a few minutes.", "text": "I see. But I think we also took a detour near the start. That added a few minutes.", "zh": "这样啊。不过我觉得刚开始那段也绕了路，多开了几分钟。", "sp": "A"}], [{"id": "s1_4_0", "md": "You're right, sir. I missed the turning earlier, sorry about that. Let me take off five dollars.", "text": "You're right, sir. I missed the turning earlier, sorry about that. Let me take off five dollars.", "zh": "您说得对，先生。我之前错过了一个路口，不好意思。我给您减五块。", "sp": "B"}], [{"id": "s1_5_0", "md": "Thanks, I appreciate that. Can I __pay by card__?", "text": "Thanks, I appreciate that. Can I pay by card?", "zh": "谢谢，感谢。可以刷卡吗？", "sp": "A"}], [{"id": "s1_6_0", "md": "Of course. Just tap here. Do you need a ==receipt==?", "text": "Of course. Just tap here. Do you need a receipt?", "zh": "当然。在这里拍一下就行。要收据吗？", "sp": "B"}], [{"id": "s1_7_0", "md": "Yes, please, a printed one. I'll need it for my ==expenses==.", "text": "Yes, please, a printed one. I'll need it for my expenses.", "zh": "要的，请给我打印的。我要拿去报销。", "sp": "A"}], [{"id": "s1_8_0", "md": "Here you go. Don't forget your umbrella, it's still raining.", "text": "Here you go. Don't forget your umbrella, it's still raining.", "zh": "给您。别忘了雨伞，外面还在下雨。", "sp": "B"}], [{"id": "s1_9_0", "md": "**Oh, thanks for the reminder. Have a good night, and drive safe.**", "text": "Oh, thanks for the reminder. Have a good night, and drive safe.", "zh": "哦，谢谢提醒。晚安，开车注意安全。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. Getting In and Giving Directions", "zh": "1. 上车与指路", "start": 0.0, "end": 2.952, "words": [[0.118, 0.408], [0.737, 1.039], [1.053, 1.316], [1.461, 1.566], [1.579, 1.842], [1.855, 2.566]]}, {"kind": "s", "id": "s0_0_0", "md": "Good evening, sir. Where to?", "zh": "晚上好，先生。去哪儿？", "sp": "B", "gap": false, "start": 2.952, "end": 7.008, "words": [[3.055, 3.318], [3.41, 3.949], [4.16, 4.568], [5.518, 5.834], [5.834, 6.031]]}, {"kind": "s", "id": "s0_1_0", "md": "Hi. Holland Village, please. It's a condo on Lorong Liput, right behind the market.", "zh": "你好，去荷兰村。是 Lorong Liput 上的一个公寓，就在巴刹后面。", "sp": "A", "gap": false, "start": 7.008, "end": 13.128, "words": [[7.14, 7.39], [7.824, 8.087], [8.1, 8.521], [8.626, 9.166], [9.6, 9.705], [9.719, 9.771], [9.784, 10.311], [10.324, 10.495], [10.508, 10.942], [10.955, 11.337], [11.653, 11.837], [11.85, 12.166], [12.179, 12.232], [12.245, 12.718]]}, {"kind": "s", "id": "s0_2_0", "md": "Sure. Do you want me to take the ==expressway==, or go through town? This time of day, the expressway is usually faster.", "zh": "好的。要走高速，还是走市区？这个点走高速一般快一些。", "sp": "B", "gap": false, "start": 13.128, "end": 24.192, "words": [[13.231, 13.665], [14.654, 14.812], [14.812, 14.931], [14.97, 15.339], [15.339, 15.575], [15.589, 15.707], [15.707, 16.049], [16.062, 16.233], [16.233, 16.97], [17.273, 17.47], [17.47, 17.707], [17.707, 17.983], [17.983, 18.431], [19.339, 19.615], [19.615, 20.049], [20.049, 20.286], [20.286, 20.588], [20.891, 21.049], [21.049, 21.865], [21.957, 22.141], [22.167, 22.694], [22.694, 23.26]]}, {"kind": "s", "id": "s0_3_0", "md": "**Whichever is faster. I'm in a bit of a rush.**", "zh": "哪条快走哪条。我有点赶时间。", "sp": "A", "gap": false, "start": 24.192, "end": 27.36, "words": [[24.31, 24.679], [24.692, 24.784], [24.797, 25.376], [25.81, 25.942], [25.955, 26.008], [26.021, 26.074], [26.087, 26.284], [26.297, 26.363], [26.376, 26.429], [26.442, 26.968]]}, {"kind": "s", "id": "s0_4_0", "md": "Okay, expressway then. Is the air con alright for you?", "zh": "好，那就走高速。空调温度还行吗？", "sp": "B", "gap": false, "start": 27.36, "end": 33.096, "words": [[27.463, 27.831], [28.015, 28.739], [28.739, 29.121], [30.044, 30.202], [30.202, 30.373], [30.452, 30.755], [30.755, 31.031], [31.11, 31.597], [31.597, 31.873], [31.873, 32.097]]}, {"kind": "s", "id": "s0_5_0", "md": "It's a bit cold, actually. Could you __turn it down a little__?", "zh": "其实有点冷。能稍微调小一点吗？", "sp": "A", "gap": false, "start": 33.096, "end": 36.432, "words": [[33.201, 33.306], [33.32, 33.372], [33.385, 33.543], [33.557, 33.925], [33.951, 34.491], [34.925, 35.043], [35.057, 35.135], [35.149, 35.359], [35.372, 35.438], [35.451, 35.649], [35.662, 35.701], [35.714, 36.03]]}, {"kind": "s", "id": "s0_6_0", "md": "No problem. When we come off the expressway, should I just follow the GPS?", "zh": "没问题。下了高速以后，我跟着导航走就行？", "sp": "B", "gap": false, "start": 36.432, "end": 43.464, "words": [[36.535, 36.706], [36.745, 37.285], [38.182, 38.432], [38.432, 38.603], [38.616, 38.945], [38.945, 39.221], [39.221, 39.392], [39.393, 40.143], [40.485, 40.721], [40.721, 40.892], [40.893, 41.261], [41.261, 41.643], [41.643, 41.787], [41.787, 42.524]]}, {"kind": "s", "id": "s0_7_0", "md": "Follow it until the ==traffic light==, and then I'll __guide you__ from there. The GPS always takes the long way.", "zh": "跟导航到红绿灯那儿，然后我来给你指路。导航总是绕远。", "sp": "A", "gap": false, "start": 43.464, "end": 50.064, "words": [[43.675, 43.977], [43.99, 44.096], [44.175, 44.451], [44.464, 44.543], [44.556, 45.017], [45.03, 45.306], [45.727, 45.793], [45.806, 45.938], [45.951, 46.069], [46.082, 46.359], [46.372, 46.464], [46.477, 46.661], [46.675, 46.964], [47.411, 47.49], [47.503, 48.188], [48.319, 48.701], [48.714, 48.977], [48.99, 49.082], [49.096, 49.359], [49.372, 49.674]]}, {"kind": "s", "id": "s0_8_0", "md": "Alright. Here's the traffic light now. Which way?", "zh": "好的。到红绿灯了。往哪边走？", "sp": "B", "gap": false, "start": 50.064, "end": 55.896, "words": [[50.167, 50.746], [51.696, 52.103], [52.103, 52.261], [52.261, 52.761], [52.761, 53.103], [53.117, 53.485], [54.353, 54.63], [54.63, 54.906]]}, {"kind": "s", "id": "s0_9_0", "md": "Turn left here, then take the second right. Then __keep going straight__ until you see a ==roundabout==.", "zh": "这里左转，然后第二个路口右转。再一直往前，看到环岛为止。", "sp": "A", "gap": false, "start": 55.896, "end": 61.608, "words": [[56.001, 56.185], [56.199, 56.435], [56.449, 56.712], [57.041, 57.199], [57.212, 57.435], [57.449, 57.541], [57.554, 57.949], [57.962, 58.251], [58.699, 58.817], [58.83, 59.054], [59.067, 59.343], [59.357, 59.804], [59.883, 60.133], [60.146, 60.238], [60.251, 60.435], [60.449, 60.501], [60.514, 61.212]]}, {"kind": "s", "id": "s0_10_0", "md": "Got it. Do you want me to go around it?", "zh": "明白。要绕过环岛吗？", "sp": "B", "gap": false, "start": 61.608, "end": 65.952, "words": [[61.711, 62.0], [62.0, 62.224], [63.161, 63.319], [63.319, 63.424], [63.45, 63.805], [63.805, 64.029], [64.042, 64.147], [64.147, 64.397], [64.397, 64.779], [64.779, 64.99]]}, {"kind": "s", "id": "s0_11_0", "md": "**No, you can pull over just before it, next to the white gate.**", "zh": "不用，在环岛前面靠边停就行，白色大门旁边。", "sp": "A", "gap": false, "start": 65.952, "end": 70.128, "words": [[66.057, 66.334], [66.715, 66.794], [66.807, 66.952], [66.965, 67.202], [67.215, 67.452], [67.465, 67.702], [67.715, 68.136], [68.149, 68.281], [68.715, 68.899], [68.913, 68.965], [68.978, 69.084], [69.097, 69.36], [69.373, 69.728]]}, {"kind": "h", "id": "h1", "md": "2. A Question About the Fare", "zh": "2. 车费有疑问", "start": 70.128, "end": 72.432, "words": [[70.246, 70.496], [70.773, 70.852], [70.865, 71.286], [71.299, 71.51], [71.523, 71.602], [71.615, 72.036]]}, {"kind": "s", "id": "s1_0_0", "md": "Here we are. That'll be thirty-two dollars and forty cents.", "zh": "到了。一共三十二块四。", "sp": "B", "gap": false, "start": 72.432, "end": 78.216, "words": [[72.535, 72.864], [72.864, 73.1], [73.1, 73.377], [74.34, 74.774], [74.774, 74.945], [74.945, 75.537], [75.537, 76.103], [76.182, 76.406], [76.406, 76.827], [76.827, 77.3]]}, {"kind": "s", "id": "s1_1_0", "md": "**Hmm, that's more than usual. It's normally around twenty. Is there a surcharge I'm missing?**", "zh": "嗯，比平时贵。一般二十块左右。是有什么附加费我没注意到吗？", "sp": "A", "gap": false, "start": 78.216, "end": 83.856, "words": [[78.334, 78.519], [78.9, 79.098], [79.111, 79.282], [79.295, 79.427], [79.44, 79.94], [80.374, 80.519], [80.532, 80.913], [80.927, 81.229], [81.242, 81.637], [82.071, 82.163], [82.177, 82.295], [82.308, 82.361], [82.374, 82.953], [82.966, 83.058], [83.071, 83.453]]}, {"kind": "s", "id": "s1_2_0", "md": "Yes, there's a peak hour ==surcharge==, plus the ERP charge on the expressway.", "zh": "是的，有高峰时段附加费，再加上高速上的电子道路收费。", "sp": "B", "gap": false, "start": 83.856, "end": 90.672, "words": [[83.959, 84.314], [84.59, 85.038], [85.117, 85.195], [85.195, 85.577], [85.656, 85.893], [85.893, 86.616], [86.959, 87.222], [87.222, 87.419], [87.511, 88.064], [88.077, 88.551], [88.643, 88.801], [88.801, 88.945], [88.945, 89.709]]}, {"kind": "s", "id": "s1_3_0", "md": "I see. But I think we also took a ==detour== near the start. __That added__ a few minutes.", "zh": "这样啊。不过我觉得刚开始那段也绕了路，多开了几分钟。", "sp": "A", "gap": false, "start": 90.672, "end": 95.808, "words": [[90.777, 90.856], [90.869, 91.212], [91.659, 91.738], [91.751, 91.804], [91.817, 92.014], [92.027, 92.146], [92.159, 92.422], [92.435, 92.633], [92.646, 92.711], [92.725, 93.119], [93.133, 93.29], [93.304, 93.369], [93.383, 93.843], [94.29, 94.422], [94.435, 94.659], [94.672, 94.711], [94.725, 94.896], [94.909, 95.409]]}, {"kind": "s", "id": "s1_4_0", "md": "You're right, sir. I missed the turning earlier, sorry about that. Let me take off five dollars.", "zh": "您说得对，先生。我之前错过了一个路口，不好意思。我给您减五块。", "sp": "B", "gap": false, "start": 95.808, "end": 105.504, "words": [[95.911, 96.2], [96.2, 96.608], [96.766, 97.147], [98.097, 98.255], [98.255, 98.598], [98.676, 98.808], [98.821, 99.361], [99.413, 99.979], [100.15, 100.571], [100.637, 100.992], [100.992, 101.413], [102.347, 102.624], [102.65, 102.887], [102.926, 103.229], [103.229, 103.571], [103.571, 103.979], [103.979, 104.584]]}, {"kind": "s", "id": "s1_5_0", "md": "Thanks, I appreciate that. Can I __pay by card__?", "zh": "谢谢，感谢。可以刷卡吗？", "sp": "A", "gap": false, "start": 105.504, "end": 108.744, "words": [[105.636, 105.938], [106.03, 106.109], [106.122, 106.662], [106.675, 106.964], [107.399, 107.504], [107.517, 107.583], [107.596, 107.78], [107.793, 107.978], [107.991, 108.359]]}, {"kind": "s", "id": "s1_6_0", "md": "Of course. Just tap here. Do you need a ==receipt==?", "zh": "当然。在这里拍一下就行。要收据吗？", "sp": "B", "gap": false, "start": 108.744, "end": 114.864, "words": [[108.847, 109.057], [109.07, 109.557], [110.494, 110.849], [110.915, 111.244], [111.244, 111.626], [112.56, 112.718], [112.718, 112.823], [112.849, 113.191], [113.27, 113.362], [113.362, 113.889]]}, {"kind": "s", "id": "s1_7_0", "md": "Yes, please, a printed one. I'll need it for my ==expenses==.", "zh": "要的，请给我打印的。我要拿去报销。", "sp": "A", "gap": false, "start": 114.864, "end": 118.92, "words": [[114.969, 115.377], [115.601, 116.048], [116.075, 116.127], [116.14, 116.469], [116.482, 116.746], [117.18, 117.285], [117.298, 117.456], [117.469, 117.535], [117.548, 117.667], [117.68, 117.825], [117.838, 118.535]]}, {"kind": "s", "id": "s1_8_0", "md": "Here you go. Don't forget your umbrella, it's still raining.", "zh": "给您。别忘了雨伞，外面还在下雨。", "sp": "B", "gap": false, "start": 118.92, "end": 125.016, "words": [[119.023, 119.312], [119.312, 119.496], [119.496, 119.786], [120.762, 121.091], [121.091, 121.617], [121.67, 121.973], [122.065, 122.604], [122.894, 123.144], [123.196, 123.525], [123.525, 124.052]]}, {"kind": "s", "id": "s1_9_0", "md": "**Oh, thanks for the reminder. Have a good night, and drive safe.**", "zh": "哦，谢谢提醒。晚安，开车注意安全。", "sp": "A", "gap": false, "start": 125.016, "end": 129.36, "words": [[125.121, 125.319], [125.74, 125.963], [125.977, 126.069], [126.082, 126.161], [126.174, 126.74], [127.174, 127.279], [127.292, 127.345], [127.358, 127.516], [127.529, 127.819], [128.095, 128.148], [128.161, 128.477], [128.49, 128.976]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

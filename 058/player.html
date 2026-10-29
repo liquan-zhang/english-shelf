@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>When Your Report Wants to Quit · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "058", "title": "When Your Report Wants to Quit", "meta": "B2 · 约 270 词 · 场景：留人谈话", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The First Five Minutes Matter Most", "heading_zh": "1. 最关键的是头五分钟", "rows": [[{"id": "s0_0_0", "md": "Your best backend engineer asks for a quick call and says, \"I've been thinking about leaving.\"", "text": "Your best backend engineer asks for a quick call and says, \"I've been thinking about leaving.\"", "zh": "你最好的后端工程师约你快速通个话，说：「我最近在考虑离开。」", "sp": null}, {"id": "s0_0_1", "md": "Your stomach drops.", "text": "Your stomach drops.", "zh": "你心里一沉。", "sp": null}, {"id": "s0_0_2", "md": "You think about the roadmap, the on-call rotation, and how you will explain this to your manager.", "text": "You think about the roadmap, the on-call rotation, and how you will explain this to your manager.", "zh": "你想到了 roadmap、on-call 排班，还有该怎么跟你老板解释。", "sp": null}], [{"id": "s0_1_0", "md": "In that moment, most managers make one of two mistakes.", "text": "In that moment, most managers make one of two mistakes.", "zh": "在那一刻，大多数管理者会犯两种错误中的一种。", "sp": null}, {"id": "s0_1_1", "md": "They panic and promise things they cannot deliver, or they ==take it personally== and go cold.", "text": "They panic and promise things they cannot deliver, or they take it personally and go cold.", "zh": "要么慌了，许下自己兑现不了的承诺；要么觉得是针对自己，态度一下子冷下来。", "sp": null}, {"id": "s0_1_2", "md": "Both reactions tell the engineer that your feelings matter more than theirs.", "text": "Both reactions tell the engineer that your feelings matter more than theirs.", "zh": "这两种反应都在告诉工程师：你的感受比他的更重要。", "sp": null}], [{"id": "s0_2_0", "md": "**Your first job is not to keep them; it is to understand them.**", "text": "Your first job is not to keep them; it is to understand them.", "zh": "你的第一要务不是留住他；而是理解他。", "sp": null}, {"id": "s0_2_1", "md": "Thank them for telling you early, because many people simply hand in a ==resignation== letter.", "text": "Thank them for telling you early, because many people simply hand in a resignation letter.", "zh": "谢谢他早点告诉你，因为很多人直接就递辞职信了。", "sp": null}, {"id": "s0_2_2", "md": "Then ==resist== the urge to __fix it on the spot__, and just listen.", "text": "Then resist the urge to fix it on the spot, and just listen.", "zh": "然后忍住当场解决问题的冲动，只是听。", "sp": null}]]}, {"heading": "2. Finding the Real Reason", "heading_zh": "2. 找到真正的原因", "rows": [[{"id": "s1_0_0", "md": "The first reason people give is often the safest one, like salary or a long commute.", "text": "The first reason people give is often the safest one, like salary or a long commute.", "zh": "人们给出的第一个理由，往往是最安全的那个，比如薪资或者通勤太远。", "sp": null}, {"id": "s1_0_1", "md": "Ask gently, \"If that were solved, would you still be thinking about leaving?\"", "text": "Ask gently, \"If that were solved, would you still be thinking about leaving?\"", "zh": "温和地问一句：「如果这个问题解决了，你还会考虑离开吗？」", "sp": null}, {"id": "s1_0_2", "md": "The answer usually __points to__ something deeper: boring work, a ==stalled== promotion, or tension with someone on the team.", "text": "The answer usually points to something deeper: boring work, a stalled promotion, or tension with someone on the team.", "zh": "答案通常会指向更深层的东西：工作没意思、晋升卡住了，或者跟团队里某个人有矛盾。", "sp": null}], [{"id": "s1_1_0", "md": "Once you know the real reason, be honest about what you can change.", "text": "Once you know the real reason, be honest about what you can change.", "zh": "一旦知道了真正的原因，就诚实地说清楚你能改变什么。", "sp": null}, {"id": "s1_1_1", "md": "If they want harder problems, you might move them onto the new streaming project next quarter.", "text": "If they want harder problems, you might move them onto the new streaming project next quarter.", "zh": "如果他想做更有挑战的事，你也许可以下个季度把他调到新的流式计算项目上。", "sp": null}, {"id": "s1_1_2", "md": "If they want a promotion that cannot happen this year, say so clearly.", "text": "If they want a promotion that cannot happen this year, say so clearly.", "zh": "如果他想要的晋升今年不可能实现，就明确说出来。", "sp": null}, {"id": "s1_1_3", "md": "**A vague promise that falls through later does more damage than a hard truth today.**", "text": "A vague promise that falls through later does more damage than a hard truth today.", "zh": "一个之后落空的含糊承诺，比今天一个难听的实话伤害更大。", "sp": null}], [{"id": "s1_2_0", "md": "Sometimes the right outcome is that they leave.", "text": "Sometimes the right outcome is that they leave.", "zh": "有时候，正确的结果就是他离开。", "sp": null}, {"id": "s1_2_1", "md": "A better opportunity elsewhere is not a ==betrayal==, and treating it like one hurts the team that stays behind.", "text": "A better opportunity elsewhere is not a betrayal, and treating it like one hurts the team that stays behind.", "zh": "外面有更好的机会并不是背叛，把它当成背叛，伤害的是留下来的团队。", "sp": null}, {"id": "s1_2_2", "md": "Help them hand over their work well, and __part on good terms__.", "text": "Help them hand over their work well, and part on good terms.", "zh": "帮他把工作好好交接，好聚好散。", "sp": null}, {"id": "s1_2_3", "md": "Engineers who leave ==gracefully== often come back, or send great people your way.", "text": "Engineers who leave gracefully often come back, or send great people your way.", "zh": "体面离开的工程师常常会回来，或者给你推荐很优秀的人。", "sp": null}]]}], "gist": [{"q": "听到下属想离职时，经理常犯哪两种错误？", "a": "慌乱之下许诺做不到的事，或者当成针对自己而变冷淡；两者都在告诉对方你的感受比他的重要。"}, {"q": "怎样找到对方想走的真实原因？", "a": "对方先说的往往是最安全的理由（薪水、通勤）；温和地问「如果这个解决了，你还会考虑走吗」，答案通常指向更深的原因。"}, {"q": "如果对方最终要走，作者建议怎么做？", "a": "别把它当背叛，帮他做好交接，好聚好散；体面离开的人常会回来或推荐好人选。"}], "dictation": [{"id": "s0_2_0", "text": "Your first job is not to keep them; it is to understand them."}, {"id": "s0_2_2", "text": "Then resist the urge to fix it on the spot, and just listen."}, {"id": "s1_1_3", "text": "A vague promise that falls through later does more damage than a hard truth today."}, {"id": "s1_2_0", "text": "Sometimes the right outcome is that they leave."}], "shadow": {"text": "In that moment, most managers make one of two mistakes. They panic and promise things they cannot deliver, or they take it personally and go cold. Both reactions tell the engineer that your feelings matter more than theirs.", "marked": "In that moment, / most managers make one of <b>two</b> mistakes. //<br>They <b>panic</b> / and promise things they <b>cannot</b> deliver, / or they take it <b>personally</b> / and go <b>cold</b>. //<br><b>Both</b> reactions tell the engineer / that <b>your</b> feelings matter more / than <b>theirs</b>. //"}, "prompts": [{"q": "下属在一对一里突然说他在考虑离职。用 30 秒回应：先感谢，不慌不许诺，然后请他多讲讲。", "ref": "Thank you for telling me, really. I know that's not an easy thing to bring up, and I'd much rather hear it from you now than read it in an email. I'm not going to try to talk you out of anything today. I just want to understand. Can you tell me more about what's been on your mind, and how long you've felt this way?", "ref_zh": "真的谢谢你告诉我。我知道这事不好开口，我宁愿现在听你亲口说，也不想在邮件里看到。今天我不会试图劝你什么。我只是想了解一下。能多跟我说说你最近在想什么吗？这种感觉有多久了？", "id": "ref0"}, {"q": "下属说想走是因为晋升没希望，而你知道今年确实升不了。用 30 秒诚实回应，同时说明你能做什么。", "ref": "I want to be straight with you, because you deserve that. A promotion this cycle isn't realistic; the calibration is already closed. What I can do is give you the payments redesign next quarter, which is exactly the scope the next level needs, and write a clear growth plan with you this week. If that's still not enough, I'll understand, and I'll support whatever you decide.", "ref_zh": "我想跟你直说，因为你值得我这么做。这一轮晋升不现实了；校准已经结束了。我能做的是下个季度把支付改版交给你，这正好是下一级需要的范围，这周再跟你一起写一份清晰的成长计划。如果这样还是不够，我能理解，不管你怎么决定我都支持。", "id": "ref1"}], "words": [{"w": "take it personally", "ipa": "/teɪk ɪt ˈpɜːrsənəli/", "zh": "当成针对自己", "ex": "Don't take it personally; the review comments are about the code.", "id": "w0"}, {"w": "resignation", "ipa": "/ˌrezɪɡˈneɪʃən/", "zh": "辞职（信）", "ex": "She handed in her resignation the day after the reorg.", "id": "w1"}, {"w": "resist", "ipa": "/rɪˈzɪst/", "zh": "抵制、忍住", "ex": "Resist the urge to deploy a hotfix before we understand the cause.", "id": "w2"}, {"w": "stalled", "ipa": "/stɔːld/", "zh": "停滞的", "ex": "The migration has been stalled since the lead engineer left.", "id": "w3"}, {"w": "betrayal", "ipa": "/bɪˈtreɪəl/", "zh": "背叛", "ex": "Leaving for a better role is a career move, not a betrayal.", "id": "w4"}, {"w": "gracefully", "ipa": "/ˈɡreɪsfəli/", "zh": "体面地、优雅地", "ex": "The service should degrade gracefully when the cache is down.", "id": "w5"}, {"w": "fall through", "ipa": "/fɔːl θruː/", "zh": "落空、泡汤", "ex": "The vendor deal fell through, so we're building it ourselves.", "id": "w6"}, {"w": "panic", "ipa": "/ˈpænɪk/", "zh": "惊慌", "ex": "Don't panic; we can roll back in five minutes.", "id": "w7"}, {"w": "commute", "ipa": "/kəˈmjuːt/", "zh": "通勤", "ex": "Her commute is over an hour, so she prefers remote days.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The First Five Minutes Matter Most", "zh": "1. 最关键的是头五分钟", "start": 0.0, "end": 2.88, "words": [[0.105, 0.355], [0.697, 0.789], [0.803, 1.118], [1.132, 1.395], [1.408, 1.684], [1.697, 2.0], [2.013, 2.487]]}, {"kind": "s", "id": "s0_0_0", "md": "Your best backend engineer asks for a quick call and says, \"I've been thinking about leaving.\"", "zh": "你最好的后端工程师约你快速通个话，说：「我最近在考虑离开。」", "sp": null, "gap": false, "start": 2.88, "end": 8.808, "words": [[2.985, 3.13], [3.143, 3.498], [3.512, 3.933], [3.946, 4.433], [4.446, 4.762], [4.775, 4.933], [4.946, 4.985], [4.998, 5.288], [5.301, 5.683], [5.946, 6.025], [6.038, 6.459], [6.906, 7.064], [7.077, 7.262], [7.275, 7.709], [7.722, 8.012], [8.025, 8.406]]}, {"kind": "s", "id": "s0_0_1", "md": "Your stomach drops.", "zh": "你心里一沉。", "sp": null, "gap": false, "start": 8.808, "end": 10.68, "words": [[8.913, 8.992], [9.005, 9.321], [9.334, 9.847]]}, {"kind": "s", "id": "s0_0_2", "md": "You think about the roadmap, the on-call rotation, and how you will explain this to your manager.", "zh": "你想到了 roadmap、on-call 排班，还有该怎么跟你老板解释。", "sp": null, "gap": false, "start": 10.68, "end": 16.296, "words": [[10.798, 10.877], [10.891, 11.088], [11.101, 11.338], [11.351, 11.43], [11.443, 12.088], [12.298, 12.43], [12.443, 12.891], [12.904, 13.509], [13.904, 13.956], [13.969, 14.14], [14.154, 14.259], [14.272, 14.404], [14.417, 14.956], [14.969, 15.14], [15.154, 15.259], [15.272, 15.377], [15.391, 15.917]]}, {"kind": "s", "id": "s0_1_0", "md": "In that moment, most managers make one of two mistakes.", "zh": "在那一刻，大多数管理者会犯两种错误中的一种。", "sp": null, "gap": true, "start": 16.296, "end": 20.088, "words": [[16.401, 16.506], [16.52, 16.704], [16.717, 17.112], [17.507, 17.757], [17.77, 18.283], [18.296, 18.546], [18.559, 18.691], [18.704, 18.796], [18.809, 19.007], [19.02, 19.704]]}, {"kind": "s", "id": "s0_1_1", "md": "They panic and promise things they cannot deliver, or they ==take it personally== and go cold.", "zh": "要么慌了，许下自己兑现不了的承诺；要么觉得是针对自己，态度一下子冷下来。", "sp": null, "gap": false, "start": 20.088, "end": 25.536, "words": [[20.206, 20.312], [20.325, 20.798], [20.864, 20.97], [20.983, 21.47], [21.483, 21.72], [21.733, 21.851], [21.864, 22.246], [22.259, 22.72], [23.141, 23.193], [23.206, 23.325], [23.338, 23.575], [23.588, 23.667], [23.68, 24.285], [24.43, 24.522], [24.535, 24.72], [24.733, 25.154]]}, {"kind": "s", "id": "s0_1_2", "md": "Both reactions tell the engineer that your feelings matter more than theirs.", "zh": "这两种反应都在告诉工程师：你的感受比他的更重要。", "sp": null, "gap": false, "start": 25.536, "end": 29.976, "words": [[25.654, 25.852], [25.865, 26.575], [26.589, 26.799], [26.812, 26.904], [26.918, 27.549], [27.562, 27.681], [27.694, 27.812], [27.825, 28.365], [28.378, 28.747], [28.76, 28.97], [28.983, 29.115], [29.128, 29.589]]}, {"kind": "s", "id": "s0_2_0", "md": "**Your first job is not to keep them; it is to understand them.**", "zh": "你的第一要务不是留住他；而是理解他。", "sp": null, "gap": true, "start": 29.976, "end": 33.888, "words": [[30.081, 30.186], [30.2, 30.542], [30.555, 30.884], [30.989, 31.094], [31.108, 31.358], [31.371, 31.45], [31.463, 31.752], [31.765, 31.963], [32.45, 32.502], [32.515, 32.634], [32.647, 32.726], [32.739, 33.331], [33.344, 33.502]]}, {"kind": "s", "id": "s0_2_1", "md": "Thank them for telling you early, because many people simply hand in a ==resignation== letter.", "zh": "谢谢他早点告诉你，因为很多人直接就递辞职信了。", "sp": null, "gap": false, "start": 33.888, "end": 39.144, "words": [[34.046, 34.23], [34.243, 34.375], [34.388, 34.533], [34.546, 34.849], [34.862, 34.98], [34.993, 35.375], [35.625, 35.954], [35.967, 36.309], [36.322, 36.704], [36.717, 37.138], [37.151, 37.546], [37.559, 37.625], [37.638, 37.691], [37.704, 38.375], [38.388, 38.743]]}, {"kind": "s", "id": "s0_2_2", "md": "Then ==resist== the urge to __fix it on the spot__, and just listen.", "zh": "然后忍住当场解决问题的冲动，只是听。", "sp": null, "gap": false, "start": 39.144, "end": 42.96, "words": [[39.249, 39.394], [39.407, 39.855], [39.868, 39.96], [39.973, 40.341], [40.355, 40.447], [40.46, 40.828], [40.841, 40.907], [40.92, 41.026], [41.039, 41.105], [41.118, 41.604], [41.933, 41.986], [41.999, 42.236], [42.249, 42.578]]}, {"kind": "h", "id": "h1", "md": "2. Finding the Real Reason", "zh": "2. 找到真正的原因", "start": 42.96, "end": 45.288, "words": [[43.065, 43.355], [43.71, 44.065], [44.078, 44.157], [44.171, 44.513], [44.526, 44.907]]}, {"kind": "s", "id": "s1_0_0", "md": "The first reason people give is often the safest one, like salary or a long commute.", "zh": "人们给出的第一个理由，往往是最安全的那个，比如薪资或者通勤太远。", "sp": null, "gap": false, "start": 45.288, "end": 50.904, "words": [[45.406, 45.472], [45.485, 45.814], [45.827, 46.104], [46.117, 46.459], [46.472, 46.749], [46.814, 46.92], [46.933, 47.288], [47.301, 47.393], [47.406, 47.946], [47.959, 48.183], [48.617, 48.749], [48.762, 49.433], [49.577, 49.696], [49.709, 49.762], [49.775, 50.077], [50.091, 50.525]]}, {"kind": "s", "id": "s1_0_1", "md": "Ask gently, \"If that were solved, would you still be thinking about leaving?\"", "zh": "温和地问一句：「如果这个问题解决了，你还会考虑离开吗？」", "sp": null, "gap": false, "start": 50.904, "end": 55.656, "words": [[51.009, 51.299], [51.312, 51.759], [52.286, 52.404], [52.417, 52.575], [52.588, 52.707], [52.72, 53.22], [53.601, 53.72], [53.733, 53.825], [53.838, 54.049], [54.062, 54.18], [54.193, 54.562], [54.575, 54.851], [54.865, 55.246]]}, {"kind": "s", "id": "s1_0_2", "md": "The answer usually __points to__ something deeper: boring work, a ==stalled== promotion, or tension with someone on the team.", "zh": "答案通常会指向更深层的东西：工作没意思、晋升卡住了，或者跟团队里某个人有矛盾。", "sp": null, "gap": false, "start": 55.656, "end": 62.52, "words": [[55.774, 55.867], [55.88, 56.248], [56.261, 56.682], [56.695, 57.09], [57.103, 57.195], [57.209, 57.617], [57.63, 57.998], [58.419, 58.761], [58.774, 59.09], [59.327, 59.353], [59.367, 59.722], [59.735, 60.34], [60.643, 60.722], [60.735, 61.13], [61.143, 61.288], [61.301, 61.59], [61.603, 61.695], [61.709, 61.774], [61.788, 62.143]]}, {"kind": "s", "id": "s1_1_0", "md": "Once you know the real reason, be honest about what you can change.", "zh": "一旦知道了真正的原因，就诚实地说清楚你能改变什么。", "sp": null, "gap": true, "start": 62.52, "end": 66.432, "words": [[62.638, 62.823], [62.836, 62.928], [62.941, 63.086], [63.099, 63.191], [63.204, 63.481], [63.494, 63.888], [64.257, 64.402], [64.415, 64.783], [64.796, 65.046], [65.059, 65.204], [65.217, 65.323], [65.336, 65.467], [65.481, 66.046]]}, {"kind": "s", "id": "s1_1_1", "md": "If they want harder problems, you might move them onto the new streaming project next quarter.", "zh": "如果他想做更有挑战的事，你也许可以下个季度把他调到新的流式计算项目上。", "sp": null, "gap": false, "start": 66.432, "end": 71.808, "words": [[66.537, 66.642], [66.656, 66.735], [66.748, 66.945], [66.958, 67.3], [67.314, 67.919], [68.156, 68.235], [68.248, 68.471], [68.485, 68.761], [68.774, 68.945], [69.024, 69.274], [69.287, 69.379], [69.393, 69.695], [69.708, 70.169], [70.182, 70.735], [70.748, 70.998], [71.011, 71.419]]}, {"kind": "s", "id": "s1_1_2", "md": "If they want a promotion that cannot happen this year, say so clearly.", "zh": "如果他想要的晋升今年不可能实现，就明确说出来。", "sp": null, "gap": false, "start": 71.808, "end": 75.96, "words": [[71.913, 72.019], [72.032, 72.124], [72.137, 72.308], [72.321, 72.374], [72.387, 72.926], [72.94, 73.084], [73.097, 73.44], [73.453, 73.808], [73.821, 74.019], [74.032, 74.268], [74.597, 74.782], [74.795, 75.071], [75.084, 75.571]]}, {"kind": "s", "id": "s1_1_3", "md": "**A vague promise that falls through later does more damage than a hard truth today.**", "zh": "一个之后落空的含糊承诺，比今天一个难听的实话伤害更大。", "sp": null, "gap": false, "start": 75.96, "end": 80.88, "words": [[76.052, 76.105], [76.118, 76.434], [76.447, 76.894], [76.907, 77.039], [77.052, 77.434], [77.447, 77.631], [77.644, 78.052], [78.131, 78.368], [78.381, 78.657], [78.671, 79.21], [79.223, 79.355], [79.368, 79.407], [79.421, 79.789], [79.802, 80.118], [80.131, 80.486]]}, {"kind": "s", "id": "s1_2_0", "md": "Sometimes the right outcome is that they leave.", "zh": "有时候，正确的结果就是他离开。", "sp": null, "gap": true, "start": 80.88, "end": 83.64, "words": [[80.998, 81.472], [81.485, 81.577], [81.591, 81.827], [81.841, 82.314], [82.433, 82.525], [82.538, 82.696], [82.709, 82.827], [82.841, 83.262]]}, {"kind": "s", "id": "s1_2_1", "md": "A better opportunity elsewhere is not a ==betrayal==, and treating it like one hurts the team that stays behind.", "zh": "外面有更好的机会并不是背叛，把它当成背叛，伤害的是留下来的团队。", "sp": null, "gap": false, "start": 83.64, "end": 90.456, "words": [[83.745, 83.811], [83.824, 84.114], [84.127, 84.798], [84.811, 85.364], [85.443, 85.574], [85.587, 85.903], [85.916, 85.956], [85.969, 86.587], [86.995, 87.048], [87.061, 87.443], [87.456, 87.561], [87.574, 87.811], [87.89, 88.127], [88.14, 88.443], [88.456, 88.548], [88.561, 88.916], [89.048, 89.179], [89.193, 89.522], [89.535, 90.061]]}, {"kind": "s", "id": "s1_2_2", "md": "Help them hand over their work well, and __part on good terms__.", "zh": "帮他把工作好好交接，好聚好散。", "sp": null, "gap": false, "start": 90.456, "end": 94.224, "words": [[90.574, 90.745], [90.759, 90.89], [90.903, 91.219], [91.232, 91.417], [91.43, 91.601], [91.614, 91.838], [91.851, 92.167], [92.561, 92.627], [92.64, 92.877], [92.89, 93.009], [93.022, 93.245], [93.259, 93.838]]}, {"kind": "s", "id": "s1_2_3", "md": "Engineers who leave ==gracefully== often come back, or send great people your way.", "zh": "体面离开的工程师常常会回来，或者给你推荐很优秀的人。", "sp": null, "gap": false, "start": 94.224, "end": 99.552, "words": [[94.329, 94.921], [94.935, 95.079], [95.092, 95.435], [95.513, 96.198], [96.211, 96.579], [96.592, 96.803], [96.816, 97.211], [97.619, 97.685], [97.698, 98.0], [98.013, 98.369], [98.382, 98.711], [98.724, 98.869], [98.882, 99.158]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

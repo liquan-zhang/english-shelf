@@ -1,0 +1,188 @@
+{
+  "id": "096",
+  "title": "Leading a Video Call with Bad Connections",
+  "meta": "B2 · 约 280 词 · 场景：网络不好时主持视频会",
+  "voice": "en-GB-SoniaNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Call That Falls Apart",
+      "paragraphs": [
+        [
+          "You know the call.",
+          "Someone's voice freezes in the middle of a sentence, two people start talking at once after a delay, and a third has been on mute for five minutes without realizing it.",
+          "By the end, nobody is sure what was decided."
+        ],
+        [
+          "With teammates in Manila, Chennai and rural Australia, weak connections are not rare ==exceptions==.",
+          "They are part of the job, and whoever leads the call has to plan for them.",
+          "**On a bad connection, structure is more important than charm.**"
+        ],
+        [
+          "The goal is a call that still works even if some people only hear half of it.",
+          "That means less ==improvising== and more ==explicit== signals about who speaks, when, and what was agreed.",
+          "Think of yourself less as a chairperson and more as a radio host."
+        ]
+      ],
+      "heading_zh": "1. 一团糟的会议",
+      "paragraphs_zh": [
+        [
+          "这种会你肯定遇到过。",
+          "有人话说到一半声音卡住了，因为有延迟两个人同时开口，还有一个人静音了五分钟自己都没发现。",
+          "到最后，谁也说不清到底定了什么。"
+        ],
+        [
+          "队友在马尼拉、金奈和澳洲乡下，网络差根本不是什么稀罕事。",
+          "这就是工作的一部分，主持会议的人得提前为此做准备。",
+          "网络不好的时候，结构比个人魅力更重要。"
+        ],
+        [
+          "目标是开一个哪怕有人只听到一半也还能运转的会。",
+          "这意味着少一些临场发挥，多一些明确的信号：谁说、什么时候说、定了什么。",
+          "别把自己当会议主席，更像一个电台主持人。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Run It Like a Radio Show",
+      "paragraphs": [
+        [
+          "Start by posting the agenda and the key question in the chat, so people who __drop out__ can still follow.",
+          "If the audio is ==choppy==, ask everyone except the speaker to turn off their video to __free up bandwidth__.",
+          "Keep your own camera on, so people can still see who is leading."
+        ],
+        [
+          "__Call on people by name__ instead of asking, \"Any thoughts?\"",
+          "\"Ahmed, you first, then Claire.\"",
+          "With a delay, open questions create long silences followed by three people talking at once."
+        ],
+        [
+          "Use the chat as a ==backup== channel.",
+          "If someone freezes, say, \"We lost you, Ahmed, could you type your main point in the chat?\"",
+          "This keeps the meeting moving without making anyone feel ==singled out==."
+        ],
+        [
+          "Finally, close by reading the decisions aloud and posting them in writing straight away.",
+          "**On a bad line, if it isn't written down, it wasn't decided.**",
+          "That way, nobody can remember it differently next week."
+        ]
+      ],
+      "heading_zh": "2. 像主持电台节目一样开会",
+      "paragraphs_zh": [
+        [
+          "一开始就把议程和核心问题发到聊天框里，这样掉线的人也还能跟上。",
+          "如果声音断断续续，请除了发言人以外的所有人关掉视频，腾出带宽。",
+          "你自己的摄像头保持开着，让大家还能看到是谁在主持。"
+        ],
+        [
+          "点名叫人发言，而不是问「大家有什么想法？」",
+          "「Ahmed 你先说，然后 Claire。」",
+          "有延迟的时候，开放式提问会先冷场很久，然后三个人同时开口。"
+        ],
+        [
+          "把聊天框当作备用通道。",
+          "如果有人卡住了，就说：「Ahmed 我们听不到你了，能把你的要点打在聊天框里吗？」",
+          "这样会议能继续往前走，也不会让谁觉得被单拎出来。"
+        ],
+        [
+          "最后，收尾时把决定大声念一遍，并马上用文字发出来。",
+          "网络不好的时候，没写下来的，就等于没定。",
+          "这样下周就没人会记成别的样子。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者说网络差的会议里什么比个人魅力更重要？",
+      "a": "结构；会议要设计成即使有人只听到一半也能运转。"
+    },
+    {
+      "q": "为什么要点名发言而不是问 \"Any thoughts?\"",
+      "a": "有延迟时，开放式提问会先冷场，然后三个人同时开口；点名能排好发言顺序。"
+    },
+    {
+      "q": "文中主持网络差会议的具体做法有哪些？",
+      "a": "提前把议程和关键问题发到聊天框；音频卡顿时让非发言者关视频；按名字点人；用聊天框作备用通道；结束时口头念出决定并立刻书面发出。"
+    }
+  ],
+  "dictation": [
+    "On a bad connection, structure is more important than charm.",
+    "The goal is a call that still works even if some people only hear half of it.",
+    "Use the chat as a backup channel.",
+    "On a bad line, if it isn't written down, it wasn't decided."
+  ],
+  "shadow": {
+    "text": "Use the chat as a backup channel. If someone freezes, say, \"We lost you, Ahmed, could you type your main point in the chat?\" This keeps the meeting moving without making anyone feel singled out.",
+    "marked": "Use the chat / as a <b>backup</b> channel. //<br>If someone <b>freezes</b>, say, / \"We <b>lost</b> you, Ahmed, / could you <b>type</b> your main point in the chat?\" //<br>This keeps the meeting <b>moving</b> / without making anyone / feel <b>singled out</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你主持会议时，马尼拉同事的声音断断续续，大家都听不清，还有人同时开口。30 秒控场。",
+      "ref": "Okay, let's pause for a second. Maria, your audio is breaking up on our side. Could you type your main point in the chat while we keep going? And could everyone except the speaker switch off video for now? That should help the connection. Ben, you were next, go ahead, and then we'll come back to Maria's point.",
+      "ref_zh": "好，我们先停一下。Maria，你的声音在我们这边断断续续的。我们继续的时候，你能把要点打在聊天框里吗？另外，除了发言人以外，大家能不能先把视频关掉？这样网络应该会好一些。Ben，该你了，你先说，然后我们再回到 Maria 的点。"
+    },
+    {
+      "q": "会议快结束了，整场网络都不好。你做 30 秒收尾总结。",
+      "ref": "Before we lose anyone else, let me read out what we decided. First, we're keeping the launch date. Second, Ahmed's team owns the load test, and the results are due Wednesday. Third, we're dropping dark mode from this release. I'll post all of this in the chat right now. If anything is wrong, reply there by tomorrow.",
+      "ref_zh": "趁还没有更多人掉线，我把定下来的事念一遍。第一，上线日期不变。第二，压测由 Ahmed 的团队负责，周三出结果。第三，深色模式这个版本先砍掉。我现在就把这些发到聊天框里。有不对的地方，明天之前在那里回复。"
+    }
+  ],
+  "words": [
+    {
+      "w": "exception",
+      "ipa": "/ɪkˈsepʃən/",
+      "zh": "例外",
+      "ex": "Late changes should be the exception, not the rule."
+    },
+    {
+      "w": "improvise",
+      "ipa": "/ˈɪmprəˌvaɪz/",
+      "zh": "即兴发挥、临时应付",
+      "ex": "The demo environment crashed, so I had to improvise with screenshots."
+    },
+    {
+      "w": "explicit",
+      "ipa": "/ɪkˈsplɪsɪt/",
+      "zh": "明确的、清楚的",
+      "ex": "Please be explicit about who owns each action item."
+    },
+    {
+      "w": "choppy",
+      "ipa": "/ˈtʃɑːpi/",
+      "zh": "（声音、画面）断断续续的",
+      "ex": "Your audio is a bit choppy, could you move closer to the router?"
+    },
+    {
+      "w": "backup",
+      "ipa": "/ˈbækˌʌp/",
+      "zh": "备用的、后备",
+      "ex": "Keep a backup plan in case the vendor misses the date."
+    },
+    {
+      "w": "single out",
+      "ipa": "/ˈsɪŋɡəl aʊt/",
+      "zh": "单独挑出（点名）",
+      "ex": "I didn't want to single him out in front of the whole team."
+    },
+    {
+      "w": "bandwidth",
+      "ipa": "/ˈbændˌwɪdθ/",
+      "zh": "带宽；精力",
+      "ex": "I don't have the bandwidth for another project this quarter."
+    },
+    {
+      "w": "freeze (v.)",
+      "ipa": "/friːz/",
+      "zh": "（画面）卡住、冻结",
+      "ex": "Your screen froze, we can only see the first slide.",
+      "tts_w": "freeze"
+    },
+    {
+      "w": "drop out",
+      "ipa": "/drɑːp aʊt/",
+      "zh": "掉线、退出",
+      "ex": "If you drop out, just rejoin and check the chat."
+    }
+  ]
+}

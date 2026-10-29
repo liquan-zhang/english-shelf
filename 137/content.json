@@ -1,0 +1,83 @@
+{
+  "id": "137",
+  "type": "dialogue",
+  "title": "Talking to Your Child's Teacher",
+  "meta": "B2 · 约 260 词 · 场景：家长会谈孩子表现与小冲突",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Teacher", "name_zh": "老师", "voice": "en-SG-LunaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. How He's Doing",
+      "heading_zh": "1. 孩子的表现",
+      "lines": [
+        {"sp": "B", "en": "Thanks for coming in, Mr. Zhang. Leo is doing well overall. He's very curious in class.", "zh": "谢谢您过来，张先生。Leo 整体表现不错，上课时好奇心很强。"},
+        {"sp": "A", "en": "**That's good to hear. How is he getting along with the other kids?**", "zh": "听到这个很高兴。他跟其他小朋友相处得怎么样？"},
+        {"sp": "B", "en": "He's a bit ==shy== in big groups, but he has two close friends he plays with every day.", "zh": "在大集体里他有点害羞，但他有两个好朋友，每天都一起玩。"},
+        {"sp": "A", "en": "At home he talks nonstop, but he says English is still hard sometimes.", "zh": "在家里他说个不停，但他说英语有时候还是挺难的。"},
+        {"sp": "B", "en": "His English has improved a lot this term. He understands everything. He just needs more ==confidence== when he speaks.", "zh": "这学期他的英语进步很大。他什么都听得懂，只是开口说的时候需要更多自信。"},
+        {"sp": "A", "en": "**Is there anything we can do at home to help?**", "zh": "我们在家能做些什么来帮他吗？"},
+        {"sp": "B", "en": "Read with him every night, even for ten minutes. And ==encourage== him to tell you about his day in English.", "zh": "每晚陪他读书，哪怕十分钟也好。再鼓励他用英语跟你们讲讲一天的事。"},
+        {"sp": "A", "en": "We can __definitely do that__. How about his reading level?", "zh": "这个我们一定能做到。他的阅读水平怎么样？"},
+        {"sp": "B", "en": "He's __right on track__. He loves picture books about animals.", "zh": "完全跟得上进度。他特别喜欢动物绘本。"}
+      ]
+    },
+    {
+      "heading": "2. A Small Concern",
+      "heading_zh": "2. 一个小问题",
+      "lines": [
+        {"sp": "B", "en": "There's one small ==concern== I wanted to raise. Last week, he pushed a classmate during a game.", "zh": "有个小问题想跟您说一下。上周玩游戏的时候，他推了一个同学。"},
+        {"sp": "A", "en": "Oh, I'm sorry to hear that. Do you know what happened, exactly?", "zh": "啊，很抱歉。你知道具体是怎么回事吗？"},
+        {"sp": "B", "en": "The other boy took his toy, and Leo got ==frustrated==. Nobody was hurt, and they __made up__ quickly.", "zh": "另一个男孩拿了他的玩具，Leo 着急了。没人受伤，他们很快就和好了。"},
+        {"sp": "A", "en": "Thanks for telling me. We'll __have a chat__ with him tonight about using words instead.", "zh": "谢谢你告诉我。我们今晚会跟他聊聊，让他用说的而不是动手。"},
+        {"sp": "B", "en": "That would help. We're also teaching the class to come to a teacher when they feel upset.", "zh": "那会很有帮助。我们也在教全班，心里不舒服时要来找老师。"},
+        {"sp": "A", "en": "One more thing. He spends almost an hour on ==homework== most nights. Is that normal?", "zh": "还有一件事。他大部分晚上做作业要花将近一个小时，这正常吗？"},
+        {"sp": "B", "en": "It shouldn't take more than twenty minutes. If he's stuck, let him stop and just write me a note.", "zh": "应该不超过二十分钟。如果他卡住了，就让他停下，给我写个条子就行。"},
+        {"sp": "A", "en": "**That's a relief. Could we stay in touch by email if anything else comes up?**", "zh": "那我就放心了。如果还有其他情况，我们能通过邮件保持联系吗？"},
+        {"sp": "B", "en": "Of course. I'll __keep you posted__.", "zh": "当然。有情况我会随时告诉您。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "老师怎么评价 Leo 的社交和英语？", "a": "大集体里有点害羞，但有两个好朋友；英语进步很大，都听得懂，只是开口缺自信。"},
+    {"q": "老师提到的小问题是什么？", "a": "上周玩游戏时同学拿了他的玩具，他着急推了对方；没人受伤，两人很快和好。"},
+    {"q": "关于作业，老师给了什么建议？", "a": "作业不该超过二十分钟；如果卡住了就停下，写个条子给老师。"}
+  ],
+  "dictation": [
+    "That's good to hear. How is he getting along with the other kids?",
+    "Is there anything we can do at home to help?",
+    "Thanks for telling me. We'll have a chat with him tonight about using words instead.",
+    "That's a relief. Could we stay in touch by email if anything else comes up?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "One more thing. He spends almost an hour on homework most nights. Is that normal?",
+    "marked": "One more <b>thing</b>. //<br>He spends <b>almost an hour</b> / on <b>homework</b> / most nights. //<br>Is that <b>normal</b>? //"
+  },
+  "prompts": [
+    {
+      "q": "孩子回家说在学校被同学欺负了。给老师打电话，说明情况，请老师留意，但语气别带指责。",
+      "ref": "Hi, this is Leo's dad. Sorry to call after school. Leo came home a bit upset today. He said one of the boys keeps taking his snacks and laughing at his English. I'm not sure how much of it is true, but could you keep an eye on it for a few days? And please let me know what you see.",
+      "ref_zh": "你好，我是 Leo 的爸爸。不好意思放学后打电话。Leo 今天回家有点不开心，说有个男孩老拿他的零食，还笑他的英语。我不确定有多少是真的，但能不能麻烦你这几天留意一下？看到什么也请告诉我。"
+    },
+    {
+      "q": "下周你要带孩子回国三天，需要请假。给老师写一段口头留言，说明请假和补课的事。",
+      "ref": "Hi, just a quick note. We need to fly back to China next week for a family event, so Leo will miss school from Wednesday to Friday. Sorry for the short notice. Is there any work he should do while he's away? I'd like to make sure he doesn't fall behind. Thank you for understanding.",
+      "ref_zh": "你好，简单说一下。我们下周要回国参加一个家庭活动，所以 Leo 周三到周五不能来上学。抱歉通知得有点晚。他不在的这几天有什么需要做的功课吗？我想确保他不会落下。谢谢理解。"
+    }
+  ],
+  "words": [
+    {"w": "shy", "ipa": "/ʃaɪ/", "zh": "害羞的", "ex": "She's shy at first, but she warms up quickly."},
+    {"w": "confidence", "ipa": "/ˈkɑːnfɪdəns/", "zh": "自信", "ex": "Swimming lessons gave him a lot of confidence."},
+    {"w": "encourage", "ipa": "/ɪnˈkɜːrɪdʒ/", "zh": "鼓励", "ex": "We encourage the kids to try new food at dinner."},
+    {"w": "on track", "ipa": "/ɑːn træk/", "zh": "进度正常", "ex": "The renovation is on track to finish by Friday."},
+    {"w": "concern", "ipa": "/kənˈsɜːrn/", "zh": "担忧的事；问题", "ex": "My main concern is the long commute to school."},
+    {"w": "frustrated", "ipa": "/ˈfrʌstreɪtɪd/", "zh": "沮丧的；着急的", "ex": "He gets frustrated when the puzzle pieces don't fit."},
+    {"w": "make up", "ipa": "/meɪk ʌp/", "zh": "和好", "ex": "The kids argued, but they made up after lunch."},
+    {"w": "homework", "ipa": "/ˈhoʊmwɜːrk/", "zh": "家庭作业", "ex": "Let's finish your homework before we go to the park."},
+    {"w": "keep someone posted", "ipa": "/kiːp ˈsʌmwʌn ˈpoʊstɪd/", "zh": "随时告知某人进展", "ex": "Keep me posted on when the delivery arrives."}
+  ]
+}

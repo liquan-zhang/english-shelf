@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Checking In at the Airport · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "103", "type": "dialogue", "title": "Checking In at the Airport", "meta": "B2 · 约 310 词 · 场景：机场值机、行李超重与转机", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Check-in Agent", "name_zh": "值机柜台", "voice": "en-GB-SoniaNeural"}}, "gist": [{"q": "第一个箱子出了什么问题？「你」怎么处理的？", "a": "超重了，三十一公斤，额度是二十三公斤；「你」没付超重费，把东西挪到了较轻的第二个箱子里。"}, {"q": "行李能直挂到成都吗？为什么？", "a": "不能。上海是入境第一站，要在上海提行李、过海关。"}, {"q": "如果赶不上转机怎么办？柜台帮了什么忙？", "a": "两段是同一张票，航空公司会免费改签下一班；柜台给行李贴了优先标签，还告诉了中转柜台的位置。"}], "dictation": [{"id": "s0_6_0", "text": "Oh, I see. What would it cost for the extra weight?"}, {"id": "s0_10_0", "text": "Could we sit together, ideally near the front of the plane?"}, {"id": "s1_0_0", "text": "One more question. Will our bags go all the way through to Chengdu?"}, {"id": "s1_2_0", "text": "But our layover is only seventy minutes. That sounds really tight. What happens if we miss the connection?"}], "shadow": {"speaker": "A", "text": "But our layover is only seventy minutes. That sounds really tight. What happens if we miss the connection?", "marked": "But our <b>layover</b> / is only <b>seventy</b> minutes. //<br>That sounds <b>really</b> tight. //<br>What happens / if we <b>miss</b> the connection? //"}, "prompts": [{"q": "你带孩子出行，行李里有一个儿童安全座椅，想问值机柜台能不能免费托运，以及能不能带上飞机用。", "ref": "Hi, quick question before we check in. We're travelling with a car seat for our son. Can we check it in for free, or does it count as one of our bags? And if there's an empty seat next to us, would we be allowed to bring it on board and use it? He sleeps much better in it.", "ref_zh": "你好，值机前想问一下。我们带了一个儿童安全座椅。能免费托运吗，还是要算作一件行李？如果我们旁边有空座，能带上飞机用吗？他坐在里面睡得好很多。", "id": "ref0"}, {"q": "航班延误三个小时，你会赶不上下一程。到柜台问能不能改签，以及有没有餐券或休息室。", "ref": "Hi, our flight to Shanghai has been delayed by three hours, so we'll definitely miss our connection to Chengdu. Could you rebook us on a later flight today? There are three of us, including a small child. Also, is there a meal voucher or a lounge we could use while we wait? It's going to be a long afternoon.", "ref_zh": "你好，我们飞上海的航班延误了三个小时，肯定赶不上转去成都的那班了。能帮我们改签今天晚一点的航班吗？我们三个人，有一个小孩。另外等的时候有餐券或者休息室可以用吗？这个下午会很漫长。", "id": "ref1"}], "words": [{"w": "stroller", "ipa": "/ˈstroʊlər/", "zh": "婴儿推车", "ex": "Can we take the stroller up to the gate?", "id": "w0"}, {"w": "scale", "ipa": "/skeɪl/", "zh": "秤", "ex": "Please put your bag on the scale.", "id": "w1"}, {"w": "allowance", "ipa": "/əˈlaʊəns/", "zh": "（行李）额度", "ex": "My baggage allowance is thirty kilos.", "id": "w2"}, {"w": "customs", "ipa": "/ˈkʌstəmz/", "zh": "海关", "ex": "It took us an hour to get through customs.", "id": "w3"}, {"w": "layover", "ipa": "/ˈleɪoʊvər/", "zh": "中转停留", "ex": "We have a two-hour layover in Hong Kong.", "tts": "We have a two hour layover in Hong Kong.", "id": "w4"}, {"w": "miss the connection", "ipa": "/mɪs ðə kəˈnekʃən/", "zh": "赶不上转机", "ex": "If the flight is late, we'll miss the connection.", "id": "w5"}, {"w": "rebook", "ipa": "/ˌriːˈbʊk/", "zh": "改签", "ex": "The airline rebooked us on the next flight.", "id": "w6"}, {"w": "transfer", "ipa": "/ˈtrænsfɜːr/", "zh": "中转", "ex": "Follow the signs to the transfer desk.", "id": "w7"}, {"w": "boarding pass", "ipa": "/ˈbɔːrdɪŋ pæs/", "zh": "登机牌", "ex": "Please have your boarding pass ready.", "id": "w8"}], "sections": [{"heading": "1. At the Check-in Counter", "heading_zh": "1. 在值机柜台", "rows": [[{"id": "s0_0_0", "md": "Good morning. Where are you flying to today?", "text": "Good morning. Where are you flying to today?", "zh": "早上好。今天飞哪里？", "sp": "B"}], [{"id": "s0_1_0", "md": "Morning. We're flying to Shanghai, then __connecting to__ Chengdu. It's me, my wife and our son.", "text": "Morning. We're flying to Shanghai, then connecting to Chengdu. It's me, my wife and our son.", "zh": "早上好。我们飞上海，再转机去成都。我、我太太和我儿子三个人。", "sp": "A"}], [{"id": "s0_2_0", "md": "Could I see all three passports, please? And are you checking in any bags?", "text": "Could I see all three passports, please? And are you checking in any bags?", "zh": "麻烦给我看一下三本护照。有行李要托运吗？", "sp": "B"}], [{"id": "s0_3_0", "md": "Yes, two suitcases and a ==stroller==. Can we keep the stroller until the gate?", "text": "Yes, two suitcases and a stroller. Can we keep the stroller until the gate?", "zh": "有，两个箱子和一辆婴儿推车。推车能推到登机口再托运吗？", "sp": "A"}], [{"id": "s0_4_0", "md": "Of course, I'll give you a gate tag for it. Could you put the first suitcase on the ==scale==?", "text": "Of course, I'll give you a gate tag for it. Could you put the first suitcase on the scale?", "zh": "当然可以，我给您一张登机口托运的标签。请把第一个箱子放到秤上。", "sp": "B"}], [{"id": "s0_5_0", "md": "I'm afraid this one is thirty-one kilos. The ==allowance== is twenty-three per bag.", "text": "I'm afraid this one is thirty-one kilos. The allowance is twenty-three per bag.", "zh": "这个恐怕有三十一公斤。每件额度是二十三公斤。", "sp": "B"}], [{"id": "s0_6_0", "md": "**Oh, I see. What would it cost for the extra weight?**", "text": "Oh, I see. What would it cost for the extra weight?", "zh": "哦，这样。超重部分要多少钱？", "sp": "A"}], [{"id": "s0_7_0", "md": "About one hundred and fifty dollars. Or you could move a few things into the other bag.", "text": "About one hundred and fifty dollars. Or you could move a few things into the other bag.", "zh": "大概一百五十块。或者您可以挪一些东西到另一个箱子里。", "sp": "B"}], [{"id": "s0_8_0", "md": "Let me __move some things over__. The second one is quite light.", "text": "Let me move some things over. The second one is quite light.", "zh": "我挪一点过去吧。第二个箱子挺轻的。", "sp": "A"}], [{"id": "s0_9_0", "md": "Perfect, they're both under the limit now. Would you like to choose your seats?", "text": "Perfect, they're both under the limit now. Would you like to choose your seats?", "zh": "好了，现在两个都没超。您要选座位吗？", "sp": "B"}], [{"id": "s0_10_0", "md": "**Could we sit together, ideally near the front of the plane?**", "text": "Could we sit together, ideally near the front of the plane?", "zh": "我们能坐在一起吗？最好靠前一点。", "sp": "A"}], [{"id": "s0_11_0", "md": "I have three together in row twelve, with a window. Shall I take those?", "text": "I have three together in row twelve, with a window. Shall I take those?", "zh": "第十二排有三个连座，带窗。给您选这个？", "sp": "B"}], [{"id": "s0_12_0", "md": "Yes, please. That's great.", "text": "Yes, please. That's great.", "zh": "好的，太好了。", "sp": "A"}]]}, {"heading": "2. A Tight Connection", "heading_zh": "2. 转机时间太紧", "rows": [[{"id": "s1_0_0", "md": "**One more question. Will our bags go all the way through to Chengdu?**", "text": "One more question. Will our bags go all the way through to Chengdu?", "zh": "还有个问题。我们的行李能直挂到成都吗？", "sp": "A"}], [{"id": "s1_1_0", "md": "Since Shanghai is your first stop in China, you'll need to collect your bags and clear ==customs== there.", "text": "Since Shanghai is your first stop in China, you'll need to collect your bags and clear customs there.", "zh": "因为上海是你们入境中国的第一站，需要在那边提行李、过海关。", "sp": "B"}], [{"id": "s1_2_0", "md": "But our ==layover== is only seventy minutes. That sounds really tight. What happens if we __miss the connection__?", "text": "But our layover is only seventy minutes. That sounds really tight. What happens if we miss the connection?", "zh": "可我们中转只有七十分钟，听起来很紧。要是赶不上转机怎么办？", "sp": "A"}], [{"id": "s1_3_0", "md": "Both flights are on one ticket, so the airline will ==rebook== you on the next flight at no cost.", "text": "Both flights are on one ticket, so the airline will rebook you on the next flight at no cost.", "zh": "两段航班是同一张票，所以航空公司会免费给你们改签到下一班。", "sp": "B"}], [{"id": "s1_4_0", "md": "That's a relief. Is there anything we can do to __save time__?", "text": "That's a relief. Is there anything we can do to save time?", "zh": "那就放心了。有什么办法能节省点时间吗？", "sp": "A"}], [{"id": "s1_5_0", "md": "I'll tag your bags as priority, so they come out first. And being near the front will help.", "text": "I'll tag your bags as priority, so they come out first. And being near the front will help.", "zh": "我给你们的行李贴优先标签，会先出来。坐得靠前也有帮助。", "sp": "B"}], [{"id": "s1_6_0", "md": "Great. And where's the ==transfer== desk in Shanghai?", "text": "Great. And where's the transfer desk in Shanghai?", "zh": "好的。上海的中转柜台在哪儿？", "sp": "A"}], [{"id": "s1_7_0", "md": "After customs, follow the signs for domestic transfers. It's right after the baggage hall.", "text": "After customs, follow the signs for domestic transfers. It's right after the baggage hall.", "zh": "过了海关，跟着国内中转的指示牌走，就在行李大厅后面。", "sp": "B"}], [{"id": "s1_8_0", "md": "**Got it. Thanks, you've been really helpful.**", "text": "Got it. Thanks, you've been really helpful.", "zh": "明白了。谢谢，你帮了大忙。", "sp": "A"}], [{"id": "s1_9_0", "md": "Here are your ==boarding passes==. Boarding starts at nine forty. Have a lovely flight.", "text": "Here are your boarding passes. Boarding starts at nine forty. Have a lovely flight.", "zh": "这是你们的登机牌。九点四十开始登机。旅途愉快。", "sp": "B"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. At the Check-in Counter", "zh": "1. 在值机柜台", "start": 0.0, "end": 2.04, "words": [[0.105, 0.342], [0.671, 0.75], [0.763, 0.829], [0.842, 1.211], [1.224, 1.658]]}, {"kind": "s", "id": "s0_0_0", "md": "Good morning. Where are you flying to today?", "zh": "早上好。今天飞哪里？", "sp": "B", "gap": false, "start": 2.04, "end": 5.496, "words": [[2.141, 2.391], [2.404, 2.997], [3.422, 3.593], [3.606, 3.685], [3.698, 3.908], [3.922, 4.369], [4.382, 4.501], [4.514, 5.106]]}, {"kind": "s", "id": "s0_1_0", "md": "Morning. We're flying to Shanghai, then __connecting to__ Chengdu. It's me, my wife and our son.", "zh": "早上好。我们飞上海，再转机去成都。我、我太太和我儿子三个人。", "sp": "A", "gap": false, "start": 5.496, "end": 11.976, "words": [[5.601, 5.93], [6.364, 6.483], [6.496, 6.825], [6.838, 6.917], [6.93, 7.549], [7.957, 8.088], [8.101, 8.601], [8.614, 8.707], [8.72, 9.233], [9.667, 9.825], [9.838, 10.154], [10.325, 10.483], [10.496, 10.93], [10.943, 11.022], [11.035, 11.167], [11.18, 11.575]]}, {"kind": "s", "id": "s0_2_0", "md": "Could I see all three passports, please? And are you checking in any bags?", "zh": "麻烦给我看一下三本护照。有行李要托运吗？", "sp": "B", "gap": false, "start": 11.976, "end": 17.64, "words": [[12.077, 12.287], [12.3, 12.432], [12.445, 12.8], [12.814, 13.037], [13.05, 13.313], [13.327, 14.142], [14.366, 14.892], [15.318, 15.476], [15.489, 15.529], [15.542, 15.739], [15.752, 16.187], [16.2, 16.331], [16.344, 16.555], [16.568, 17.239]]}, {"kind": "s", "id": "s0_3_0", "md": "Yes, two suitcases and a ==stroller==. Can we keep the stroller until the gate?", "zh": "有，两个箱子和一辆婴儿推车。推车能推到登机口再托运吗？", "sp": "A", "gap": false, "start": 17.64, "end": 22.752, "words": [[17.745, 18.179], [18.403, 18.574], [18.587, 19.377], [19.469, 19.601], [19.614, 19.666], [19.679, 20.206], [20.64, 20.745], [20.758, 20.864], [20.877, 21.1], [21.114, 21.206], [21.219, 21.693], [21.706, 21.929], [21.943, 22.022], [22.035, 22.364]]}, {"kind": "s", "id": "s0_4_0", "md": "Of course, I'll give you a gate tag for it. Could you put the first suitcase on the ==scale==?", "zh": "当然可以，我给您一张登机口托运的标签。请把第一个箱子放到秤上。", "sp": "B", "gap": false, "start": 22.752, "end": 28.992, "words": [[22.855, 23.039], [23.052, 23.565], [23.841, 23.934], [23.947, 24.144], [24.157, 24.302], [24.315, 24.394], [24.407, 24.71], [24.723, 25.012], [25.026, 25.249], [25.263, 25.618], [26.0, 26.237], [26.25, 26.382], [26.395, 26.645], [26.658, 26.763], [26.776, 27.184], [27.197, 27.789], [27.803, 27.934], [27.947, 28.039], [28.053, 28.592]]}, {"kind": "s", "id": "s0_5_0", "md": "I'm afraid this one is thirty-one kilos. The ==allowance== is twenty-three per bag.", "zh": "这个恐怕有三十一公斤。每件额度是二十三公斤。", "sp": "B", "gap": false, "start": 28.992, "end": 34.992, "words": [[29.134, 29.305], [29.318, 29.726], [29.739, 29.963], [29.976, 30.253], [30.266, 30.489], [30.503, 31.108], [31.121, 31.845], [32.268, 32.413], [32.426, 33.058], [33.071, 33.295], [33.308, 33.939], [33.953, 34.124], [34.137, 34.597]]}, {"kind": "s", "id": "s0_6_0", "md": "**Oh, I see. What would it cost for the extra weight?**", "zh": "哦，这样。超重部分要多少钱？", "sp": "A", "gap": false, "start": 34.992, "end": 38.208, "words": [[35.11, 35.229], [35.255, 35.347], [35.36, 35.729], [36.163, 36.242], [36.255, 36.36], [36.374, 36.479], [36.492, 36.887], [36.9, 37.005], [37.018, 37.11], [37.124, 37.453], [37.466, 37.808]]}, {"kind": "s", "id": "s0_7_0", "md": "About one hundred and fifty dollars. Or you could move a few things into the other bag.", "zh": "大概一百五十块。或者您可以挪一些东西到另一个箱子里。", "sp": "B", "gap": false, "start": 38.208, "end": 44.16, "words": [[38.35, 38.784], [38.797, 39.021], [39.034, 39.416], [39.429, 39.561], [39.574, 39.969], [39.982, 40.6], [40.997, 41.129], [41.142, 41.313], [41.326, 41.524], [41.537, 41.8], [41.813, 41.879], [41.892, 42.169], [42.182, 42.629], [42.642, 42.905], [42.919, 43.05], [43.063, 43.274], [43.287, 43.761]]}, {"kind": "s", "id": "s0_8_0", "md": "Let me __move some things over__. The second one is quite light.", "zh": "我挪一点过去吧。第二个箱子挺轻的。", "sp": "A", "gap": false, "start": 44.16, "end": 47.88, "words": [[44.265, 44.357], [44.371, 44.449], [44.463, 44.673], [44.686, 44.844], [44.857, 45.121], [45.134, 45.489], [45.936, 46.002], [46.015, 46.37], [46.384, 46.607], [46.686, 46.778], [46.792, 47.081], [47.094, 47.476]]}, {"kind": "s", "id": "s0_9_0", "md": "Perfect, they're both under the limit now. Would you like to choose your seats?", "zh": "好了，现在两个都没超。您要选座位吗？", "sp": "B", "gap": false, "start": 47.88, "end": 53.352, "words": [[47.996, 48.693], [48.983, 49.154], [49.167, 49.469], [49.483, 49.706], [49.719, 49.812], [49.825, 50.22], [50.233, 50.641], [51.038, 51.235], [51.248, 51.367], [51.38, 51.669], [51.683, 51.801], [51.814, 52.117], [52.13, 52.288], [52.301, 52.972]]}, {"kind": "s", "id": "s0_10_0", "md": "**Could we sit together, ideally near the front of the plane?**", "zh": "我们能坐在一起吗？最好靠前一点。", "sp": "A", "gap": false, "start": 53.352, "end": 56.688, "words": [[53.457, 53.562], [53.576, 53.668], [53.681, 53.931], [53.944, 54.418], [54.826, 55.26], [55.273, 55.418], [55.431, 55.51], [55.523, 55.76], [55.773, 55.812], [55.826, 55.891], [55.905, 56.299]]}, {"kind": "s", "id": "s0_11_0", "md": "I have three together in row twelve, with a window. Shall I take those?", "zh": "第十二排有三个连座，带窗。给您选这个？", "sp": "B", "gap": false, "start": 56.688, "end": 62.232, "words": [[56.83, 56.935], [56.949, 57.212], [57.225, 57.501], [57.514, 58.041], [58.054, 58.225], [58.238, 58.462], [58.475, 59.041], [59.304, 59.462], [59.475, 59.514], [59.527, 60.12], [60.504, 60.806], [60.82, 60.912], [60.925, 61.28], [61.293, 61.833]]}, {"kind": "s", "id": "s0_12_0", "md": "Yes, please. That's great.", "zh": "好的，太好了。", "sp": "A", "gap": false, "start": 62.232, "end": 64.536, "words": [[62.337, 62.627], [62.679, 63.166], [63.614, 63.758], [63.771, 64.14]]}, {"kind": "h", "id": "h1", "md": "2. A Tight Connection", "zh": "2. 转机时间太紧", "start": 64.536, "end": 66.528, "words": [[64.641, 64.931], [65.22, 65.312], [65.325, 65.615], [65.628, 66.128]]}, {"kind": "s", "id": "s1_0_0", "md": "**One more question. Will our bags go all the way through to Chengdu?**", "zh": "还有个问题。我们的行李能直挂到成都吗？", "sp": "A", "gap": false, "start": 66.528, "end": 70.56, "words": [[66.633, 66.739], [66.752, 66.91], [66.923, 67.41], [67.844, 67.975], [67.989, 68.107], [68.12, 68.489], [68.502, 68.765], [68.844, 69.028], [69.041, 69.133], [69.146, 69.41], [69.423, 69.594], [69.607, 69.673], [69.686, 70.16]]}, {"kind": "s", "id": "s1_1_0", "md": "Since Shanghai is your first stop in China, you'll need to collect your bags and clear ==customs== there.", "zh": "因为上海是你们入境中国的第一站，需要在那边提行李、过海关。", "sp": "B", "gap": false, "start": 70.56, "end": 76.704, "words": [[70.689, 71.044], [71.057, 71.636], [71.649, 71.847], [71.86, 71.978], [71.992, 72.347], [72.36, 72.597], [72.61, 72.728], [72.742, 73.228], [73.571, 73.715], [73.728, 73.913], [73.926, 74.005], [74.018, 74.399], [74.413, 74.531], [74.544, 75.018], [75.031, 75.163], [75.176, 75.465], [75.478, 75.992], [76.005, 76.307]]}, {"kind": "s", "id": "s1_2_0", "md": "But our ==layover== is only seventy minutes. That sounds really tight. What happens if we __miss the connection__?", "zh": "可我们中转只有七十分钟，听起来很紧。要是赶不上转机怎么办？", "sp": "A", "gap": false, "start": 76.704, "end": 83.16, "words": [[76.822, 76.901], [76.915, 77.033], [77.046, 77.651], [77.77, 77.98], [78.046, 78.362], [78.375, 78.757], [78.77, 79.283], [79.73, 79.822], [79.836, 80.112], [80.125, 80.375], [80.388, 80.796], [81.23, 81.336], [81.349, 81.704], [81.717, 81.822], [81.836, 81.941], [81.954, 82.138], [82.151, 82.23], [82.243, 82.77]]}, {"kind": "s", "id": "s1_3_0", "md": "Both flights are on one ticket, so the airline will ==rebook== you on the next flight at no cost.", "zh": "两段航班是同一张票，所以航空公司会免费给你们改签到下一班。", "sp": "B", "gap": false, "start": 83.16, "end": 89.352, "words": [[83.276, 83.565], [83.578, 84.013], [84.026, 84.105], [84.118, 84.302], [84.315, 84.552], [84.565, 85.065], [85.381, 85.526], [85.539, 85.71], [85.723, 86.171], [86.184, 86.368], [86.381, 86.763], [86.776, 86.986], [86.999, 87.157], [87.171, 87.263], [87.276, 87.605], [87.618, 88.013], [88.026, 88.144], [88.157, 88.328], [88.342, 88.96]]}, {"kind": "s", "id": "s1_4_0", "md": "That's a relief. Is there anything we can do to __save time__?", "zh": "那就放心了。有什么办法能节省点时间吗？", "sp": "A", "gap": false, "start": 89.352, "end": 92.808, "words": [[89.47, 89.615], [89.628, 89.694], [89.707, 90.207], [90.641, 90.747], [90.76, 90.905], [90.918, 91.273], [91.286, 91.378], [91.391, 91.51], [91.523, 91.668], [91.681, 91.747], [91.76, 92.036], [92.049, 92.418]]}, {"kind": "s", "id": "s1_5_0", "md": "I'll tag your bags as priority, so they come out first. And being near the front will help.", "zh": "我给你们的行李贴优先标签，会先出来。坐得靠前也有帮助。", "sp": "B", "gap": false, "start": 92.808, "end": 99.432, "words": [[92.95, 93.148], [93.161, 93.45], [93.463, 93.595], [93.608, 94.069], [94.082, 94.2], [94.213, 94.976], [95.279, 95.411], [95.424, 95.529], [95.542, 95.766], [95.779, 96.003], [96.016, 96.647], [97.071, 97.229], [97.242, 97.558], [97.571, 97.795], [97.808, 97.913], [97.926, 98.347], [98.361, 98.532], [98.545, 99.045]]}, {"kind": "s", "id": "s1_6_0", "md": "Great. And where's the ==transfer== desk in Shanghai?", "zh": "好的。上海的中转柜台在哪儿？", "sp": "A", "gap": false, "start": 99.432, "end": 102.768, "words": [[99.537, 99.879], [100.314, 100.406], [100.419, 100.642], [100.656, 100.748], [100.761, 101.274], [101.287, 101.669], [101.682, 101.774], [101.787, 102.379]]}, {"kind": "s", "id": "s1_7_0", "md": "After customs, follow the signs for domestic transfers. It's right after the baggage hall.", "zh": "过了海关，跟着国内中转的指示牌走，就在行李大厅后面。", "sp": "B", "gap": false, "start": 102.768, "end": 109.488, "words": [[102.884, 103.252], [103.265, 103.976], [104.265, 104.542], [104.555, 104.686], [104.7, 105.2], [105.213, 105.331], [105.344, 105.897], [105.91, 106.752], [107.176, 107.386], [107.4, 107.768], [107.781, 108.097], [108.11, 108.215], [108.229, 108.636], [108.65, 109.097]]}, {"kind": "s", "id": "s1_8_0", "md": "**Got it. Thanks, you've been really helpful.**", "zh": "明白了。谢谢，你帮了大忙。", "sp": "A", "gap": false, "start": 109.488, "end": 112.344, "words": [[109.593, 109.764], [109.777, 109.896], [110.343, 110.738], [110.975, 111.106], [111.12, 111.291], [111.304, 111.501], [111.514, 111.962]]}, {"kind": "s", "id": "s1_9_0", "md": "Here are your ==boarding passes==. Boarding starts at nine forty. Have a lovely flight.", "zh": "这是你们的登机牌。九点四十开始登机。旅途愉快。", "sp": "B", "gap": false, "start": 112.344, "end": 118.92, "words": [[112.486, 112.749], [112.762, 112.802], [112.815, 113.026], [113.039, 113.499], [113.512, 114.249], [114.673, 115.12], [115.133, 115.673], [115.686, 115.883], [115.897, 116.199], [116.212, 116.778], [117.199, 117.397], [117.41, 117.462], [117.476, 117.897], [117.91, 118.515]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+{
+  "id": "073",
+  "title": "Estimating When You Really Don't Know",
+  "meta": "B2 · 约 270 词 · 场景：排期估时",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Why Single Numbers Mislead",
+      "paragraphs": [
+        [
+          "Your PM asks how long the new search integration will take.",
+          "You have never used this vendor's API, and the data format is still undecided.",
+          "Any single number you give right now is a guess dressed up as a plan."
+        ],
+        [
+          "The usual mistake is to say \"about three weeks\" to sound ==decisive==.",
+          "The PM writes it on the roadmap, and from that moment the guess __becomes a commitment__.",
+          "When it slips, the team looks ==unreliable==, even though the original number was never real."
+        ],
+        [
+          "**An estimate without a range is a promise you didn't mean to make.**",
+          "Ranges can sound ==noncommittal==, but they carry real information: how much you still don't know.",
+          "A wide range is not a weakness; it is an honest description of the problem."
+        ]
+      ],
+      "heading_zh": "1. 单个数字为什么会误导",
+      "paragraphs_zh": [
+        [
+          "PM 问你新的搜索集成要多久。",
+          "你从来没用过这家供应商的 API，数据格式也还没定。",
+          "现在你给出的任何一个数字，都只是一个打扮成计划的猜测。"
+        ],
+        [
+          "常见的错误是为了显得果断，张口就说「大概三周」。",
+          "PM 把它写进 roadmap，从那一刻起，这个猜测就变成了承诺。",
+          "等延期了，团队就显得不靠谱，尽管最初那个数字本来就不是真的。"
+        ],
+        [
+          "不带区间的估时，是一个你本没打算做出的承诺。",
+          "区间听起来可能像不愿表态，但它承载着真实的信息：你还有多少不知道。",
+          "区间宽不是弱点；它是对问题的诚实描述。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. A Range, a Reason, a Checkpoint",
+      "paragraphs": [
+        [
+          "Give a range, and say what drives the width.",
+          "\"Two to six weeks; the big unknown is whether their API supports bulk updates.\"",
+          "Now the PM knows which question matters most, and might even help answer it."
+        ],
+        [
+          "Then offer to __narrow it down__.",
+          "Spend two or three days on a quick ==prototype== against the real API.",
+          "After that, you can give a much tighter estimate, and the PM can decide whether the project is still worth it."
+        ],
+        [
+          "Agree on a ==checkpoint== where you will update the number, and put it in the calendar.",
+          "**The goal is not a perfect estimate; it is an estimate that gets better on schedule.**",
+          "When the update arrives on the day you promised, a changed number looks like ==diligence==, not failure.",
+          "Over a few projects, that habit __earns you__ more trust than any confident guess ever could."
+        ]
+      ],
+      "heading_zh": "2. 一个区间、一个理由、一个检查点",
+      "paragraphs_zh": [
+        [
+          "给一个区间，并说明是什么让它这么宽。",
+          "「两到六周；最大的未知是他们的 API 支不支持批量更新。」",
+          "这样 PM 就知道哪个问题最关键，说不定还能帮着去搞清楚。"
+        ],
+        [
+          "然后主动提出把区间缩小。",
+          "花两三天对着真实的 API 快速做一个原型。",
+          "之后你就能给出一个准得多的估时，PM 也能判断这个项目还值不值得做。"
+        ],
+        [
+          "约好一个更新数字的检查点，并且放进日历。",
+          "目标不是一次完美的估时；而是一个能按时变得越来越准的估时。",
+          "当更新在你承诺的那天准时到来，数字变了看起来是认真负责，而不是失败。",
+          "做过几个项目之后，这个习惯为你赢得的信任，比任何自信满满的猜测都多。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "面对未知时给出单一数字有什么问题？",
+      "a": "猜测会被写进路线图变成承诺，延期时团队显得不可靠，尽管原始数字本来就不真实。"
+    },
+    {
+      "q": "作者建议怎么给估时？",
+      "a": "给一个区间，并说明是什么因素决定了区间宽度（最大的未知是什么）。"
+    },
+    {
+      "q": "如何让估时逐步变准并赢得信任？",
+      "a": "花两三天做原型缩小不确定性；约定检查点按时更新数字，这样数字变化看起来是尽责而非失败。"
+    }
+  ],
+  "dictation": [
+    "Any single number you give right now is a guess dressed up as a plan.",
+    "An estimate without a range is a promise you didn't mean to make.",
+    "A wide range is not a weakness; it is an honest description of the problem.",
+    "The goal is not a perfect estimate; it is an estimate that gets better on schedule."
+  ],
+  "shadow": {
+    "text": "Give a range, and say what drives the width. \"Two to six weeks; the big unknown is whether their API supports bulk updates.\" Now the PM knows which question matters most, and might even help answer it.",
+    "marked": "Give a <b>range</b>, / and say what <b>drives</b> the width. //<br>\"<b>Two</b> to <b>six</b> weeks; / the big <b>unknown</b> / is whether their API supports <b>bulk</b> updates.\" //<br>Now the PM knows / which question matters <b>most</b>, / and might even <b>help</b> answer it. //"
+  },
+  "prompts": [
+    {
+      "q": "PM 在会上追问“接入新支付渠道要多久？给个数”。你们从没接过这家。用 30 秒给出区间、主要未知和检查点。",
+      "ref": "Honestly, a single number right now would be a guess. My range is three to eight weeks. The biggest unknown is their refund API; if it works like their docs say, we're near the low end. Here's what I suggest: give us three days to build a small prototype against their sandbox. On Thursday I'll come back with a much tighter estimate, and you can decide if it's still worth it.",
+      "ref_zh": "说实话，现在给一个数字只能是猜。我的区间是三到八周。最大的未知是他们的退款 API；如果它跟文档说的一样，我们就接近下限。我的建议是：给我们三天，对着他们的沙箱环境做个小原型。周四我给你一个准得多的估时，到时候你再判断还值不值得做。"
+    },
+    {
+      "q": "上次估三周、实际做了六周，老板有些不满。用 30 秒说明你以后会怎么给估时。",
+      "ref": "You're right that the last estimate was off, and I take responsibility for that. The problem was that I gave one number when we still didn't understand the data migration. From now on, I'll give a range and name the biggest unknown behind it. I'll also set a checkpoint after the first week to update the estimate, so you hear about any change early rather than at the deadline.",
+      "ref_zh": "你说得对，上次的估时偏了，这个责任在我。问题在于，我们还没搞懂数据迁移的时候，我就给了一个数字。以后我会给区间，并说明背后最大的未知是什么。我还会在第一周之后设一个检查点来更新估时，这样有任何变化你都能早点知道，而不是到 deadline 才知道。"
+    }
+  ],
+  "words": [
+    {
+      "w": "decisive",
+      "ipa": "/dɪˈsaɪsɪv/",
+      "zh": "果断的",
+      "ex": "We need someone decisive to own the launch call."
+    },
+    {
+      "w": "unreliable",
+      "ipa": "/ˌʌnrɪˈlaɪəbəl/",
+      "zh": "不可靠的",
+      "ex": "The staging data is unreliable, so test against a production copy."
+    },
+    {
+      "w": "noncommittal",
+      "ipa": "/ˌnɑːnkəˈmɪtəl/",
+      "zh": "不表态的、含糊的",
+      "ex": "The vendor was noncommittal about when the fix would be ready."
+    },
+    {
+      "w": "prototype",
+      "ipa": "/ˈproʊtəˌtaɪp/",
+      "zh": "原型",
+      "ex": "Let's build a quick prototype before we commit to this design."
+    },
+    {
+      "w": "checkpoint",
+      "ipa": "/ˈtʃekˌpɔɪnt/",
+      "zh": "检查点、节点",
+      "ex": "We'll have a checkpoint at the end of week two to review progress."
+    },
+    {
+      "w": "diligence",
+      "ipa": "/ˈdɪlɪdʒəns/",
+      "zh": "勤勉、尽责",
+      "ex": "Her diligence in testing caught the bug before launch."
+    },
+    {
+      "w": "commitment",
+      "ipa": "/kəˈmɪtmənt/",
+      "zh": "承诺",
+      "ex": "Is this date a commitment or just a target?"
+    },
+    {
+      "w": "narrow down",
+      "ipa": "/ˈnæroʊ daʊn/",
+      "zh": "缩小（范围）",
+      "ex": "We narrowed down the cause to one bad query."
+    },
+    {
+      "w": "tight",
+      "ipa": "/taɪt/",
+      "zh": "（估计）精确的；（时间）紧的",
+      "ex": "The schedule is tight, so let's not add new scope."
+    }
+  ]
+}

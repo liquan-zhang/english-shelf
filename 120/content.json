@@ -1,0 +1,84 @@
+{
+  "id": "120",
+  "type": "dialogue",
+  "title": "Talking to an Insurance Agent",
+  "meta": "B2 · 约 280 词 · 场景：咨询家庭医疗保险与理赔",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Insurance Agent", "name_zh": "保险顾问", "voice": "en-AU-WilliamMultilingualNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. What the Plan Covers",
+      "heading_zh": "1. 这份保险保什么",
+      "lines": [
+        {"sp": "B", "en": "Thanks for coming in. So you're looking at health cover for the whole family?", "zh": "谢谢您过来。您是想给全家买医疗保险，对吧？"},
+        {"sp": "A", "en": "Yes. My company plan only covers me, so I want something for my wife and our son.", "zh": "对。公司的保险只保我一个人，我想给太太和儿子也买一份。"},
+        {"sp": "B", "en": "This family plan covers hospital stays, surgery, and specialist visits, both here and in Malaysia.", "zh": "这个家庭计划保住院、手术和专科门诊，新加坡和马来西亚都保。"},
+        {"sp": "A", "en": "**What's the deductible, and how much would we still have to pay ourselves?**", "zh": "免赔额是多少？我们自己还要付多少？"},
+        {"sp": "B", "en": "The ==deductible== is two thousand dollars a year. After that, there's ten percent ==co-payment==, __capped at__ three thousand.", "zh": "免赔额每年两千元。超过后自付百分之十，封顶三千元。"},
+        {"sp": "A", "en": "So the most we'd pay in a bad year is five thousand. What's the ==premium==?", "zh": "那情况最糟的一年，我们最多付五千。保费是多少？"},
+        {"sp": "B", "en": "For the three of you, around two hundred and sixty dollars a month.", "zh": "你们三个人，每月大概两百六十元。"},
+        {"sp": "A", "en": "My son had asthma when he was a baby. Would that be ==excluded==?", "zh": "我儿子婴儿时期有过哮喘。这个会被除外吗？"},
+        {"sp": "B", "en": "It may be, as a ==pre-existing condition==. We'd need his medical records to __make a decision__.", "zh": "有可能，属于既往病症。我们需要看他的病历才能决定。"}
+      ]
+    },
+    {
+      "heading": "2. Not So Fast",
+      "heading_zh": "2. 先别急着签",
+      "lines": [
+        {"sp": "B", "en": "Now, a lot of families also add our savings plan. It __builds up__ cash value for your son's education.", "zh": "另外，很多家庭会加上我们的储蓄计划，可以为孩子教育攒现金价值。"},
+        {"sp": "A", "en": "**I'd rather keep insurance and savings separate. Let's focus on the health plan for now.**", "zh": "我更想把保险和储蓄分开。现在先专注医疗险吧。"},
+        {"sp": "B", "en": "Fair enough. Can I ask how quickly you'd like to sign up?", "zh": "可以理解。请问您打算多快投保？"},
+        {"sp": "A", "en": "Not today. Could you send me the full policy ==wording== so I can read the fine print?", "zh": "今天不签。能把完整的保单条款发给我吗？我想看看细则。"},
+        {"sp": "B", "en": "Sure, I'll email it tonight, along with a summary of the benefits.", "zh": "当然，今晚就发邮件给您，附上保障摘要。"},
+        {"sp": "A", "en": "Thanks. And if we do need to ==claim==, how does it work? Do we pay first and get ==reimbursed==?", "zh": "谢谢。如果真要理赔，流程是怎样的？是先自己付钱再报销吗？"},
+        {"sp": "B", "en": "At our panel hospitals, we pay them directly. Elsewhere, you __submit the bills__ in the app within ninety days.", "zh": "在我们的合作医院，我们直接跟医院结算。其他医院的话，九十天内在应用里提交账单。"},
+        {"sp": "A", "en": "And is there a ==waiting period== before the cover starts?", "zh": "保障生效前有等待期吗？"},
+        {"sp": "B", "en": "Thirty days for illness, but accidents are covered from day one.", "zh": "疾病有三十天等待期，意外从第一天起就保。"},
+        {"sp": "A", "en": "**That's helpful. I'll go through it with my wife and get back to you next week.**", "zh": "很有帮助。我跟太太一起看看，下周给你答复。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "这份家庭医疗险的自付部分怎么算？", "a": "每年免赔额两千元，之后自付百分之十，封顶三千元，最坏一年最多付五千元。"},
+    {"q": "儿子的哮喘会有什么影响？", "a": "可能被当作既往病症除外，需要看病历才能决定。"},
+    {"q": "顾问推销储蓄计划时「你」怎么回应的？最后怎么收尾？", "a": "说想把保险和储蓄分开，先只谈医疗险；今天不签，要完整条款回去和太太商量，下周答复。"}
+  ],
+  "dictation": [
+    "What's the deductible, and how much would we still have to pay ourselves?",
+    "I'd rather keep insurance and savings separate. Let's focus on the health plan for now.",
+    "Not today. Could you send me the full policy wording so I can read the fine print?",
+    "That's helpful. I'll go through it with my wife and get back to you next week."
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "Thanks. And if we do need to claim, how does it work? Do we pay first and get reimbursed?",
+    "marked": "<b>Thanks</b>. //<br>And if we <b>do</b> need to <b>claim</b>, / how does it <b>work</b>? //<br>Do we <b>pay first</b> / and get <b>reimbursed</b>? //"
+  },
+  "prompts": [
+    {
+      "q": "你想给全家买一份旅游保险，下个月回国过年。打电话问保不保航班延误、孩子生病看急诊，以及丢行李怎么理赔。",
+      "ref": "Hi, we're flying to China next month with our three-year-old, and I'm looking at your family travel plan. Does it cover flight delays, and from how many hours? If my son gets sick and needs to see a doctor there, is that covered? And if a bag goes missing, what documents would I need to make a claim?",
+      "ref_zh": "你好，我们下个月要带三岁的孩子回中国，我在看你们的家庭旅游险。航班延误保吗？延误几个小时起算？如果儿子在那边生病要看医生，保不保？如果行李丢了，理赔需要哪些材料？"
+    },
+    {
+      "q": "你的理赔申请被拒了，理由是既往病症，但你认为这次就诊和以前的病无关。打电话给保险公司提出复议。",
+      "ref": "Hi, I'm calling about a claim that was rejected last week. The letter says it's a pre-existing condition, but I don't think that's right. My son saw the doctor for an ear infection, which has nothing to do with his asthma. Could you review the claim again? I can send a letter from his doctor if that helps.",
+      "ref_zh": "你好，我打电话是关于上周被拒的一笔理赔。信里说属于既往病症，但我觉得不对。我儿子这次看的是耳朵感染，跟他的哮喘没关系。能重新审核一下吗？需要的话我可以提供医生的证明信。"
+    }
+  ],
+  "words": [
+    {"w": "deductible", "ipa": "/dɪˈdʌktəbəl/", "zh": "免赔额", "ex": "A higher deductible means a lower monthly premium."},
+    {"w": "co-payment", "ipa": "/ˌkoʊ ˈpeɪmənt/", "zh": "共付额，自付比例", "ex": "There's a small co-payment for each clinic visit."},
+    {"w": "premium", "ipa": "/ˈpriːmiəm/", "zh": "保费", "ex": "Our car insurance premium went up this year."},
+    {"w": "exclude", "ipa": "/ɪkˈskluːd/", "zh": "除外，不包括", "ex": "Dental care is excluded from this plan."},
+    {"w": "pre-existing condition", "ipa": "/ˌpriː ɪɡˈzɪstɪŋ kənˈdɪʃən/", "zh": "既往病症", "ex": "Most plans don't cover pre-existing conditions straight away."},
+    {"w": "wording", "ipa": "/ˈwɜːrdɪŋ/", "zh": "（保单）条款措辞", "ex": "Always read the policy wording, not just the brochure."},
+    {"w": "claim", "ipa": "/kleɪm/", "zh": "理赔；索赔", "ex": "You can claim for the taxi if your flight is cancelled."},
+    {"w": "reimburse", "ipa": "/ˌriːɪmˈbɜːrs/", "zh": "报销，偿还", "ex": "My company reimburses me for the phone bill."},
+    {"w": "waiting period", "ipa": "/ˈweɪtɪŋ ˈpɪriəd/", "zh": "等待期", "ex": "There's a thirty-day waiting period for illness."}
+  ]
+}

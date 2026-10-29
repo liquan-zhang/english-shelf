@@ -1,0 +1,185 @@
+{
+  "id": "082",
+  "title": "Remembering Things About People",
+  "meta": "B2 · 约 290 词 · 场景：记住同事的小事",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Colleague Who Remembered",
+      "paragraphs": [
+        [
+          "Last spring, a designer I had met only once asked me, \"How did your daughter's piano exam go?\"",
+          "I had mentioned it __in passing__, weeks earlier, at the end of a call.",
+          "I was ==genuinely== surprised, and from that moment I __went out of my way__ to help her whenever she asked."
+        ],
+        [
+          "That is the quiet power of remembering ==trivial== things.",
+          "It costs almost nothing, yet it tells people they are more than a ticket in your queue.",
+          "**People rarely remember what you said, but they always remember that you remembered.**"
+        ],
+        [
+          "Most of us do not have that kind of memory, especially when we work with dozens of people across several teams.",
+          "So we should not ==rely== on memory alone.",
+          "We need a small system."
+        ]
+      ],
+      "heading_zh": "1. 那位记得我的同事",
+      "paragraphs_zh": [
+        [
+          "去年春天，一位我只见过一面的设计师问我：「你女儿的钢琴考级怎么样了？」",
+          "那是几周前一次通话快结束时，我随口提的一句。",
+          "我是真的很意外，从那以后，只要她找我帮忙，我都会特意帮她。"
+        ],
+        [
+          "这就是记住小事的无声力量。",
+          "它几乎不花什么成本，却能让对方知道，自己在你眼里不只是队列里的一张工单。",
+          "人们很少记得你说过什么，但总会记得你记得他们。"
+        ],
+        [
+          "我们大多数人没有那么好的记性，尤其是要和好几个团队、几十号人打交道的时候。",
+          "所以不能只靠脑子记。",
+          "我们需要一个小系统。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. A Two-Line Habit",
+      "paragraphs": [
+        [
+          "**After any real conversation, write down two lines: one fact and one thing to follow up on.**",
+          "For example: \"Marco, moving apartments next month. Ask how the move went.\"",
+          "Keep these notes in one place, next to the person's name in your contacts or in a simple document."
+        ],
+        [
+          "Before your next one-on-one or coffee chat, spend thirty seconds reading the note.",
+          "Then open with a ==callback==: \"Last time you were in the middle of moving. Did it all go smoothly?\"",
+          "This __shows you were listening__ and gives the other person an easy story to tell."
+        ],
+        [
+          "Be careful with ==sensitive== topics.",
+          "Health problems, family conflicts, or a rejected promotion are things to __bring up__ only if the other person raises them first.",
+          "Stick to ==milestones== people are happy to share: trips, hobbies, exams, new pets, a first marathon."
+        ],
+        [
+          "Done ==consistently==, this habit __adds up__.",
+          "You will not just be the manager from the other team; you will be the person who asked about their dog."
+        ]
+      ],
+      "heading_zh": "2. 两行笔记的习惯",
+      "paragraphs_zh": [
+        [
+          "每次真正聊过之后，记两行：一条事实，一件之后要跟进的事。",
+          "比如：「Marco，下个月搬家。回头问问搬得怎么样。」",
+          "这些笔记放在一个地方，记在通讯录里这个人的名字旁边，或者一个简单的文档里。"
+        ],
+        [
+          "下次一对一或者喝咖啡之前，花三十秒看一眼笔记。",
+          "然后用一句回扣开场：「上次你正忙着搬家，后来都还顺利吧？」",
+          "这说明你当时在认真听，也给了对方一个好讲的话题。"
+        ],
+        [
+          "敏感话题要小心。",
+          "健康问题、家庭矛盾，或者晋升没过，这些只有对方自己先提起，你才能聊。",
+          "就聊那些大家乐意分享的节点：旅行、爱好、考试、新养的宠物、第一次跑全马。"
+        ],
+        [
+          "坚持下来，这个习惯会慢慢攒出效果。",
+          "你不再只是隔壁团队的某个经理；你会是那个问起他们家狗狗的人。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者开头讲的设计师的故事说明了什么？",
+      "a": "只见过一面的人记得他随口提过的女儿钢琴考试，让他很意外，之后主动帮她；记住小事成本低、回报大。"
+    },
+    {
+      "q": "作者建议的“两行习惯”具体是什么？",
+      "a": "每次真正的交谈后记两行：一个事实 + 一件下次要跟进的事；见面前花三十秒看一眼，用 callback 开场。"
+    },
+    {
+      "q": "哪些话题要小心？应该聊什么？",
+      "a": "健康、家庭矛盾、晋升被拒等敏感话题，除非对方先提；多聊对方乐于分享的里程碑：旅行、爱好、考试、宠物、第一次马拉松。"
+    }
+  ],
+  "dictation": [
+    "People rarely remember what you said, but they always remember that you remembered.",
+    "So we should not rely on memory alone.",
+    "After any real conversation, write down two lines: one fact and one thing to follow up on.",
+    "This shows you were listening and gives the other person an easy story to tell."
+  ],
+  "shadow": {
+    "text": "Before your next one-on-one or coffee chat, spend thirty seconds reading the note. Then open with a callback: \"Last time you were in the middle of moving. Did it all go smoothly?\" This shows you were listening and gives the other person an easy story to tell.",
+    "marked": "Before your next <b>one-on-one</b> or coffee chat, / spend <b>thirty seconds</b> / reading the <b>note</b>. //<br>Then open with a <b>callback</b>: / \"Last time you were in the middle of <b>moving</b>. / Did it all go <b>smoothly</b>?\" //<br>This shows you were <b>listening</b> / and gives the other person / an <b>easy</b> story to tell. //"
+  },
+  "prompts": [
+    {
+      "q": "你和新加坡同事 Wei Ling 两周没见，上次她说要带父母去日本。现在在茶水间碰到她，用 callback 开场聊 30 秒。",
+      "ref": "Hey Wei Ling, welcome back! Last time we talked, you were about to take your parents to Japan. How did it go? Did they cope with all the walking? That sounds lovely. My parents visited me here last year, and I think they walked more in one week than in a whole year at home. Any place you'd recommend?",
+      "ref_zh": "嘿 Wei Ling，欢迎回来！上次聊的时候，你正准备带爸妈去日本。玩得怎么样？他们走那么多路吃得消吗？听着真不错。我爸妈去年来这边看我，我觉得他们一周走的路比在家一年都多。有什么地方推荐吗？"
+    },
+    {
+      "q": "一对一开始时，你想关心下属最近搬家的事，但又不想显得在查岗。30 秒自然带过，再进入正题。",
+      "ref": "Before we get into the project, how did the move go? I remember you said the new place is closer to the office. Has the commute actually gotten better? Good to hear. If you need a morning off to sort out the boxes, just let me know. Okay, shall we start with the release plan?",
+      "ref_zh": "聊项目之前，先问一句，搬家还顺利吗？我记得你说新家离公司更近。通勤是真的轻松些了吗？那挺好。要是需要请半天假收拾箱子，跟我说一声就行。好，我们先从发布计划开始？"
+    }
+  ],
+  "words": [
+    {
+      "w": "genuinely",
+      "ipa": "/ˈdʒenjuɪnli/",
+      "zh": "真诚地、确实",
+      "ex": "I was genuinely impressed by how fast the new hire picked up the codebase."
+    },
+    {
+      "w": "trivial",
+      "ipa": "/ˈtrɪviəl/",
+      "zh": "琐碎的、微不足道的",
+      "ex": "It sounds trivial, but fixing the error message cut support tickets in half."
+    },
+    {
+      "w": "rely on",
+      "ipa": "/rɪˈlaɪ ɑːn/",
+      "zh": "依赖、依靠",
+      "ex": "We can't rely on one person to remember every deployment step."
+    },
+    {
+      "w": "callback",
+      "ipa": "/ˈkɔːlˌbæk/",
+      "zh": "回扣前文、呼应之前的话题",
+      "ex": "She opened with a callback to our last chat about her marathon."
+    },
+    {
+      "w": "sensitive",
+      "ipa": "/ˈsensətɪv/",
+      "zh": "敏感的",
+      "ex": "Compensation is a sensitive topic, so let's discuss it one-on-one."
+    },
+    {
+      "w": "milestone",
+      "ipa": "/ˈmaɪlˌstoʊn/",
+      "zh": "里程碑、重要节点",
+      "ex": "Passing the driving test was a big milestone for him."
+    },
+    {
+      "w": "consistently",
+      "ipa": "/kənˈsɪstəntli/",
+      "zh": "一贯地、持续地",
+      "ex": "She consistently ships on time, so I trust her estimates."
+    },
+    {
+      "w": "in passing",
+      "ipa": "/ɪn ˈpæsɪŋ/",
+      "zh": "顺带地、随口",
+      "ex": "He mentioned in passing that he's looking for a new role."
+    },
+    {
+      "w": "go out of your way",
+      "ipa": "/ɡoʊ aʊt əv jʊr weɪ/",
+      "zh": "特意、不怕麻烦地",
+      "ex": "Thanks for going out of your way to review this on a Sunday."
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "id": "034",
+  "title": "Pushing Back on an Unrealistic Deadline",
+  "meta": "B2 · 约 260 词 · 场景：排期谈判",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Why No Is the Wrong First Word",
+      "paragraphs": [
+        [
+          "Your director wants the new onboarding flow live before the year-end campaign.",
+          "Your estimate says it needs ten weeks, and you have six.",
+          "The worst thing you can say is \"That's impossible.\""
+        ],
+        [
+          "\"Impossible\" ends the conversation and makes you look ==inflexible==.",
+          "Your director usually has a real reason for the date, maybe a promise to a partner or a marketing ==slot== that is already booked.",
+          "If you __brush off the date__, you also brush off their problem.",
+          "From that moment, you are an obstacle, not a partner."
+        ],
+        [
+          "**Instead of arguing about the deadline, make the trade-offs visible.**",
+          "Every project has three ==levers==: scope, time, and people.",
+          "If the date is fixed, at least one of the other two has to move."
+        ]
+      ],
+      "heading_zh": "1. 为什么第一句话不该是「不行」",
+      "paragraphs_zh": [
+        [
+          "你的总监希望新的注册引导流程在年底大促前上线。",
+          "你评估下来需要十周，而你只有六周。",
+          "你最不该说的一句话就是「这不可能」。"
+        ],
+        [
+          "「不可能」会直接终结对话，还会让你显得很死板。",
+          "总监定这个日期通常是有真实原因的，可能是答应了合作方，也可能是已经订好的营销档期。",
+          "你要是一口回绝这个日期，也就等于把他的难处一起推开了。",
+          "从那一刻起，你就成了障碍，而不是伙伴。"
+        ],
+        [
+          "与其争论 deadline，不如把取舍摆到台面上。",
+          "每个项目都有三根杠杆：范围、时间和人力。",
+          "如果日期定死了，另外两个里至少有一个得动。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Offer What Fits",
+      "paragraphs": [
+        [
+          "Start by agreeing on what the date protects.",
+          "\"So the key thing is being ready for the campaign traffic, right?\"",
+          "This shows you take the goal seriously before you talk about limits."
+        ],
+        [
+          "Then present options, not ==refusals==.",
+          "\"By that date, we can ship sign-up and email login, and add social login two weeks later.\"",
+          "Or: \"We can hit the full scope if we borrow two engineers from the growth team.\"",
+          "Now your director is choosing between plans instead of __fighting with you__."
+        ],
+        [
+          "Be honest about quality, too.",
+          "Squeezing ten weeks into six usually means skipping tests, and that ==debt== shows up as incidents in January.",
+          "**Let your director choose the risk, but make sure they choose it with open eyes.**"
+        ],
+        [
+          "Put the agreed version __in writing__ the same day.",
+          "A short summary of scope, date, and known risks protects everyone when memories ==fade==."
+        ]
+      ],
+      "heading_zh": "2. 给出能落地的方案",
+      "paragraphs_zh": [
+        [
+          "先就这个日期要保住什么达成一致。",
+          "「所以最关键的是要在大促流量来之前准备好，对吧？」",
+          "这能表明你在谈限制之前，先认真对待了目标。"
+        ],
+        [
+          "然后拿出方案，而不是拒绝。",
+          "「到那天，我们可以上线注册和邮箱登录，两周后再加上第三方登录。」",
+          "或者：「如果能从增长团队借两个工程师，我们就能做完全部范围。」",
+          "这样一来，总监是在几个方案之间做选择，而不是在跟你较劲。"
+        ],
+        [
+          "对质量也要坦诚。",
+          "把十周的活压到六周，通常意味着要跳过测试，而这笔债会在一月份以线上事故的形式找上门来。",
+          "让总监来选择承担哪种风险，但要确保他是看清楚了再选的。"
+        ],
+        [
+          "当天就把商定好的版本落成文字。",
+          "一份关于范围、日期和已知风险的简短总结，能在大家记忆模糊的时候保护所有人。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么不该直接说「不可能」？",
+      "a": "它会终结对话、显得不灵活；总监定这个日期通常有真实原因，否定日期等于否定他的问题。"
+    },
+    {
+      "q": "作者说每个项目有哪三个杠杆？",
+      "a": "范围、时间、人力；如果日期固定，另外两个至少要动一个。"
+    },
+    {
+      "q": "具体应该怎么谈？",
+      "a": "先确认日期要保护的目标；给出选项（砍范围分期上线或借人）而不是拒绝；坦白赶工带来的质量风险，让对方知情选择；当天书面确认。"
+    }
+  ],
+  "dictation": [
+    "Instead of arguing about the deadline, make the trade-offs visible.",
+    "Let your director choose the risk, but make sure they choose it with open eyes.",
+    "If the date is fixed, at least one of the other two has to move.",
+    "Start by agreeing on what the date protects."
+  ],
+  "shadow": {
+    "text": "Instead of arguing about the deadline, make the trade-offs visible. Every project has three levers: scope, time, and people. If the date is fixed, at least one of the other two has to move.",
+    "marked": "Instead of <b>arguing</b> about the deadline, / make the <b>trade-offs</b> visible. //<br>Every project has <b>three</b> levers: / <b>scope</b>, / <b>time</b>, / and <b>people</b>. //<br>If the date is <b>fixed</b>, / at least <b>one</b> of the other two / has to <b>move</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "老板要求新功能月底上线，你估算需要再多三周。用 30 秒回应：先确认日期背后的目标，再给出两个选项。",
+      "ref": "I understand the end of the month matters because of the partner demo. Let me be straight about where we are: the full feature needs about three more weeks. So here are two options. We can demo the core flow by the end of the month and ship the admin tools three weeks later. Or, if the full scope has to be there, we'd need two more engineers starting next week. Which matters more for the demo?",
+      "ref_zh": "我理解月底很重要，因为有合作方的 demo。我直说现在的情况：完整功能还需要大概三周。所以有两个方案。我们可以月底先 demo 核心流程，三周后再上线管理工具。或者，如果必须是完整范围，我们需要从下周开始再加两个工程师。对这次 demo 来说，哪个更重要？"
+    },
+    {
+      "q": "PM 提议跳过测试来赶日期。用 30 秒说明质量风险，让对方明确选择，并提议书面确认。",
+      "ref": "We can hit that date if we cut the test phase, but I want us to make that choice with open eyes. Without regression tests, the most likely result is a few bugs in checkout during the first week, right when traffic peaks. If you're comfortable with that risk, I'll go ahead. I'll just send a short note today with the scope, the date, and the risk we're accepting, so we're all aligned.",
+      "ref_zh": "如果砍掉测试阶段，我们能赶上那个日期，但我希望大家是看清楚了再做这个选择。没有回归测试的话，最可能的结果是第一周结账流程会出几个 bug，正好赶上流量高峰。如果你能接受这个风险，我就推进。我今天会发一份简短的说明，写清楚范围、日期和我们接受的风险，确保大家对齐。"
+    }
+  ],
+  "words": [
+    {
+      "w": "inflexible",
+      "ipa": "/ɪnˈfleksəbl/",
+      "zh": "死板的、不灵活的",
+      "ex": "Saying no to every date makes the team look inflexible."
+    },
+    {
+      "w": "slot",
+      "ipa": "/slɑːt/",
+      "zh": "（时间）档期",
+      "ex": "Marketing already booked the launch slot for the first week of December."
+    },
+    {
+      "w": "lever",
+      "ipa": "/ˈlevər/",
+      "zh": "杠杆、可调节的手段",
+      "ex": "Scope is the only lever we can pull this late in the project."
+    },
+    {
+      "w": "scope",
+      "ipa": "/skoʊp/",
+      "zh": "范围",
+      "ex": "If we cut the scope, we can still make the date."
+    },
+    {
+      "w": "refusal",
+      "ipa": "/rɪˈfjuːzl/",
+      "zh": "拒绝",
+      "ex": "A flat refusal won't help; give them an option."
+    },
+    {
+      "w": "debt",
+      "ipa": "/det/",
+      "zh": "（技术）债务",
+      "ex": "Skipping tests now just adds technical debt for next quarter."
+    },
+    {
+      "w": "fade (v.)",
+      "ipa": "/feɪd/",
+      "zh": "（记忆）消退",
+      "ex": "Write the decision down before memories fade.",
+      "tts_w": "fade"
+    },
+    {
+      "w": "squeeze (v.)",
+      "ipa": "/skwiːz/",
+      "zh": "挤压、硬塞",
+      "ex": "We can't squeeze a full migration into one sprint.",
+      "tts_w": "squeeze"
+    },
+    {
+      "w": "obstacle",
+      "ipa": "/ˈɑːbstəkl/",
+      "zh": "障碍",
+      "ex": "I don't want the platform team to be seen as an obstacle."
+    }
+  ]
+}

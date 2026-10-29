@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>When the Food Is Wrong · 听说练习册</title>
+<style>
+  :root { --ink:#1f2328; --mute:#6b7280; --line:#e5e7eb; --bg:#fafaf7; --card:#fff; --accent:#2563eb; --hl:#fef08a; --ok:#16a34a; --bad:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 120px; }
+  header h1 { margin: 0 0 4px; font-size: 26px; }
+  header .meta { color: var(--mute); font-size: 14px; }
+  .bar { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); padding: 10px 0; margin: 16px 0 8px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .bar nav a { color: var(--mute); text-decoration: none; margin-right: 10px; }
+  .bar nav a.done { color: var(--ok); }
+  .bar nav a.done::before { content: "✓ "; }
+  .bar .speed { margin-left:auto; }
+  section.step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step h2 { margin: 0; font-size: 19px; display:flex; align-items:center; gap:10px; }
+  .step h2 .time { font-size: 13px; color: var(--mute); font-weight: normal; }
+  .step h2 label { margin-left:auto; font-size: 13px; font-weight: normal; color: var(--mute); cursor:pointer; }
+  .how { color: var(--mute); font-size: 14px; margin: 6px 0 14px; }
+  button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.rec { border-color: var(--bad); color: var(--bad); }
+  button.rec.on { background: var(--bad); color:#fff; }
+  audio { width: 100%; margin: 6px 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .q { margin: 12px 0; }
+  .row { display:flex; gap:8px; align-items:flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .row .ctl { flex: none; display:flex; gap:4px; padding-top: 2px; }
+  .row .txt { flex: 1; }
+  .hide .txt { filter: blur(6px); cursor: pointer; user-select: none; }
+  .para-gap { height: 10px; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; margin-right: 6px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .sp.A { background: #fee2e2; color: #b91c1c; }
+  .zh { color: var(--mute); font-size: 14px; margin-top: 2px; }
+  body.nozh .zh { display: none; }
+  h3 { font-size: 16px; margin: 16px 0 4px; }
+  mark { background: var(--hl); padding: 0 2px; border-radius: 3px; }
+  u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; min-height: 60px; margin: 6px 0; }
+  .diff span { padding: 0 2px; border-radius: 3px; }
+  .diff .hit { color: var(--ok); }
+  .diff .miss { color: var(--bad); background: #fee2e2; }
+  .score { font-size: 13px; color: var(--mute); margin-left: 6px; }
+  .shadow { font-size: 19px; line-height: 2.1; background: #f8fafc; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 6px; }
+  .shadow b { color: var(--accent); }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 22px; min-width: 48px; }
+  .prompt { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--mute); font-weight: normal; font-size: 13px; }
+  .ipa { color: var(--mute); font-family: "Lucida Grande", sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" style="color:#6b7280;text-decoration:none;font-size:14px">← 书架</a>
+    <h1 id="title"></h1>
+    <div class="meta" id="meta"></div>
+    <a href="player.html" style="display:inline-block;margin-top:10px;padding:6px 14px;border-radius:999px;background:#1c1917;color:#fff;text-decoration:none;font-size:14px">🎧 打开跟读播放器（歌词同步）</a>
+  </header>
+  <div class="bar">
+    <nav id="nav"></nav>
+    <span class="speed">语速
+      <select id="speed"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+    </span>
+  </div>
+  <main id="main"></main>
+</div>
+<script>
+const D = {"id": "108", "type": "dialogue", "title": "When the Food Is Wrong", "meta": "B2 · 约 280 词 · 场景：上错菜、菜凉、等太久的礼貌投诉", "voice": "en-US-AndrewNeural", "rate": "-5%", "speakers": {"A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"}, "B": {"name": "Waiter", "name_zh": "服务员", "voice": "en-GB-RyanNeural"}}, "gist": [{"q": "第一道菜和意面分别有什么问题？", "a": "三文鱼配菜上错了，点的是沙拉却上了土豆泥；意面早早上来，等其他菜时已经凉了，「你」要求重新做一份。"}, {"q": "孩子们的餐等了多久？服务员做了什么？", "a": "等了快四十分钟；服务员马上去催，并免费先送了面包。"}, {"q": "「你」提意见后，餐厅怎么补偿的？", "a": "服务员承认今晚人手不够，跟经理商量后免了意面的钱和服务费。"}], "dictation": [{"id": "s0_1_0", "text": "Sorry, I think there's been a mix-up. I actually ordered the salmon with salad, not mash."}, {"id": "s0_5_0", "text": "A fresh one would be better, if that's not too much trouble."}, {"id": "s0_9_0", "text": "Thank you. Could we get some bread for them in the meantime?"}, {"id": "s1_5_0", "text": "I appreciate you saying that. Is there anything you can do about the bill?"}], "shadow": {"speaker": "A", "text": "Actually, we've been waiting almost forty minutes for the kids' meals. Could you check on them? They're getting quite cranky.", "marked": "Actually, / we've been waiting <b>almost forty minutes</b> / for the kids' meals. //<br>Could you <b>check</b> on them? //<br>They're getting quite <b>cranky</b>. //"}, "prompts": [{"q": "你点的牛排要五分熟，端上来几乎全熟了。礼貌地跟服务员说明，并提出你希望的处理方式。", "ref": "Excuse me, sorry to bother you. I asked for my steak medium, but this one is almost well done. It's quite dry inside. Would it be possible to have it cooked again? I'm happy to wait. And could you keep the sides warm for me, so everything comes out together this time?", "ref_zh": "不好意思，打扰一下。我的牛排要的是五分熟，但这块几乎全熟了，里面挺干的。能重新做一份吗？我可以等。另外配菜能帮我保温一下吗？这次一起上。", "id": "ref0"}, {"q": "你在一碗汤里发现了一根头发。冷静地叫来服务员，说明情况，不想闹大，但希望换掉这道菜。", "ref": "Hi, sorry, could you come over for a second? I just found a hair in my soup. I don't want to make a big deal out of it, but I'd rather not eat this one. Could you take it away and bring me something else? Maybe the fish noodles instead. Thanks for understanding.", "ref_zh": "你好，不好意思，能过来一下吗？我刚在汤里发现了一根头发。我不想把事情闹大，但这碗我不想吃了。能拿走换个别的吗？换成鱼片面吧。谢谢理解。", "id": "ref1"}], "words": [{"w": "mix-up", "ipa": "/ˈmɪks ʌp/", "zh": "搞混；弄错", "ex": "There was a mix-up with our booking.", "id": "w0"}, {"w": "lukewarm", "ipa": "/ˌluːkˈwɔːrm/", "zh": "温吞的；不够热的", "ex": "The coffee was only lukewarm.", "id": "w1"}, {"w": "cranky", "ipa": "/ˈkræŋki/", "zh": "（孩子）烦躁闹脾气的", "ex": "He gets cranky when he's hungry.", "id": "w2"}, {"w": "chase up", "ipa": "/tʃeɪs ʌp/", "zh": "催办", "ex": "Could you chase up my order? It's been a while.", "id": "w3"}, {"w": "in the meantime", "ipa": "/ɪn ðə ˈmiːntaɪm/", "zh": "在此期间", "ex": "The doctor is running late. In the meantime, please fill in this form.", "id": "w4"}, {"w": "on the house", "ipa": "/ɑːn ðə haʊs/", "zh": "店家免费请客", "ex": "The dessert is on the house tonight.", "id": "w5"}, {"w": "short-staffed", "ipa": "/ˌʃɔːrt ˈstæft/", "zh": "人手不足的", "ex": "Sorry for the wait, we're short-staffed today.", "id": "w6"}, {"w": "excuse (n.)", "ipa": "/ɪkˈskjuːs/", "zh": "借口；理由", "ex": "Being busy is no excuse for being rude.", "tts_w": "excuse", "id": "w7"}, {"w": "waive", "ipa": "/weɪv/", "zh": "免除（费用）", "ex": "They waived the delivery fee because it came late.", "id": "w8"}], "sections": [{"heading": "1. The Wrong Dish", "heading_zh": "1. 上错菜", "rows": [[{"id": "s0_0_0", "md": "Here you are, the grilled salmon with mashed potatoes.", "text": "Here you are, the grilled salmon with mashed potatoes.", "zh": "您的烤三文鱼配土豆泥。", "sp": "B"}], [{"id": "s0_1_0", "md": "Sorry, I think there's been a ==mix-up==. I actually ordered the salmon with salad, not mash.", "text": "Sorry, I think there's been a mix-up. I actually ordered the salmon with salad, not mash.", "zh": "不好意思，好像搞错了。我点的是三文鱼配沙拉，不是土豆泥。", "sp": "A"}], [{"id": "s0_2_0", "md": "Oh, I do apologise. Let me check. You're quite right, it says salad. I'll get that changed.", "text": "Oh, I do apologise. Let me check. You're quite right, it says salad. I'll get that changed.", "zh": "哦，非常抱歉。我查一下。您说得对，单子上写的是沙拉。我马上给您换。", "sp": "B"}], [{"id": "s0_3_0", "md": "Thanks. Also, the pasta came out a while ago, and it's gone ==lukewarm== while we waited for everything else.", "text": "Thanks. Also, the pasta came out a while ago, and it's gone lukewarm while we waited for everything else.", "zh": "谢谢。另外意面很早就上了，等其他菜的时候已经温吞了。", "sp": "A"}], [{"id": "s0_4_0", "md": "I'm sorry about that. Would you like the kitchen to __heat it up__, or make a fresh one?", "text": "I'm sorry about that. Would you like the kitchen to heat it up, or make a fresh one?", "zh": "抱歉。您是想让厨房热一下，还是重新做一份？", "sp": "B"}], [{"id": "s0_5_0", "md": "**A fresh one would be better, if that's not too much trouble.**", "text": "A fresh one would be better, if that's not too much trouble.", "zh": "如果不太麻烦的话，重新做一份更好。", "sp": "A"}], [{"id": "s0_6_0", "md": "Not at all. Is everything else alright?", "text": "Not at all. Is everything else alright?", "zh": "一点也不麻烦。其他还好吗？", "sp": "B"}], [{"id": "s0_7_0", "md": "Actually, we've been waiting almost forty minutes for the kids' meals. Could you __check on__ them? They're getting quite ==cranky==.", "text": "Actually, we've been waiting almost forty minutes for the kids' meals. Could you check on them? They're getting quite cranky.", "zh": "其实孩子们的餐我们已经等了快四十分钟了。能帮忙催一下吗？他们已经开始闹脾气了。", "sp": "A"}], [{"id": "s0_8_0", "md": "Of course. I'll __chase it up__ right now.", "text": "Of course. I'll chase it up right now.", "zh": "当然，我现在就去催。", "sp": "B"}], [{"id": "s0_9_0", "md": "**Thank you. Could we get some bread for them in the meantime?**", "text": "Thank you. Could we get some bread for them in the meantime?", "zh": "谢谢。这期间能先给他们来点面包吗？", "sp": "A"}], [{"id": "s0_10_0", "md": "Certainly. I'll bring some over, ==on the house==.", "text": "Certainly. I'll bring some over, on the house.", "zh": "当然。我拿一些过来，免费的。", "sp": "B"}]]}, {"heading": "2. Giving Feedback", "heading_zh": "2. 提意见", "rows": [[{"id": "s1_0_0", "md": "How was everything in the end?", "text": "How was everything in the end?", "zh": "最后吃得怎么样？", "sp": "B"}], [{"id": "s1_1_0", "md": "The food was good once it came, but honestly, the wait was really long. I'd like to give some feedback, if that's okay.", "text": "The food was good once it came, but honestly, the wait was really long. I'd like to give some feedback, if that's okay.", "zh": "菜上了以后挺好吃的，不过说实话，等得太久了。我想提点意见，可以吗？", "sp": "A"}], [{"id": "s1_2_0", "md": "Please do. We'd appreciate it.", "text": "Please do. We'd appreciate it.", "zh": "请说，我们很欢迎。", "sp": "B"}], [{"id": "s1_3_0", "md": "We waited nearly an hour for the kids' food, and two dishes came out wrong. It __put a damper on__ the evening.", "text": "We waited nearly an hour for the kids' food, and two dishes came out wrong. It put a damper on the evening.", "zh": "孩子的饭等了将近一个小时，还有两道菜上错了。整晚的兴致都被扫了。", "sp": "A"}], [{"id": "s1_4_0", "md": "I completely understand, and I'm really sorry. We're ==short-staffed== tonight, but that's no ==excuse==.", "text": "I completely understand, and I'm really sorry. We're short-staffed tonight, but that's no excuse.", "zh": "我完全理解，真的很抱歉。我们今晚人手不够，但这不是理由。", "sp": "B"}], [{"id": "s1_5_0", "md": "**I appreciate you saying that. Is there anything you can do about the bill?**", "text": "I appreciate you saying that. Is there anything you can do about the bill?", "zh": "谢谢你这么说。账单上能有什么表示吗？", "sp": "A"}], [{"id": "s1_6_0", "md": "I've spoken to my manager. We've taken the pasta off, and we've ==waived== the service charge.", "text": "I've spoken to my manager. We've taken the pasta off, and we've waived the service charge.", "zh": "我跟经理说过了。意面不收钱，服务费也免了。", "sp": "B"}], [{"id": "s1_7_0", "md": "**That's very fair. Thanks for handling it so well.**", "text": "That's very fair. Thanks for handling it so well.", "zh": "很公道。谢谢你处理得这么好。", "sp": "A"}], [{"id": "s1_8_0", "md": "Thank you for being so understanding. We hope you'll __give us another chance__.", "text": "Thank you for being so understanding. We hope you'll give us another chance.", "zh": "谢谢您这么体谅。希望您再给我们一次机会。", "sp": "B"}], [{"id": "s1_9_0", "md": "We will. The salmon was lovely, actually.", "text": "We will. The salmon was lovely, actually.", "zh": "会的。其实三文鱼很好吃。", "sp": "A"}]]}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Wrong Dish", "zh": "1. 上错菜", "start": 0.0, "end": 1.8, "words": [[0.105, 0.342], [0.566, 0.645], [0.658, 0.947], [0.961, 1.421]]}, {"kind": "s", "id": "s0_0_0", "md": "Here you are, the grilled salmon with mashed potatoes.", "zh": "您的烤三文鱼配土豆泥。", "sp": "B", "gap": false, "start": 1.8, "end": 6.024, "words": [[1.9, 2.15], [2.163, 2.334], [2.347, 2.637], [2.861, 2.966], [2.979, 3.374], [3.387, 3.716], [3.729, 3.874], [3.887, 4.255], [4.268, 5.111]]}, {"kind": "s", "id": "s0_1_0", "md": "Sorry, I think there's been a ==mix-up==. I actually ordered the salmon with salad, not mash.", "zh": "不好意思，好像搞错了。我点的是三文鱼配沙拉，不是土豆泥。", "sp": "A", "gap": false, "start": 6.024, "end": 11.832, "words": [[6.129, 6.59], [6.827, 6.906], [6.919, 7.116], [7.129, 7.287], [7.3, 7.419], [7.432, 7.471], [7.485, 8.011], [8.458, 8.55], [8.563, 8.998], [9.011, 9.3], [9.313, 9.379], [9.392, 9.787], [9.8, 9.945], [9.958, 10.379], [10.669, 10.866], [10.879, 11.432]]}, {"kind": "s", "id": "s0_2_0", "md": "Oh, I do apologise. Let me check. You're quite right, it says salad. I'll get that changed.", "zh": "哦，非常抱歉。我查一下。您说得对，单子上写的是沙拉。我马上给您换。", "sp": "B", "gap": false, "start": 11.832, "end": 21.504, "words": [[11.932, 12.169], [12.393, 12.511], [12.524, 12.735], [12.748, 13.669], [14.579, 14.803], [14.816, 14.935], [14.948, 15.421], [16.329, 16.553], [16.566, 16.974], [16.987, 17.369], [17.54, 17.645], [17.658, 17.921], [17.935, 18.448], [19.356, 19.579], [19.593, 19.803], [19.816, 19.974], [19.987, 20.593]]}, {"kind": "s", "id": "s0_3_0", "md": "Thanks. Also, the pasta came out a while ago, and it's gone ==lukewarm== while we waited for everything else.", "zh": "谢谢。另外意面很早就上了，等其他菜的时候已经温吞了。", "sp": "A", "gap": false, "start": 21.504, "end": 28.128, "words": [[21.636, 22.043], [22.478, 22.925], [23.188, 23.267], [23.28, 23.675], [23.688, 23.912], [23.925, 24.03], [24.043, 24.083], [24.096, 24.359], [24.372, 24.741], [25.03, 25.136], [25.149, 25.28], [25.293, 25.557], [25.57, 26.057], [26.07, 26.228], [26.241, 26.346], [26.359, 26.701], [26.715, 26.899], [26.912, 27.293], [27.307, 27.741]]}, {"kind": "s", "id": "s0_4_0", "md": "I'm sorry about that. Would you like the kitchen to __heat it up__, or make a fresh one?", "zh": "抱歉。您是想让厨房热一下，还是重新做一份？", "sp": "B", "gap": false, "start": 28.128, "end": 34.368, "words": [[28.228, 28.425], [28.439, 28.807], [28.82, 29.123], [29.136, 29.504], [30.415, 30.586], [30.599, 30.678], [30.691, 30.889], [30.902, 30.994], [31.007, 31.362], [31.375, 31.468], [31.481, 31.717], [31.731, 31.836], [31.849, 32.06], [32.27, 32.375], [32.389, 32.625], [32.639, 32.691], [32.704, 33.06], [33.073, 33.441]]}, {"kind": "s", "id": "s0_5_0", "md": "**A fresh one would be better, if that's not too much trouble.**", "zh": "如果不太麻烦的话，重新做一份更好。", "sp": "A", "gap": false, "start": 34.368, "end": 37.896, "words": [[34.473, 34.526], [34.539, 34.881], [34.894, 35.052], [35.065, 35.21], [35.223, 35.329], [35.342, 35.75], [36.184, 36.25], [36.263, 36.486], [36.5, 36.736], [36.75, 36.894], [36.907, 37.118], [37.131, 37.513]]}, {"kind": "s", "id": "s0_6_0", "md": "Not at all. Is everything else alright?", "zh": "一点也不麻烦。其他还好吗？", "sp": "B", "gap": false, "start": 37.896, "end": 42.12, "words": [[37.996, 38.364], [38.378, 38.522], [38.535, 38.878], [39.788, 39.999], [40.012, 40.393], [40.407, 40.591], [40.604, 41.196]]}, {"kind": "s", "id": "s0_7_0", "md": "Actually, we've been waiting almost forty minutes for the kids' meals. Could you __check on__ them? They're getting quite ==cranky==.", "zh": "其实孩子们的餐我们已经等了快四十分钟了。能帮忙催一下吗？他们已经开始闹脾气了。", "sp": "A", "gap": false, "start": 42.12, "end": 49.032, "words": [[42.225, 42.738], [42.988, 43.173], [43.186, 43.331], [43.344, 43.725], [43.738, 44.173], [44.186, 44.581], [44.594, 44.909], [44.923, 45.041], [45.054, 45.133], [45.146, 45.409], [45.423, 45.936], [46.383, 46.488], [46.502, 46.567], [46.581, 46.831], [46.844, 46.949], [46.962, 47.094], [47.541, 47.62], [47.633, 47.857], [47.87, 48.146], [48.159, 48.633]]}, {"kind": "s", "id": "s0_8_0", "md": "Of course. I'll __chase it up__ right now.", "zh": "当然，我现在就去催。", "sp": "B", "gap": false, "start": 49.032, "end": 53.304, "words": [[49.132, 49.343], [49.356, 49.974], [50.885, 51.095], [51.108, 51.398], [51.411, 51.516], [51.529, 51.687], [51.7, 51.964], [51.977, 52.385]]}, {"kind": "s", "id": "s0_9_0", "md": "**Thank you. Could we get some bread for them in the meantime?**", "zh": "谢谢。这期间能先给他们来点面包吗？", "sp": "A", "gap": false, "start": 53.304, "end": 56.424, "words": [[53.422, 53.58], [53.593, 53.778], [54.212, 54.291], [54.304, 54.383], [54.396, 54.554], [54.567, 54.738], [54.751, 55.028], [55.041, 55.186], [55.199, 55.33], [55.343, 55.409], [55.422, 55.488], [55.501, 56.041]]}, {"kind": "s", "id": "s0_10_0", "md": "Certainly. I'll bring some over, ==on the house==.", "zh": "当然。我拿一些过来，免费的。", "sp": "B", "gap": false, "start": 56.424, "end": 61.104, "words": [[56.524, 57.248], [58.158, 58.382], [58.395, 58.606], [58.619, 58.829], [58.842, 59.171], [59.382, 59.553], [59.566, 59.632], [59.645, 60.184]]}, {"kind": "h", "id": "h1", "md": "2. Giving Feedback", "zh": "2. 提意见", "start": 61.104, "end": 63.024, "words": [[61.222, 61.486], [61.762, 62.025], [62.038, 62.643]]}, {"kind": "s", "id": "s1_0_0", "md": "How was everything in the end?", "zh": "最后吃得怎么样？", "sp": "B", "gap": false, "start": 63.024, "end": 65.64, "words": [[63.125, 63.415], [63.428, 63.573], [63.586, 64.007], [64.02, 64.099], [64.112, 64.257], [64.27, 64.717]]}, {"kind": "s", "id": "s1_1_0", "md": "The food was good once it came, but honestly, the wait was really long. I'd like to give some feedback, if that's okay.", "zh": "菜上了以后挺好吃的，不过说实话，等得太久了。我想提点意见，可以吗？", "sp": "A", "gap": false, "start": 65.64, "end": 72.936, "words": [[65.758, 65.811], [65.824, 66.14], [66.153, 66.324], [66.337, 66.508], [66.522, 66.785], [66.798, 66.89], [66.903, 67.351], [67.745, 67.89], [67.903, 68.482], [68.745, 68.837], [68.851, 69.048], [69.061, 69.232], [69.245, 69.535], [69.548, 69.916], [70.351, 70.443], [70.456, 70.601], [70.614, 70.693], [70.706, 70.877], [70.89, 71.048], [71.061, 71.627], [71.824, 71.903], [71.916, 72.114], [72.127, 72.548]]}, {"kind": "s", "id": "s1_2_0", "md": "Please do. We'd appreciate it.", "zh": "请说，我们很欢迎。", "sp": "B", "gap": false, "start": 72.936, "end": 76.776, "words": [[73.036, 73.378], [73.391, 73.799], [74.71, 74.92], [74.933, 75.578], [75.591, 75.854]]}, {"kind": "s", "id": "s1_3_0", "md": "We waited nearly an hour for the kids' food, and two dishes came out wrong. It __put a damper on__ the evening.", "zh": "孩子的饭等了将近一个小时，还有两道菜上错了。整晚的兴致都被扫了。", "sp": "A", "gap": false, "start": 76.776, "end": 83.016, "words": [[76.881, 77.013], [77.026, 77.329], [77.342, 77.723], [77.737, 77.815], [77.829, 78.079], [78.092, 78.21], [78.223, 78.302], [78.315, 78.592], [78.605, 79.026], [79.408, 79.487], [79.5, 79.723], [79.737, 80.092], [80.105, 80.342], [80.355, 80.552], [80.565, 80.855], [81.289, 81.368], [81.381, 81.526], [81.539, 81.605], [81.618, 82.0], [82.013, 82.105], [82.118, 82.184], [82.197, 82.618]]}, {"kind": "s", "id": "s1_4_0", "md": "I completely understand, and I'm really sorry. We're ==short-staffed== tonight, but that's no ==excuse==.", "zh": "我完全理解，真的很抱歉。我们今晚人手不够，但这不是理由。", "sp": "B", "gap": false, "start": 83.016, "end": 90.528, "words": [[83.116, 83.274], [83.287, 83.8], [83.813, 84.524], [84.761, 84.866], [84.879, 85.037], [85.05, 85.353], [85.366, 85.787], [86.698, 86.934], [86.948, 87.619], [87.632, 88.092], [88.224, 88.355], [88.369, 88.605], [88.619, 88.829], [88.842, 89.605]]}, {"kind": "s", "id": "s1_5_0", "md": "**I appreciate you saying that. Is there anything you can do about the bill?**", "zh": "谢谢你这么说。账单上能有什么表示吗？", "sp": "A", "gap": false, "start": 90.528, "end": 94.464, "words": [[90.633, 90.725], [90.739, 91.199], [91.212, 91.278], [91.291, 91.62], [91.633, 91.936], [92.37, 92.475], [92.489, 92.646], [92.66, 93.015], [93.028, 93.133], [93.146, 93.265], [93.278, 93.436], [93.449, 93.699], [93.712, 93.791], [93.804, 94.081]]}, {"kind": "s", "id": "s1_6_0", "md": "I've spoken to my manager. We've taken the pasta off, and we've ==waived== the service charge.", "zh": "我跟经理说过了。意面不收钱，服务费也免了。", "sp": "B", "gap": false, "start": 94.464, "end": 101.304, "words": [[94.564, 94.748], [94.761, 95.156], [95.169, 95.261], [95.275, 95.419], [95.432, 96.038], [96.948, 97.198], [97.211, 97.527], [97.54, 97.619], [97.632, 97.988], [98.001, 98.343], [98.593, 98.698], [98.711, 98.869], [98.882, 99.225], [99.238, 99.317], [99.33, 99.777], [99.79, 100.396]]}, {"kind": "s", "id": "s1_7_0", "md": "**That's very fair. Thanks for handling it so well.**", "zh": "很公道。谢谢你处理得这么好。", "sp": "A", "gap": false, "start": 101.304, "end": 104.496, "words": [[101.422, 101.58], [101.593, 101.83], [101.843, 102.251], [102.699, 102.87], [102.883, 103.015], [103.028, 103.436], [103.449, 103.528], [103.541, 103.751], [103.765, 104.107]]}, {"kind": "s", "id": "s1_8_0", "md": "Thank you for being so understanding. We hope you'll __give us another chance__.", "zh": "谢谢您这么体谅。希望您再给我们一次机会。", "sp": "B", "gap": false, "start": 104.496, "end": 110.232, "words": [[104.596, 104.925], [104.938, 105.017], [105.03, 105.162], [105.175, 105.425], [105.438, 105.701], [105.714, 106.543], [107.454, 107.612], [107.625, 107.901], [107.914, 108.059], [108.072, 108.23], [108.243, 108.349], [108.362, 108.678], [108.691, 109.322]]}, {"kind": "s", "id": "s1_9_0", "md": "We will. The salmon was lovely, actually.", "zh": "会的。其实三文鱼很好吃。", "sp": "A", "gap": false, "start": 110.232, "end": 113.256, "words": [[110.337, 110.456], [110.469, 110.719], [111.166, 111.219], [111.232, 111.574], [111.587, 111.732], [111.745, 112.166], [112.337, 112.864]]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids) el.append(k);
+  return el;
+};
+const md = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/__(.+?)__/g, '<u>$1</u>').replace(/==(.+?)==/g, '<mark>$1</mark>');
+const src = id => `audio/${id}.mp3`;
+
+// one shared player for clip buttons
+const player = new Audio();
+let loopBtn = null;
+const rate = () => parseFloat($('#speed').value);
+// sentence/heading ids are segments of track.mp3; other ids (words, refs, shadow) are their own files
+const SEG = Object.fromEntries((D.karaoke || []).map(l => [l.id, l]));
+let seg = null, segLoop = false;
+function play(id, loop = false, r = null) {
+  seg = SEG[id] || null; segLoop = loop;
+  const url = src(seg ? 'track' : id);
+  if (!player.src.endsWith(url)) player.src = url;
+  player.loop = !seg && loop;
+  player.playbackRate = r ?? rate();
+  const go = () => { if (seg) player.currentTime = seg.start; player.playbackRate = r ?? rate(); player.play(); };
+  if (seg && player.readyState < 1) player.addEventListener('loadedmetadata', go, { once: true }); else go();
+}
+(function watchSeg() {
+  if (seg && !player.paused && player.currentTime >= seg.end - 0.03) {
+    if (segLoop) player.currentTime = seg.start; else { player.pause(); seg = null; }
+  }
+  requestAnimationFrame(watchSeg);
+})();
+$('#speed').addEventListener('change', () => {
+  player.playbackRate = rate();
+  document.querySelectorAll('audio').forEach(a => a.playbackRate = rate());
+});
+function clipCtl(id) {
+  const p = h('button', { title: '播放', onclick: () => { stopLoop(); play(id); } }, '▶');
+  const l = h('button', { title: '单句循环', onclick: () => {
+    if (loopBtn === l) return stopLoop();
+    stopLoop(); loopBtn = l; l.classList.add('on'); play(id, true);
+  } }, '🔁');
+  return h('span', { class: 'ctl' }, p, l);
+}
+function stopLoop() {
+  if (loopBtn) { loopBtn.classList.remove('on'); loopBtn = null; player.pause(); player.loop = false; segLoop = false; }
+}
+
+// progress
+const KEY = 'wb:' + D.id;
+const prog = JSON.parse(localStorage.getItem(KEY) || '{}');
+const steps = [];
+function step(id, name, time, how, body) {
+  const cb = h('input', { type: 'checkbox' });
+  cb.checked = !!prog[id];
+  cb.addEventListener('change', () => { prog[id] = cb.checked; localStorage.setItem(KEY, JSON.stringify(prog)); renderNav(); });
+  steps.push({ id, name });
+  return h('section', { class: 'step', id },
+    h('h2', {}, name, h('span', { class: 'time' }, time), h('label', {}, cb, ' 完成')),
+    h('div', { class: 'how', html: how }), body);
+}
+function renderNav() {
+  $('#nav').replaceChildren(...steps.map(s => h('a', { href: '#' + s.id, class: prog[s.id] ? 'done' : '' }, s.name)));
+}
+
+// recorder
+async function makeRecorder(slot) {
+  let mr = null, chunks = [];
+  const btn = h('button', { class: 'rec', onclick: async () => {
+    if (mr && mr.state === 'recording') { mr.stop(); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mr = new MediaRecorder(stream); chunks = [];
+      mr.ondataavailable = e => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('on'); btn.textContent = '🎙 重录';
+        slot.replaceChildren(h('div', { class: 'how' }, '我的录音：'), h('audio', { controls: '', src: URL.createObjectURL(new Blob(chunks)) }));
+        btn.dispatchEvent(new Event('stopped'));
+      };
+      mr.start(); btn.classList.add('on'); btn.textContent = '⏹ 停止录音';
+      btn.dispatchEvent(new Event('started'));
+    } catch (e) { slot.textContent = '无法使用麦克风：' + e.message; }
+  } }, '🎙 录音');
+  btn.stopRec = () => { if (mr && mr.state === 'recording') mr.stop(); };
+  return btn;
+}
+
+// dictation diff (word-level LCS)
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function diff(ref, got) {
+  const a = norm(ref), b = norm(got);
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Set(); let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  return { words: a.map((w, k) => [w, hit.has(k)]), pct: Math.round(100 * hit.size / a.length) };
+}
+
+// ---------- render ----------
+$('#title').textContent = D.title;
+$('#meta').textContent = D.meta + ' · 朗读 ' + D.voice.replace(/^en-US-|Neural$/g, '');
+const main = $('#main');
+
+// 1 blind listening
+main.append(step('s1', '① 盲听', '3 分钟', '不看稿，听完整篇（可听两遍），然后试着回答下面的问题，再展开看答案。',
+  h('div', {},
+    h('audio', { controls: '', src: src('track'), preload: 'none' }),
+    ...D.gist.map((g, i) => h('div', { class: 'q' }, h('div', {}, `Q${i + 1}. ${g.q}`),
+      h('details', {}, h('summary', {}, '看答案'), h('div', {}, g.a)))))));
+
+// 2 dictation
+main.append(step('s2', '② 听写', '4 分钟', '每句可以反复听，听到能完整写出来为止。点「核对」后，<span style="color:var(--bad)">红色</span>是漏听或听错的词。',
+  h('div', {}, ...D.dictation.map((d, i) => {
+    const ta = h('textarea', { placeholder: '把听到的句子打出来…' });
+    const out = h('div', { class: 'diff' });
+    return h('div', { class: 'q' },
+      h('div', { class: 'controls' }, h('b', {}, `第 ${i + 1} 句`), clipCtl(d.id),
+        h('button', { onclick: () => {
+          const r = diff(d.text, ta.value);
+          out.replaceChildren(...r.words.flatMap(([w, ok]) => [h('span', { class: ok ? 'hit' : 'miss' }, w), ' ']),
+            h('span', { class: 'score' }, `${r.pct}%`));
+        } }, '核对')),
+      ta, out);
+  }))));
+
+// 3 intensive listening
+const intensive = h('div', { class: 'hide' });
+for (const sec of D.sections) {
+  intensive.append(h('h3', {}, sec.heading));
+  sec.rows.forEach((para, pi) => {
+    if (pi && !para[0].sp) intensive.append(h('div', { class: 'para-gap' }));
+    for (const s of para) {
+      const tag = s.sp ? `<span class="sp ${s.sp}">${D.speakers[s.sp].name}</span>` : '';
+      const txt = h('div', { class: 'txt', html: tag + md(s.md) });
+      if (s.zh) txt.append(h('div', { class: 'zh' }, s.zh));
+      txt.addEventListener('click', () => txt.style.filter = 'none');
+      intensive.append(h('div', { class: 'row' }, clipCtl(s.id), txt));
+    }
+  });
+}
+const zhBtn = h('button', { onclick: () => {
+  const on = document.body.classList.toggle('nozh');
+  localStorage.setItem('wb:zh', on ? '0' : '1');
+  zhBtn.textContent = on ? '显示中文' : '隐藏中文';
+} }, '隐藏中文');
+if (localStorage.getItem('wb:zh') === '0') { document.body.classList.add('nozh'); zhBtn.textContent = '显示中文'; }
+const toggle = h('button', { onclick: () => {
+  intensive.classList.toggle('hide');
+  intensive.querySelectorAll('.txt').forEach(t => t.style.filter = '');
+  toggle.textContent = intensive.classList.contains('hide') ? '显示全部原文' : '隐藏原文';
+} }, '显示全部原文');
+main.append(step('s3', '③ 精听', '4 分钟', '逐句听，先自己在脑中复述，再点模糊的文字看原文。没听出来的那句就用 🔁 循环，直到每个词都能听清。<b>加粗</b>是要背的句子，<u>下划线</u>是可复用的短语，<mark>高亮</mark>是重点词。',
+  h('div', {}, h('div', { class: 'controls' }, toggle, zhBtn), intensive)));
+
+// 4 shadowing
+const shadowSlot = h('div');
+makeRecorder(shadowSlot).then(rec => {
+  $('#s4-ctl').append(rec);
+});
+main.append(step('s4', '④ 跟读', '4 分钟', '先用 0.75× 跟读 2 遍，再用原速跟读 1 遍，最后录一遍自己的声音和原音对比。<code>/</code> 是短停顿，<code>//</code> 是长停顿，蓝色加粗的词要重读。',
+  h('div', {},
+    h('div', { class: 'shadow', html: D.shadow.marked }),
+    h('div', { class: 'controls', id: 's4-ctl' },
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 0.75); } }, '▶ 0.75×'),
+      h('button', { onclick: () => { stopLoop(); play('shadow', false, 1); } }, '▶ 原速')),
+    shadowSlot)));
+
+// 5 output
+main.append(step('s5', '⑤ 输出', '5 分钟', '点「开始」后会倒计时 30 秒并自动录音。用文中的三个动作作答：先对齐目标，再用提问代替断言，最后说具体。说完再听参考答案。',
+  h('div', {}, ...D.prompts.map((p, i) => {
+    const slot = h('div');
+    const timer = h('span', { class: 'timer' }, '30');
+    const box = h('div', { class: 'prompt' }, h('div', {}, h('b', {}, `场景 ${i + 1}：`), p.q));
+    makeRecorder(slot).then(rec => {
+      let t = null;
+      rec.textContent = '▶ 开始（30 秒）';
+      rec.addEventListener('started', () => {
+        let n = 30; timer.textContent = n;
+        t = setInterval(() => { timer.textContent = --n; if (n <= 0) rec.stopRec(); }, 1000);
+      });
+      rec.addEventListener('stopped', () => { clearInterval(t); timer.textContent = '30'; });
+      box.append(h('div', { class: 'controls' }, rec, timer), slot,
+        h('details', {}, h('summary', {}, '参考答案'),
+          h('div', { class: 'controls' }, clipCtl(p.id)), h('div', {}, p.ref),
+          p.ref_zh ? h('div', { class: 'zh' }, p.ref_zh) : ''));
+    });
+    return box;
+  }))));
+
+// words
+main.append(step('s6', '⑥ 单词', '2 分钟', '点 ▶ 听单词和例句，跟着读一遍。例句都取自开会、写技术文档的场景。',
+  h('table', {},
+    h('tr', {}, ...['', '单词', '音标', '中文', '工作中怎么用'].map(t => h('th', {}, t))),
+    ...D.words.map(w => h('tr', {},
+      h('td', {}, clipCtl(w.id)), h('td', {}, h('b', {}, w.w)), h('td', { class: 'ipa' }, w.ipa),
+      h('td', {}, w.zh), h('td', {}, w.ex))))));
+
+renderNav();
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

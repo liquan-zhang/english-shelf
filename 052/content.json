@@ -1,0 +1,191 @@
+{
+  "id": "052",
+  "title": "The First One-on-One with a New Report",
+  "meta": "B2 · 约 280 词 · 场景：一对一",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. What This Meeting Is Really For",
+      "paragraphs": [
+        [
+          "Your new engineer joined on Monday, and your first one-on-one is on Thursday.",
+          "It is tempting to fill the half hour with a project overview, the team's ==conventions==, and a list of tickets.",
+          "That information matters, but a document can deliver it."
+        ],
+        [
+          "The first one-on-one has a different job.",
+          "It sets the tone for every conversation you will have with this person for the next few years.",
+          "**If the first meeting is a status update, every meeting after it will be one too.**"
+        ],
+        [
+          "What you want to learn is how this person works best.",
+          "What motivates them, what ==drains== them, and how they like to hear bad news.",
+          "Those answers are hard to get later, once habits have __settled in__ and both of you are ==guarded==."
+        ]
+      ],
+      "heading_zh": "1. 这个会真正是为了什么",
+      "paragraphs_zh": [
+        [
+          "你的新工程师周一入职，你们的第一次 1:1 定在周四。",
+          "很容易就想把这半小时塞满：项目介绍、团队规范，再加一串工单。",
+          "这些信息很重要，但一份文档就能传达。"
+        ],
+        [
+          "第一次 1:1 有不一样的任务。",
+          "它为你接下来几年和这个人的每一次谈话定下基调。",
+          "如果第一次会是同步进度，之后的每一次也都会是。"
+        ],
+        [
+          "你想了解的是这个人怎样工作状态最好。",
+          "什么能激励他，什么会消耗他，他喜欢怎么听坏消息。",
+          "这些答案以后就很难问出来了，因为那时习惯已经定型，双方也都有了戒备。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Questions Worth Asking",
+      "paragraphs": [
+        [
+          "Start with their past, not your plans.",
+          "\"Tell me about the best manager you ever had. What did they do?\"",
+          "Then ask the ==mirror== question: \"What did a bad manager do that you never want to see again?\""
+        ],
+        [
+          "Next, ask how they want to receive feedback.",
+          "Some people prefer it in writing, so they can think before replying.",
+          "Others want it __on the spot__, in a quick chat after the meeting.",
+          "Asking now means your first piece of critical feedback will not __come as a shock__."
+        ],
+        [
+          "Then talk about the ==rhythm== of your meetings.",
+          "Agree on how often you meet, and make it clear that this time belongs to them, not to project updates.",
+          "**Tell them they can bring anything, including complaints about you.**"
+        ],
+        [
+          "Finally, talk less than you want to.",
+          "Write down what you hear, and repeat it back in the next meeting.",
+          "Nothing builds early trust faster than showing someone that you actually remembered what they ==revealed==."
+        ]
+      ],
+      "heading_zh": "2. 值得问的问题",
+      "paragraphs_zh": [
+        [
+          "从他的过去聊起，而不是你的计划。",
+          "「讲讲你遇到过的最好的老板吧。他做了些什么？」",
+          "然后问反过来的问题：「有哪个糟糕的老板做过什么，是你再也不想遇到的？」"
+        ],
+        [
+          "接着，问他希望怎样接收反馈。",
+          "有些人喜欢书面的，这样回复前可以先想一想。",
+          "另一些人希望当场说，会后简单聊几句。",
+          "现在问清楚，意味着你第一次给出批评性反馈时，不会让对方觉得突然。"
+        ],
+        [
+          "然后聊聊你们开会的节奏。",
+          "约定多久见一次，并且说清楚这段时间是属于他的，不是用来同步项目的。",
+          "告诉他什么都可以拿来聊，包括对你的抱怨。"
+        ],
+        [
+          "最后，少说话，比你想说的还要少。",
+          "把听到的记下来，下次见面时复述一遍。",
+          "没有什么比让对方看到你真的记住了他说过的话，更能快速建立早期信任了。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为第一次一对一的真正目的是什么？",
+      "a": "定下以后所有谈话的基调，了解对方怎样工作最好：什么激励他、什么消耗他、他希望怎样听坏消息；项目信息可以靠文档。"
+    },
+    {
+      "q": "作者建议问哪些问题？",
+      "a": "你遇到过最好的经理做了什么、最差的经理做了什么；你希望怎样接收反馈（书面还是当面即时）。"
+    },
+    {
+      "q": "关于一对一的节奏和你自己的表现，作者有什么建议？",
+      "a": "约定频率，说明这段时间属于对方不是汇报进度，可以聊任何事包括对你的抱怨；自己少说，记下来，下次复述给对方听。"
+    }
+  ],
+  "dictation": [
+    "If the first meeting is a status update, every meeting after it will be one too.",
+    "Start with their past, not your plans.",
+    "Tell them they can bring anything, including complaints about you.",
+    "Write down what you hear, and repeat it back in the next meeting."
+  ],
+  "shadow": {
+    "text": "Next, ask how they want to receive feedback. Some people prefer it in writing, so they can think before replying. Others want it on the spot, in a quick chat after the meeting.",
+    "marked": "Next, / ask <b>how</b> they want to <b>receive</b> feedback. //<br>Some people prefer it in <b>writing</b>, / so they can <b>think</b> before replying. //<br><b>Others</b> want it <b>on the spot</b>, / in a <b>quick</b> chat / after the meeting. //"
+  },
+  "prompts": [
+    {
+      "q": "和新下属的第一次一对一刚开始。用 30 秒开场：说明这次会面的目的，不谈项目，然后抛出第一个问题。",
+      "ref": "Welcome again, I'm really glad you're here. I want to use today a bit differently. We'll have plenty of time for projects and tickets, and most of that is in the onboarding doc anyway. Today I'd like to understand how you work best. So let me start with an easy one. Tell me about the best manager you've had. What did they do that worked for you?",
+      "ref_zh": "再次欢迎，真的很高兴你能加入。今天我想换个方式来用这段时间。项目和工单以后有的是时间聊，而且大部分都在入职文档里了。今天我想了解一下你怎样工作状态最好。那我先问个简单的。讲讲你遇到过的最好的老板吧。他做了什么让你觉得很受用？"
+    },
+    {
+      "q": "继续这次一对一。用 30 秒问对方希望怎样接收反馈，并说明一对一的频率和规则。",
+      "ref": "One more thing I'd like to get right early. When I have feedback for you, how do you prefer to get it? Some people like a written note, others want a quick chat right after the meeting. Also, I'd suggest we meet every week for thirty minutes. This time is yours, so bring anything, including things I'm doing that bother you.",
+      "ref_zh": "还有一件事我想早点弄对。我有反馈要给你的时候，你更喜欢什么方式？有些人喜欢书面留言，有些人希望会后马上简单聊一下。另外，我建议我们每周见一次，每次三十分钟。这段时间是你的，所以什么都可以聊，包括我做的让你不舒服的事。"
+    }
+  ],
+  "words": [
+    {
+      "w": "convention",
+      "ipa": "/kənˈvenʃən/",
+      "zh": "惯例、约定",
+      "ex": "Our naming convention for feature flags is in the wiki."
+    },
+    {
+      "w": "drain (v.)",
+      "ipa": "/dreɪn/",
+      "zh": "消耗（精力）",
+      "ex": "Back-to-back on-call weeks really drain the team.",
+      "tts_w": "drain"
+    },
+    {
+      "w": "guarded",
+      "ipa": "/ˈɡɑːrdɪd/",
+      "zh": "有戒心的、保留的",
+      "ex": "He was a bit guarded when I asked about his last project."
+    },
+    {
+      "w": "mirror (adj.)",
+      "ipa": "/ˈmɪrər/",
+      "zh": "镜像的、反向对应的",
+      "ex": "Let's run the mirror test: what if traffic drops instead?",
+      "tts_w": "mirror"
+    },
+    {
+      "w": "rhythm",
+      "ipa": "/ˈrɪðəm/",
+      "zh": "节奏",
+      "ex": "Weekly demos gave the team a good rhythm."
+    },
+    {
+      "w": "reveal",
+      "ipa": "/rɪˈviːl/",
+      "zh": "透露、揭示",
+      "ex": "The trace revealed a slow call to the auth service."
+    },
+    {
+      "w": "motivate",
+      "ipa": "/ˈmoʊtɪveɪt/",
+      "zh": "激励",
+      "ex": "Seeing real user impact really motivates her."
+    },
+    {
+      "w": "critical",
+      "ipa": "/ˈkrɪtɪkl/",
+      "zh": "批评性的",
+      "ex": "I have some critical feedback on the design, but it's fixable."
+    },
+    {
+      "w": "settle in",
+      "ipa": "/ˈsetl ɪn/",
+      "zh": "安顿下来、适应",
+      "ex": "Give him two weeks to settle in before assigning on-call."
+    }
+  ]
+}

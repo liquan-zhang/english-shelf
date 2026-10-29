@@ -1,0 +1,194 @@
+{
+  "id": "020",
+  "title": "Keeping a Remote Audience Awake",
+  "meta": "B2 · 约 290 词 · 场景：线上汇报",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. You Are Competing with Their Inbox",
+      "paragraphs": [
+        [
+          "In a meeting room, you can see when people ==drift== away.",
+          "On a video call, you see a grid of muted squares, half of them with cameras off.",
+          "Somewhere behind those squares, your audience has email, chat, and a dashboard they are quietly ==monitoring==."
+        ],
+        [
+          "This means a remote talk cannot be the same talk you would give in person.",
+          "Your slides are not just competing with silence; they are competing with every notification on the listener's screen.",
+          "**Online, attention is not something you earn once; you have to win it back every few minutes.**"
+        ],
+        [
+          "The good news is that small changes make a big difference.",
+          "You do not need to be more ==charismatic==, you need to be more ==deliberate== about rhythm."
+        ]
+      ],
+      "heading_zh": "1. 你在跟他们的收件箱抢注意力",
+      "paragraphs_zh": [
+        [
+          "在会议室里，你能看出大家什么时候走神了。",
+          "在视频会上，你看到的是一格格静音的小方块，一半还关着摄像头。",
+          "在那些小方块后面，你的听众开着邮件、聊天工具，还有一个他们正在悄悄盯着的看板。"
+        ],
+        [
+          "这意味着远程分享不能照搬线下的讲法。",
+          "你的幻灯片不只是在跟沉默竞争，它在跟听众屏幕上的每一条通知竞争。",
+          "在线上，注意力不是赢一次就完事的，你得每隔几分钟就重新把它抢回来。"
+        ],
+        [
+          "好消息是，小小的改变就能带来很大的不同。",
+          "你不需要更有个人魅力，你需要更刻意地把控节奏。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Change Something Every Five Minutes",
+      "paragraphs": [
+        [
+          "Plan your talk in short blocks, and make sure something changes at the end of each one.",
+          "Switch from slides to a live screen, ask a question, or ==hand over== to a colleague.",
+          "**A change in what people see or hear pulls their eyes back to your window.**"
+        ],
+        [
+          "Use the chat ==actively==, because it is easier than unmuting.",
+          "\"Type one if you've hit this bug, and two if you haven't.\"",
+          "Within seconds, the room __comes alive__, and you have real data to react to."
+        ],
+        [
+          "Call on people by name, but warn them first.",
+          "\"In a minute, I'll ask Hana how her team handles alerts.\"",
+          "Hana starts listening ==closely==, and so does everyone else, because they know it could be them next."
+        ],
+        [
+          "Finally, __cut your content__ by about a third compared with an in-person version.",
+          "Remote listeners tire faster, and nobody has ever complained that a call ended early.",
+          "Leave the details in a written doc, and __use the live time__ for the parts that need a conversation."
+        ]
+      ],
+      "heading_zh": "2. 每五分钟变一次花样",
+      "paragraphs_zh": [
+        [
+          "把分享拆成一个个短小的模块，确保每个模块结束时都有点变化。",
+          "从幻灯片切到实时屏幕、抛一个问题，或者交给同事来讲。",
+          "大家看到的或听到的一有变化，视线就会被拉回你的窗口。"
+        ],
+        [
+          "多用聊天框，因为打字比解除静音容易。",
+          "「遇到过这个 bug 的打一，没遇到过的打二。」",
+          "几秒钟之内，全场就活跃起来了，你也有了可以回应的真实数据。"
+        ],
+        [
+          "可以点名，但要先打个招呼。",
+          "「等会儿我会问问 Hana，她们团队是怎么处理告警的。」",
+          "Hana 会开始认真听，其他人也一样，因为他们知道下一个可能就是自己。"
+        ],
+        [
+          "最后，内容要比线下版本砍掉三分之一左右。",
+          "远程听众更容易累，而且从来没人抱怨过会议提前结束。",
+          "细节留在书面文档里，现场时间用在需要讨论的部分。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "作者认为线上汇报和线下汇报最大的不同是什么？",
+      "a": "线上看不到听众的状态，而且你在和他们屏幕上的邮件、消息、通知争夺注意力，注意力需要每隔几分钟重新赢回。"
+    },
+    {
+      "q": "作者建议多久做一次变化？可以怎么变？",
+      "a": "大约每五分钟；切换到实时画面、提一个问题、交给同事讲，或让大家在聊天框里回复。"
+    },
+    {
+      "q": "点名提问时作者有什么技巧？内容量应怎样调整？",
+      "a": "提前预告要点谁，让对方和其他人都专心听；内容比线下版本削减约三分之一，细节放到书面文档。"
+    }
+  ],
+  "dictation": [
+    "Online, attention is not something you earn once; you have to win it back every few minutes.",
+    "A change in what people see or hear pulls their eyes back to your window.",
+    "Use the chat actively, because it is easier than unmuting.",
+    "Remote listeners tire faster, and nobody has ever complained that a call ended early."
+  ],
+  "shadow": {
+    "text": "Call on people by name, but warn them first. \"In a minute, I'll ask Hana how her team handles alerts.\"",
+    "marked": "Call on people by <b>name</b>, / but <b>warn</b> them first. //<br>\"In a <b>minute</b>, / I'll ask <b>Hana</b> / how <b>her</b> team handles alerts.\" //"
+  },
+  "prompts": [
+    {
+      "q": "你在给几个海外团队做线上分享，讲到第十分钟，感觉大家都在干别的。用 30 秒做一次“变化”：用聊天框互动，并预告接下来要点名。",
+      "ref": "Let me pause the slides for a second and get a quick pulse check. In the chat, type one if your team has had a deploy rolled back this quarter, and two if not. Okay, I'm seeing lots of ones, that's what I expected. In a moment, I'm going to ask Carlos what his team changed after their last rollback, so Carlos, get ready.",
+      "ref_zh": "我先暂停一下幻灯片，快速摸个底。在聊天框里，如果你们团队这个季度有过部署被回滚，就打一，没有就打二。好，我看到好多一，跟我预想的一样。等会儿我会请 Carlos 讲讲他们团队上次回滚之后改了什么，Carlos 准备一下。"
+    },
+    {
+      "q": "你要把一个六十分钟的线下培训改成线上版本。用 30 秒向同事说明你打算怎么调整结构。",
+      "ref": "For the online version, I want to cut it down to about forty minutes. I'll split it into short blocks of five or six minutes each, and end every block with something different, a poll in the chat, a quick live demo, or a question for a specific person. The detailed examples will go into a written guide that people can read afterward, so the live time is mostly discussion.",
+      "ref_zh": "线上版本我想压缩到四十分钟左右。我会把它拆成每段五六分钟的短模块，每段结尾都换个花样，比如聊天框里的投票、一段简短的现场演示，或者点名问某个人一个问题。详细的例子会放进一份书面指南，大家会后可以看，这样现场时间主要用来讨论。"
+    }
+  ],
+  "words": [
+    {
+      "w": "drift (away)",
+      "ipa": "/drɪft/",
+      "zh": "走神、注意力漂走",
+      "ex": "I could see people drift away during the long architecture section.",
+      "tts_w": "drift"
+    },
+    {
+      "w": "monitor (v.)",
+      "ipa": "/ˈmɑːnɪtər/",
+      "zh": "监控、盯着",
+      "ex": "Keep monitoring the error rate for an hour after the deploy.",
+      "tts_w": "monitor"
+    },
+    {
+      "w": "charismatic",
+      "ipa": "/ˌkærɪzˈmætɪk/",
+      "zh": "有魅力的、有感染力的",
+      "ex": "You don't have to be charismatic to give a clear tech talk."
+    },
+    {
+      "w": "deliberate",
+      "ipa": "/dɪˈlɪbərət/",
+      "zh": "刻意的、有意为之的",
+      "ex": "Keeping the first release small was a deliberate choice."
+    },
+    {
+      "w": "actively",
+      "ipa": "/ˈæktɪvli/",
+      "zh": "积极地、主动地",
+      "ex": "We're actively looking into the login failures."
+    },
+    {
+      "w": "closely",
+      "ipa": "/ˈkloʊsli/",
+      "zh": "仔细地、密切地",
+      "ex": "We'll watch the memory usage closely during the canary."
+    },
+    {
+      "w": "come alive",
+      "ipa": "/kʌm əˈlaɪv/",
+      "zh": "活跃起来",
+      "ex": "The retro really came alive once we started using sticky notes."
+    },
+    {
+      "w": "call on",
+      "ipa": "/kɔːl ɑːn/",
+      "zh": "点名（让某人发言）",
+      "ex": "Feel free to call on me if you need the backend view."
+    },
+    {
+      "w": "notification",
+      "ipa": "/ˌnoʊtɪfɪˈkeɪʃən/",
+      "zh": "通知、提醒",
+      "ex": "I mute all notifications when I'm on call for deep debugging."
+    },
+    {
+      "w": "hand over (to)",
+      "ipa": "/hænd ˈoʊvər/",
+      "zh": "交接、把发言交给",
+      "ex": "I'll hand over to Mei for the database part of the demo.",
+      "tts_w": "hand over"
+    }
+  ]
+}

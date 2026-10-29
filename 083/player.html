@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英语书架">
+<meta name="theme-color" content="#1c1917">
+<title>Talking About Your Weekend in Two Sentences · 跟读播放器</title>
+<style>
+  :root { --ink:#f5f5f4; --dim:rgba(245,245,244,.38); --said:rgba(245,245,244,.9); --accent:#f87171; --bg1:#1c1917; --bg2:#292524; --hl:rgba(250,204,21,.28); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { background: radial-gradient(ellipse at top, var(--bg2), var(--bg1) 70%); color: var(--ink); font: 17px/1.5 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; overflow: hidden; }
+  header { position: fixed; top:0; left:0; right:0; padding: 14px 22px; display:flex; align-items:center; gap:12px; z-index:3; background: linear-gradient(var(--bg1) 60%, transparent); }
+  header h1 { font-size: 16px; margin:0; font-weight:600; }
+  header a { color: var(--dim); font-size: 14px; text-decoration:none; margin-left:auto; }
+  #lyrics { position: absolute; inset: 0; overflow-y: auto; padding: 45vh 22px 55vh; scroll-behavior: smooth; scrollbar-width: none; }
+  #lyrics::-webkit-scrollbar { display:none; }
+  .col { max-width: 760px; margin: 0 auto; }
+  .line { font-size: 21px; line-height: 1.55; padding: 10px 14px; margin: 2px 0; border-radius: 12px; color: var(--dim); cursor: pointer; transition: color .25s, font-size .25s, background .25s; }
+  .line:hover { background: rgba(255,255,255,.04); }
+  .line.h { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: rgba(245,245,244,.3); margin-top: 26px; }
+  .line.gap { margin-top: 22px; }
+  .line.cur { font-size: 27px; color: var(--dim); background: rgba(255,255,255,.05); }
+  .line.cur .w.said { color: var(--said); }
+  .line.cur .w.now { color: var(--accent); }
+  .w { transition: color .12s; }
+  .w.b { font-weight: 700; }
+  .w.u { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .w.m { background: var(--hl); border-radius: 4px; }
+  body.hidetext .line:not(.h) { filter: blur(7px); }
+  body.hidetext .line.cur.reveal { filter: none; }
+  .zh { font-size: 15px; line-height: 1.5; margin-top: 4px; color: rgba(245,245,244,.32); }
+  .line.cur .zh { font-size: 17px; color: rgba(245,245,244,.72); }
+  .line.h .zh { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  body.nozh .zh { display: none; }
+  .sp { display:inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 1px 8px; margin-right: 8px; border-radius: 999px; vertical-align: 3px; background: rgba(255,255,255,.1); color: rgba(245,245,244,.7); }
+  .sp.A { background: rgba(248,113,113,.2); color: #fca5a5; }
+  .line.myturn .w { filter: blur(6px); }
+  .line.myturn.reveal .w { filter: none; }
+  .turn { display:none; font-size: 13px; color: var(--accent); margin-left: 6px; }
+  .line.myturn .turn { display:inline; }
+  .wait { display:none; height: 3px; background: rgba(255,255,255,.12); border-radius: 2px; margin-top: 8px; overflow:hidden; }
+  .wait i { display:block; height:100%; width:0; background: var(--accent); }
+  .line.cur.waiting .wait { display:block; }
+  footer { position: fixed; left:0; right:0; bottom:0; z-index:3; padding: 18px 22px 22px; background: linear-gradient(transparent, var(--bg1) 35%); }
+  .prog { display:flex; align-items:center; gap:10px; max-width: 760px; margin: 0 auto 10px; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { flex:1; accent-color: var(--accent); }
+  .btns { display:flex; justify-content:center; align-items:center; gap: 10px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+  button, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  button.big { width: 56px; height: 56px; padding: 0; font-size: 22px; background: var(--accent); border-color: var(--accent); }
+  button.on { background: rgba(248,113,113,.22); border-color: var(--accent); color: #fff; }
+  .hint { text-align:center; font-size: 12px; color: rgba(245,245,244,.3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1><a href="index.html">练习册</a><a href="../index.html" style="margin-left:14px">书架</a></header>
+<div id="lyrics"><div class="col" id="col"></div></div>
+<footer>
+  <div class="prog"><span id="tcur">0:00</span><input type="range" id="seek" min="0" step="0.01" value="0"><span id="tdur">0:00</span></div>
+  <div class="btns">
+    <button id="loop" title="单句循环 (L)">🔁 单句</button>
+    <button id="shadow" title="每句后停顿，留时间跟读 (S)">🗣 跟读停顿</button>
+    <button id="prev" title="上一句 (←)">⏮</button>
+    <button id="play" class="big" title="播放/暂停 (空格)">▶</button>
+    <button id="next" title="下一句 (→)">⏭</button>
+    <button id="hide" title="隐藏文字，先盲听 (H)">🙈 盲听</button>
+    <button id="zh" title="显示/隐藏中文 (T)">中</button>
+    <button id="role" title="角色扮演：轮到你的台词时暂停，你来说 (R)" hidden>🎭 我来说</button>
+    <select id="speed" title="语速"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.15">1.15×</option></select>
+  </div>
+  <div class="hint">点任意一句从那里播放 · 空格 播放/暂停 · ← → 切句 · L 单句循环 · S 跟读停顿 · H 盲听 · T 中文 · R 角色扮演</div>
+</footer>
+<audio id="a" src="audio/track.mp3" preload="auto"></audio>
+<script>
+const D = {"id": "083", "title": "Talking About Your Weekend in Two Sentences", "meta": "B2 · 约 280 词 · 场景：周一聊周末", "voice": "en-US-AndrewNeural", "rate": "-5%", "sections": [{"heading": "1. The Problem with \"Not Much\"", "heading_zh": "1. 「没干啥」的问题", "rows": [[{"id": "s0_0_0", "md": "Every Monday, someone asks, \"How was your weekend?\"", "text": "Every Monday, someone asks, \"How was your weekend?\"", "zh": "每周一，总有人问：「周末过得怎么样？」", "sp": null}, {"id": "s0_0_1", "md": "And every Monday, many of us answer, \"Good, not much,\" and the conversation dies __on the spot__.", "text": "And every Monday, many of us answer, \"Good, not much,\" and the conversation dies on the spot.", "zh": "也是每周一，很多人回一句：「挺好，没干啥。」然后天就当场聊死了。", "sp": null}, {"id": "s0_0_2", "md": "It is not rude, but it gives the other person nothing to __hold on to__.", "text": "It is not rude, but it gives the other person nothing to hold on to.", "zh": "这不算没礼貌，但对方完全接不住话。", "sp": null}], [{"id": "s0_1_0", "md": "Part of the problem is that we think our weekends are too ==ordinary== to share.", "text": "Part of the problem is that we think our weekends are too ordinary to share.", "zh": "问题的一部分在于，我们觉得自己的周末太平淡，不值一提。", "sp": null}, {"id": "s0_1_1", "md": "We did not climb a mountain; we did laundry and watched a show.", "text": "We did not climb a mountain; we did laundry and watched a show.", "zh": "我们没去爬山；就是洗了衣服、追了个剧。", "sp": null}, {"id": "s0_1_2", "md": "But small talk does not need ==drama==.", "text": "But small talk does not need drama.", "zh": "但闲聊不需要什么戏剧性。", "sp": null}, {"id": "s0_1_3", "md": "**People are not asking for an adventure; they are asking for a way in.**", "text": "People are not asking for an adventure; they are asking for a way in.", "zh": "人家要的不是冒险故事；要的是一个能接上话的口子。", "sp": null}], [{"id": "s0_2_0", "md": "A weekend answer is really an ==invitation==.", "text": "A weekend answer is really an invitation.", "zh": "回答周末怎么过，其实是在发出邀请。", "sp": null}, {"id": "s0_2_1", "md": "If you give one real detail, the other person can __pick up on__ it and ask a follow-up.", "text": "If you give one real detail, the other person can pick up on it and ask a follow-up.", "zh": "你只要给一个真实的细节，对方就能顺着接下去，再追问一句。", "sp": null}]]}, {"heading": "2. One Fact, One Hook", "heading_zh": "2. 一个事实，一个钩子", "rows": [[{"id": "s1_0_0", "md": "Here is a simple formula: one sentence about what you did, and one sentence that leaves a ==hook==.", "text": "Here is a simple formula: one sentence about what you did, and one sentence that leaves a hook.", "zh": "有个简单的公式：一句说你干了什么，一句留个钩子。", "sp": null}, {"id": "s1_0_1", "md": "The hook can be a feeling, a small problem, or a question back.", "text": "The hook can be a feeling, a small problem, or a question back.", "zh": "钩子可以是一种感受、一个小麻烦，或者反问回去。", "sp": null}, {"id": "s1_0_2", "md": "Think of it as a handle the other person can grab without any effort.", "text": "Think of it as a handle the other person can grab without any effort.", "zh": "把它想成一个把手，对方不费劲就能抓住。", "sp": null}], [{"id": "s1_1_0", "md": "\"I finally tried that new noodle place near the office. Honestly, I think it's ==overrated==, have you been?\"", "text": "\"I finally tried that new noodle place near the office. Honestly, I think it's overrated, have you been?\"", "zh": "「我终于去试了公司附近那家新开的面馆。说实话我觉得有点名不副实，你去过吗？」", "sp": null}, {"id": "s1_1_1", "md": "\"We took the kids to the beach on Sunday. I'm still finding sand in the car.\"", "text": "\"We took the kids to the beach on Sunday. I'm still finding sand in the car.\"", "zh": "「周日我们带孩子去了海边。到现在车里还能翻出沙子。」", "sp": null}, {"id": "s1_1_2", "md": "\"Quiet one, I mostly __caught up on__ sleep. I needed it after the release last week.\"", "text": "\"Quiet one, I mostly caught up on sleep. I needed it after the release last week.\"", "zh": "「挺清闲的，基本就是在补觉。上周上线完，确实得缓缓。」", "sp": null}], [{"id": "s1_2_0", "md": "Notice that none of these are ==impressive==.", "text": "Notice that none of these are impressive.", "zh": "你会发现，这几句没有一句是厉害的。", "sp": null}, {"id": "s1_2_1", "md": "They work because they are specific and slightly ==personal==, so the listener has something to work with.", "text": "They work because they are specific and slightly personal, so the listener has something to work with.", "zh": "它们之所以管用，是因为具体、又带点个人色彩，听的人有东西可接。", "sp": null}, {"id": "s1_2_2", "md": "**Two honest sentences beat a long story, and they beat \"not much\" every time.**", "text": "Two honest sentences beat a long story, and they beat \"not much\" every time.", "zh": "两句实在话胜过一个长故事，更是每次都胜过「没干啥」。", "sp": null}], [{"id": "s1_3_0", "md": "Prepare your two sentences on Sunday night, the same way you would prepare a status update.", "text": "Prepare your two sentences on Sunday night, the same way you would prepare a status update.", "zh": "周日晚上就把这两句话准备好，就像你准备进度同步一样。", "sp": null}, {"id": "s1_3_1", "md": "And when you ask back, __listen for__ their hook and follow it.", "text": "And when you ask back, listen for their hook and follow it.", "zh": "轮到你反问的时候，留意对方的钩子，顺着接下去。", "sp": null}]]}], "gist": [{"q": "为什么回答 \"Good, not much\" 会让对话冷掉？", "a": "它不失礼，但没给对方任何可以接的东西，对话当场就结束了。"}, {"q": "作者说别人问周末时其实想要什么？", "a": "不是想听冒险经历，而是想要一个接话的入口；周末回答其实是一个邀请。"}, {"q": "文中的公式是什么？好的例子有什么共同点？", "a": "一句说做了什么 + 一句留钩子（感受、小麻烦或反问）；例子都不厉害，但具体、带点个人色彩。"}], "dictation": [{"id": "s0_1_3", "text": "People are not asking for an adventure; they are asking for a way in."}, {"id": "s0_2_0", "text": "A weekend answer is really an invitation."}, {"id": "s0_2_1", "text": "If you give one real detail, the other person can pick up on it and ask a follow-up."}, {"id": "s1_2_2", "text": "Two honest sentences beat a long story, and they beat \"not much\" every time."}], "shadow": {"text": "Notice that none of these are impressive. They work because they are specific and slightly personal, so the listener has something to work with. Two honest sentences beat a long story, and they beat \"not much\" every time.", "marked": "Notice that <b>none</b> of these / are <b>impressive</b>. //<br>They work because they are <b>specific</b> / and slightly <b>personal</b>, / so the listener has something to <b>work</b> with. //<br>Two <b>honest</b> sentences / beat a <b>long</b> story, / and they beat \"<b>not much</b>\" / every <b>time</b>. //"}, "prompts": [{"q": "周一早上澳洲同事问你 How was your weekend? 你其实只是在家陪孩子、去了一趟超市。用“一句事实加一个钩子”回答，再问回去。", "ref": "Pretty low-key, to be honest. We stayed home with the kids, and the big event was a trip to the supermarket, which somehow took three hours. Honestly, it was relaxing in its own way. How about you? I saw the weather was great on Saturday. Did you get out anywhere?", "ref_zh": "说实话挺平淡的。我们在家陪孩子，最大的事是去了趟超市，不知怎么就逛了三个小时。不过说真的，也挺放松的。你呢？我看周六天气特别好，出去玩了吗？", "id": "ref0"}, {"q": "周五下班前同事问 Any plans for the weekend? 你打算去爬山但还没定。两句话回答并留一个钩子。", "ref": "I'm thinking of doing the MacRitchie trail on Saturday morning, if the weather holds. Last time I only made it halfway before it started pouring. I've never done the full loop, so I'm a bit worried about the monkeys. Have you done it? Any tips for a beginner?", "ref_zh": "如果天气不变，我打算周六上午去走 MacRitchie 步道。上次走到一半就下起了大雨。我还没走完过整圈，有点怕那些猴子。你走过吗？给新手支几招？", "id": "ref1"}], "words": [{"w": "ordinary", "ipa": "/ˈɔːrdəneri/", "zh": "普通的、平常的", "ex": "It was an ordinary week, just bug fixes and reviews.", "id": "w0"}, {"w": "drama", "ipa": "/ˈdrɑːmə/", "zh": "戏剧性、大事件", "ex": "The launch went out with no drama at all, which is exactly what we wanted.", "id": "w1"}, {"w": "invitation", "ipa": "/ˌɪnvɪˈteɪʃən/", "zh": "邀请", "ex": "Treat every question in a review as an invitation to explain your thinking.", "id": "w2"}, {"w": "hook (n.)", "ipa": "/hʊk/", "zh": "钩子、吸引人接话的点", "ex": "End your update with a hook, like a question for the team.", "tts_w": "hook", "id": "w3"}, {"w": "overrated", "ipa": "/ˌoʊvərˈreɪtɪd/", "zh": "被高估的", "ex": "Honestly, I think that new framework is a bit overrated.", "id": "w4"}, {"w": "impressive", "ipa": "/ɪmˈpresɪv/", "zh": "令人印象深刻的", "ex": "The demo was impressive, but I want to see real traffic numbers.", "id": "w5"}, {"w": "personal", "ipa": "/ˈpɜːrsənəl/", "zh": "个人的、私人的", "ex": "Adding a personal example made her talk much easier to follow.", "id": "w6"}, {"w": "catch up on", "ipa": "/kætʃ ʌp ɑːn/", "zh": "补上（睡眠、工作等）", "ex": "I spent Saturday catching up on sleep after the release.", "id": "w7"}, {"w": "pick up on", "ipa": "/pɪk ʌp ɑːn/", "zh": "注意到并接住（话头）", "ex": "She picked up on my comment about the deadline and asked for details.", "id": "w8"}], "karaoke": [{"kind": "h", "id": "h0", "md": "1. The Problem with \"Not Much\"", "zh": "1. 「没干啥」的问题", "start": 0.0, "end": 2.592, "words": [[0.105, 0.355], [0.684, 0.776], [0.789, 1.21], [1.224, 1.395], [1.421, 1.697], [1.711, 2.211]]}, {"kind": "s", "id": "s0_0_0", "md": "Every Monday, someone asks, \"How was your weekend?\"", "zh": "每周一，总有人问：「周末过得怎么样？」", "sp": null, "gap": false, "start": 2.592, "end": 5.832, "words": [[2.697, 2.908], [2.921, 3.381], [3.421, 3.75], [3.763, 4.302], [4.579, 4.697], [4.71, 4.855], [4.868, 4.974], [4.987, 5.421]]}, {"kind": "s", "id": "s0_0_1", "md": "And every Monday, many of us answer, \"Good, not much,\" and the conversation dies __on the spot__.", "zh": "也是每周一，很多人回一句：「挺好，没干啥。」然后天就当场聊死了。", "sp": null, "gap": false, "start": 5.832, "end": 13.032, "words": [[5.937, 6.121], [6.135, 6.385], [6.398, 6.924], [7.293, 7.543], [7.556, 7.648], [7.661, 7.832], [7.845, 8.293], [8.608, 9.029], [9.45, 9.7], [9.714, 10.2], [10.7, 10.793], [10.806, 10.885], [10.898, 11.674], [11.687, 12.003], [12.016, 12.095], [12.108, 12.174], [12.187, 12.648]]}, {"kind": "s", "id": "s0_0_2", "md": "It is not rude, but it gives the other person nothing to __hold on to__.", "zh": "这不算没礼貌，但对方完全接不住话。", "sp": null, "gap": false, "start": 13.032, "end": 17.28, "words": [[13.137, 13.216], [13.229, 13.335], [13.348, 13.664], [13.677, 14.098], [14.414, 14.519], [14.532, 14.624], [14.637, 14.874], [14.887, 15.019], [15.032, 15.269], [15.282, 15.716], [15.729, 16.032], [16.045, 16.098], [16.111, 16.387], [16.4, 16.598], [16.611, 16.887]]}, {"kind": "s", "id": "s0_1_0", "md": "Part of the problem is that we think our weekends are too ==ordinary== to share.", "zh": "问题的一部分在于，我们觉得自己的周末太平淡，不值一提。", "sp": null, "gap": true, "start": 17.28, "end": 21.792, "words": [[17.398, 17.543], [17.556, 17.609], [17.622, 17.701], [17.714, 18.214], [18.372, 18.464], [18.477, 18.622], [18.635, 18.767], [18.78, 19.109], [19.122, 19.28], [19.293, 19.819], [19.833, 19.938], [19.951, 20.333], [20.438, 20.885], [20.898, 20.951], [20.964, 21.398]]}, {"kind": "s", "id": "s0_1_1", "md": "We did not climb a mountain; we did laundry and watched a show.", "zh": "我们没去爬山；就是洗了衣服、追了个剧。", "sp": null, "gap": false, "start": 21.792, "end": 25.632, "words": [[21.897, 21.976], [21.989, 22.095], [22.108, 22.292], [22.305, 22.568], [22.581, 22.621], [22.634, 23.055], [23.384, 23.489], [23.503, 23.674], [23.687, 24.253], [24.384, 24.503], [24.516, 24.805], [24.818, 24.845], [24.858, 25.253]]}, {"kind": "s", "id": "s0_1_2", "md": "But small talk does not need ==drama==.", "zh": "但闲聊不需要什么戏剧性。", "sp": null, "gap": false, "start": 25.632, "end": 27.888, "words": [[25.75, 25.843], [25.856, 26.158], [26.171, 26.514], [26.527, 26.658], [26.671, 26.895], [26.908, 27.079], [27.093, 27.5]]}, {"kind": "s", "id": "s0_1_3", "md": "**People are not asking for an adventure; they are asking for a way in.**", "zh": "人家要的不是冒险故事；要的是一个能接上话的口子。", "sp": null, "gap": false, "start": 27.888, "end": 32.232, "words": [[28.006, 28.256], [28.27, 28.362], [28.375, 28.691], [28.704, 29.125], [29.138, 29.309], [29.322, 29.388], [29.401, 29.941], [30.414, 30.533], [30.546, 30.704], [30.717, 31.112], [31.125, 31.296], [31.309, 31.362], [31.375, 31.598], [31.612, 31.835]]}, {"kind": "s", "id": "s0_2_0", "md": "A weekend answer is really an ==invitation==.", "zh": "回答周末怎么过，其实是在发出邀请。", "sp": null, "gap": true, "start": 32.232, "end": 34.896, "words": [[32.337, 32.403], [32.416, 32.771], [32.785, 33.14], [33.153, 33.311], [33.324, 33.758], [33.771, 33.837], [33.85, 34.495]]}, {"kind": "s", "id": "s0_2_1", "md": "If you give one real detail, the other person can __pick up on__ it and ask a follow-up.", "zh": "你只要给一个真实的细节，对方就能顺着接下去，再追问一句。", "sp": null, "gap": false, "start": 34.896, "end": 40.008, "words": [[35.001, 35.12], [35.133, 35.225], [35.238, 35.462], [35.475, 35.699], [35.712, 35.962], [35.975, 36.554], [36.778, 36.883], [36.896, 37.107], [37.12, 37.462], [37.475, 37.607], [37.62, 37.817], [37.83, 38.001], [38.014, 38.172], [38.185, 38.304], [38.659, 38.751], [38.764, 38.988], [39.001, 39.041], [39.054, 39.606]]}, {"kind": "h", "id": "h1", "md": "2. One Fact, One Hook", "zh": "2. 一个事实，一个钩子", "start": 40.008, "end": 41.952, "words": [[40.113, 40.284], [40.311, 40.534], [40.547, 40.968], [40.995, 41.192], [41.205, 41.574]]}, {"kind": "s", "id": "s1_0_0", "md": "Here is a simple formula: one sentence about what you did, and one sentence that leaves a ==hook==.", "zh": "有个简单的公式：一句说你干了什么，一句留个钩子。", "sp": null, "gap": false, "start": 41.952, "end": 47.928, "words": [[42.097, 42.281], [42.294, 42.413], [42.426, 42.491], [42.505, 42.899], [42.913, 43.426], [43.886, 44.097], [44.11, 44.491], [44.505, 44.755], [44.768, 44.926], [44.939, 45.031], [45.044, 45.413], [45.755, 45.899], [45.913, 46.163], [46.176, 46.584], [46.597, 46.781], [46.794, 47.044], [47.057, 47.097], [47.11, 47.531]]}, {"kind": "s", "id": "s1_0_1", "md": "The hook can be a feeling, a small problem, or a question back.", "zh": "钩子可以是一种感受、一个小麻烦，或者反问回去。", "sp": null, "gap": false, "start": 47.928, "end": 52.32, "words": [[48.046, 48.099], [48.112, 48.375], [48.389, 48.546], [48.56, 48.704], [48.717, 48.77], [48.783, 49.283], [49.691, 49.717], [49.731, 50.06], [50.073, 50.533], [50.967, 51.046], [51.06, 51.099], [51.112, 51.52], [51.533, 51.928]]}, {"kind": "s", "id": "s1_0_2", "md": "Think of it as a handle the other person can grab without any effort.", "zh": "把它想成一个把手，对方不费劲就能抓住。", "sp": null, "gap": false, "start": 52.32, "end": 56.4, "words": [[52.478, 52.636], [52.649, 52.741], [52.754, 52.873], [52.886, 53.044], [53.057, 53.109], [53.123, 53.557], [53.57, 53.702], [53.715, 53.938], [53.952, 54.359], [54.373, 54.531], [54.544, 54.965], [54.978, 55.346], [55.359, 55.57], [55.583, 56.017]]}, {"kind": "s", "id": "s1_1_0", "md": "\"I finally tried that new noodle place near the office. Honestly, I think it's ==overrated==, have you been?\"", "zh": "「我终于去试了公司附近那家新开的面馆。说实话我觉得有点名不副实，你去过吗？」", "sp": null, "gap": true, "start": 56.4, "end": 62.76, "words": [[56.571, 56.597], [56.597, 57.018], [57.032, 57.347], [57.361, 57.545], [57.558, 57.768], [57.782, 58.111], [58.124, 58.426], [58.439, 58.597], [58.611, 58.716], [58.729, 59.268], [59.703, 60.229], [60.439, 60.518], [60.532, 60.742], [60.755, 60.887], [60.9, 61.453], [61.479, 61.637], [61.65, 61.755], [61.768, 62.045]]}, {"kind": "s", "id": "s1_1_1", "md": "\"We took the kids to the beach on Sunday. I'm still finding sand in the car.\"", "zh": "「周日我们带孩子去了海边。到现在车里还能翻出沙子。」", "sp": null, "gap": false, "start": 62.76, "end": 67.368, "words": [[62.944, 62.984], [62.984, 63.155], [63.168, 63.26], [63.273, 63.549], [63.563, 63.642], [63.655, 63.76], [63.773, 64.063], [64.076, 64.207], [64.221, 64.734], [65.168, 65.286], [65.299, 65.576], [65.589, 66.01], [66.023, 66.365], [66.378, 66.431], [66.444, 66.523], [66.536, 66.957]]}, {"kind": "s", "id": "s1_1_2", "md": "\"Quiet one, I mostly __caught up on__ sleep. I needed it after the release last week.\"", "zh": "「挺清闲的，基本就是在补觉。上周上线完，确实得缓缓。」", "sp": null, "gap": false, "start": 67.368, "end": 71.088, "words": [[67.552, 67.71], [67.789, 68.052], [68.315, 68.368], [68.381, 68.736], [68.75, 69.013], [69.026, 69.157], [69.171, 69.315], [69.329, 69.763], [70.197, 70.236], [70.25, 70.552], [70.565, 70.671], [70.684, 70.934], [70.947, 71.026], [71.039, 71.434], null, null]}, {"kind": "s", "id": "s1_2_0", "md": "Notice that none of these are ==impressive==.", "zh": "你会发现，这几句没有一句是厉害的。", "sp": null, "gap": true, "start": 71.088, "end": 73.416, "words": [[71.193, 71.483], [71.496, 71.693], [71.706, 72.009], [72.022, 72.101], [72.114, 72.325], [72.338, 72.43], [72.443, 73.035]]}, {"kind": "s", "id": "s1_2_1", "md": "They work because they are specific and slightly ==personal==, so the listener has something to work with.", "zh": "它们之所以管用，是因为具体、又带点个人色彩，听的人有东西可接。", "sp": null, "gap": false, "start": 73.416, "end": 79.08, "words": [[73.534, 73.627], [73.64, 73.942], [74.008, 74.311], [74.324, 74.416], [74.429, 74.521], [74.534, 75.311], [75.416, 75.548], [75.561, 76.061], [76.074, 76.613], [77.008, 77.1], [77.113, 77.219], [77.232, 77.574], [77.587, 77.784], [77.798, 78.074], [78.087, 78.153], [78.166, 78.403], [78.416, 78.692]]}, {"kind": "s", "id": "s1_2_2", "md": "**Two honest sentences beat a long story, and they beat \"not much\" every time.**", "zh": "两句实在话胜过一个长故事，更是每次都胜过「没干啥」。", "sp": null, "gap": false, "start": 79.08, "end": 84.864, "words": [[79.198, 79.396], [79.409, 79.751], [79.764, 80.264], [80.277, 80.593], [80.672, 80.712], [80.725, 81.08], [81.093, 81.633], [81.883, 82.014], [82.027, 82.172], [82.185, 82.593], [82.804, 83.146], [83.159, 83.672], [83.843, 84.067], [84.08, 84.462]]}, {"kind": "s", "id": "s1_3_0", "md": "Prepare your two sentences on Sunday night, the same way you would prepare a status update.", "zh": "周日晚上就把这两句话准备好，就像你准备进度同步一样。", "sp": null, "gap": true, "start": 84.864, "end": 90.12, "words": [[84.982, 85.298], [85.311, 85.456], [85.469, 85.68], [85.693, 86.259], [86.272, 86.417], [86.43, 86.798], [86.811, 87.14], [87.443, 87.535], [87.548, 87.851], [87.864, 88.061], [88.075, 88.167], [88.18, 88.311], [88.325, 88.785], [88.798, 88.851], [88.864, 89.272], [89.285, 89.732]]}, {"kind": "s", "id": "s1_3_1", "md": "And when you ask back, __listen for__ their hook and follow it.", "zh": "轮到你反问的时候，留意对方的钩子，顺着接下去。", "sp": null, "gap": false, "start": 90.12, "end": 93.6, "words": [[90.225, 90.304], [90.317, 90.449], [90.462, 90.567], [90.581, 90.909], [90.923, 91.317], [91.633, 91.936], [91.949, 92.067], [92.081, 92.225], [92.238, 92.502], [92.515, 92.594], [92.607, 93.041], [93.054, 93.212]]}]};
+const L = D.karaoke;
+const $ = id => document.getElementById(id);
+const a = $('a');
+$('title').textContent = D.title;
+
+// render lines; each whitespace token is a word span, markdown markers become classes
+const MK = { '**': 'b', '__': 'u', '==': 'm' };
+L.forEach((l, i) => {
+  const el = document.createElement('div');
+  el.className = 'line' + (l.kind === 'h' ? ' h' : '') + (l.gap ? ' gap' : '');
+  if (l.sp) {
+    const sp = D.speakers[l.sp];
+    const tag = document.createElement('span');
+    tag.className = 'sp ' + l.sp; tag.textContent = sp.name;
+    el.append(tag);
+  }
+  const st = { b: false, u: false, m: false };
+  l.spans = l.md.split(/\s+/).map((tok, k) => {
+    const cls = new Set();
+    let text = '';
+    for (const part of tok.split(/(\*\*|__|==)/)) {
+      if (MK[part]) { st[MK[part]] = !st[MK[part]]; continue; }
+      if (!part) continue;
+      text += part;
+      for (const c in st) if (st[c]) cls.add(c);
+    }
+    const s = document.createElement('span');
+    s.className = 'w ' + [...cls].join(' ');
+    s.textContent = text;
+    s.dataset.k = k;
+    el.append(s, ' ');
+    return s;
+  });
+  // keep underline/highlight continuous across the spaces inside a phrase
+  l.spans.forEach((s, k) => {
+    const n = l.spans[k + 1];
+    const shared = n && ['u', 'm'].filter(c => s.classList.contains(c) && n.classList.contains(c));
+    if (shared && shared.length) {
+      const gap = document.createElement('span');
+      gap.className = 'w ' + shared.join(' '); gap.textContent = ' ';
+      s.nextSibling.replaceWith(gap);
+    }
+  });
+  if (l.sp === 'A') {
+    const turn = document.createElement('span');
+    turn.className = 'turn'; turn.textContent = '轮到你说 · 点击看答案';
+    el.append(turn);
+  }
+  if (l.zh) {
+    const zh = document.createElement('div');
+    zh.className = 'zh'; zh.textContent = l.zh;
+    el.append(zh);
+  }
+  const wait = document.createElement('div');
+  wait.className = 'wait'; wait.innerHTML = '<i></i>';
+  el.append(wait);
+  el.addEventListener('click', e => {
+    const k = e.target.dataset?.k;
+    const w = k != null && l.words[k];
+    seekTo(w ? w[0] : l.start, i);
+    if (document.body.classList.contains('hidetext')) el.classList.add('reveal');
+  });
+  l.el = el; l.bar = wait.firstChild;
+  $('col').append(el);
+});
+
+const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+a.addEventListener('loadedmetadata', () => { $('seek').max = a.duration; $('tdur').textContent = fmt(a.duration); });
+
+let cur = -1, loopOn = false, shadowOn = false, roleOn = false, waitT = null, turnDone = -1;
+const lineAt = t => { for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].start) return i; return 0; };
+
+function setCur(i) {
+  if (i === cur) return;
+  if (cur >= 0) L[cur].el.classList.remove('cur', 'reveal', 'waiting');
+  cur = i;
+  L[i].el.classList.add('cur');
+  L[i].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function paintWords(t) {
+  const l = L[cur];
+  l.spans.forEach((s, k) => {
+    const w = l.words[k];
+    s.classList.toggle('said', !!w && t >= w[1]);
+    s.classList.toggle('now', !!w && t >= w[0] && t < w[1] + 0.08);
+  });
+}
+
+function seekTo(t, i = lineAt(t)) {
+  cancelWait();
+  turnDone = -1;
+  a.currentTime = t + 0.001;
+  setCur(i);
+  if (a.paused) a.play();
+}
+
+function cancelWait() {
+  if (waitT) { clearInterval(waitT); waitT = null; }
+  if (cur >= 0) L[cur].el.classList.remove('waiting', 'myturn');
+}
+
+// role play: your lines are muted; say them yourself, then the other side answers
+function myTurn(i) {
+  const l = L[i];
+  turnDone = i;
+  shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+  l.el.classList.add('myturn');
+}
+
+// shadowing pause: wait 1.3x the sentence length so there is room to repeat it
+function shadowPause(l, then) {
+  a.pause();
+  const total = (l.end - l.start) * 1.3 / a.playbackRate * 1000, t0 = performance.now();
+  l.el.classList.add('waiting');
+  waitT = setInterval(() => {
+    const p = (performance.now() - t0) / total;
+    l.bar.style.width = Math.min(100, p * 100) + '%';
+    if (p >= 1) { cancelWait(); then(); }
+  }, 50);
+}
+
+function tick() {
+  const t = a.currentTime;
+  if (!a.paused && cur >= 0 && !waitT && roleOn && L[cur].sp === 'A' && turnDone !== cur && t < L[cur].end - 0.2) {
+    myTurn(cur);
+  } else if (!a.paused && cur >= 0 && !waitT) {
+    const l = L[cur];
+    if (t >= l.end - 0.04) {
+      if (loopOn && l.kind === 's') {
+        if (shadowOn) shadowPause(l, () => { a.currentTime = l.start; a.play(); });
+        else a.currentTime = l.start;
+      } else if (shadowOn && l.kind === 's') {
+        shadowPause(l, () => { a.currentTime = l.end + 0.001; a.play(); });
+      }
+    }
+  }
+  if (!waitT) {
+    const i = lineAt(a.currentTime);
+    if (!(loopOn && i === cur + 1)) setCur(i);
+    paintWords(a.currentTime);
+  }
+  $('seek').value = a.currentTime;
+  $('tcur').textContent = fmt(a.currentTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+const toggle = (btn, on) => (btn.classList.toggle('on', on), on);
+a.addEventListener('play', () => $('play').textContent = '⏸');
+a.addEventListener('pause', () => { if (!waitT) $('play').textContent = '▶'; });
+$('play').onclick = () => { if (waitT) { cancelWait(); a.play(); } else if (a.paused) a.play(); else a.pause(); };
+$('prev').onclick = () => seekTo(L[Math.max(0, (a.currentTime - L[cur].start > 1 ? cur : cur - 1))].start, undefined);
+$('next').onclick = () => cur < L.length - 1 && seekTo(L[cur + 1].start, cur + 1);
+$('loop').onclick = () => loopOn = toggle($('loop'), !loopOn);
+$('shadow').onclick = () => { shadowOn = toggle($('shadow'), !shadowOn); if (!shadowOn && waitT) { cancelWait(); a.play(); } };
+$('hide').onclick = () => toggle($('hide'), document.body.classList.toggle('hidetext'));
+const zhOn = on => { document.body.classList.toggle('nozh', !on); $('zh').classList.toggle('on', on); localStorage.setItem('wb:zh', on ? '1' : '0'); };
+zhOn(localStorage.getItem('wb:zh') !== '0');
+$('zh').onclick = () => zhOn(document.body.classList.contains('nozh'));
+if (D.type === 'dialogue') $('role').hidden = false;
+$('role').onclick = () => { roleOn = toggle($('role'), !roleOn); turnDone = -1; if (!roleOn && waitT) { cancelWait(); a.play(); } };
+$('speed').onchange = e => a.playbackRate = parseFloat(e.target.value);
+$('seek').oninput = e => seekTo(parseFloat(e.target.value));
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  const k = { ' ': 'play', ArrowLeft: 'prev', ArrowRight: 'next', l: 'loop', s: 'shadow', h: 'hide', t: 'zh', r: 'role' }[e.key];
+  if (k) { e.preventDefault(); $(k).click(); }
+});
+setCur(0); paintWords(0);
+</script>
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('../sw.js', { scope: '../' });</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+{
+  "id": "119",
+  "type": "dialogue",
+  "title": "Asking About a Strange Charge",
+  "meta": "B2 · 约 260 词 · 场景：电话查询账单上的陌生扣款",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "speakers": {
+    "A": {"name": "You", "name_zh": "你", "voice": "en-US-AndrewNeural"},
+    "B": {"name": "Customer Service", "name_zh": "银行客服", "voice": "en-IN-NeerjaNeural"}
+  },
+  "scenes": [
+    {
+      "heading": "1. A Name You Don't Recognise",
+      "heading_zh": "1. 不认识的商户名",
+      "lines": [
+        {"sp": "B", "en": "Good afternoon, you're speaking with Priya. How may I assist you?", "zh": "下午好，我是 Priya。有什么可以帮您？"},
+        {"sp": "A", "en": "**Hi, there's a charge on my statement that I don't recognise. Could you help me look into it?**", "zh": "你好，我的账单上有一笔扣款我不认识。能帮我查一下吗？"},
+        {"sp": "B", "en": "Of course. Which ==statement== are you looking at, and what's the amount?", "zh": "当然。您看的是哪一期账单？金额是多少？"},
+        {"sp": "A", "en": "The October one. It's one hundred and nineteen dollars, and the ==merchant== is just a string of letters.", "zh": "十月的。一百一十九元，商户名就是一串字母。"},
+        {"sp": "B", "en": "Let me pull it up. That ==descriptor== belongs to a software company. It's an ==annual== subscription for cloud storage.", "zh": "我调出来看看。这个商户代码属于一家软件公司，是云存储的年度订阅。"},
+        {"sp": "A", "en": "Oh. I signed up for a free trial last year and __completely forgot__ about it.", "zh": "哦。我去年注册了个免费试用，完全忘了这事。"},
+        {"sp": "B", "en": "That happens a lot. The trial __rolls over__ into a paid plan automatically.", "zh": "这种情况很常见。试用期结束会自动转成付费套餐。"},
+        {"sp": "A", "en": "Can the bank get that money back for me?", "zh": "银行能帮我把这笔钱要回来吗？"},
+        {"sp": "B", "en": "Since you agreed to the terms, you'd need to ask the company directly. Many will refund if you cancel quickly.", "zh": "因为您同意过条款，需要直接联系那家公司。很多公司如果您尽快取消，会给退款。"}
+      ]
+    },
+    {
+      "heading": "2. Charged Twice",
+      "heading_zh": "2. 被扣了两次",
+      "lines": [
+        {"sp": "A", "en": "Okay, I'll do that. While I have you, there's another problem. A hotel charged me twice.", "zh": "好，我去联系。顺便还有个问题，有家酒店扣了我两次钱。"},
+        {"sp": "B", "en": "I see two payments of four hundred and fifty dollars. One is still ==pending==, though.", "zh": "我看到两笔四百五十元的扣款，不过其中一笔还在处理中。"},
+        {"sp": "A", "en": "Sorry, what does pending mean exactly? __Has it been taken__ from my account or not?", "zh": "不好意思，处理中具体是什么意思？钱到底扣走了没有？"},
+        {"sp": "B", "en": "It's a ==hold== the hotel placed at check-in. It usually __drops off__ within seven to ten days.", "zh": "那是酒店入住时做的预授权冻结，一般七到十天内会自动释放。"},
+        {"sp": "A", "en": "And if it doesn't drop off by then?", "zh": "如果到时候还没释放呢？"},
+        {"sp": "B", "en": "Then please call us back and we'll raise a ==dispute== with the hotel on your behalf.", "zh": "那就再打给我们，我们代您向酒店提出争议。"},
+        {"sp": "A", "en": "**Could you note that on my account, so I don't have to explain everything again?**", "zh": "能在我账户上备注一下吗？免得我还得从头解释一遍。"},
+        {"sp": "B", "en": "Certainly, I've added a note. Is there anything else I can help you with today?", "zh": "当然，已经加了备注。今天还有别的需要帮忙的吗？"},
+        {"sp": "A", "en": "No, that's everything. Thanks for explaining it so clearly.", "zh": "没有了，就这些。谢谢你解释得这么清楚。"}
+      ]
+    }
+  ],
+  "gist": [
+    {"q": "那笔一百一十九元的陌生扣款是什么？", "a": "去年注册的云存储免费试用自动转成了年度付费订阅。"},
+    {"q": "银行能帮「你」退这笔订阅费吗？", "a": "不能，因为同意过条款；需要自己直接联系那家公司，尽快取消可能会退款。"},
+    {"q": "酒店的两笔扣款是怎么回事？", "a": "其中一笔是入住时的预授权冻结，七到十天内会释放；如果没释放再打电话，银行代为提出争议。"}
+  ],
+  "dictation": [
+    "Hi, there's a charge on my statement that I don't recognise. Could you help me look into it?",
+    "Can the bank get that money back for me?",
+    "Sorry, what does pending mean exactly? Has it been taken from my account or not?",
+    "Could you note that on my account, so I don't have to explain everything again?"
+  ],
+  "shadow": {
+    "speaker": "A",
+    "text": "The October one. It's one hundred and nineteen dollars, and the merchant is just a string of letters.",
+    "marked": "The <b>October</b> one. //<br>It's one hundred and <b>nineteen</b> dollars, / and the <b>merchant</b> / is just a <b>string of letters</b>. //"
+  },
+  "prompts": [
+    {
+      "q": "你发现自动续费的健身房会员费又扣了一个月，但你上个月已经取消了。打电话给健身房，要求退款。",
+      "ref": "Hi, I cancelled my membership last month and got a confirmation email, but I was still charged for this month. It's eighty-nine dollars. Could you check your records and refund it? I can forward you the email if that helps. I'd also like a written confirmation that there won't be any more charges.",
+      "ref_zh": "你好，我上个月取消了会员，也收到了确认邮件，但这个月还是被扣了八十九元。能帮我查一下记录并退款吗？需要的话我可以把邮件转发给你。我还想要一份书面确认，保证之后不会再扣费。"
+    },
+    {
+      "q": "你看到账单上有一笔国外的小额扣款，不确定是不是盗刷。打电话问银行该怎么判断、要不要换卡。",
+      "ref": "Hi, I noticed a small charge from an overseas website on my card, only about three dollars, but I've never shopped there. I've read that people sometimes test stolen cards with small amounts. Could you tell me more about this merchant? If it looks suspicious, I think I'd rather block the card and get a new one.",
+      "ref_zh": "你好，我看到卡上有一笔境外网站的小额扣款，大约三块钱，但我从没在那儿买过东西。我看到说有人会用小额消费测试盗来的卡。能告诉我这个商户的更多信息吗？如果看起来可疑，我宁愿把卡冻结，换张新卡。"
+    }
+  ],
+  "words": [
+    {"w": "statement", "ipa": "/ˈsteɪtmənt/", "zh": "（银行）账单，对账单", "ex": "I check my credit card statement every month."},
+    {"w": "merchant", "ipa": "/ˈmɜːrtʃənt/", "zh": "商户", "ex": "The merchant name on the bill was different from the shop's name."},
+    {"w": "descriptor", "ipa": "/dɪˈskrɪptər/", "zh": "（账单上的）商户描述代码", "ex": "Search the descriptor online to see which company it is."},
+    {"w": "annual", "ipa": "/ˈænjuəl/", "zh": "每年的", "ex": "The annual fee is waived for the first year."},
+    {"w": "pending", "ipa": "/ˈpendɪŋ/", "zh": "待处理的，未入账的", "ex": "The refund is still pending."},
+    {"w": "hold", "ipa": "/hoʊld/", "zh": "冻结金额，预授权", "ex": "The car rental put a hold of five hundred dollars on my card.", "tts": "The car rental put a hold of five hundred dollars on my card."},
+    {"w": "dispute", "ipa": "/dɪˈspjuːt/", "zh": "争议，异议", "ex": "The bank will open a dispute with the shop."},
+    {"w": "roll over", "ipa": "/roʊl ˈoʊvər/", "zh": "自动续延", "ex": "The free trial rolls over into a paid plan after a month."},
+    {"w": "drop off", "ipa": "/drɑːp ɔːf/", "zh": "（冻结金额）自动消失", "ex": "The deposit hold should drop off in a few days."}
+  ]
+}

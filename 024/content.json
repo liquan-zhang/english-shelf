@@ -1,0 +1,187 @@
+{
+  "id": "024",
+  "title": "Running a Blameless Postmortem",
+  "meta": "B2 · 约 260 词 · 场景：事故复盘会",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. Blame Feels Good and Fixes Nothing",
+      "paragraphs": [
+        [
+          "At two in the morning, an engineer ran a cleanup script against the wrong database.",
+          "Checkout was down for forty minutes.",
+          "In the postmortem, the easiest thing is to __point at__ that engineer and move on."
+        ],
+        [
+          "But the next person will make the same mistake, because nothing about the system has changed.",
+          "Worse, people learn to hide their errors, and you lose the honest ==timeline== you need.",
+          "**If people are punished for telling the truth, your postmortems will be full of fiction.**"
+        ],
+        [
+          "Blameless does not mean that nobody is ==accountable==.",
+          "It means the team is accountable for fixing the conditions that made the mistake easy.",
+          "Why did the script run without asking for ==confirmation==?",
+          "Why did production and staging look exactly the same in the terminal?"
+        ]
+      ],
+      "heading_zh": "1. 甩锅很爽，但什么也解决不了",
+      "paragraphs_zh": [
+        [
+          "凌晨两点，一位工程师对着错误的数据库跑了一个清理脚本。",
+          "结账功能挂了四十分钟。",
+          "复盘的时候，最省事的做法就是把矛头指向那位工程师，然后翻篇。"
+        ],
+        [
+          "但下一个人还会犯同样的错，因为系统本身什么都没变。",
+          "更糟的是，大家会学着藏起自己的错误，你就拿不到需要的那条真实时间线了。",
+          "如果说真话会受罚，你的复盘报告里就全是编出来的故事。"
+        ],
+        [
+          "Blameless 不代表没人需要负责。",
+          "它的意思是，团队要负责把那些让人容易犯错的条件修掉。",
+          "为什么这个脚本运行前不要求二次确认？",
+          "为什么在终端里，生产环境和测试环境看起来一模一样？"
+        ]
+      ]
+    },
+    {
+      "heading": "2. Questions That Keep People Talking",
+      "paragraphs": [
+        [
+          "As the ==facilitator==, __set the ground rules__ in the first minute.",
+          "Say clearly that the goal is to learn how the system failed, not who failed.",
+          "Then walk through the timeline in order, step by step."
+        ],
+        [
+          "**Replace \"Why did you do that?\" with \"What made that look like the right call at the time?\"**",
+          "The second question __invites people to explain__ their ==reasoning== instead of defending themselves.",
+          "Usually the answer reveals missing alerts, ==misleading== dashboards, or a runbook that was out of date."
+        ],
+        [
+          "Watch out for ==hindsight==.",
+          "Saying \"it was obvious\" is easy once you know the ending.",
+          "In the moment, the engineer had half the information you have now."
+        ],
+        [
+          "End with a short list of action items, each with one owner and a date.",
+          "A postmortem without __follow-up__ is just a well-written story."
+        ]
+      ],
+      "heading_zh": "2. 让大家愿意开口的提问方式",
+      "paragraphs_zh": [
+        [
+          "作为主持人，要在第一分钟就把规则定好。",
+          "明确说出来：目的是弄清系统是怎么出问题的，而不是谁出了问题。",
+          "然后按顺序，一步一步过时间线。"
+        ],
+        [
+          "把「你为什么那么做？」换成「当时是什么让那个操作看起来是对的？」",
+          "第二种问法会让人去讲自己的思路，而不是忙着为自己辩护。",
+          "答案通常会暴露出缺失的告警、误导人的大盘，或者一份过时的 runbook。"
+        ],
+        [
+          "小心事后诸葛亮。",
+          "知道了结局，说一句「这不是很明显吗」当然容易。",
+          "可在当时，那位工程师掌握的信息只有你现在的一半。"
+        ],
+        [
+          "最后列一份简短的待办清单，每一项都要有一个负责人和一个截止日期。",
+          "没有后续跟进的复盘，只是一篇写得不错的故事。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么复盘时指责个人没有用？",
+      "a": "系统没变，下一个人还会犯同样的错；而且大家会学会隐瞒错误，复盘失去真实的时间线。"
+    },
+    {
+      "q": "「无责」是不是意味着没人负责？",
+      "a": "不是。团队要为「让错误容易发生的条件」负责，比如脚本没有二次确认、生产和测试环境看起来一样。"
+    },
+    {
+      "q": "主持人可以用什么提问方式让大家愿意说？",
+      "a": "把「你为什么这么做」换成「当时是什么让这个做法看起来是对的」；警惕事后诸葛亮；最后列出有负责人和日期的行动项。"
+    }
+  ],
+  "dictation": [
+    "If people are punished for telling the truth, your postmortems will be full of fiction.",
+    "It means the team is accountable for fixing the conditions that made the mistake easy.",
+    "Say clearly that the goal is to learn how the system failed, not who failed.",
+    "A postmortem without follow-up is just a well-written story."
+  ],
+  "shadow": {
+    "text": "Replace \"Why did you do that?\" with \"What made that look like the right call at the time?\" The second question invites people to explain their reasoning instead of defending themselves.",
+    "marked": "<b>Replace</b> \"Why did <b>you</b> do that?\" / with \"What <b>made</b> that look like the <b>right call</b> / at the <b>time</b>?\" //<br>The second question / invites people to <b>explain</b> their reasoning / instead of <b>defending</b> themselves. //"
+  },
+  "prompts": [
+    {
+      "q": "你主持一次线上事故复盘，开场 30 秒：说明无责原则和今天的流程。",
+      "ref": "Thanks for joining, everyone. Before we start, one ground rule: this is a blameless review. We're here to understand how the system let this happen, not to find someone to blame. Anyone in the same seat could have made the same call. We'll walk through the timeline step by step, then agree on a few action items, each with one owner and a date.",
+      "ref_zh": "谢谢大家参加。开始之前先定一条规则：这是一次 blameless 复盘。我们是来搞清楚系统怎么会让这件事发生的，不是来找人背锅的。换谁坐在那个位置上，都可能做出同样的判断。我们会一步一步过时间线，然后定几个待办，每项都有一个负责人和截止日期。"
+    },
+    {
+      "q": "复盘中有人说：「这明显是值班同学操作失误。」你作为主持人，用 30 秒把讨论拉回系统层面。",
+      "ref": "I hear you, but let's be careful with the word obvious, because we all know the ending now. At two in the morning, with the alert he had, what made that command look like the right step? I suspect the dashboard showed both clusters with the same name. If that's true, the fix is in the tooling, and that protects the next person on call too.",
+      "ref_zh": "我理解你的意思，但「明显」这个词我们得慎用，因为现在大家都知道结局了。凌晨两点，就凭他手上那条告警，是什么让那条命令看起来是对的一步？我猜大盘上两个集群显示的名字是一样的。如果真是这样，那该修的是工具，这样下一个 on-call 的人也能被保护到。"
+    }
+  ],
+  "words": [
+    {
+      "w": "blameless",
+      "ipa": "/ˈbleɪmləs/",
+      "zh": "无责的",
+      "ex": "We run every incident review in a blameless format."
+    },
+    {
+      "w": "timeline",
+      "ipa": "/ˈtaɪmlaɪn/",
+      "zh": "时间线",
+      "ex": "Can you add the alert times to the incident timeline?"
+    },
+    {
+      "w": "accountable",
+      "ipa": "/əˈkaʊntəbl/",
+      "zh": "负有责任的",
+      "ex": "Each action item needs one person who is accountable for it."
+    },
+    {
+      "w": "confirmation",
+      "ipa": "/ˌkɑːnfərˈmeɪʃən/",
+      "zh": "确认",
+      "ex": "The delete command should ask for confirmation in production."
+    },
+    {
+      "w": "facilitator",
+      "ipa": "/fəˈsɪlɪteɪtər/",
+      "zh": "主持人、引导者",
+      "ex": "As facilitator, I'll keep us on time and on the timeline."
+    },
+    {
+      "w": "reasoning",
+      "ipa": "/ˈriːzənɪŋ/",
+      "zh": "推理、思路",
+      "ex": "Walk us through your reasoning when the alert fired."
+    },
+    {
+      "w": "misleading",
+      "ipa": "/ˌmɪsˈliːdɪŋ/",
+      "zh": "误导性的",
+      "ex": "The dashboard was misleading because it averaged all regions."
+    },
+    {
+      "w": "hindsight",
+      "ipa": "/ˈhaɪndsaɪt/",
+      "zh": "事后之明",
+      "ex": "In hindsight, we should have paged the database team earlier."
+    },
+    {
+      "w": "runbook",
+      "ipa": "/ˈrʌnbʊk/",
+      "zh": "运维手册",
+      "ex": "The runbook still points to the old failover script."
+    }
+  ]
+}

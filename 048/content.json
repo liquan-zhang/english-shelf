@@ -1,0 +1,191 @@
+{
+  "id": "048",
+  "title": "Finding Who Really Makes the Decision",
+  "meta": "B2 · 约 270 词 · 场景：推动决策",
+  "voice": "en-US-AndrewNeural",
+  "rate": "-5%",
+  "sections": [
+    {
+      "heading": "1. The Org Chart Is Only a Map",
+      "paragraphs": [
+        [
+          "You spend three weeks convincing a director to approve your migration plan.",
+          "She says yes in the meeting.",
+          "Then nothing moves, because a senior architect two levels below her quietly has ==doubts==, and the director will not overrule him."
+        ],
+        [
+          "This happens all the time in large companies.",
+          "The org chart tells you who signs, but not who ==shapes== the decision.",
+          "Often there is a trusted engineer, a finance partner, or a product lead whose opinion the formal owner always checks first.",
+          "**Getting a yes from the wrong person is just a slower way of getting a no.**"
+        ],
+        [
+          "None of this is ==sinister==.",
+          "Leaders rely on people they trust, especially for technical details they cannot ==verify== themselves.",
+          "Your task is simply to find those people early."
+        ]
+      ],
+      "heading_zh": "1. 组织架构图只是一张地图",
+      "paragraphs_zh": [
+        [
+          "你花了三周说服一位总监批准你的迁移方案。",
+          "她在会上同意了。",
+          "然后事情一点都没动，因为她下面隔两级的一位资深架构师心里有疑虑，而总监不会去否掉他。"
+        ],
+        [
+          "这种事在大公司里天天发生。",
+          "组织架构图告诉你谁签字，但不告诉你谁在影响决策。",
+          "往往有一位被信任的工程师、财务伙伴或者产品负责人，名义上的负责人总会先问他们的意见。",
+          "从不对的人那里拿到同意，只不过是换一种更慢的方式被拒绝。"
+        ],
+        [
+          "这里面没有什么阴谋。",
+          "领导依赖自己信任的人，尤其是那些他们自己没法验证的技术细节。",
+          "你要做的只是早点找到这些人。"
+        ]
+      ]
+    },
+    {
+      "heading": "2. How to Find the Real Decision",
+      "paragraphs": [
+        [
+          "The easiest method is to ask directly.",
+          "\"Besides you, who else needs to be comfortable with this before it can move forward?\"",
+          "Most people will answer honestly, because it saves them trouble later."
+        ],
+        [
+          "Next, watch the room.",
+          "When a tough question comes up, notice whose face the director looks at before answering.",
+          "That glance often tells you more than any ==hierarchy== diagram."
+        ],
+        [
+          "Once you know the ==influencers==, meet them one by one before the big meeting.",
+          "Share the draft, __ask for their input__, and adjust the plan where they have a point.",
+          "**Nobody likes to be surprised in public, and nobody blocks a plan they helped to shape.**"
+        ],
+        [
+          "Finally, __close the loop__ in writing.",
+          "After the decision, send a short summary that names who agreed and what happens next.",
+          "A written record makes the decision ==stick==, even when the real decision makers were never on the invite."
+        ]
+      ],
+      "heading_zh": "2. 怎么找到真正做决定的人",
+      "paragraphs_zh": [
+        [
+          "最简单的办法就是直接问。",
+          "「除了你，还有谁需要认可这件事，它才能往前推？」",
+          "大多数人都会如实回答，因为这能省掉他们以后的麻烦。"
+        ],
+        [
+          "接着，观察会议室。",
+          "遇到棘手的问题时，留意总监在回答前先看了谁一眼。",
+          "那一眼往往比任何层级图告诉你的都多。"
+        ],
+        [
+          "一旦知道了谁有影响力，就在大会之前一个一个去聊。",
+          "把草稿给他们看，听听他们的意见，有道理的地方就调整方案。",
+          "没人喜欢在公开场合被突然袭击，也没人会去拦一个自己参与塑造过的方案。"
+        ],
+        [
+          "最后，用书面形式收个尾。",
+          "决定做出后，发一份简短的纪要，写明谁同意了、接下来做什么。",
+          "有了书面记录，决定才能落地，哪怕真正拍板的人根本不在会议邀请里。"
+        ]
+      ]
+    }
+  ],
+  "gist": [
+    {
+      "q": "为什么总监在会上同意了，项目却没有推进？",
+      "a": "因为她下面一位资深架构师心存疑虑，而总监不会推翻他的意见；签字的人和真正影响决策的人不是同一个。"
+    },
+    {
+      "q": "怎么找到真正影响决策的人？",
+      "a": "直接问「除了你，还有谁需要认可这件事」；开会时观察遇到难题总监先看谁。"
+    },
+    {
+      "q": "找到之后怎么做？",
+      "a": "大会前逐个单聊，分享草稿、征求意见、按合理意见调整；决定后写邮件总结谁同意了、下一步是什么。"
+    }
+  ],
+  "dictation": [
+    "Getting a yes from the wrong person is just a slower way of getting a no.",
+    "The org chart tells you who signs, but not who shapes the decision.",
+    "Nobody likes to be surprised in public, and nobody blocks a plan they helped to shape.",
+    "After the decision, send a short summary that names who agreed and what happens next."
+  ],
+  "shadow": {
+    "text": "Next, watch the room. When a tough question comes up, notice whose face the director looks at before answering. That glance often tells you more than any hierarchy diagram.",
+    "marked": "Next, / <b>watch</b> the room. //<br>When a <b>tough</b> question comes up, / notice <b>whose</b> face the director looks at / <b>before</b> answering. //<br>That <b>glance</b> / often tells you <b>more</b> / than any hierarchy diagram. //"
+  },
+  "prompts": [
+    {
+      "q": "你想推动把日志系统迁移到新平台，名义上的决策人是基础架构负责人。用 30 秒问他：还有谁需要认可这件事？问得自然、不显得绕过他。",
+      "ref": "Thanks for supporting the migration, that really helps. I want to make sure we don't hit surprises later. Besides you, is there anyone else who should be comfortable with this before we start? For example, does the security team or the cost owner usually need to review changes like this? I'd rather talk to them now than discover a concern two weeks in.",
+      "ref_zh": "谢谢你支持这次迁移，真的帮了大忙。我想确保后面不会出意外。除了你之外，在我们开始前还有谁需要认可这件事吗？比如说，像这样的改动，安全团队或者成本负责人通常需要 review 吗？我宁愿现在就去找他们聊，也不想做了两周才发现有顾虑。"
+    },
+    {
+      "q": "大评审会前，你约了一位关键的资深工程师单独聊你的方案。用 30 秒开场，请他提意见。",
+      "ref": "Thanks for making time. Next week I'm presenting the caching proposal, and you know this service better than anyone, so I wanted your view before it goes in front of a big group. Here's the draft. I'm most unsure about the invalidation part. Where do you see the biggest risk? If you think something's wrong, I'd much rather fix it now.",
+      "ref_zh": "谢谢你抽时间。下周我要讲缓存方案，你比谁都了解这个服务，所以我想在拿到大场合之前先听听你的看法。这是草稿。我最没把握的是失效那一块。你觉得最大的风险在哪儿？如果你觉得有什么不对，我非常希望现在就改掉。"
+    }
+  ],
+  "words": [
+    {
+      "w": "doubt",
+      "ipa": "/daʊt/",
+      "zh": "疑虑",
+      "ex": "I have some doubts about the rollback plan for the database."
+    },
+    {
+      "w": "shape (v.)",
+      "ipa": "/ʃeɪp/",
+      "zh": "塑造、影响",
+      "ex": "Her feedback shaped the final version of the design.",
+      "tts_w": "shape"
+    },
+    {
+      "w": "sinister",
+      "ipa": "/ˈsɪnɪstər/",
+      "zh": "阴险的、不怀好意的",
+      "ex": "The delay isn't sinister; they just lost two engineers."
+    },
+    {
+      "w": "verify",
+      "ipa": "/ˈverɪfaɪ/",
+      "zh": "核实、验证",
+      "ex": "Can someone verify the fix in staging before we deploy?"
+    },
+    {
+      "w": "hierarchy",
+      "ipa": "/ˈhaɪərɑːrki/",
+      "zh": "层级",
+      "ex": "In a flat hierarchy, decisions often happen in side conversations."
+    },
+    {
+      "w": "influencer",
+      "ipa": "/ˈɪnfluənsər/",
+      "zh": "有影响力的人",
+      "ex": "The lead architect is the key influencer on any storage decision."
+    },
+    {
+      "w": "stick (v.)",
+      "ipa": "/stɪk/",
+      "zh": "（决定）站得住、不被推翻",
+      "ex": "Write it down, or the decision won't stick.",
+      "tts_w": "stick"
+    },
+    {
+      "w": "overrule",
+      "ipa": "/ˌoʊvərˈruːl/",
+      "zh": "否决、推翻",
+      "ex": "The VP overruled the team and moved the launch date."
+    },
+    {
+      "w": "glance",
+      "ipa": "/ɡlæns/",
+      "zh": "一瞥",
+      "ex": "One glance at the dashboard told us the deploy had failed."
+    }
+  ]
+}
